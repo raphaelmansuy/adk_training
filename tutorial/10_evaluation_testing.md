@@ -5,6 +5,7 @@
 Learn how to systematically test and evaluate AI agents using pytest and FastAPI TestClient. This tutorial demonstrates practical testing patterns learned from implementing comprehensive test suites for real AG-UI integration agents.
 
 **What You'll Build**: A complete testing system with production-ready patterns:
+
 - **pytest test suites** with FastAPI TestClient
 - **Mock data** for deterministic testing
 - **Tool validation** (function behavior and error handling)
@@ -16,6 +17,7 @@ Learn how to systematically test and evaluate AI agents using pytest and FastAPI
 **Why It Matters**: Production agents need systematic testing. Based on implementing 73 tests across 3 real tutorials, we've learned what works, what fails, and how to build reliable test suites.
 
 **Real-World Results**: Our test implementations achieved:
+
 - ✅ 73/73 tests passing (100% success rate)
 - ⚡ Fast execution (< 1 minute for all tests)
 - 🔄 Automated with master test runner
@@ -40,16 +42,19 @@ Learn how to systematically test and evaluate AI agents using pytest and FastAPI
 This tutorial has been updated with insights from implementing **73 comprehensive tests** across 3 production AG-UI integration agents:
 
 ### Tutorial 29: Quickstart AG-UI (8 tests)
+
 - FastAPI with AG-UI middleware
 - Health endpoints and CORS
 - Agent initialization and configuration
 
 ### Tutorial 30: Customer Support Agent (26 tests)
+
 - 3 tools (knowledge base, orders, tickets)
 - Mock data for deterministic testing
 - Error handling and edge cases
 
 ### Tutorial 31: Data Analysis Agent (39 tests)
+
 - Pandas integration
 - CSV loading and parsing
 - Statistical analysis tools
@@ -57,6 +62,7 @@ This tutorial has been updated with insights from implementing **73 comprehensiv
 ### Key Lessons Learned
 
 **1. FastAPI TestClient is Essential**
+
 ```python
 from fastapi.testclient import TestClient
 from agent import app
@@ -67,6 +73,7 @@ assert response.status_code == 200
 ```
 
 **2. Mock Data Makes Tests Deterministic**
+
 ```python
 # Embedded in test file - no external dependencies
 SALES_CSV = """date,product,sales,revenue
@@ -75,6 +82,7 @@ SALES_CSV = """date,product,sales,revenue
 ```
 
 **3. Test Multiple Dimensions**
+
 - ✅ API endpoints (health, CORS, CopilotKit)
 - ✅ Tool functions (individual behavior)
 - ✅ Agent configuration (initialization, tools)
@@ -82,6 +90,7 @@ SALES_CSV = """date,product,sales,revenue
 - ✅ Error handling (invalid inputs, edge cases)
 
 **4. Common Issues We Encountered**
+
 - CORS middleware wrapping in newer FastAPI versions
 - Case-sensitivity in data validation
 - Import path differences (`google.adk.agents` vs `google.genai.llms`)
@@ -89,6 +98,7 @@ SALES_CSV = """date,product,sales,revenue
 - Agent attribute access patterns
 
 **5. Test Organization Matters**
+
 ```python
 class TestAPIEndpoints:
     """Group related tests together"""
@@ -102,6 +112,7 @@ class TestToolFunctions:
 ```
 
 **6. Setup/Teardown is Critical**
+
 ```python
 def setup_method(self):
     """Clear state before each test"""
@@ -109,6 +120,7 @@ def setup_method(self):
 ```
 
 **7. JSON Reporting Enables CI/CD**
+
 ```bash
 pytest --json-report --json-report-file=report.json
 # Generates machine-readable results for automation
@@ -121,11 +133,13 @@ pytest --json-report --json-report-file=report.json
 ### Why Evaluate Agents?
 
 Traditional software:
+
 ```python
 assert calculate(2 + 2) == 4  # Deterministic
 ```
 
 AI Agents:
+
 ```python
 # Non-deterministic! Could return:
 # "The answer is 4"
@@ -135,17 +149,20 @@ AI Agents:
 ```
 
 **Challenge**: LLM responses are probabilistic, so we need to evaluate:
+
 1. **Trajectory**: Did the agent call the right tools in the right order?
 2. **Response Quality**: Is the final answer correct and well-formed?
 
 ### What to Evaluate
 
 **1. Trajectory (Tool Usage)**:
+
 - Did the agent call the expected tools?
 - In the correct order?
 - With valid arguments?
 
 **Metrics**:
+
 - Exact match (perfect trajectory)
 - In-order match (correct tools, correct order, extra OK)
 - Any-order match (correct tools, any order, extra OK)
@@ -153,17 +170,20 @@ AI Agents:
 - Recall (% of expected calls that were made)
 
 **2. Response Quality (Final Output)**:
+
 - Is the answer accurate?
 - Is it well-formatted?
 - Does it match expected content?
 
 **Metrics**:
+
 - tool_trajectory_avg_score (0-1): Average tool call correctness
 - response_match_score (0-1): ROUGE similarity to expected response
 
 ### Evaluation Approaches
 
 **Approach 1: Test Files** (Unit Testing):
+
 - Single `.test.json` file = single session
 - Simple interactions
 - Fast execution
@@ -171,6 +191,7 @@ AI Agents:
 - Run with pytest or adk eval
 
 **Approach 2: Evalsets** (Integration Testing):
+
 - Single `.evalset.json` file = multiple sessions
 - Complex multi-turn conversations
 - Slower execution
@@ -182,12 +203,14 @@ AI Agents:
 ## Use Case: Customer Support Agent Testing
 
 **Scenario**: Build a support agent that:
+
 - Searches knowledge base for answers
 - Creates tickets for issues
 - Checks ticket status
 - Needs systematic testing to ensure quality
 
 **What to Test**:
+
 1. Knowledge base search works correctly
 2. Ticket creation uses proper fields
 3. Status checks return accurate info
@@ -213,6 +236,7 @@ tutorial_test/
 ```
 
 **Key Differences from Traditional ADK**:
+
 - ✅ FastAPI + AG-UI middleware (not plain ADK agents)
 - ✅ TestClient for HTTP endpoint testing
 - ✅ Mock data embedded in tests
@@ -245,7 +269,7 @@ KNOWLEDGE_BASE = {
 def search_knowledge_base(query: str) -> Dict[str, Any]:
     """Search knowledge base for information."""
     query_lower = query.lower()
-    
+
     for topic, content in KNOWLEDGE_BASE.items():
         if topic in query_lower:
             return {
@@ -253,7 +277,7 @@ def search_knowledge_base(query: str) -> Dict[str, Any]:
                 "topic": topic.title(),
                 "content": content
             }
-    
+
     return {
         "status": "success",
         "topic": "General Support",
@@ -264,10 +288,10 @@ def create_ticket(issue: str, priority: str = "normal") -> Dict[str, Any]:
     """Create a support ticket."""
     if priority not in ["normal", "high"]:
         return {"status": "error", "error": "Invalid priority"}
-    
+
     import uuid
     ticket_id = f"TICK-{uuid.uuid4().hex[:8].upper()}"
-    
+
     return {
         "status": "success",
         "ticket_id": ticket_id,
@@ -344,7 +368,7 @@ client = TestClient(app)
 
 class TestAPIEndpoints:
     """Test FastAPI endpoints"""
-    
+
     def test_health_endpoint(self):
         """Test health check"""
         response = client.get("/health")
@@ -353,7 +377,7 @@ class TestAPIEndpoints:
         assert data["status"] == "healthy"
         assert data["agent"] == "support_agent"
         assert data["tutorial"] == "10"
-    
+
     def test_cors_headers(self):
         """Test CORS configuration"""
         response = client.options(
@@ -365,7 +389,7 @@ class TestAPIEndpoints:
         )
         assert response.status_code == 200
         assert "access-control-allow-origin" in response.headers
-    
+
     def test_copilotkit_endpoint_exists(self):
         """Test AG-UI endpoint is registered"""
         routes = [route.path for route in app.routes]
@@ -376,27 +400,27 @@ class TestAPIEndpoints:
 
 class TestToolFunctions:
     """Test tools in isolation"""
-    
+
     def test_search_knowledge_base_refund(self):
         """Test searching for refund policy"""
         result = search_knowledge_base("refund policy")
         assert result["status"] == "success"
         assert "Refund Policy" in result["topic"]
         assert "30-day" in result["content"]
-    
+
     def test_search_knowledge_base_shipping(self):
         """Test searching for shipping info"""
         result = search_knowledge_base("shipping information")
         assert result["status"] == "success"
         assert "Shipping" in result["topic"]
         assert "Free shipping" in result["content"]
-    
+
     def test_search_knowledge_base_not_found(self):
         """Test search with no match"""
         result = search_knowledge_base("xyz unknown topic")
         assert result["status"] == "success"
         assert "General Support" in result["topic"]
-    
+
     def test_create_ticket_normal_priority(self):
         """Test creating normal priority ticket"""
         result = create_ticket("App crashed", "normal")
@@ -404,19 +428,19 @@ class TestToolFunctions:
         assert "TICK-" in result["ticket_id"]
         assert result["priority"] == "normal"
         assert result["issue"] == "App crashed"
-    
+
     def test_create_ticket_high_priority(self):
         """Test creating high priority ticket"""
         result = create_ticket("Critical bug", "high")
         assert result["status"] == "success"
         assert result["priority"] == "high"
-    
+
     def test_create_ticket_invalid_priority(self):
         """Test invalid priority handling"""
         result = create_ticket("Issue", "urgent")  # Invalid
         assert result["status"] == "error"
         assert "Invalid priority" in result["error"]
-    
+
     def test_create_ticket_unique_ids(self):
         """Test that ticket IDs are unique"""
         result1 = create_ticket("Issue 1", "normal")
@@ -426,21 +450,21 @@ class TestToolFunctions:
 
 class TestAgentConfiguration:
     """Test agent setup"""
-    
+
     def test_agent_exists(self):
         """Test agent is initialized"""
         assert adk_agent is not None
         assert agent is not None
-    
+
     def test_agent_name(self):
         """Test agent name"""
         assert adk_agent.name == "support_agent"
-    
+
     def test_agent_has_tools(self):
         """Test agent has tools registered"""
         assert adk_agent.tools is not None
         assert len(adk_agent.tools) == 2
-    
+
     def test_agent_model(self):
         """Test agent uses correct model"""
         model_str = str(adk_agent.model if hasattr(adk_agent, "model") else adk_agent._model)
@@ -449,7 +473,7 @@ class TestAgentConfiguration:
 
 class TestIntegration:
     """Integration tests"""
-    
+
     def test_knowledge_base_completeness(self):
         """Test all KB topics are searchable"""
         topics = ["refund policy", "shipping", "warranty", "account"]
@@ -459,13 +483,13 @@ class TestIntegration:
             # Should find the topic, not fallback to General Support
             assert topic.title().replace(" ", " ") in result["topic"] or \
                    "General Support" not in result["topic"]
-    
+
     def test_ticket_creation_workflow(self):
         """Test complete ticket creation flow"""
         # 1. Search KB first (no match)
         kb_result = search_knowledge_base("custom feature request")
         assert kb_result["status"] == "success"
-        
+
         # 2. Create ticket for unsupported query
         ticket_result = create_ticket("Need custom feature", "normal")
         assert ticket_result["status"] == "success"
@@ -537,7 +561,8 @@ test_agent.py::TestIntegration::test_ticket_creation_workflow PASSED
 
 ### Complete Code
 
-**support_agent/__init__.py**:
+**support_agent/**init**.py**:
+
 ```python
 from .agent import root_agent
 
@@ -545,6 +570,7 @@ __all__ = ['root_agent']
 ```
 
 **support_agent/agent.py**:
+
 ```python
 """
 Customer Support Agent - For Evaluation Testing Demonstration
@@ -569,7 +595,7 @@ def search_knowledge_base(
 ) -> Dict[str, Any]:
     """
     Search knowledge base for relevant articles.
-    
+
     Args:
         query: Search query
     """
@@ -579,13 +605,13 @@ def search_knowledge_base(
         'billing': 'For billing questions, contact billing@example.com or call 1-800-555-0123.',
         'technical support': 'Technical support is available 24/7 via chat or phone.'
     }
-    
+
     # Simple keyword search
     results = []
     for key, article in kb.items():
         if any(word in key for word in query.lower().split()):
             results.append({'title': key.title(), 'content': article})
-    
+
     return {
         'status': 'success',
         'query': query,
@@ -602,7 +628,7 @@ def create_ticket(
 ) -> Dict[str, Any]:
     """
     Create a support ticket.
-    
+
     Args:
         issue: Issue description
         priority: low, medium, or high
@@ -614,10 +640,10 @@ def create_ticket(
             'status': 'error',
             'message': f'Invalid priority: {priority}. Must be low, medium, or high.'
         }
-    
+
     # Generate ticket ID
     ticket_id = f'TICK-{hash(issue) % 10000:04d}'
-    
+
     return {
         'status': 'success',
         'ticket_id': ticket_id,
@@ -634,7 +660,7 @@ def check_ticket_status(
 ) -> Dict[str, Any]:
     """
     Check status of existing ticket.
-    
+
     Args:
         ticket_id: Ticket ID (e.g., TICK-1234)
     """
@@ -643,13 +669,13 @@ def check_ticket_status(
         'TICK-1234': {'status': 'open', 'priority': 'high', 'assigned_to': 'Agent Smith'},
         'TICK-5678': {'status': 'resolved', 'priority': 'low', 'resolved_at': '2024-01-15'}
     }
-    
+
     if ticket_id not in tickets:
         return {
             'status': 'error',
             'message': f'Ticket {ticket_id} not found'
         }
-    
+
     ticket = tickets[ticket_id]
     return {
         'status': 'success',
@@ -665,48 +691,49 @@ def check_ticket_status(
 root_agent = Agent(
     name="support_agent",
     model="gemini-2.0-flash",
-    
+
     description="""
     Customer support agent that can search knowledge base, create tickets,
     and check ticket status. Designed for systematic testing.
     """,
-    
+
     instruction="""
     You are a helpful customer support agent.
-    
+
     CAPABILITIES:
     - Search knowledge base for answers to common questions
     - Create support tickets for issues
     - Check status of existing tickets
-    
+
     WORKFLOW:
     1. For questions, search the knowledge base FIRST
     2. If KB has answer, provide it directly
     3. If KB doesn't have answer or issue needs follow-up, create a ticket
     4. For ticket status inquiries, use check_ticket_status
-    
+
     RESPONSE FORMAT:
     - Be concise and professional
     - Always confirm actions (e.g., "I've created ticket TICK-1234")
     - Provide clear next steps
-    
+
     IMPORTANT:
     - Call search_knowledge_base before creating tickets
     - Use correct priority levels: low, medium, high
     - Always include customer email when creating tickets
     """,
-    
+
     tools=[
         search_knowledge_base,
         create_ticket,
         check_ticket_status
     ],
-    
+
     output_key="support_response"
 )
 ```
 
 **support_agent/.env**:
+
 ```
 GOOGLE_GENAI_USE_VERTEXAI=FALSE
 GOOGLE_API_KEY=your_api_key_here
@@ -771,6 +798,7 @@ GOOGLE_API_KEY=your_api_key_here
 ```
 
 **What This Tests**:
+
 - Agent calls `search_knowledge_base` (trajectory)
 - With query "password reset" (argument validation)
 - Returns correct KB article (response quality)
@@ -839,6 +867,7 @@ GOOGLE_API_KEY=your_api_key_here
 ```
 
 **What This Tests**:
+
 - Agent searches KB first (good practice)
 - Then creates ticket (2-step trajectory)
 - Uses correct priority ("high" for critical bug)
@@ -861,16 +890,23 @@ GOOGLE_API_KEY=your_api_key_here
         {
           "invocation_id": "inv-003-turn1",
           "user_content": {
-            "parts": [{"text": "How do I contact billing?"}],
+            "parts": [{ "text": "How do I contact billing?" }],
             "role": "user"
           },
           "final_response": {
-            "parts": [{"text": "For billing questions, contact billing@example.com or call 1-800-555-0123."}],
+            "parts": [
+              {
+                "text": "For billing questions, contact billing@example.com or call 1-800-555-0123."
+              }
+            ],
             "role": "model"
           },
           "intermediate_data": {
             "tool_uses": [
-              {"name": "search_knowledge_base", "args": {"query": "billing"}}
+              {
+                "name": "search_knowledge_base",
+                "args": { "query": "billing" }
+              }
             ],
             "intermediate_responses": []
           }
@@ -878,11 +914,17 @@ GOOGLE_API_KEY=your_api_key_here
         {
           "invocation_id": "inv-003-turn2",
           "user_content": {
-            "parts": [{"text": "Actually, I need to report a billing error. My email is alice@example.com"}],
+            "parts": [
+              {
+                "text": "Actually, I need to report a billing error. My email is alice@example.com"
+              }
+            ],
             "role": "user"
           },
           "final_response": {
-            "parts": [{"text": "I've created a ticket for your billing error"}],
+            "parts": [
+              { "text": "I've created a ticket for your billing error" }
+            ],
             "role": "model"
           },
           "intermediate_data": {
@@ -911,6 +953,7 @@ GOOGLE_API_KEY=your_api_key_here
 ```
 
 **What This Tests**:
+
 - Multi-turn conversation (context maintenance)
 - First turn: Knowledge base search
 - Second turn: Ticket creation
@@ -930,6 +973,7 @@ GOOGLE_API_KEY=your_api_key_here
 ```
 
 **What This Means**:
+
 - `tool_trajectory_avg_score: 1.0` → Perfect tool call match required
 - `response_match_score: 0.7` → 70% ROUGE similarity to expected response
 
@@ -1054,16 +1098,19 @@ adk web support_agent
 **Workflow**:
 
 1. **Create Session**:
+
    - Chat with agent: "How do I reset my password?"
    - Agent responds with KB article
 
 2. **Save as Eval Case**:
+
    - Click "Eval" tab (right side)
    - Click "Create new eval set" or select existing
    - Click "Add current session"
    - Name it: "test_password_reset"
 
 3. **Edit Eval Case**:
+
    - Click eval case ID to view
    - Click pencil icon to edit
    - Modify expected tool calls:
@@ -1079,6 +1126,7 @@ adk web support_agent
    - Save changes
 
 4. **Run Evaluation**:
+
    - Select eval case(s)
    - Click "Run Evaluation"
    - Set thresholds:
@@ -1095,6 +1143,7 @@ adk web support_agent
    - Use Trace tab for detailed execution flow
 
 **Web UI Benefits**:
+
 - Visual comparison of expected vs actual
 - Easy to capture real sessions as tests
 - Interactive editing of test cases
@@ -1107,6 +1156,7 @@ adk web support_agent
 ### Tool Trajectory Score
 
 **How It Works**:
+
 ```python
 expected_tools = ["search_knowledge_base", "create_ticket"]
 actual_tools = ["search_knowledge_base", "create_ticket"]
@@ -1119,6 +1169,7 @@ score = 2/2 = 1.0  # Perfect!
 **Examples**:
 
 **Example 1: Perfect Match**:
+
 ```
 Expected: [search_knowledge_base, create_ticket]
 Actual:   [search_knowledge_base, create_ticket]
@@ -1126,6 +1177,7 @@ Score: 1.0 (2/2 matches)
 ```
 
 **Example 2: Partial Match**:
+
 ```
 Expected: [search_knowledge_base, create_ticket]
 Actual:   [create_ticket]
@@ -1133,6 +1185,7 @@ Score: 0.5 (1/2 matches)
 ```
 
 **Example 3: Extra Calls OK (In-Order Match)**:
+
 ```
 Expected: [search_knowledge_base, create_ticket]
 Actual:   [search_knowledge_base, check_ticket_status, create_ticket]
@@ -1155,6 +1208,7 @@ ROUGE-2 (bigrams): ~0.5 (50% phrase overlap)
 ```
 
 **Score Interpretation**:
+
 - 1.0 = Perfect match (identical)
 - 0.8-0.9 = Very similar (minor rewording)
 - 0.6-0.7 = Similar (same info, different wording)
@@ -1162,6 +1216,7 @@ ROUGE-2 (bigrams): ~0.5 (50% phrase overlap)
 - < 0.4 = Different content
 
 **Threshold Selection**:
+
 - 1.0 = Exact wording required (too strict!)
 - 0.8 = High similarity (good for specific responses)
 - 0.7 = Moderate similarity (good default)
@@ -1225,19 +1280,23 @@ ROUGE-2 (bigrams): ~0.5 (50% phrase overlap)
 ## Key Takeaways
 
 1. **Two Dimensions of Quality**:
+
    - **Trajectory**: Did agent take right steps? (tool calls)
    - **Response**: Is the answer good? (text quality)
 
 2. **Two Testing Approaches**:
+
    - **Test files**: Unit tests, single sessions, fast
    - **Evalsets**: Integration tests, multiple sessions, comprehensive
 
 3. **Three Execution Methods**:
+
    - **pytest**: Automated, CI/CD friendly
    - **CLI**: Quick manual testing
    - **Web UI**: Interactive, visual debugging
 
 4. **Flexible Thresholds**:
+
    - Strict (1.0): Perfect match required
    - Moderate (0.7-0.8): Good balance
    - Loose (0.5): Allow variation
@@ -1259,6 +1318,7 @@ Based on implementing 73 tests across 3 production agents, here are the real iss
 #### Issue 1: CORS Middleware Compatibility
 
 **Problem**:
+
 ```python
 # Modern FastAPI wraps CORS middleware
 app.add_middleware(CORSMiddleware, ...)
@@ -1268,6 +1328,7 @@ response = client.options("/health")  # Returns 405
 ```
 
 **Solution**:
+
 ```python
 # Test CORS on the main AG-UI endpoint
 response = client.options(
@@ -1288,6 +1349,7 @@ response = client.get("/health")  # Works fine
 #### Issue 2: Import Path Variations
 
 **Problem**:
+
 ```python
 # This fails in newer ADK versions
 from google.genai.llms import Gemini
@@ -1295,6 +1357,7 @@ from google.genai.llms import Gemini
 ```
 
 **Solution**:
+
 ```python
 # Use correct import path (modern 2025 style)
 from google.adk.agents import Agent
@@ -1316,11 +1379,13 @@ from google.adk.agents import LlmAgent  # Same as Agent
 #### Issue 3: Pandas/NumPy Compatibility
 
 **Problem**:
+
 ```bash
 ValueError: numpy.dtype size changed, may indicate binary incompatibility
 ```
 
 **Solution**:
+
 ```txt
 # requirements.txt - Use compatible versions
 pandas>=2.3.3
@@ -1332,6 +1397,7 @@ numpy>=2.3.3
 #### Issue 4: CSV Parsing Assumptions
 
 **Problem**:
+
 ```python
 # Test expects invalid CSV to raise error
 def test_invalid_csv():
@@ -1340,12 +1406,14 @@ def test_invalid_csv():
 ```
 
 **Reality**:
+
 ```python
 # Pandas is permissive - parses almost anything
 pd.read_csv(StringIO("invalid"))  # Creates DataFrame with one column
 ```
 
 **Solution**:
+
 ```python
 # Test for resilience, not rejection
 def test_invalid_csv():
@@ -1359,6 +1427,7 @@ def test_invalid_csv():
 #### Issue 5: Agent Attribute Access
 
 **Problem**:
+
 ```python
 # Test fails with TypeError
 def test_agent_wrapper():
@@ -1367,6 +1436,7 @@ def test_agent_wrapper():
 ```
 
 **Solution**:
+
 ```python
 # Test what matters - initialization
 def test_agent_wrapper():
@@ -1380,6 +1450,7 @@ def test_agent_wrapper():
 #### Issue 6: Test Assertion Specificity
 
 **Problem**:
+
 ```python
 # Both CSVs have 5 rows - assertion fails
 def test_dataset_overwrite():
@@ -1389,15 +1460,16 @@ def test_dataset_overwrite():
 ```
 
 **Solution**:
+
 ```python
 # Check for actual data changes
 def test_dataset_overwrite():
     load_csv_data("data.csv", csv1)
     cols1 = list(datasets["data.csv"].columns)
-    
+
     load_csv_data("data.csv", csv2)
     cols2 = list(datasets["data.csv"].columns)
-    
+
     assert cols1 != cols2  # Check real difference
 ```
 
@@ -1471,6 +1543,7 @@ def test_with_mock():
 ### Test Creation
 
 **DO**:
+
 - ✅ Test common user flows (happy paths)
 - ✅ Test edge cases (error handling)
 - ✅ Test multi-turn conversations
@@ -1482,6 +1555,7 @@ def test_with_mock():
 - ✅ Add descriptive test names and docstrings
 
 **DON'T**:
+
 - ❌ Test only perfect inputs
 - ❌ Use overly specific expected responses
 - ❌ Forget to test error cases
@@ -1522,6 +1596,7 @@ class TestIntegration:
 ```
 
 **Benefits**:
+
 - ✅ Easy to run specific feature tests
 - ✅ Clear organization in test reports
 - ✅ Parallel execution potential
@@ -1532,29 +1607,30 @@ class TestIntegration:
 ```python
 class TestDataAnalysis:
     """Test data analysis tools"""
-    
+
     def setup_method(self, method):
         """Run before each test"""
         # Clear datasets
         datasets.clear()
-        
+
         # Load sample data
         self.sample_csv = """name,age,city
 Alice,25,NYC
 Bob,30,LA"""
         load_csv_data("test.csv", self.sample_csv)
-    
+
     def teardown_method(self, method):
         """Run after each test"""
         # Clean up
         datasets.clear()
-    
+
     def test_analyze_data_summary(self):
         result = analyze_data("test.csv", "summary")
         assert result["status"] == "success"
 ```
 
 **Benefits**:
+
 - ✅ Tests are independent
 - ✅ No state leakage between tests
 - ✅ Easier debugging
@@ -1580,6 +1656,7 @@ class TestCSVLoading:
 ```
 
 **Benefits**:
+
 - ✅ Deterministic tests
 - ✅ Easy to modify test data
 - ✅ No external file dependencies
@@ -1610,6 +1687,7 @@ TestIntegration            # 3 tests (12%) - End-to-end
 ```
 
 **Why This Distribution?**
+
 - Tools have the most complexity and edge cases
 - API endpoints are simple but critical
 - Integration tests catch interactions
@@ -1638,11 +1716,13 @@ assert isinstance(result["data"], list)
 **For ADK Evaluation Framework (Traditional Approach)**:
 
 **Tool Trajectory**:
+
 - 1.0: Exact match (strict, good for critical flows)
 - 0.8-0.9: Allow some flexibility
 - < 0.7: Too lenient (agent might skip steps)
 
 **Response Match**:
+
 - 0.9-1.0: Very strict (rarely needed)
 - 0.7-0.8: Good default (similar content)
 - 0.5-0.6: Loose (useful for creative responses)
@@ -1670,20 +1750,20 @@ import time
 def run_tutorial_tests(tutorial_dir: Path) -> dict:
     """Run pytest for a single tutorial and return results."""
     test_file = tutorial_dir / "backend" / "test_agent.py"
-    
+
     if not test_file.exists():
         return {
             "tutorial": tutorial_dir.name,
             "status": "skipped",
             "reason": "test_agent.py not found"
         }
-    
+
     print(f"\n{'='*70}")
     print(f"Running tests for {tutorial_dir.name}")
     print(f"{'='*70}\n")
-    
+
     start_time = time.time()
-    
+
     # Run pytest with JSON report
     result = subprocess.run(
         [
@@ -1698,15 +1778,15 @@ def run_tutorial_tests(tutorial_dir: Path) -> dict:
         capture_output=True,
         text=True
     )
-    
+
     duration = time.time() - start_time
-    
+
     # Parse JSON report
     report_file = tutorial_dir / "test_report.json"
     if report_file.exists():
         with open(report_file) as f:
             report = json.load(f)
-        
+
         return {
             "tutorial": tutorial_dir.name,
             "status": "passed" if result.returncode == 0 else "failed",
@@ -1728,34 +1808,34 @@ def run_tutorial_tests(tutorial_dir: Path) -> dict:
 def main():
     """Run all tutorial tests and generate summary."""
     test_dir = Path(__file__).parent
-    
+
     # Find all tutorial directories
     tutorial_dirs = sorted([
         d for d in test_dir.iterdir()
         if d.is_dir() and d.name.startswith("tutorial") and d.name.endswith("_test")
     ])
-    
+
     if not tutorial_dirs:
         print("No tutorial test directories found!")
         sys.exit(1)
-    
+
     print(f"Found {len(tutorial_dirs)} tutorial test directories\n")
-    
+
     # Run tests for each tutorial
     results = []
     for tutorial_dir in tutorial_dirs:
         result = run_tutorial_tests(tutorial_dir)
         results.append(result)
-    
+
     # Generate summary
     print(f"\n{'='*70}")
     print("TEST SUMMARY")
     print(f"{'='*70}\n")
-    
+
     total_tests = 0
     total_passed = 0
     total_failed = 0
-    
+
     for result in results:
         if result["status"] == "passed":
             print(f"✅ {result['tutorial']}: {result['tests_passed']}/{result['tests_total']} tests passed ({result['duration']:.2f}s)")
@@ -1770,11 +1850,11 @@ def main():
             print(f"⏭️  {result['tutorial']}: {result['reason']}")
         else:
             print(f"⚠️  {result['tutorial']}: {result['reason']}")
-    
+
     print(f"\n{'='*70}")
     print(f"TOTAL: {total_passed}/{total_tests} tests passed")
     print(f"{'='*70}\n")
-    
+
     # Save master report
     master_report = {
         "timestamp": datetime.now().isoformat(),
@@ -1784,13 +1864,13 @@ def main():
         "total_failed": total_failed,
         "results": results
     }
-    
+
     master_report_file = test_dir / "master_report.json"
     with open(master_report_file, "w") as f:
         json.dump(master_report, f, indent=2)
-    
+
     print(f"Master report saved to: {master_report_file}\n")
-    
+
     # Exit with error if any tests failed
     if total_failed > 0:
         sys.exit(1)
@@ -1855,26 +1935,26 @@ name: Agent Tests
 
 on:
   push:
-    branches: [ main, develop ]
+    branches: [main, develop]
   pull_request:
-    branches: [ main ]
+    branches: [main]
 
 jobs:
   test:
     runs-on: ubuntu-latest
-    
+
     strategy:
       matrix:
         python-version: ["3.10", "3.11", "3.12"]
-    
+
     steps:
       - uses: actions/checkout@v4
-      
+
       - name: Set up Python ${{ matrix.python-version }}
         uses: actions/setup-python@v5
         with:
           python-version: ${{ matrix.python-version }}
-      
+
       - name: Cache dependencies
         uses: actions/cache@v4
         with:
@@ -1882,18 +1962,18 @@ jobs:
           key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
           restore-keys: |
             ${{ runner.os }}-pip-
-      
+
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
           pip install pytest pytest-json-report pytest-cov
-      
+
       - name: Install tutorial dependencies
         run: |
           cd test_tutorials/tutorial29_test/backend && pip install -r requirements.txt
           cd ../../tutorial30_test/backend && pip install -r requirements.txt
           cd ../../tutorial31_test/backend && pip install -r requirements.txt
-      
+
       - name: Run master test suite
         env:
           GOOGLE_API_KEY: ${{ secrets.GOOGLE_API_KEY }}
@@ -1901,7 +1981,7 @@ jobs:
         run: |
           cd test_tutorials
           python run_all_tests.py
-      
+
       - name: Upload test reports
         if: always()
         uses: actions/upload-artifact@v4
@@ -1910,7 +1990,7 @@ jobs:
           path: |
             test_tutorials/**/test_report.json
             test_tutorials/master_report.json
-      
+
       - name: Upload coverage
         if: matrix.python-version == '3.11'
         uses: codecov/codecov-action@v4
@@ -1918,7 +1998,7 @@ jobs:
           files: ./coverage.xml
           flags: agents
           name: agent-coverage
-      
+
       - name: Comment PR with results
         if: github.event_name == 'pull_request'
         uses: actions/github-script@v7
@@ -1927,18 +2007,18 @@ jobs:
             const fs = require('fs');
             const report = JSON.parse(fs.readFileSync('test_tutorials/master_report.json', 'utf8'));
             const body = `## 🧪 Test Results
-            
+
             - **Total Tests**: ${report.total_passed}/${report.total_tests}
             - **Status**: ${report.total_failed === 0 ? '✅ All passed!' : `❌ ${report.total_failed} failed`}
             - **Python**: ${{ matrix.python-version }}
-            
+
             <details>
             <summary>Tutorial Results</summary>
-            
+
             ${report.results.map(r => `- ${r.status === 'passed' ? '✅' : '❌'} ${r.tutorial}: ${r.tests_passed}/${r.tests_total} (${r.duration.toFixed(2)}s)`).join('\n')}
-            
+
             </details>`;
-            
+
             github.rest.issues.createComment({
               issue_number: context.issue.number,
               owner: context.repo.owner,
@@ -1948,6 +2028,7 @@ jobs:
 ```
 
 **Features**:
+
 - ✅ Multi-Python version testing (3.10, 3.11, 3.12)
 - ✅ Dependency caching for faster runs
 - ✅ JSON report generation
@@ -1985,22 +2066,26 @@ Now every commit automatically runs all 73 tests!
 ### Debugging Failed Tests
 
 **Step 1: Reproduce in Web UI**:
+
 ```bash
 adk web support_agent
 # Type the exact user input from failed test
 ```
 
 **Step 2: Use Trace Tab**:
+
 - See all tool calls (actual trajectory)
 - See LLM requests/responses
 - Identify where behavior diverged
 
 **Step 3: Check Logs**:
+
 ```bash
 pytest tests/test_agent.py -v -s  # Show all output
 ```
 
 **Step 4: Adjust Test or Agent**:
+
 - If agent is wrong → Fix agent logic
 - If test is wrong → Update test file
 
@@ -2013,6 +2098,7 @@ pytest tests/test_agent.py -v -s  # Show all output
 **Problem**: Expected `[search_kb, create_ticket]` but got `[create_ticket]`
 
 **Solutions**:
+
 1. Check agent instruction emphasizes search first
 2. Add explicit instruction: "Always search KB before creating tickets"
 3. Review LLM request in Trace tab (was instruction clear?)
@@ -2023,6 +2109,7 @@ pytest tests/test_agent.py -v -s  # Show all output
 **Problem**: Response is correct but scores 0.5 (below 0.7 threshold)
 
 **Solutions**:
+
 1. Update expected response to match agent's style
 2. Lower threshold to 0.5-0.6 if content is correct
 3. Check if response includes extra info (might need to strip)
@@ -2033,6 +2120,7 @@ pytest tests/test_agent.py -v -s  # Show all output
 **Problem**: Evaluation runs for minutes without completing
 
 **Solutions**:
+
 1. Check LLM API key is valid
 2. Verify network connectivity
 3. Test with single simple eval first
@@ -2043,6 +2131,7 @@ pytest tests/test_agent.py -v -s  # Show all output
 **Problem**: `FileNotFoundError: simple.test.json`
 
 **Solutions**:
+
 1. Verify path is correct (relative to agent module)
 2. Check file exists: `ls tests/simple.test.json`
 3. Ensure JSON is valid (use JSON validator)
@@ -2055,6 +2144,7 @@ pytest tests/test_agent.py -v -s  # Show all output
 ### 1. Customer Support Agent
 
 **Test Scenarios**:
+
 - Common questions (KB search)
 - Ticket creation (various priorities)
 - Status inquiries (existing tickets)
@@ -2062,12 +2152,14 @@ pytest tests/test_agent.py -v -s  # Show all output
 - Error handling (invalid inputs)
 
 **Metrics**:
+
 - 100% tool trajectory match (critical for compliance)
 - 70% response match (allow natural language variation)
 
 ### 2. E-commerce Shopping Assistant
 
 **Test Scenarios**:
+
 - Product search (various queries)
 - Filtering (price, category, brand)
 - Cart operations (add, remove, update)
@@ -2075,12 +2167,14 @@ pytest tests/test_agent.py -v -s  # Show all output
 - Order tracking
 
 **Metrics**:
+
 - 90% trajectory match (allow some flexibility)
 - 60% response match (product descriptions vary)
 
 ### 3. Healthcare Symptom Checker
 
 **Test Scenarios**:
+
 - Symptom assessment (decision trees)
 - Emergency detection (must be perfect)
 - Appointment scheduling
@@ -2088,6 +2182,7 @@ pytest tests/test_agent.py -v -s  # Show all output
 - Medical history queries
 
 **Metrics**:
+
 - 100% trajectory for emergency paths
 - 90% trajectory for routine flows
 - 80% response match (medical accuracy critical)
@@ -2095,6 +2190,7 @@ pytest tests/test_agent.py -v -s  # Show all output
 ### 4. Financial Advisor
 
 **Test Scenarios**:
+
 - Portfolio analysis
 - Risk assessment
 - Investment recommendations
@@ -2102,6 +2198,7 @@ pytest tests/test_agent.py -v -s  # Show all output
 - Transaction execution
 
 **Metrics**:
+
 - 100% trajectory (regulatory compliance)
 - 85% response match (specific financial data)
 
@@ -2122,6 +2219,7 @@ Total (73 tests):        59.46s (0.81s avg)
 ```
 
 **Key Insights**:
+
 - 📊 **Most tests run in < 1 second** (no LLM calls)
 - 📊 **API tests are fastest** (0.1-0.3s) - just HTTP calls
 - 📊 **Tool tests are medium** (0.5-1s) - business logic
@@ -2225,11 +2323,11 @@ jobs:
         with:
           path: ~/.cache/pip
           key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
-      
+
       # Run tests in parallel
       - name: Run tests
         run: pytest -n auto --dist loadscope
-      
+
       # Only run slow tests on main branch
       - name: Run slow tests
         if: github.ref == 'refs/heads/main'
@@ -2252,23 +2350,27 @@ jobs:
 ### Key Takeaways
 
 **1. FastAPI TestClient is Essential**
+
 - Modern AG-UI agents use FastAPI
 - TestClient provides HTTP testing without server
 - Handles CORS, routing, middleware automatically
 
 **2. Mock Data Makes Tests Reliable**
+
 - Embed test data in test files
 - No external dependencies
 - Deterministic, reproducible results
 - Fast execution
 
 **3. Test Organization Matters**
+
 - Group by feature (API, Tools, Config, Integration)
 - Use setup/teardown for isolation
 - Clear test names and docstrings
 - One assertion concept per test
 
 **4. Real Issues We Fixed**
+
 - CORS middleware compatibility
 - Import path changes
 - Pandas/numpy version conflicts
@@ -2277,18 +2379,21 @@ jobs:
 - Test assertion specificity
 
 **5. CI/CD Integration is Critical**
+
 - Master test runner for all tutorials
 - JSON reports for machine parsing
 - GitHub Actions for automated testing
 - Pre-commit hooks for local validation
 
 **6. Performance Optimization Works**
+
 - Parallel execution (3.3x faster)
 - Skip LLM tests in development
 - Use test markers for selective running
 - Cache fixtures appropriately
 
 **7. Focus on What Matters**
+
 - Test public APIs, not internals
 - Test behavior, not implementation
 - Test error cases thoroughly
@@ -2370,17 +2475,20 @@ Based on our implementation:
 ## Further Reading
 
 ### Official Documentation
+
 - [Google ADK Documentation](https://google.github.io/adk-docs/)
 - [AG-UI Framework](https://github.com/ag-ui/ag-ui)
 - [FastAPI Testing](https://fastapi.tiangolo.com/tutorial/testing/)
 - [Pytest Documentation](https://docs.pytest.org/)
 
 ### Testing Best Practices
+
 - [Test-Driven Development](https://www.agilealliance.org/glossary/tdd/)
 - [Testing Pyramids](https://martinfowler.com/articles/practical-test-pyramid.html)
 - [Mocking Best Practices](https://docs.python.org/3/library/unittest.mock.html)
 
 ### CI/CD Resources
+
 - [GitHub Actions for Python](https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-python)
 - [Pre-commit Framework](https://pre-commit.com/)
 - [Codecov Integration](https://about.codecov.io/)
