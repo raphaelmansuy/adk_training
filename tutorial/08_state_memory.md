@@ -1,5 +1,7 @@
 # Tutorial 08: State & Memory - Persistent Context Management
 
+> **💡 [View the complete working implementation and test suite here.](../tutorial_implementation/tutorial08/README.md)**
+
 ## Overview
 
 Learn how to build agents that remember information across interactions using **session state** and **long-term memory**. This tutorial demonstrates a personal tutor system that tracks user progress, preferences, and learning history.
@@ -86,11 +88,12 @@ Long-term knowledge beyond current session - like a **searchable archive**.
 
 ### Project Structure
 
+
 ```
 personal_tutor/
 ├── __init__.py          # Imports agent
 ├── agent.py             # Agent definition
-└── .env                 # API key
+└── .env.example         # API key template
 ```
 
 ### Complete Code
@@ -116,7 +119,7 @@ This agent uses:
 
 from google.adk.agents import Agent
 from google.adk.tools.tool_context import ToolContext
-from typing import Dict, Any, List
+from typing import Dict, Any
 
 # ============================================================================
 # TOOLS: State Management & Memory Operations

@@ -99,8 +99,22 @@ tutorialXX/
 - Use `Agent` class (not deprecated `LlmAgent`)
 - Proper variable naming (`root_agent`)
 - Correct model specifications
+- **🔒 SECURITY: Never use `.env` - always use `.env.example`**
 - Secure authentication patterns
 - Type hints and modern Python
+
+**Critical Security Rule:**
+```bash
+# ❌ NEVER DO THIS - commits secrets to version control
+touch .env
+echo "GOOGLE_API_KEY=your-secret-key" > .env
+
+# ✅ ALWAYS DO THIS - safe example file
+touch .env.example
+echo "GOOGLE_API_KEY=your_api_key_here" > .env.example
+```
+
+**Why?** `.env` files contain real API keys and should never be committed to version control. `.env.example` provides a template for users to copy and fill in their own keys.
 
 #### 2.3 Implement Comprehensive Testing
 
@@ -273,6 +287,7 @@ Then open `http://localhost:8000` in your browser!
 - ✅ Modern Python patterns
 - ✅ Proper error handling
 - ✅ Type hints included
+- ✅ **🔒 SECURITY: Never commit `.env` files - only `.env.example`**
 - ✅ Secure authentication
 
 ### Documentation Quality
@@ -369,6 +384,7 @@ Creating perfect ADK tutorials requires systematic rigor, continuous research, a
 - **Tutorial Accuracy Review**: Systematically verify tutorial content against working implementations
 - **Comprehensive Testing**: Use extensive test suites (30-50+ tests) to validate all functionality
 - **Post-Implementation Validation**: Review tutorials after implementation to catch discrepancies
+- **🔒 Security First**: Never commit `.env` files - always use `.env.example` with placeholder values
 - **User-Centric Design**: Provide quick starts, clear instructions, and multiple learning paths
 
 **Remember**: The goal is not just to teach, but to create confident, capable ADK developers who can build real-world applications.
