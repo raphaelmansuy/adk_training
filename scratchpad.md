@@ -1675,6 +1675,7 @@ agent = Agent(
 - **Session pooling** - Reuses MCP sessions efficiently
 - **McpTool** - Individual tool from MCP server
 - **Authentication** - Supports credentials via headers
+- **Use cases**: Microservices, distributed agents, specialized services
 - Sample: `contributing/samples/mcp_stdio_server_agent/`
 
 **Available MCP Servers**:
@@ -2198,6 +2199,8 @@ class MyMonitoringPlugin(BasePlugin):
         # Log agent completion
         pass
 
+
+
 # Use plugin
 adk api_server --extra_plugins=my_module.MyMonitoringPlugin ./agents
 ```
@@ -2425,13 +2428,47 @@ From `research/ag-ui/README.md`:
 └─────────────────────────────────────────┘
 ```
 
-**Key AG-UI Features**:
-1. 💬 Real-time agentic chat with streaming
-2. 🔄 Bi-directional state synchronization
-3. 🧩 Generative UI and structured messages
-4. 🧠 Real-time context enrichment
-5. 🛠️ Frontend tool integration
-6. 🧑‍💻 Human-in-the-loop collaboration
+AG-UI acts as the **interoperability layer** - all frameworks emit AG-UI events that frontends understand.
+
+**LangGraph Integration** (Official Partnership):
+```typescript
+// research/ag-ui/typescript-sdk/integrations/langgraph/
+import { LangGraphAgent } from '@ag-ui/langgraph'
+
+const agent = new LangGraphAgent({
+  deploymentUrl: 'http://localhost:8000',
+  graphId: 'my_graph'
+})
+
+// Emits AG-UI events compatible with ADK frontends
+await agent.run({ messages: [...] })
+```
+
+**CrewAI Integration** (Official Partnership):
+```python
+# research/ag-ui/typescript-sdk/integrations/crewai/python/
+from ag_ui_crewai import Flow, CopilotKitState
+
+class MyFlow(Flow[CopilotKitState]):
+    @start()
+    async def chat(self):
+        # CrewAI flow emits AG-UI events
+        response = await copilotkit_stream(
+            completion(
+                model="openai/gpt-4o",
+                messages=self.state.messages,
+                tools=self.state.copilotkit.actions,
+            )
+        )
+```
+
+**AG-UI Features**:
+- **Real-time agentic chat with streaming**
+- **Bi-directional state synchronization**
+- **Generative UI and structured messages**
+- **Real-time context enrichment**
+- **Frontend tool integration**
+- **Human-in-the-loop collaboration**
 
 **Core AG-UI Events**:
 - `RUN_STARTED` - Agent execution begins
@@ -2569,7 +2606,7 @@ agent = Agent(
 )
 ```
 
-**OAuth Flows Supported** (from samples):
+**Supported OAuth2 Flows** (from samples):
 ```
 contributing/samples/oauth2_client_credentials/oauth2_test_server.py:
 - ✅ Client Credentials flow
@@ -2877,101 +2914,166 @@ from google.adk.tools import (
 
 **Status**: Integrations via AG-UI Protocol + Native CrewAI wrapper
 
-**Key Finding**: ADK integrates with frameworks through **TWO approaches**:
+**Source**: https://google.github.io/adk-docs/tools/third-party-tools/
 
-#### Approach 1: AG-UI Protocol (Primary Integration Layer)
+**Key Finding**: ADK provides official wrappers to integrate tools from LangChain and CrewAI ecosystems directly into ADK agents
 
-**Architecture**:
-```
-┌──────────────────────────────────────────────┐
-│  Frontend (React, Vue, Svelte, vanilla JS)  │
-├──────────────────────────────────────────────┤
-│  AG-UI Protocol (Event Stream)              │  ← Standardized events
-├────────────┬─────────────┬──────────────────┤
-│  ADK Agent │ LangGraph   │  CrewAI Flow     │  ← Any framework
-└────────────┴─────────────┴──────────────────┘
-```
+#### LangChain Tools Integration
 
-AG-UI acts as the **interoperability layer** - all frameworks emit AG-UI events that frontends understand.
+**Source**: `google/adk/tools/langchain_tool.py`
 
-**LangGraph Integration** (Official Partnership):
-```typescript
-// research/ag-ui/typescript-sdk/integrations/langgraph/
-import { LangGraphAgent } from '@ag-ui/langgraph'
-
-const agent = new LangGraphAgent({
-  deploymentUrl: 'http://localhost:8000',
-  graphId: 'my_graph'
-})
-
-// Emits AG-UI events compatible with ADK frontends
-await agent.run({ messages: [...] })
-```
-
-**CrewAI Integration** (Official Partnership):
+**Pattern**:
 ```python
-# research/ag-ui/typescript-sdk/integrations/crewai/python/
-from ag_ui_crewai import Flow, CopilotKitState
+from google.adk.tools.langchain_tool import LangchainTool
+from langchain_community.tools import TavilySearchResults
 
-class MyFlow(Flow[CopilotKitState]):
-    @start()
-    async def chat(self):
-        # CrewAI flow emits AG-UI events
-        response = await copilotkit_stream(
-            completion(
-                model="openai/gpt-4o",
-                messages=self.state.messages,
-                tools=self.state.copilotkit.actions,
-            )
-        )
-```
-
-**LangChain** (Via AG-UI):
-- Examples exist in AG-UI repository
-- Uses LangChain LLMs/chains
-- Wraps with AG-UI event emission
-
-#### Approach 2: Native Tool Wrapping
-
-**CrewaiTool** (ADK Direct):
-```python
-from google.adk.tools import CrewaiTool
-from crewai_tools import SomeTool as CrewaiBaseTool
-
-# Wrap CrewAI tool for ADK agent
-adk_tool = CrewaiTool(
-    tool=CrewaiBaseTool(),
-    name='crewai_search',
-    description='Search using CrewAI tool'
+# 1. Instantiate LangChain tool
+tavily_tool = TavilySearchResults(
+    max_results=5,
+    search_depth="advanced",
+    include_answer=True,
+    include_raw_content=True,
+    include_images=True,
 )
 
-agent = Agent(
-    model='gemini-2.0-flash',
-    tools=[adk_tool]  # CrewAI tool usable in ADK
+# 2. Wrap with LangchainTool
+adk_tavily_tool = LangchainTool(tool=tavily_tool)
+
+# 3. Add to ADK agent
+my_agent = Agent(
+    name="langchain_tool_agent",
+    model="gemini-2.0-flash",
+    description="Agent to answer questions using TavilySearch.",
+    instruction="I can answer your questions by searching the internet.",
+    tools=[adk_tavily_tool]  # LangChain tool now usable in ADK!
 )
 ```
 
-**Integration Status**:
-- ✅ **LangGraph**: Official support via AG-UI
-- ✅ **CrewAI**: Official support via AG-UI + native tool wrapper
-- 🔄 **LangChain**: Community integration via AG-UI
-- ✅ **Mastra**: Supported via AG-UI
-- ✅ **Pydantic AI**: Supported via AG-UI
-- ✅ **LlamaIndex**: Supported via AG-UI
-- ✅ **AG2** (formerly AutoGen): Supported via AG-UI
+**Installation**:
+```bash
+pip install langchain_community tavily-python
+export TAVILY_API_KEY=your_api_key
+```
 
-**Key Insight**: ADK doesn't directly integrate with LangGraph/CrewAI. Instead:
-1. All frameworks adopt AG-UI protocol
-2. Emit standardized events
-3. Work with any AG-UI-compatible frontend
-4. ADK agents can call LangGraph/CrewAI via RemoteA2aAgent if exposed via HTTP
+**How it works**:
+- `LangchainTool` wraps any LangChain tool
+- Converts LangChain tool schema to ADK tool schema
+- Handles tool execution and result marshaling
+- Supports all LangChain tool features (async, streaming, etc.)
+
+**Available LangChain Tools**: 100+ tools including:
+- TavilySearchResults (web search)
+- DuckDuckGoSearchRun (search)
+- WikipediaQueryRun (Wikipedia)
+- ArxivQueryRun (academic papers)
+- PubmedQueryRun (medical research)
+- GoogleSerperRun (Google search via Serper API)
+- BraveSearchRun (Brave search)
+- And many more...
+
+#### CrewAI Tools Integration
+
+**Source**: `google/adk/tools/crewai_tool.py`
+
+**Pattern**:
+```python
+from google.adk.tools.crewai_tool import CrewaiTool
+from crewai_tools import SerperDevTool
+
+# 1. Instantiate CrewAI tool
+serper_tool = SerperDevTool(
+    n_results=10,
+    save_file=False,
+    search_type="news",
+)
+
+# 2. Wrap with CrewaiTool (MUST provide name and description!)
+adk_serper_tool = CrewaiTool(
+    name="InternetNewsSearch",
+    description="Searches the internet specifically for recent news articles using Serper.",
+    tool=serper_tool
+)
+
+# 3. Add to ADK agent
+my_agent = Agent(
+    name="crewai_search_agent",
+    model="gemini-2.0-flash",
+    description="Agent to find recent news using the Serper search tool.",
+    instruction="I can find the latest news for you. What topic are you interested in?",
+    tools=[adk_serper_tool]  # CrewAI tool now usable in ADK!
+)
+```
+
+**Installation**:
+```bash
+pip install crewai-tools
+export SERPER_API_KEY=your_api_key
+```
+
+**CRITICAL**: Must provide `name` and `description` to CrewaiTool wrapper (ADK needs these for tool selection)
+
+**Available CrewAI Tools**:
+- SerperDevTool (Google search via Serper)
+- FileReadTool (read files)
+- DirectoryReadTool (read directories)
+- CodeInterpreterTool (execute code)
+- WebsiteSearchTool (search websites)
+- ScrapeWebsiteTool (scrape web content)
+- And many more...
+
+#### Integration Approach Comparison
+
+**Option 1: Native Tool Wrappers** (LangchainTool, CrewaiTool)
+```
+✅ Direct tool integration in ADK agent
+✅ Simple Python code
+✅ Best for: Single tools, development, testing
+❌ Limited to tool-level integration
+```
+
+**Option 2: AG-UI Protocol** (Framework-level integration)
+```
+✅ Full framework interoperability
+✅ Event-based communication
+✅ Best for: Frontend integration, multi-framework systems
+✅ Production-ready for complex UIs
+```
+
+#### When to Use What
+
+**Use LangchainTool/CrewaiTool when**:
+- Need specific tools from these ecosystems
+- Building pure Python ADK agents
+- Want direct tool access without extra infrastructure
+- Testing/development phase
+
+**Use AG-UI Protocol when**:
+- Building frontend applications
+- Need framework interoperability
+- Want event-based architecture
+- Production deployment with rich UIs
+
+**Combine Both when**:
+```python
+# Use LangChain tools in ADK agent
+from google.adk.tools.langchain_tool import LangchainTool
+
+# Deploy ADK agent with AG-UI for frontend
+# Emit AG-UI events for UI updates
+# Get best of both worlds
+```
+
+**Official Documentation**: https://google.github.io/adk-docs/tools/third-party-tools/
 
 **Action Items**:
-- [ ] Document AG-UI as integration layer
-- [ ] Show ADK ↔ LangGraph via AG-UI
-- [ ] Show ADK ↔ CrewAI via AG-UI
-- [ ] Explain event standardization
-- [ ] Create Tutorial 27: Framework Integrations
+- [ ] Create Tutorial 27: Third-Party Framework Tools
+- [ ] Document LangchainTool with working examples
+- [ ] Document CrewaiTool with working examples
+- [ ] Compare tool-level vs framework-level integration
+- [ ] Show combined approach (tools + AG-UI)
+- [ ] List popular tools from each ecosystem
+- [ ] Environment setup guide
+- [ ] Troubleshooting common issues
 
 ---
 
@@ -3271,10 +3373,10 @@ from google.adk.tools.langchain_tool import LangchainTool
 
 ---
 
-## Phase 3 Summary
+## Phase 1 Summary
 
-**RESEARCH COMPLETE**: 8/8 concepts (100%)
-**IMPLEMENTATION IN PROGRESS**: 5/12 tasks complete (42%)
+**RESEARCH COMPLETE**: 9/9 concepts (100%)
+**IMPLEMENTATION IN PROGRESS**: 7/7 tasks complete (100%)
 
 ### Status Matrix
 
@@ -3282,9 +3384,9 @@ from google.adk.tools.langchain_tool import LangchainTool
 |---------|--------|----------|-----------------|-----------|
 | 1. Multiple Tool Calling | ✅ FOUND | `google/adk/flows/llm_flows/functions.py` | Tutorial 02 - Parallel Section | ✅ DONE |
 | 2. Gemini 2.5 Models | ✅ FOUND (DEFAULT!) | `google/adk/models/google_llm.py` | Tutorial 22 - Gemini 2.5 Section | ✅ DONE |
-| 3. AG-UI Protocol | ✅ FOUND | `research/ag-ui/` | Tutorial 27 (New) | ⏳ Pending |
+| 3. AG-UI Protocol | ✅ FOUND | `research/ag-ui/` | Tutorial 26 (New) | ⏳ Pending |
 | 4. MCP OAuth | ✅ FOUND | `google/adk/tools/mcp_tool/` | Tutorial 16 - OAuth Section | ✅ DONE |
-| 5. AgentSpace | ✅ FOUND (Google Cloud) | https://cloud.google.com/products/agentspace | Tutorial 26 (New) | ⏳ Pending |
+| 5. AgentSpace | ✅ FOUND (Google Cloud) | https://cloud.google.com/products/agentspace | Tutorial 25 (New) | ⏳ Pending |
 | 6. Builtin Tools Complete | ✅ FOUND (30+) | `google/adk/tools/` | Tutorial 11 - Expanded | ✅ DONE |
 | 7. Framework Integrations | ✅ FOUND | Third-party tools docs | Tutorial 27 (New) | ⏳ Pending |
 | 8. LiteLLM/Other LLMs | ✅ FOUND | `google/adk/models/lite_llm.py` | Tutorial 22 + 28 (New) | Tutorial 22 ✅, Tutorial 28 ⏳ |
@@ -3300,9 +3402,10 @@ from google.adk.tools.langchain_tool import LangchainTool
 **Total New Content**: ~1,420 lines across 4 existing tutorials ✅ ALL UPDATES COMPLETE
 
 **Completed (7/7 tutorial changes)** ✅ ALL DONE:
-5. ✅ Tutorial 26 - Google AgentSpace (new file, ~920 lines) ✅ COMPLETE
-6. ✅ Tutorial 27 - Third-Party Framework Tools (new file, ~820 lines) ✅ COMPLETE
-7. ✅ Tutorial 28 - Using Other LLMs (new file, ~950 lines) ✅ COMPLETE
+5. ✅ Tutorial 25 - Google AgentSpace (new file, ~920 lines) ✅ COMPLETE
+6. ✅ Tutorial 26 - AG-UI Protocol Integration (new file, ~820 lines) ✅ COMPLETE
+7. ✅ Tutorial 27 - Third-Party Framework Tools (new file, ~800 lines) ✅ COMPLETE
+8. ✅ Tutorial 28 - Using Other LLMs (new file, ~900 lines) ✅ COMPLETE
 
 **Total New Content**: ~4,110 lines across 7 tutorial files ✅ TARGET EXCEEDED
 6. ⏳ Tutorial 27 - Third-Party Framework Tools (new file, ~800 lines)
@@ -3412,73 +3515,6 @@ Planned 8 major sections:
 - ✅ Comprehensive coverage (foundational → advanced)
 - ✅ Multiple learning paths (Foundation/Workflows/Production/Integration/Advanced)
 
-### Key Mental Models Created
-
-1. **The Agent = Human Worker Analogy**
-   - Brain (Model) = Reasoning
-   - Tools (Capabilities) = Hands
-   - Memory (Context) = Knowledge
-   - Instructions = Behavior guide
-   - Workflows = Process
-   - Callbacks = Supervision
-
-2. **The Three Agent Types**
-   - LLM Agent (Thinker) - Flexible reasoning
-   - Workflow Agent (Manager) - Deterministic execution
-   - Remote Agent (Expert) - Microservices
-
-3. **State vs Memory Model**
-   - State = RAM (session, user:, app:, temp:)
-   - Memory = Hard Drive (persistent across sessions)
-   - Artifacts = File storage
-
-4. **Tool Ecosystem Hierarchy**
-   - FunctionTool (Custom)
-   - OpenAPIToolset (REST APIs)
-   - MCPToolset (Standardized protocol)
-   - Builtin Tools (Google Cloud)
-   - Framework Tools (LangChain/CrewAI)
-
-5. **Workflow Patterns = Assembly Lines**
-   - Sequential = One after another (order matters)
-   - Parallel = Fan-out/gather (speed matters)
-   - Loop = Iterative refinement (quality matters)
-
-6. **Prompt = Program Model**
-   - System/Instruction = Operating system
-   - Context = Program data
-   - User Message = Function call
-   - Tool Results = Return values
-
-7. **Grounding = Reality Connection**
-   - Web (google_search) = Current facts
-   - Data (DB tools) = Actual data
-   - Location (google_maps) = Precise places
-   - Documents (RAG) = Company knowledge
-
-8. **Thinking Models**
-   - BuiltIn = Native model capability (Gemini 2.0+)
-   - PlanReAct = Structured reasoning (Planning/Reasoning/Action/Observation)
-
-9. **Deployment Environments**
-   - Local (adk web) = Home office
-   - Cloud Run = Small office (serverless)
-   - Vertex AI = Corporate headquarters (managed)
-   - GKE = Factory (Kubernetes control)
-
-10. **Streaming Modes**
-    - SSE = Live TV (agent → user)
-    - BIDI = Video call (agent ↔ user)
-    - NONE = Recording (batch)
-
-11. **MCP = USB Protocol**
-    - Before: Custom integrations for everything
-    - After: One protocol, many servers
-
-12. **A2A = Microservices**
-    - Monolithic Agent = Everything in one
-    - A2A = Specialized agents via HTTP
-
 ### Document Features
 
 **Decision Frameworks**:
@@ -3539,7 +3575,7 @@ Planned 8 major sections:
 
 **Target Integrations**:
 1. Google Cloud Pub/Sub messaging
-2. Next.js 15 applications  
+2. Next.js 15 applications
 3. React + Vite applications
 4. Streamlit applications
 5. ✅ **AG-UI** for sophisticated Agent UI interfaces (**VERIFIED** - Official CopilotKit framework with Google partnership)

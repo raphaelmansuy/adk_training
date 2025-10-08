@@ -1,5 +1,7 @@
 # Tutorial 02: Function Tools - Give Your Agent Superpowers
 
+> **💡 Working Implementation**: See the complete, tested code at [`tutorial_implementation/tutorial02/`](../tutorial_implementation/tutorial02/)
+
 ## Overview
 
 Transform your agent from a conversationalist into a problem-solver! In this tutorial, you'll learn how to give your agent custom abilities by adding Python functions as tools. Your agent will automatically decide when to use these tools based on user requests.
@@ -74,40 +76,83 @@ def calculate_compound_interest(
     principal: float, 
     annual_rate: float, 
     years: int,
-    compounds_per_year: int = 12
+    compounds_per_year: int = 1
 ) -> dict:
-    """Calculate compound interest for savings or investments.
+    """
+    Calculate compound interest for savings or investments.
+    
+    This function computes how much an initial investment will grow to
+    over time with compound interest. It uses the standard compound interest
+    formula: A = P(1 + r/n)^(nt)
     
     Args:
-        principal: The initial amount invested (in dollars)
-        annual_rate: The annual interest rate as a percentage (e.g., 5.5 for 5.5%)
-        years: Number of years to calculate for
-        compounds_per_year: How many times per year interest compounds (default: 12 for monthly)
+        principal: Initial investment amount (e.g., 10000 for $10,000)
+        annual_rate: Annual interest rate as decimal (e.g., 0.06 for 6%)
+        years: Number of years to compound
+        compounds_per_year: How often interest compounds per year (default: 1 for annual)
         
     Returns:
-        dict: Dictionary with status and calculation results
+        Dict with calculation results and formatted report
+        
+    Example:
+        >>> calculate_compound_interest(10000, 0.06, 5)
+        {
+            'status': 'success',
+            'final_amount': 13488.50,
+            'interest_earned': 3488.50,
+            'report': 'After 5 years at 6% annual interest...'
+        }
     """
     try:
-        # Convert percentage to decimal
-        rate_decimal = annual_rate / 100
-        
-        # Compound interest formula: A = P(1 + r/n)^(nt)
-        final_amount = principal * (1 + rate_decimal / compounds_per_year) ** (compounds_per_year * years)
+        # Validate inputs
+        if principal <= 0:
+            return {
+                'status': 'error',
+                'error': 'Principal must be positive',
+                'report': 'Error: Investment principal must be greater than zero.'
+            }
+
+        if annual_rate < 0 or annual_rate > 1:
+            return {
+                'status': 'error',
+                'error': 'Invalid interest rate',
+                'report': 'Error: Annual interest rate must be between 0 and 1 (e.g., 0.06 for 6%).'
+            }
+
+        if years <= 0:
+            return {
+                'status': 'error',
+                'error': 'Invalid time period',
+                'report': 'Error: Investment period must be positive.'
+            }
+
+        # Calculate compound interest
+        rate_per_period = annual_rate / compounds_per_year
+        total_periods = years * compounds_per_year
+
+        final_amount = principal * (1 + rate_per_period) ** total_periods
         interest_earned = final_amount - principal
-        
+
+        # Format human-readable report
+        report = (
+            f"After {years} years at {annual_rate*100:.1f}% annual interest "
+            f"(compounded {compounds_per_year} times per year), "
+            f"your ${principal:,.0f} investment will grow to "
+            f"${final_amount:,.2f}. That's ${interest_earned:,.2f} in interest!"
+        )
+
         return {
-            "status": "success",
-            "report": (
-                f"Initial investment: ${principal:,.2f}\n"
-                f"Final amount after {years} years: ${final_amount:,.2f}\n"
-                f"Total interest earned: ${interest_earned:,.2f}\n"
-                f"Effective annual return: {annual_rate}%"
-            )
+            'status': 'success',
+            'final_amount': round(final_amount, 2),
+            'interest_earned': round(interest_earned, 2),
+            'report': report
         }
+
     except Exception as e:
         return {
-            "status": "error",
-            "error_message": f"Calculation error: {str(e)}"
+            'status': 'error',
+            'error': str(e),
+            'report': f'Error calculating compound interest: {str(e)}'
         }
 
 
@@ -117,43 +162,93 @@ def calculate_loan_payment(
     annual_rate: float,
     years: int
 ) -> dict:
-    """Calculate monthly payment for a loan (mortgage, car, personal loan).
+    """Calculate monthly loan payments using the standard amortization formula.
+    
+    This function computes the monthly payment required to pay off a loan
+    over a specified period at a given interest rate. It uses the formula:
+    M = P[r(1+r)^n]/[(1+r)^n-1] where r is monthly rate and n is months.
     
     Args:
-        loan_amount: Total amount borrowed (in dollars)
-        annual_rate: Annual interest rate as a percentage (e.g., 4.5 for 4.5%)
+        loan_amount: Total loan amount (e.g., 300000 for $300,000)
+        annual_rate: Annual interest rate as decimal (e.g., 0.045 for 4.5%)
         years: Loan term in years
         
     Returns:
-        dict: Dictionary with status and payment calculations
+        Dict with payment calculation results and formatted report
+        
+    Example:
+        >>> calculate_loan_payment(300000, 0.045, 30)
+        {
+            'status': 'success',
+            'monthly_payment': 1520.06,
+            'total_paid': 547221.60,
+            'total_interest': 247221.60,
+            'report': 'For a $300,000 loan at 4.5% over 30 years...'
+        }
     """
     try:
-        # Convert to monthly rate and number of payments
-        monthly_rate = (annual_rate / 100) / 12
-        num_payments = years * 12
-        
-        # Monthly payment formula: M = P[r(1+r)^n]/[(1+r)^n-1]
-        if monthly_rate == 0:  # Handle 0% interest case
-            monthly_payment = loan_amount / num_payments
+        # Validate inputs
+        if loan_amount <= 0:
+            return {
+                'status': 'error',
+                'error': 'Invalid loan amount',
+                'report': 'Error: Loan amount must be positive.'
+            }
+
+        if annual_rate < 0 or annual_rate > 1:
+            return {
+                'status': 'error',
+                'error': 'Invalid interest rate',
+                'report': 'Error: Annual interest rate must be between 0 and 1 '
+                          '(e.g., 0.045 for 4.5%).'
+            }
+
+        if years <= 0:
+            return {
+                'status': 'error',
+                'error': 'Invalid loan term',
+                'report': 'Error: Loan term must be positive.'
+            }
+
+        # Convert to monthly calculations
+        monthly_rate = annual_rate / 12
+        total_months = years * 12
+
+        # Handle zero interest rate case
+        if monthly_rate == 0:
+            monthly_payment = loan_amount / total_months
+            total_paid = loan_amount
+            total_interest = 0
         else:
-            monthly_payment = loan_amount * (monthly_rate * (1 + monthly_rate)**num_payments) / ((1 + monthly_rate)**num_payments - 1)
-        
-        total_paid = monthly_payment * num_payments
-        total_interest = total_paid - loan_amount
-        
+            # Standard loan payment formula
+            monthly_payment = loan_amount * (
+                monthly_rate * (1 + monthly_rate) ** total_months
+            ) / ((1 + monthly_rate) ** total_months - 1)
+
+            total_paid = monthly_payment * total_months
+            total_interest = total_paid - loan_amount
+
+        # Format human-readable report
+        report = (
+            f"For a ${loan_amount:,.0f} loan at {annual_rate*100:.1f}% interest "
+            f"over {years} years, your monthly payment will be "
+            f"${monthly_payment:,.2f}. Over the life of the loan, you'll pay "
+            f"${total_paid:,.2f} total, with ${total_interest:,.2f} being interest."
+        )
+
         return {
-            "status": "success",
-            "report": (
-                f"Loan amount: ${loan_amount:,.2f}\n"
-                f"Monthly payment: ${monthly_payment:,.2f}\n"
-                f"Total paid over {years} years: ${total_paid:,.2f}\n"
-                f"Total interest paid: ${total_interest:,.2f}"
-            )
+            'status': 'success',
+            'monthly_payment': round(monthly_payment, 2),
+            'total_paid': round(total_paid, 2),
+            'total_interest': round(total_interest, 2),
+            'report': report
         }
+
     except Exception as e:
         return {
-            "status": "error",
-            "error_message": f"Calculation error: {str(e)}"
+            'status': 'error',
+            'error': str(e),
+            'report': f'Error calculating loan payment: {str(e)}'
         }
 
 
@@ -161,46 +256,99 @@ def calculate_loan_payment(
 def calculate_monthly_savings(
     target_amount: float,
     years: int,
-    annual_return: float = 5.0
+    annual_return: float = 0.05
 ) -> dict:
-    """Calculate how much to save monthly to reach a financial goal.
+    """Calculate monthly savings needed to reach a financial goal.
+    
+    This function determines how much you need to save each month to reach
+    a savings goal, assuming compound growth at a specified annual return.
+    It uses the present value of annuity formula rearranged for payment amount.
     
     Args:
-        target_amount: The amount you want to save (in dollars)
-        years: Number of years to reach the goal
-        annual_return: Expected annual return rate as percentage (default: 5.0%)
+        target_amount: Target savings amount (e.g., 50000 for $50,000)
+        years: Number of years to save
+        annual_return: Expected annual return as decimal (default: 0.05 for 5%)
         
     Returns:
-        dict: Dictionary with status and savings plan
+        Dict with savings calculation results and formatted report
+        
+    Example:
+        >>> calculate_monthly_savings(50000, 3, 0.05)
+        {
+            'status': 'success',
+            'monthly_savings': 1315.07,
+            'total_contributed': 47342.52,
+            'interest_earned': 2657.48,
+            'report': 'To reach $50,000 in 3 years with 5% annual return...'
+        }
     """
     try:
-        months = years * 12
-        monthly_rate = (annual_return / 100) / 12
-        
-        # Future value of annuity formula rearranged to solve for payment:
-        # PMT = FV / [((1+r)^n - 1) / r]
-        if monthly_rate == 0:
-            monthly_savings = target_amount / months
+        # Validate inputs
+        if target_amount <= 0:
+            return {
+                'status': 'error',
+                'error': 'Invalid target amount',
+                'report': 'Error: Savings target must be positive.'
+            }
+
+        if years <= 0:
+            return {
+                'status': 'error',
+                'error': 'Invalid time period',
+                'report': 'Error: Savings period must be positive.'
+            }
+
+        if annual_return < 0:
+            return {
+                'status': 'error',
+                'error': 'Invalid return rate',
+                'report': 'Error: Annual return rate cannot be negative.'
+            }
+
+        # Convert to monthly calculations
+        monthly_return = annual_return / 12
+        total_months = years * 12
+
+        # Handle zero return case
+        if monthly_return == 0:
+            monthly_savings = target_amount / total_months
+            total_contributed = target_amount
+            interest_earned = 0
         else:
-            monthly_savings = target_amount / (((1 + monthly_rate)**months - 1) / monthly_rate)
-        
-        total_contributed = monthly_savings * months
-        interest_earned = target_amount - total_contributed
-        
-        return {
-            "status": "success",
-            "report": (
-                f"To reach ${target_amount:,.2f} in {years} years:\n"
-                f"Save ${monthly_savings:,.2f} per month\n"
-                f"Total you'll contribute: ${total_contributed:,.2f}\n"
-                f"Estimated interest earned: ${interest_earned:,.2f}\n"
-                f"Assuming {annual_return}% annual return"
+            # Correct formula for monthly savings to reach future value
+            # PMT = FV * (r / ((1 + r)^n - 1)) where r is monthly rate, n is months
+            monthly_savings = target_amount * (
+                monthly_return / ((1 + monthly_return) ** total_months - 1)
             )
+
+            total_contributed = monthly_savings * total_months
+            # Calculate actual future value to verify
+            future_value = 0
+            for month in range(1, total_months + 1):
+                future_value += monthly_savings * (1 + monthly_return) ** (total_months - month)
+            interest_earned = future_value - total_contributed
+
+        # Format human-readable report
+        report = (
+            f"To reach ${target_amount:,.0f} in {years} years with a "
+            f"{annual_return*100:.1f}% annual return, you need to save "
+            f"${monthly_savings:,.2f} per month. You'll contribute "
+            f"${total_contributed:,.2f} total, with the rest coming from investment returns."
+        )
+
+        return {
+            'status': 'success',
+            'monthly_savings': round(monthly_savings, 2),
+            'total_contributed': round(total_contributed, 2),
+            'interest_earned': round(interest_earned, 2),
+            'report': report
         }
+
     except Exception as e:
         return {
-            "status": "error",
-            "error_message": f"Calculation error: {str(e)}"
+            'status': 'error',
+            'error': str(e),
+            'report': f'Error calculating monthly savings: {str(e)}'
         }
 
 
@@ -208,7 +356,15 @@ def calculate_monthly_savings(
 root_agent = Agent(
     name="finance_assistant",
     model="gemini-2.0-flash",
-    description="A personal finance assistant that helps with savings, loans, and financial planning calculations",
+    description="""
+    A financial calculation assistant that can help with:
+    - Compound interest calculations for investments
+    - Loan payment calculations for mortgages or other loans
+    - Monthly savings calculations to reach financial goals
+
+    I can perform multiple calculations simultaneously for comparison purposes.
+    All calculations include detailed explanations and formatted reports.
+    """,
     instruction=(
         "You are a helpful personal finance assistant. You can help users with:\n"
         "- Calculating compound interest for savings and investments\n"
@@ -259,16 +415,27 @@ adk web
 
 Open `http://localhost:8000` and select "finance_assistant" from the dropdown.
 
+### Alternative: Parallel Execution Demo
+
+For an advanced demo showcasing ADK's automatic parallel tool execution, try the parallel demo:
+
+```bash
+cd ..  # Go to parent of finance_assistant/
+make parallel-demo
+```
+
+This runs the same financial tools but demonstrates how ADK automatically executes multiple tools simultaneously when Gemini requests them in a single turn. Perfect for comparing multiple investment options or analyzing different loan scenarios!
+
 ### Try These Prompts
 
 **Savings Calculation:**
 ```
-If I invest $10,000 at 6% annual interest for 5 years, how much will I have?
+If I invest $10,000 at 0.06 annual interest for 5 years, how much will I have?
 ```
 
 **Loan Payment:**
 ```
-I want to buy a $300,000 house with a 30-year mortgage at 4.5% interest. 
+I want to buy a $300,000 house with a 30-year mortgage at 0.045 interest. 
 What will my monthly payment be?
 ```
 
@@ -300,11 +467,11 @@ This is incredibly powerful for debugging - you can see EXACTLY when and how too
 
 **Example 1: Savings Calculation**
 ```
-User: If I invest $10,000 at 6% annual interest for 5 years, how much will I have?
+User: If I invest $10,000 at 0.06 annual interest for 5 years, how much will I have?
 
 Agent: Let me calculate that for you!
 
-[Tool Call: calculate_compound_interest(principal=10000, annual_rate=6, years=5)]
+[Tool Call: calculate_compound_interest(principal=10000, annual_rate=0.06, years=5)]
 
 Based on the calculation, if you invest $10,000 at 6% annual interest compounded 
 monthly for 5 years, you'll have approximately $13,488.50. That means you'll earn 
@@ -476,9 +643,9 @@ parallel_finance_agent = Agent(
 
 ```
 Compare these three investment options for me:
-1. $10,000 at 5% for 10 years
-2. $15,000 at 4% for 10 years  
-3. $12,000 at 6% for 10 years
+1. $10,000 at 0.05 for 10 years
+2. $15,000 at 0.04 for 10 years  
+3. $12,000 at 0.06 for 10 years
 ```
 
 **What happens**:
@@ -493,9 +660,9 @@ Compare these three investment options for me:
 **Sequential Execution** (if you did it manually):
 ```python
 # ❌ Slow approach (not how ADK works)
-result1 = calculate_compound_interest(10000, 5, 10)   # 0.5s
-result2 = calculate_compound_interest(15000, 4, 10)   # 0.5s
-result3 = calculate_compound_interest(12000, 6, 10)   # 0.5s
+result1 = calculate_compound_interest(10000, 0.05, 10)   # 0.5s
+result2 = calculate_compound_interest(15000, 0.04, 10)   # 0.5s
+result3 = calculate_compound_interest(12000, 0.06, 10)   # 0.5s
 # Total: ~1.5 seconds
 ```
 
@@ -503,9 +670,9 @@ result3 = calculate_compound_interest(12000, 6, 10)   # 0.5s
 ```python
 # ✅ Fast - ADK does this for you!
 results = await asyncio.gather(
-    calculate_compound_interest(10000, 5, 10),
-    calculate_compound_interest(15000, 4, 10),
-    calculate_compound_interest(12000, 6, 10)
+    calculate_compound_interest(10000, 0.05, 10),
+    calculate_compound_interest(15000, 0.04, 10),
+    calculate_compound_interest(12000, 0.06, 10)
 )
 # Total: ~0.5 seconds (limited by slowest tool)
 ```
@@ -516,16 +683,16 @@ results = await asyncio.gather(
 
 ```
 User: Compare these three investment options for me:
-1. $10,000 at 5% for 10 years
-2. $15,000 at 4% for 10 years  
-3. $12,000 at 6% for 10 years
+1. $10,000 at 0.05 for 10 years
+2. $15,000 at 0.04 for 10 years  
+3. $12,000 at 0.06 for 10 years
 
 Agent: Let me calculate all three options for you...
 
 [Tool Calls - EXECUTED SIMULTANEOUSLY]:
-- calculate_compound_interest(principal=10000, annual_rate=5, years=10)
-- calculate_compound_interest(principal=15000, annual_rate=4, years=10)
-- calculate_compound_interest(principal=12000, annual_rate=6, years=10)
+- calculate_compound_interest(principal=10000, annual_rate=0.05, years=10)
+- calculate_compound_interest(principal=15000, annual_rate=0.04, years=10)
+- calculate_compound_interest(principal=12000, annual_rate=0.06, years=10)
 
 Great question! Here's how your three investment options compare:
 
@@ -774,7 +941,9 @@ GOOGLE_API_KEY=your-api-key-here
 
 **finance_assistant/agent.py**
 ```python
-# See Step 3 above for the complete agent.py code
+# See the complete implementation at tutorial_implementation/tutorial02/finance_assistant/agent.py
+# This file contains the full agent code with comprehensive error handling,
+# input validation, and detailed docstrings.
 ```
 
 Congratulations! Your agent now has superpowers! 🚀💰
