@@ -2,7 +2,18 @@
 
 ## Overview
 
-Learn how to chain multiple agents in a strict sequence to create sophisticated pipelines! This tutorial teaches you how to build workflows where each agent's output feeds into the next - perfect for multi-step processes like content creation, data processing, or quality control.
+Connect your agents to create sophisticated multi-step workflows! Learn how to chain multiple agents in a strict sequence where each agent's output feeds into the next - perfect for content creation, data processing, or quality control pipelines.
+
+**What You'll Build**: A Blog Post Generator Pipeline with 4 stages:
+
+1. **Research Agent** - Gathers information about the topic
+2. **Writer Agent** - Creates a draft blog post from research
+3. **Editor Agent** - Reviews and suggests improvements
+4. **Formatter Agent** - Converts to final markdown format
+
+**Implementation**: [tutorial_implementation/tutorial04](../tutorial_implementation/tutorial04/) - Complete working blog creation pipeline with tests
+
+Each agent's output feeds into the next, creating a complete content creation pipeline!
 
 ## Prerequisites
 

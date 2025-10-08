@@ -17,6 +17,35 @@ This guide documents the systematic process I follow to create high-quality, wor
 
 **"Iterative Improvement"** - Tutorials evolve through implementation, testing, and user feedback.
 
+## Process Overview
+
+```text
+┌─────────────────┐    ┌─────────────────────┐    ┌─────────────────────┐
+│  Phase 1        │    │  Phase 2            │    │  Phase 3            │
+│  Research &     │───▶│  Implementation     │───▶│  Testing &          │
+│  Planning       │    │  Creation           │    │  Validation         │
+└─────────────────┘    └─────────────────────┘    └─────────────────────┘
+         │                        │                        │
+         ▼                        ▼                        ▼
+┌─────────────────┐    ┌─────────────────────┐    ┌─────────────────────┐
+│  Phase 4        │    │  Phase 5            │    │  Phase 6            │
+│  Research &     │◀───│  Tutorial           │◀───│  Documentation &    │
+│  Verification   │    │  Refinement         │    │  Linking            │
+└─────────────────┘    └─────────────────────┘    └─────────────────────┘
+         ▲                        ▲                        ▲
+         └────────────────────────┴────────────────────────┘
+                    Iterative Feedback Loop
+```
+
+**Key Flow:**
+
+1. **Research First** → Understand requirements and best practices
+2. **Build Working Code** → Create complete, tested implementations
+3. **Validate Thoroughly** → Test everything works perfectly
+4. **Research Deeply** → Verify all decisions against authoritative sources
+5. **Refine Tutorial** → Update content based on implementation insights
+6. **Link Everything** → Connect tutorials to working code and documentation
+
 ## The Complete Tutorial Creation Process
 
 ### Phase 1: Research & Planning
@@ -214,6 +243,28 @@ Then open `http://localhost:8000` in your browser!
 - **Project Structure**: Canonical `__init__.py`, `agent.py`, `.env` pattern required
 - **Variable Naming**: Must use `root_agent` exactly for ADK discovery
 
+### From Tutorial 04 Implementation
+
+#### ✅ What Worked Well
+
+- **Tutorial Accuracy Verification**: Systematic review of tutorial content against working implementation
+- **Comprehensive Test Coverage**: 54 tests covering all aspects of the sequential workflow pipeline
+- **Code Consistency**: Tutorial code examples exactly matched working implementation
+- **Post-Implementation Review**: Reviewing tutorials after implementation catches discrepancies
+
+#### ❌ What Needed Fixing
+
+- **Title Formatting Error**: Incorrect title "Build **What You'll Build**" instead of proper tutorial title
+- **Tutorial vs Implementation Sync**: Ensuring all code examples remain consistent with working code
+- **Content Accuracy**: Verifying that explanations match actual implementation behavior
+
+#### 🔍 Research Findings
+
+- **SequentialAgent Patterns**: Proper use of `output_key` and state injection `{key}` syntax
+- **State Flow Documentation**: Clear visualization of data flow between agents in pipelines
+- **Deterministic Execution**: SequentialAgent always runs agents in exact defined order
+- **Pipeline Testing**: Comprehensive testing of agent chaining and state management
+
 ## Quality Standards
 
 ### Code Quality
@@ -313,9 +364,17 @@ Then open `http://localhost:8000` in your browser!
 
 Creating perfect ADK tutorials requires systematic rigor, continuous research, and iterative improvement. By following this process, we ensure that tutorials are not just instructional but truly empowering - giving users working, understandable, and extensible code that they can build upon.
 
+**Key Principles:**
+- **Working Code First**: Always create complete, tested implementations before tutorial refinement
+- **Tutorial Accuracy Review**: Systematically verify tutorial content against working implementations
+- **Comprehensive Testing**: Use extensive test suites (30-50+ tests) to validate all functionality
+- **Post-Implementation Validation**: Review tutorials after implementation to catch discrepancies
+- **User-Centric Design**: Provide quick starts, clear instructions, and multiple learning paths
+
 **Remember**: The goal is not just to teach, but to create confident, capable ADK developers who can build real-world applications.
 
+
+Ensure we include a link to the working implementation in the original tutorial, for example.
 ---
 
-*This guide was created through the implementation and refinement of Tutorial 01: Hello World Agent. See: [Tutorial 01 Implementation](tutorial_implementation/tutorial01/)*</content>
-<parameter name="filePath">/Users/raphaelmansuy/Github/03-working/adk_training/how_to_create_perfect_tutorial.md
+*This guide was created through the implementation and refinement of Tutorial 01: Hello World Agent. See: [Tutorial 01 Implementation](tutorial_implementation/tutorial01/)*
