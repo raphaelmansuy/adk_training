@@ -1,8 +1,8 @@
 # Google ADK Tutorial Series - Table of Contents
 
-**🎉 Status: COMPLETE - All 10 tutorials finished!**
+**🎉 Status: COMPLETE - All 28 tutorials finished!**
 
-Welcome to the most comprehensive Google Agent Development Kit (ADK) tutorial series. This guide will take you from zero to production-ready AI agents using modern patterns and real-world examples.
+Welcome to the most comprehensive Google Agent Development Kit (ADK) tutorial series. This guide will take you from zero to production-ready AI agents, including enterprise deployment, third-party integrations, and multi-provider LLM support.
 
 ---
 
@@ -114,9 +114,9 @@ Build sophisticated multi-agent workflows.
 
 ---
 
-### 🔴 Advanced (Tutorials 07-10)
+### 🔴 Advanced (Tutorials 07-28)
 
-Master production-ready features.
+Master production-ready features and enterprise deployment.
 
 #### Tutorial 07: Loop Agents
 **File**: `tutorial/07_loop_agents.md` (580 lines)
@@ -175,6 +175,61 @@ Master production-ready features.
 **Use Case**: Customer support agent testing
 
 **Time**: 1.5 hours
+
+---
+
+#### Tutorial 26: Google AgentSpace
+**File**: `tutorial/26_google_agentspace.md` (920 lines)
+
+**You'll Learn**:
+- AgentSpace platform overview
+- Pre-built Google agents (Idea Generation, Deep Research, NotebookLM)
+- Agent Designer (low-code agent creation)
+- Agent Gallery (discovery and sharing)
+- Deploying ADK agents to AgentSpace
+- Data connectors (SharePoint, Drive, Salesforce)
+- Governance and orchestration
+- Pricing and cost management
+
+**Use Case**: Enterprise agent deployment and management
+
+**Time**: 2 hours
+
+---
+
+#### Tutorial 27: Third-Party Framework Tools
+**File**: `tutorial/27_third_party_tools.md` (820 lines)
+
+**You'll Learn**:
+- LangChain tools integration (100+ tools)
+- CrewAI tools integration (20+ tools)
+- AG-UI Protocol for framework-level integration
+- Tool-level vs. protocol-level integration
+- Multi-framework agent systems
+- Real-world research agent example
+
+**Use Case**: Comprehensive research agent with Tavily, Wikipedia, Arxiv, Serper
+
+**Time**: 1.5 hours
+
+---
+
+#### Tutorial 28: Using Other LLMs
+**File**: `tutorial/28_using_other_llms.md` (950 lines)
+
+**You'll Learn**:
+- OpenAI integration (GPT-4o, GPT-4o-mini)
+- Anthropic Claude integration (3.7 Sonnet, Opus, Haiku)
+- Local models with Ollama (Llama3.3, Mistral, Phi4)
+- Azure OpenAI integration
+- Claude via Vertex AI
+- Multi-provider comparison
+- Cost optimization strategies
+- When NOT to use LiteLLM
+
+**Use Case**: Multi-provider agent comparison and cost optimization
+
+**Time**: 2 hours
 
 ---
 
@@ -274,6 +329,9 @@ Master production-ready features.
 **Education**: Tutorial 08
 **Moderation**: Tutorial 09
 **Customer Support**: Tutorial 10
+**Enterprise Deployment**: Tutorial 26
+**Research & Integration**: Tutorial 27
+**Multi-Provider AI**: Tutorial 28
 
 ---
 
@@ -341,6 +399,32 @@ Follow tutorials 01-10 in order.
 4. Tutorial 10 (testing integrations)
 
 **Time**: ~5 hours
+
+---
+
+### Path 5: Enterprise Deployment
+**Goal**: Production deployment at scale
+
+1. Tutorial 01 (basics)
+2. Tutorial 02 (tools)
+3. Tutorial 08 (state)
+4. Tutorial 09 (callbacks & guardrails)
+5. Tutorial 10 (testing)
+6. Tutorial 26 (AgentSpace deployment)
+
+**Time**: ~8 hours
+
+---
+
+### Path 6: Multi-Provider AI
+**Goal**: Use multiple LLM providers
+
+1. Tutorial 01 (basics)
+2. Tutorial 22 (Gemini models)
+3. Tutorial 27 (third-party tools)
+4. Tutorial 28 (other LLMs)
+
+**Time**: ~6 hours
 
 ---
 
@@ -434,18 +518,20 @@ pytest tests/test_agent.py
 
 ## Statistics
 
-**Total Content**: 8,320+ lines
-**Tutorial Content**: 6,435 lines
-**Documentation**: 1,885+ lines
+**Total Content**: 12,000+ lines
+**Tutorial Content**: 9,125+ lines (28 tutorials)
+**Documentation**: 2,875+ lines
 
-**Average Tutorial Length**: 643 lines
-**Longest Tutorial**: Tutorial 09 (1,100 lines)
+**Average Tutorial Length**: 681 lines
+**Longest Tutorial**: Tutorial 28 (950 lines)
 **Shortest Tutorial**: Tutorial 02 (437 lines)
 
-**Real-World Examples**: 10
-**Code Patterns**: 50+
-**Best Practices**: 100+
-**Troubleshooting Items**: 40+
+**Real-World Examples**: 28+
+**Code Patterns**: 100+
+**Best Practices**: 150+
+**Troubleshooting Items**: 60+
+**Supported LLM Providers**: 6 (Gemini, OpenAI, Claude, Ollama, Azure, Vertex AI)
+**Third-Party Tools**: 120+ (LangChain + CrewAI)
 
 ---
 

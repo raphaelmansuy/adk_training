@@ -340,11 +340,351 @@ time horizon...
 
 **You never manually call tools** - the LLM does it automatically!
 
+## 🚀 Advanced: Parallel Tool Calling
+
+**Source**: `google/adk/flows/llm_flows/functions.py`
+
+One of ADK's most powerful features is **automatic parallel tool execution**. When the LLM requests multiple tools in a single turn, ADK executes them **simultaneously** using `asyncio.gather()` - dramatically improving performance!
+
+### How It Works
+
+When Gemini decides to call multiple tools, instead of executing them one-by-one:
+
+```python
+# ❌ Sequential execution (slow)
+result1 = await tool1()  # Wait...
+result2 = await tool2()  # Wait...
+result3 = await tool3()  # Wait...
+# Total time: ~6 seconds
+
+# ✅ Parallel execution (fast) - ADK does this automatically!
+results = await asyncio.gather(tool1(), tool2(), tool3())
+# Total time: ~2 seconds (limited by slowest tool)
+```
+
+**You don't need to do anything** - ADK handles this automatically! Just define your tools normally.
+
+### Real-World Example: Multi-City Financial Planning
+
+Let's extend our finance assistant to handle parallel calculations:
+
+```python
+from __future__ import annotations
+import asyncio
+from google.adk.agents import Agent
+
+def calculate_compound_interest(
+    principal: float, 
+    annual_rate: float, 
+    years: int,
+    compounds_per_year: int = 12
+) -> dict:
+    """Calculate compound interest for savings or investments.
+    
+    Args:
+        principal: The initial amount invested (in dollars)
+        annual_rate: The annual interest rate as a percentage (e.g., 5.5 for 5.5%)
+        years: Number of years to calculate for
+        compounds_per_year: How many times per year interest compounds (default: 12)
+        
+    Returns:
+        dict: Dictionary with status and calculation results
+    """
+    # Add simulated delay to show parallel execution benefit
+    import time
+    time.sleep(0.5)  # Simulate API call or heavy computation
+    
+    rate_decimal = annual_rate / 100
+    final_amount = principal * (1 + rate_decimal / compounds_per_year) ** (compounds_per_year * years)
+    interest_earned = final_amount - principal
+    
+    return {
+        "status": "success",
+        "report": (
+            f"Investment: ${principal:,.2f}\n"
+            f"Final amount: ${final_amount:,.2f}\n"
+            f"Interest earned: ${interest_earned:,.2f}"
+        )
+    }
+
+
+def calculate_loan_payment(
+    loan_amount: float,
+    annual_rate: float,
+    years: int
+) -> dict:
+    """Calculate monthly payment for a loan."""
+    import time
+    time.sleep(0.5)  # Simulate processing
+    
+    monthly_rate = (annual_rate / 100) / 12
+    num_payments = years * 12
+    
+    if monthly_rate == 0:
+        monthly_payment = loan_amount / num_payments
+    else:
+        monthly_payment = loan_amount * (monthly_rate * (1 + monthly_rate)**num_payments) / ((1 + monthly_rate)**num_payments - 1)
+    
+    return {
+        "status": "success",
+        "report": f"Monthly payment: ${monthly_payment:,.2f}"
+    }
+
+
+def calculate_monthly_savings(
+    target_amount: float,
+    years: int,
+    annual_return: float = 5.0
+) -> dict:
+    """Calculate monthly savings needed to reach a goal."""
+    import time
+    time.sleep(0.5)  # Simulate calculation
+    
+    months = years * 12
+    monthly_rate = (annual_return / 100) / 12
+    
+    if monthly_rate == 0:
+        monthly_savings = target_amount / months
+    else:
+        monthly_savings = target_amount / (((1 + monthly_rate)**months - 1) / monthly_rate)
+    
+    return {
+        "status": "success",
+        "report": f"Save ${monthly_savings:,.2f} per month"
+    }
+
+
+parallel_finance_agent = Agent(
+    name="parallel_finance_assistant",
+    model="gemini-2.5-flash",  # Supports parallel tool calling!
+    description="Financial assistant with parallel computation",
+    instruction=(
+        "You are a financial planning assistant. When users ask about multiple "
+        "scenarios or calculations, call ALL necessary tools at once to be efficient. "
+        "For example, if comparing investment options, call the calculation tool for "
+        "EACH option simultaneously."
+    ),
+    tools=[
+        calculate_compound_interest,
+        calculate_loan_payment,
+        calculate_monthly_savings
+    ]
+)
+```
+
+### Try This Prompt (Triggers Parallel Execution)
+
+```
+Compare these three investment options for me:
+1. $10,000 at 5% for 10 years
+2. $15,000 at 4% for 10 years  
+3. $12,000 at 6% for 10 years
+```
+
+**What happens**:
+1. Gemini recognizes it needs to call `calculate_compound_interest` THREE times
+2. ADK receives THREE `FunctionCall` objects from Gemini
+3. ADK executes all three **simultaneously** with `asyncio.gather()`
+4. All results come back in ~0.5s instead of ~1.5s (sequential)
+5. Gemini receives all results and generates comparative analysis
+
+### Performance Comparison
+
+**Sequential Execution** (if you did it manually):
+```python
+# ❌ Slow approach (not how ADK works)
+result1 = calculate_compound_interest(10000, 5, 10)   # 0.5s
+result2 = calculate_compound_interest(15000, 4, 10)   # 0.5s
+result3 = calculate_compound_interest(12000, 6, 10)   # 0.5s
+# Total: ~1.5 seconds
+```
+
+**Parallel Execution** (ADK automatic):
+```python
+# ✅ Fast - ADK does this for you!
+results = await asyncio.gather(
+    calculate_compound_interest(10000, 5, 10),
+    calculate_compound_interest(15000, 4, 10),
+    calculate_compound_interest(12000, 6, 10)
+)
+# Total: ~0.5 seconds (limited by slowest tool)
+```
+
+**Speedup**: 3x faster for 3 parallel tools!
+
+### Example Output
+
+```
+User: Compare these three investment options for me:
+1. $10,000 at 5% for 10 years
+2. $15,000 at 4% for 10 years  
+3. $12,000 at 6% for 10 years
+
+Agent: Let me calculate all three options for you...
+
+[Tool Calls - EXECUTED SIMULTANEOUSLY]:
+- calculate_compound_interest(principal=10000, annual_rate=5, years=10)
+- calculate_compound_interest(principal=15000, annual_rate=4, years=10)
+- calculate_compound_interest(principal=12000, annual_rate=6, years=10)
+
+Great question! Here's how your three investment options compare:
+
+**Option 1**: $10,000 at 5% for 10 years
+- Final amount: $16,470.09
+- Interest earned: $6,470.09
+
+**Option 2**: $15,000 at 4% for 10 years
+- Final amount: $22,280.97
+- Interest earned: $7,280.97
+
+**Option 3**: $12,000 at 6% for 10 years
+- Final amount: $21,791.23
+- Interest earned: $9,791.23
+
+Option 3 gives you the highest return ($9,791.23 in interest), even with a lower 
+principal than Option 2. That extra 2% rate makes a big difference over 10 years!
+```
+
+### When Does Parallel Execution Happen?
+
+Parallel execution occurs when:
+
+✅ **Multiple tool calls in single turn** - Gemini decides to call 2+ tools at once
+✅ **Tools are independent** - Results don't depend on each other
+✅ **Model supports parallel calling** - Gemini 2.5-flash, 2.5-pro, 2.0-flash support this
+
+**Does NOT happen when**:
+❌ **Sequential dependencies** - Tool B needs result from Tool A
+❌ **Single tool call** - Only one tool invoked
+❌ **Manual sequential instructions** - You explicitly tell the model to do things step-by-step
+
+### Optimizing for Parallel Execution
+
+**✅ DO: Design independent tools**
+```python
+# Good - These can run in parallel
+def get_weather(city: str): ...
+def get_exchange_rate(currency: str): ...
+def get_stock_price(symbol: str): ...
+
+# User: "What's the weather in Tokyo, EUR/USD rate, and AAPL stock price?"
+# → All 3 execute simultaneously!
+```
+
+**❌ DON'T: Create dependencies**
+```python
+# Bad - These create a dependency chain
+def search_database(query: str) -> dict:
+    """Find database records."""
+    return {"status": "success", "record_id": "123"}
+
+def fetch_record_details(record_id: str) -> dict:
+    """Get full details for a record (needs record_id first)."""
+    return {"status": "success", "details": "..."}
+
+# These MUST run sequentially - can't parallelize
+```
+
+### Verification: Check the Events Tab
+
+Open the Dev UI Events tab after sending a multi-tool query. Look for:
+
+```
+[FunctionCall] calculate_compound_interest(principal=10000, ...)
+[FunctionCall] calculate_compound_interest(principal=15000, ...)  
+[FunctionCall] calculate_compound_interest(principal=12000, ...)
+
+[FunctionResponse] result for 10000
+[FunctionResponse] result for 15000
+[FunctionResponse] result for 12000
+```
+
+Notice all `FunctionCall` events are emitted **before** any `FunctionResponse` - proof they executed in parallel!
+
+### Source Code Reference
+
+The parallel execution implementation is in `google/adk/flows/llm_flows/functions.py`:
+
+```python
+# Simplified version of what ADK does internally
+async def execute_function_calls(calls: list[FunctionCall]):
+    """Execute multiple function calls in parallel."""
+    
+    tasks = [execute_single_function(call) for call in calls]
+    results = await asyncio.gather(*tasks)
+    
+    return results
+```
+
+**You get this for free** - just define your tools normally!
+
+### Performance Tips
+
+1. **For I/O-bound tools** (API calls, database queries):
+   - Parallel execution provides **massive speedup** (3-10x)
+   - Each tool waits on network, not CPU
+
+2. **For CPU-bound tools** (calculations, data processing):
+   - Parallel execution still helps if tools are independent
+   - Python GIL limits pure CPU parallelism, but asyncio scheduling still improves responsiveness
+
+3. **Mixed workloads** (some I/O, some CPU):
+   - I/O tools finish during CPU tool execution
+   - Best of both worlds!
+
+### Advanced Example: Multi-Source Data Aggregation
+
+```python
+def get_market_data(symbol: str) -> dict:
+    """Fetch stock market data (simulated API call)."""
+    import time
+    time.sleep(1.0)  # Simulate API latency
+    return {
+        "status": "success",
+        "report": f"{symbol}: $150.32 (+2.1%)"
+    }
+
+def get_company_news(symbol: str) -> dict:
+    """Fetch latest news for a company (simulated API call)."""
+    import time
+    time.sleep(1.2)  # Simulate API latency
+    return {
+        "status": "success",
+        "report": f"{symbol} announces Q4 earnings beat"
+    }
+
+def get_analyst_ratings(symbol: str) -> dict:
+    """Fetch analyst ratings (simulated API call)."""
+    import time
+    time.sleep(0.8)  # Simulate API latency
+    return {
+        "status": "success",
+        "report": f"{symbol}: 12 Buy, 3 Hold, 1 Sell"
+    }
+
+aggregator_agent = Agent(
+    name="market_aggregator",
+    model="gemini-2.5-flash",
+    description="Aggregates market data from multiple sources",
+    instruction="When asked about a stock, fetch ALL relevant data simultaneously.",
+    tools=[get_market_data, get_company_news, get_analyst_ratings]
+)
+
+# Query: "Tell me everything about AAPL"
+# → All 3 tools execute in parallel (~1.2s total vs ~3s sequential)
+```
+
+### Sample Reference
+
+Check out `contributing/samples/parallel_functions/agent.py` for a complete working example of parallel tool execution.
+
 ## Key Takeaways
 
 ✅ **Tools are just Python functions** - No special classes needed, just regular functions!
 
 ✅ **LLM decides when to use tools** - You don't manually trigger them. The LLM reads the docstring and decides.
+
+✅ **Parallel execution is automatic** - When multiple tools are called, ADK runs them simultaneously via `asyncio.gather()`
 
 ✅ **Type hints are critical** - They tell the LLM what data types to use for parameters
 
@@ -354,9 +694,11 @@ time horizon...
 
 ✅ **Default parameters = optional** - Functions with defaults can be called without those params
 
-✅ **Events tab is your debugging friend** - See every tool call, parameter, and response
+✅ **Events tab is your debugging friend** - See every tool call, parameter, and response (and verify parallel execution!)
 
 ✅ **Tools extend LLM capabilities** - Use tools for calculations, API calls, database queries - anything the LLM can't do alone
+
+✅ **Design for independence** - Tools that don't depend on each other enable parallel execution and better performance
 
 ## Best Practices
 
