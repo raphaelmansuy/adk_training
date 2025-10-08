@@ -4,6 +4,8 @@
 
 Learn how to execute multiple agents concurrently to dramatically speed up your workflows! This tutorial teaches you the **`ParallelAgent`** pattern and the powerful **fan-out/gather** technique - essential for any real-world agent system that needs performance.
 
+**🎯 Working Implementation Available**: A complete, tested travel planning system is available at [`tutorial_implementation/tutorial05/`](../tutorial_implementation/tutorial05/). The implementation includes comprehensive tests, documentation, and a user-friendly setup process.
+
 ## Prerequisites
 
 - **Completed Tutorials 01-04** - Understanding of agents, tools, and sequential workflows
@@ -65,7 +67,27 @@ We're building a **Smart Travel Planner** that helps users plan trips by:
 
 This demonstrates the fan-out/gather pattern - parallel data gathering + sequential synthesis!
 
-## Step 1: Create Project Structure
+## Step 1: Get the Working Implementation
+
+A complete, tested implementation is available in the repository:
+
+```bash
+# Navigate to the working implementation
+cd tutorial_implementation/tutorial05/
+
+# Install dependencies
+make setup
+
+# Copy environment template and add your API key
+cp travel_planner/.env.example travel_planner/.env
+# Edit travel_planner/.env and add your GOOGLE_API_KEY
+```
+
+**Alternative**: Follow the step-by-step build instructions below to create your own implementation.
+
+## Step 2: Create Project Structure (Optional - Skip if using working implementation)
+
+If you prefer to build from scratch, create this structure:
 
 ```bash
 mkdir travel_planner
@@ -74,6 +96,32 @@ touch __init__.py agent.py .env
 ```
 
 Copy your `.env` file from previous tutorials.
+
+## Project Structure
+
+The working implementation follows this structure:
+
+```
+tutorial05/
+├── travel_planner/           # Agent implementation
+│   ├── __init__.py          # Package initialization
+│   ├── agent.py             # Agent definitions and pipeline
+│   └── .env.example         # Environment template
+├── tests/                   # Comprehensive test suite
+│   ├── __init__.py
+│   ├── test_agent.py        # Agent and pipeline tests
+│   ├── test_imports.py      # Import validation tests
+│   └── test_structure.py    # Project structure tests
+├── requirements.txt         # Python dependencies
+├── Makefile                # Development commands
+└── README.md               # Implementation documentation
+```
+
+**Key Components:**
+- **`travel_planner/agent.py`**: Complete ParallelAgent + SequentialAgent pipeline
+- **`tests/test_agent.py`**: 57 tests covering all functionality
+- **`Makefile`**: `make setup`, `make test`, `make dev`, `make demo` commands
+- **`.env.example`**: Template for API key configuration
 
 ## Step 2: Set Up Package Import
 
@@ -89,6 +137,10 @@ from . import agent
 from __future__ import annotations
 
 from google.adk.agents import Agent, ParallelAgent, SequentialAgent
+
+# ============================================================================
+# PARALLEL SEARCH AGENTS
+# ============================================================================
 
 # ===== Parallel Branch 1: Flight Finder =====
 flight_finder = Agent(
@@ -150,7 +202,11 @@ activity_finder = Agent(
     output_key="activity_options"  # Saves to state
 )
 
-# ===== Fan-Out: Parallel Data Gathering =====
+# ============================================================================
+# FAN-OUT: PARALLEL DATA GATHERING
+# ============================================================================
+
+# Create the ParallelAgent for concurrent search
 parallel_search = ParallelAgent(
     name="ParallelSearch",
     sub_agents=[
@@ -160,6 +216,10 @@ parallel_search = ParallelAgent(
     ],  # All run AT THE SAME TIME!
     description="Searches flights, hotels, and activities concurrently"
 )
+
+# ============================================================================
+# GATHER: SEQUENTIAL RESULT MERGING
+# ============================================================================
 
 # ===== Gather: Merge Results into Itinerary =====
 itinerary_builder = Agent(
@@ -190,8 +250,11 @@ itinerary_builder = Agent(
     output_key="final_itinerary"
 )
 
-# ===== Complete Fan-Out/Gather Pipeline =====
-# Parallel → Sequential pattern!
+# ============================================================================
+# COMPLETE FAN-OUT/GATHER PIPELINE
+# ============================================================================
+
+# Combine parallel search with sequential merge
 travel_planning_system = SequentialAgent(
     name="TravelPlanningSystem",
     sub_agents=[
@@ -201,7 +264,7 @@ travel_planning_system = SequentialAgent(
     description="Complete travel planning system with parallel search and itinerary building"
 )
 
-# MUST be named root_agent for ADK
+# MUST be named root_agent for ADK discovery
 root_agent = travel_planning_system
 ```
 
@@ -236,6 +299,17 @@ Final Output: complete travel itinerary
 - Outer `SequentialAgent` ensures parallel → sequential flow
 
 ## Step 4: Run the Travel Planner
+
+### Using the Working Implementation
+
+```bash
+# From tutorial_implementation/tutorial05/
+make dev
+```
+
+Open `http://localhost:8000` and select "travel_planner".
+
+### Manual Setup (if building from scratch)
 
 Navigate to parent directory and launch:
 
@@ -286,6 +360,31 @@ Open the **Events tab** and watch the magic:
 6. **Event**: Itinerary builder completes → final output!
 
 **Notice**: The 3 search agents don't run in order - they all start together and finish whenever they're done!
+
+## Testing Your Implementation
+
+The working implementation includes comprehensive tests to validate your understanding:
+
+```bash
+# From tutorial_implementation/tutorial05/
+make test
+```
+
+**Test Coverage:**
+- ✅ Agent configurations and instructions (57 tests total)
+- ✅ ParallelAgent structure and concurrent execution
+- ✅ SequentialAgent pipeline flow and state management
+- ✅ Data injection between parallel and sequential agents
+- ✅ Import validation and module structure
+- ✅ Project organization and file structure
+
+**Quick Demo:**
+```bash
+# Test basic functionality without full ADK setup
+make demo
+```
+
+This validates that your agents load correctly and the pipeline structure is sound.
 
 ## Expected Behavior
 
@@ -461,6 +560,24 @@ And you understand when/how to use parallel execution!
 5. **Benchmarking** - Measure actual speedup comparing sequential vs parallel
 
 ## Complete Code Reference
+
+**Working Implementation**: See [`tutorial_implementation/tutorial05/`](../tutorial_implementation/tutorial05/) for a complete, tested version with comprehensive documentation.
+
+**Key Files:**
+- [`travel_planner/agent.py`](../tutorial_implementation/tutorial05/travel_planner/agent.py) - Complete agent implementation
+- [`tests/test_agent.py`](../tutorial_implementation/tutorial05/tests/test_agent.py) - 57 comprehensive tests
+- [`README.md`](../tutorial_implementation/tutorial05/README.md) - Detailed implementation guide
+- [`Makefile`](../tutorial_implementation/tutorial05/Makefile) - Development commands
+
+**Quick Start with Working Code:**
+```bash
+cd tutorial_implementation/tutorial05/
+make setup  # Install dependencies
+make test   # Run all tests (57 passing)
+make dev    # Start development server
+```
+
+**Manual Implementation:**
 
 **travel_planner/__init__.py**
 ```python

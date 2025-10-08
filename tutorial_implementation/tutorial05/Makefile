@@ -1,0 +1,57 @@
+# Tutorial 05: Parallel Processing - Travel Planning System
+# Makefile for development, testing, and deployment
+
+.PHONY: help setup dev test clean demo
+
+# Default target
+help:
+	@echo "Tutorial 05: Parallel Processing - Travel Planning System"
+	@echo ""
+	@echo "Available commands:"
+	@echo "  setup    Install dependencies and set up development environment"
+	@echo "  dev      Start development server (ADK web interface)"
+	@echo "  test     Run comprehensive test suite"
+	@echo "  demo     Run a quick demo of the travel planner"
+	@echo "  clean    Clean up temporary files and caches"
+	@echo "  help     Show this help message"
+
+# Setup development environment
+setup:
+	@echo "Setting up Tutorial 05 development environment..."
+	pip install -r requirements.txt
+	@echo "Setup complete! Copy travel_planner/.env.example to travel_planner/.env and add your API key."
+
+# Start development server
+dev:
+	@echo "Starting ADK development server..."
+	@echo "Open http://localhost:8000 in your browser"
+	@echo "Select 'travel_planner' from the agent list"
+	@echo ""
+	@echo "Example prompts to try:"
+	@echo "  - 'Plan a 3-day trip to Paris'"
+	@echo "  - 'Weekend getaway to New York'"
+	@echo "  - '5-day Tokyo trip for 2 people'"
+	@echo ""
+	adk web
+
+# Run tests
+test:
+	@echo "Running comprehensive test suite..."
+	pytest tests/ -v --tb=short
+
+# Quick demo
+demo:
+	@echo "Running travel planner demo..."
+	@echo "This will test the basic functionality"
+	@python -c "from travel_planner.agent import root_agent; print('✅ Travel planner loaded successfully!'); print(f'Agent name: {root_agent.name}'); print(f'Number of pipeline stages: {len(root_agent.sub_agents)}'); print('First stage (parallel search) has', len(root_agent.sub_agents[0].sub_agents), 'concurrent agents'); print('✅ Demo complete!')"
+
+# Clean up
+clean:
+	@echo "Cleaning up temporary files..."
+	find . -type d -name __pycache__ -exec rm -rf {} + 2>/dev/null || true
+	find . -type f -name "*.pyc" -delete 2>/dev/null || true
+	find . -type f -name "*.pyo" -delete 2>/dev/null || true
+	find . -type f -name ".coverage" -delete 2>/dev/null || true
+	find . -type d -name ".pytest_cache" -exec rm -rf {} + 2>/dev/null || true
+	find . -type d -name "*.egg-info" -exec rm -rf {} + 2>/dev/null || true
+	@echo "Cleanup complete!"
