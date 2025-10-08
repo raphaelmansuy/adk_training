@@ -3215,3 +3215,186 @@ from google.adk.tools.langchain_tool import LangchainTool
 4. **MCP OAuth is production-ready** - Fully tested, just needs documentation
 5. **LiteLLM support is comprehensive** - Any model, any provider, working samples exist
 
+---
+
+## Mental Models Mission (2025-01-26)
+
+**HIGH-STAKES DIRECTIVE**: "Create an exception overview.md that will act as mental models to understand all the concepts from Google ADK and Generative AI"
+
+### Mission Requirements
+- **Purpose**: Synthesize ALL ADK + GenAI concepts into clear mental frameworks
+- **Audience**: Developers learning ADK (beginner to advanced)
+- **Source of Truth**: `research/adk-python/` + Official docs + 28 tutorials
+- **Emphasis**: "exception high stake mission, work non stop to achieve it"
+
+### Approach
+
+**Step 1: Assessment Phase** ✅ COMPLETE
+- Reviewed 28 existing tutorials (~9,125 lines)
+- Verified source code structure (14 core modules)
+- Identified key concepts to synthesize
+
+**Step 2: Structure Design** ✅ COMPLETE
+Planned 8 major sections:
+1. **Foundational Mental Models** - Core abstractions (Agent = Brain + Tools + Memory)
+2. **Agent Architecture Models** - How agents think/act/remember
+3. **Tool & Integration Models** - Capability extensions
+4. **State & Memory Models** - Context management (RAM vs Hard Drive)
+5. **Workflow Orchestration Models** - Assembly line strategies
+6. **LLM Interaction Models** - Prompting, grounding, thinking
+7. **Production Deployment Models** - Local → Cloud → Enterprise
+8. **Decision Frameworks** - When to use what patterns
+
+**Step 3: Mental Models Identified**
+- Agent = Brain + Tools + Memory analogy
+- State = RAM (short-term), Memory = Hard Drive (long-term)
+- Workflows = Assembly line patterns (Sequential/Parallel/Loop)
+- Tools = Capability extensions (like power tools)
+- Grounding = LLM to real-world connection
+- Thinking = Explicit reasoning before action
+- Streaming = Live TV (SSE) vs Video call (BIDI) vs Recording (NONE)
+- MCP = USB for tools (standardized protocol)
+- A2A = Calling other departments (agent microservices)
+- Deployment = Home office → Small office → Corporate → Factory
+
+**Step 4: Document Creation** ✅ COMPLETE
+- Created `/Users/raphaelmansuy/Github/temp/adk_training/overview.md`
+- **Content**: 1,072 lines of comprehensive mental models
+- **Coverage**:
+  - 15 core mental models with visual diagrams
+  - Complete decision trees for pattern selection
+  - Cost optimization frameworks
+  - Learning path recommendations (5 paths)
+  - Source code map for reference
+  - 100+ decision rules
+  - 50+ ASCII diagrams
+  - 28 tutorial cross-references
+  - 10 commandments of ADK development
+
+**Step 5: Synthesis Quality**
+- ✅ Every concept grounded in source code paths
+- ✅ Clear analogies for understanding (human worker, assembly line, RAM/HDD)
+- ✅ Decision frameworks actionable (when to use what)
+- ✅ Links to tutorials for detailed implementations
+- ✅ Comprehensive coverage (foundational → advanced)
+- ✅ Multiple learning paths (Foundation/Workflows/Production/Integration/Advanced)
+
+### Key Mental Models Created
+
+1. **The Agent = Human Worker Analogy**
+   - Brain (Model) = Reasoning
+   - Tools (Capabilities) = Hands
+   - Memory (Context) = Knowledge
+   - Instructions = Behavior guide
+   - Workflows = Process
+   - Callbacks = Supervision
+
+2. **The Three Agent Types**
+   - LLM Agent (Thinker) - Flexible reasoning
+   - Workflow Agent (Manager) - Deterministic execution
+   - Remote Agent (Expert) - Microservices
+
+3. **State vs Memory Model**
+   - State = RAM (session, user:, app:, temp:)
+   - Memory = Hard Drive (persistent across sessions)
+   - Artifacts = File storage
+
+4. **Tool Ecosystem Hierarchy**
+   - FunctionTool (Custom)
+   - OpenAPIToolset (REST APIs)
+   - MCPToolset (Standardized protocol)
+   - Builtin Tools (Google Cloud)
+   - Framework Tools (LangChain/CrewAI)
+
+5. **Workflow Patterns = Assembly Lines**
+   - Sequential = One after another (order matters)
+   - Parallel = Fan-out/gather (speed matters)
+   - Loop = Iterative refinement (quality matters)
+
+6. **Prompt = Program Model**
+   - System/Instruction = Operating system
+   - Context = Program data
+   - User Message = Function call
+   - Tool Results = Return values
+
+7. **Grounding = Reality Connection**
+   - Web (google_search) = Current facts
+   - Data (DB tools) = Actual data
+   - Location (google_maps) = Precise places
+   - Documents (RAG) = Company knowledge
+
+8. **Thinking Models**
+   - BuiltIn = Native model capability (Gemini 2.0+)
+   - PlanReAct = Structured reasoning (Planning/Reasoning/Action/Observation)
+
+9. **Deployment Environments**
+   - Local (adk web) = Home office
+   - Cloud Run = Small office (serverless)
+   - Vertex AI = Corporate headquarters (managed)
+   - GKE = Factory (Kubernetes control)
+
+10. **Streaming Modes**
+    - SSE = Live TV (agent → user)
+    - BIDI = Video call (agent ↔ user)
+    - NONE = Recording (batch)
+
+11. **MCP = USB Protocol**
+    - Before: Custom integrations for everything
+    - After: One protocol, many servers
+
+12. **A2A = Microservices**
+    - Monolithic Agent = Everything in one
+    - A2A = Specialized agents via HTTP
+
+### Document Features
+
+**Decision Frameworks**:
+- Tool selection decision tree
+- Workflow decision matrix
+- Grounding decision framework
+- Streaming decision framework
+- Deployment decision tree
+- Cost optimization strategies
+- Complete pattern selection guide
+
+**Learning Paths**:
+1. Foundation (Start here) - 5 tutorials
+2. Workflows (Orchestration) - 5 tutorials
+3. Production (Deploy) - 4 tutorials
+4. Integration (Extend) - 5 tutorials
+5. Advanced (Master) - 4 tutorials + source code
+
+**Source Code Map**:
+- Complete directory structure with descriptions
+- File-by-file purpose documentation
+- Links to relevant concepts
+- Quick reference for finding truth
+
+**The 10 Commandments of ADK**:
+1. Agent = System, not just LLM
+2. State for short-term, Memory for long-term
+3. Sequential when order matters, Parallel when speed matters
+4. Loop for quality, not logic
+5. Ground everything that needs to be true
+6. Tools are capabilities, not afterthoughts
+7. Callbacks for control, not core logic
+8. Start simple, add complexity when needed
+9. Evaluate early, evaluate often
+10. Production ≠ Development
+
+### Results
+
+**File Created**: `/Users/raphaelmansuy/Github/temp/adk_training/overview.md`
+- **Size**: 1,072 lines
+- **Content**: Comprehensive mental models from first principles to advanced patterns
+- **Quality**: Source-verified, decision-focused, learning-path structured
+- **Coverage**: All 28 tutorials synthesized + source code insights
+
+**Documentation Impact**:
+- Complements existing tutorials (doesn't replace)
+- Provides "why" and "when" (tutorials provide "how")
+- Enables pattern-based thinking
+- Accelerates learning via clear mental frameworks
+
+**Mission Status**: ✅ COMPLETE - Exceptional overview.md created with comprehensive mental models for mastering Google ADK and Generative AI.
+

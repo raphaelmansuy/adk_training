@@ -350,6 +350,29 @@ Final Itinerary:
 - Parallel: ~10 seconds (all 3 run together, limited by slowest)
 - **3x faster!**
 
+**Visual Flow:**
+
+```mermaid
+flowchart TD
+    A[User Query] --> B[ParallelAgent]
+    B --> C[Flight Agent]
+    B --> D[Hotel Agent]
+    B --> E[Activity Agent]
+    C --> F[Merge Agent]
+    D --> F
+    E --> F
+    F --> G[Final Itinerary]
+    
+    style A fill:#FFE5E5,stroke:#FF6B6B,stroke-width:2px,color:#000
+    style B fill:#E5F5FF,stroke:#4ECDC4,stroke-width:2px,color:#000
+    style C fill:#F0E5FF,stroke:#9B59B6,stroke-width:2px,color:#000
+    style D fill:#FFF5E5,stroke:#FFB347,stroke-width:2px,color:#000
+    style E fill:#E5FFE5,stroke:#52D17C,stroke-width:2px,color:#000
+    style F fill:#FFE5F5,stroke:#FF6B9D,stroke-width:2px,color:#000
+    style G fill:#E5F5FF,stroke:#4ECDC4,stroke-width:2px,color:#000
+    
+```
+
 ## Key Takeaways
 
 ✅ **ParallelAgent runs sub-agents concurrently** - Major speed boost

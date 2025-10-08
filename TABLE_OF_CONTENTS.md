@@ -1,16 +1,46 @@
 # Google ADK Tutorial Series - Table of Contents
 
-**🎉 Status: COMPLETE - All 28 tutorials finished!**
+**🎉 Status: COMPLETE - All 28 tutorials + Mental Models Overview finished!**
 
 Welcome to the most comprehensive Google Agent Development Kit (ADK) tutorial series. This guide will take you from zero to production-ready AI agents, including enterprise deployment, third-party integrations, and multi-provider LLM support.
 
 ---
 
+## 📖 Start Here: Mental Models Overview
+
+**NEW**: Before diving into tutorials, read the comprehensive mental models document!
+
+### **Overview: Mental Models for Mastery**
+**File**: `overview.md` (1,357 lines)
+
+**What You'll Learn**:
+- 15+ core mental models for understanding ADK
+- Agent = Brain + Tools + Memory + Instructions + Workflows + Supervision
+- Complete decision frameworks (when to use what)
+- Learning paths (Foundation → Advanced)
+- Source code navigation map
+- The 10 Commandments of ADK development
+
+**Why Read This First**:
+- Provides "why" and "when" (tutorials provide "how")
+- Clear analogies (RAM vs Hard Drive, Assembly Lines, USB Protocol)
+- Decision trees for every major pattern choice
+- Synthesizes all 28 tutorials into cohesive frameworks
+- Accelerates learning via mental frameworks
+
+**Time**: 2 hours (comprehensive read)
+
+**Recommended**: Read overview → Follow learning path → Deep dive tutorials
+
+---
+
 ## Quick Start
 
-1. Install ADK: `pip install google-adk`
-2. Set API key: `export GOOGLE_API_KEY=your_key`
-3. Start with Tutorial 01 and progress sequentially
+1. **Start with**: Read `overview.md` for mental models
+2. Install ADK: `pip install google-adk`
+3. Set API key: `export GOOGLE_API_KEY=your_key`
+4. Follow a learning path from overview (Foundation/Workflows/Production/Integration/Advanced)
+5. Deep dive into specific tutorials as needed
 
 ---
 

@@ -332,6 +332,25 @@ Unlike traditional computers that use bits (0 or 1), quantum computers use qubit
 - No LLM deciding order
 - Predictable behavior
 
+**Visual Flow:**
+
+```mermaid
+sequenceDiagram
+    participant U as User
+    participant R as Research
+    participant W as Writer
+    participant E as Editor
+    participant F as Formatter
+    
+    U->>R: Topic
+    R->>W: research_findings
+    W->>E: draft_post
+    E->>F: draft_post + editorial_feedback
+    F->>U: Final Post
+    
+    Note over R,F: Each agent waits for previous to complete
+```
+
 ## Key Takeaways
 
 ✅ **SequentialAgent chains agents in strict order** - Perfect for pipelines
