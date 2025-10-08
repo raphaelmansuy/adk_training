@@ -25,8 +25,9 @@ class TestIndividualAgents:
         """Test news pipeline agent configurations"""
         assert news_fetcher.name == "news_fetcher"
         assert news_fetcher.model == "gemini-2.0-flash"
-        assert news_fetcher.description == "Fetches current news articles"
+        assert news_fetcher.description == "Fetches current news articles using Google Search"
         assert "news" in news_fetcher.instruction.lower()
+        assert "google_search" in news_fetcher.instruction.lower()
         assert news_fetcher.output_key == "raw_news"
 
         assert news_summarizer.name == "news_summarizer"
@@ -39,8 +40,9 @@ class TestIndividualAgents:
         """Test social pipeline agent configurations"""
         assert social_monitor.name == "social_monitor"
         assert social_monitor.model == "gemini-2.0-flash"
-        assert social_monitor.description == "Monitors social media trends"
+        assert social_monitor.description == "Monitors social media trends using Google Search"
         assert "social" in social_monitor.instruction.lower()
+        assert "google_search" in social_monitor.instruction.lower()
         assert social_monitor.output_key == "raw_social"
 
         assert sentiment_analyzer.name == "sentiment_analyzer"
@@ -53,8 +55,9 @@ class TestIndividualAgents:
         """Test expert pipeline agent configurations"""
         assert expert_finder.name == "expert_finder"
         assert expert_finder.model == "gemini-2.0-flash"
-        assert expert_finder.description == "Finds expert opinions"
+        assert expert_finder.description == "Finds expert opinions using Google Search"
         assert "expert" in expert_finder.instruction.lower()
+        assert "google_search" in expert_finder.instruction.lower()
         assert expert_finder.output_key == "raw_experts"
 
         assert quote_extractor.name == "quote_extractor"
@@ -224,6 +227,7 @@ class TestAgentInstructions:
         """Test news fetcher has clear, specific instructions"""
         instruction = news_fetcher.instruction
         assert "news researcher" in instruction.lower()
+        assert "google_search" in instruction.lower()
         assert "3-4" in instruction
         assert "bulleted list" in instruction
         assert "recent" in instruction
@@ -241,6 +245,7 @@ class TestAgentInstructions:
         """Test social monitor has clear social media focus"""
         instruction = social_monitor.instruction
         assert "social media analyst" in instruction.lower()
+        assert "google_search" in instruction.lower()
         assert "trending" in instruction.lower()
         assert "hashtags" in instruction.lower()
         assert "sentiment" in instruction.lower()
@@ -257,6 +262,7 @@ class TestAgentInstructions:
         """Test expert finder focuses on credible sources"""
         instruction = expert_finder.instruction
         assert "expert opinion researcher" in instruction.lower()
+        assert "google_search" in instruction.lower()
         assert "industry experts" in instruction.lower()
         assert "academics" in instruction.lower()
         assert "thought leaders" in instruction.lower()

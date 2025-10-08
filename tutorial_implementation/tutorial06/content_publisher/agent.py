@@ -10,6 +10,7 @@ through sequential refinement (write, edit, format).
 from __future__ import annotations
 
 from google.adk.agents import Agent, ParallelAgent, SequentialAgent
+from google.adk.tools import google_search
 
 # ============================================================================
 # PARALLEL BRANCH 1: News Research Pipeline
@@ -18,16 +19,21 @@ from google.adk.agents import Agent, ParallelAgent, SequentialAgent
 news_fetcher = Agent(
     name="news_fetcher",
     model="gemini-2.0-flash",
-    description="Fetches current news articles",
+    description="Fetches current news articles using Google Search",
     instruction=(
-        "You are a news researcher. Based on the user's topic, find 3-4 "
-        "current news articles or recent developments.\n"
+        "You are a news researcher. Based on the user's topic, search for "
+        "current news articles and recent developments.\n"
+        "\n"
+        "Use the google_search tool to find 3-4 current news articles.\n"
+        "Focus on recent, credible news sources from the past 6 months.\n"
         "\n"
         "Output a bulleted list with:\n"
         "• Source + Headline + Brief summary\n"
+        "• Include publication dates when available\n"
         "\n"
-        "Focus on recent, credible news sources."
+        "Search query should be: '[topic] news recent developments site:reputable-news-sites'"
     ),
+    tools=[google_search],
     output_key="raw_news"
 )
 
@@ -64,16 +70,24 @@ news_pipeline = SequentialAgent(
 social_monitor = Agent(
     name="social_monitor",
     model="gemini-2.0-flash",
-    description="Monitors social media trends",
+    description="Monitors social media trends using Google Search",
     instruction=(
-        "You are a social media analyst. Based on the user's topic, identify "
+        "You are a social media analyst. Based on the user's topic, search for "
         "trending discussions, popular hashtags, and public sentiment.\n"
+        "\n"
+        "Use the google_search tool to find:\n"
+        "• Trending hashtags and topics on social platforms\n"
+        "• Recent social media discussions and viral content\n"
+        "• Public opinion and sentiment analysis\n"
+        "\n"
+        "Search for: '[topic] social media trends reddit twitter discussion'\n"
         "\n"
         "Output:\n"
         "• 3-4 trending hashtags or topics\n"
         "• Popular discussion themes\n"
-        "• General sentiment (positive/negative/mixed)"
+        "• General sentiment (positive/negative/mixed) with evidence"
     ),
+    tools=[google_search],
     output_key="raw_social"
 )
 
@@ -110,16 +124,24 @@ social_pipeline = SequentialAgent(
 expert_finder = Agent(
     name="expert_finder",
     model="gemini-2.0-flash",
-    description="Finds expert opinions",
+    description="Finds expert opinions using Google Search",
     instruction=(
-        "You are an expert opinion researcher. Based on the user's topic, find "
+        "You are an expert opinion researcher. Based on the user's topic, search for "
         "what industry experts, academics, or thought leaders are saying.\n"
+        "\n"
+        "Use the google_search tool to find:\n"
+        "• Industry experts and their credentials\n"
+        "• Academic researchers and their affiliations\n"
+        "• Thought leaders and their recent statements\n"
+        "\n"
+        "Search for: '[topic] expert opinion academic research thought leader'\n"
         "\n"
         "Output:\n"
         "• 2-3 expert names and their credentials\n"
         "• Their key statements or positions\n"
-        "• Source (where they said it)"
+        "• Source (where they said it) with links when available"
     ),
+    tools=[google_search],
     output_key="raw_experts"
 )
 
