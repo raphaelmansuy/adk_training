@@ -31,7 +31,28 @@ We're building a **friendly AI assistant** that:
 
 This is the foundation - every ADK agent starts here!
 
-## Step 1: Installation
+## Quick Start
+
+The easiest way to get started is with our working implementation:
+
+```bash
+# Clone or navigate to the tutorial implementation
+cd tutorial_implementation/tutorial01
+
+# Install dependencies and setup
+make setup
+
+# Start the agent
+make dev
+```
+
+Then open `http://localhost:8000` in your browser and select "hello_agent"!
+
+## Step-by-Step Setup (Alternative)
+
+If you prefer to build it yourself, follow these steps:
+
+### Step 1: Installation
 
 Open your terminal and install ADK:
 
@@ -41,7 +62,7 @@ pip install google-adk
 
 This installs the complete ADK toolkit including the Dev UI, CLI tools, and all dependencies.
 
-## Step 2: Create Project Structure
+### Step 2: Create Project Structure
 
 ADK requires a specific folder structure. Create a new directory for your agent:
 
@@ -56,18 +77,19 @@ touch __init__.py agent.py .env
 
 Your folder structure should look like this:
 
-```
+```text
 hello_agent/
 ├── __init__.py    # Makes this a Python package
 ├── agent.py       # Your agent definition
 └── .env          # Authentication credentials
 ```
 
-## Step 3: Configure Authentication
+### Step 3: Configure Authentication
 
 Open `.env` in your text editor and add your Google AI Studio API key:
 
-**hello_agent/.env**
+#### hello_agent/.env
+
 ```bash
 # Using Google AI Studio (recommended for learning)
 GOOGLE_GENAI_USE_VERTEXAI=FALSE
@@ -76,22 +98,24 @@ GOOGLE_API_KEY=your-api-key-here
 
 Replace `your-api-key-here` with your actual API key from [Google AI Studio](https://aistudio.google.com/app/apikey).
 
-## Step 4: Set Up Package Import
+### Step 4: Set Up Package Import
 
 Open `__init__.py` and add this single line:
 
-**hello_agent/__init__.py**
+#### hello_agent/__init__.py
+
 ```python
 from . import agent
 ```
 
 This line tells ADK where to find your agent definition. It's required!
 
-## Step 5: Define Your Agent
+### Step 5: Define Your Agent
 
 Now for the exciting part! Open `agent.py` and create your agent:
 
-**hello_agent/agent.py**
+#### hello_agent/agent.py
+
 ```python
 # Required by ADK for proper Python type hints
 from __future__ import annotations
@@ -122,7 +146,7 @@ root_agent = Agent(
 - **`instruction`**: Detailed behavioral instructions for the LLM
 - **`root_agent`**: MUST use this exact variable name - ADK looks for it!
 
-## Step 6: Run Your Agent
+### Step 6: Run Your Agent
 
 Navigate to the **parent directory** of `hello_agent`:
 
@@ -145,6 +169,7 @@ This starts a web server. Open your browser to `http://localhost:8000` and:
 3. **Explore Events tab**: Click "Events" on the left to see exactly what the LLM received and returned
 
 **Try these prompts:**
+
 - "Hello!"
 - "What can you help me with?"
 - "Tell me a joke"
@@ -172,13 +197,13 @@ When you send a message to your agent:
 
 ## Expected Behavior
 
-```
+```text
 You: Hello!
 Agent: Hello! It's great to hear from you! How can I help you today?
 
 You: What can you do?
-Agent: I'm here to chat and answer your questions! I can help with general 
-       information, have conversations, explain concepts, or just be a 
+Agent: I'm here to chat and answer your questions! I can help with general
+       information, have conversations, explain concepts, or just be a
        friendly companion. What would you like to talk about?
 ```
 
@@ -199,20 +224,25 @@ Agent: I'm here to chat and answer your questions! I can help with general
 ## Common Issues & Solutions
 
 **Problem**: "Agent not found in dropdown"
+
 - **Solution**: Make sure you're running `adk web` from the parent directory that contains `hello_agent/`
 
 **Problem**: "Authentication error"
+
 - **Solution**: Check your `.env` file has the correct API key and `GOOGLE_GENAI_USE_VERTEXAI=FALSE`
 
 **Problem**: "Module not found"
+
 - **Solution**: Verify `__init__.py` contains `from . import agent`
 
 **Problem**: "root_agent not found"
+
 - **Solution**: Your variable in `agent.py` must be exactly named `root_agent`
 
 ## What We Built
 
 You now have a fully functional AI agent! It can:
+
 - Hold natural conversations
 - Respond to questions contextually
 - Remember the conversation history during a session
@@ -224,6 +254,7 @@ But it's limited to what the LLM knows. In the next tutorial, we'll give it **su
 🚀 **Tutorial 02: Function Tools** - Give your agent the ability to execute Python functions, perform calculations, and interact with data
 
 📖 **Further Reading**:
+
 - [Official ADK Quickstart](https://google.github.io/adk-docs/get-started/quickstart/)
 - [Agent Configuration Guide](https://google.github.io/adk-docs/agents/llm-agents/)
 - [Model Options](https://google.github.io/adk-docs/agents/models/)
@@ -232,18 +263,21 @@ But it's limited to what the LLM knows. In the next tutorial, we'll give it **su
 
 For easy reference, here are all three files together:
 
-**hello_agent/__init__.py**
+### `hello_agent/__init__.py`
+
 ```python
 from . import agent
 ```
 
-**hello_agent/.env**
+### `hello_agent/.env`
+
 ```bash
 GOOGLE_GENAI_USE_VERTEXAI=FALSE
 GOOGLE_API_KEY=your-api-key-here
 ```
 
-**hello_agent/agent.py**
+### `hello_agent/agent.py`
+
 ```python
 from __future__ import annotations
 from google.adk.agents import Agent
