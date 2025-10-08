@@ -4,6 +4,10 @@
 
 Learn how to build self-improving agent systems using **`LoopAgent`**! This tutorial teaches you iterative refinement patterns - perfect for when quality matters more than speed. Build agents that critique their own work and keep improving until it's excellent.
 
+**🎯 Working Implementation Available**: A complete, tested essay refinement system is available at [`tutorial_implementation/tutorial07/`](../tutorial_implementation/tutorial07/). The implementation includes comprehensive tests, documentation, and a user-friendly setup process.
+
+**🚀 Quick Start**: Want to see it in action immediately? Jump to the [Complete Working Code](#complete-code-reference) section below!
+
 ## Prerequisites
 
 - **Completed Tutorials 01-06** - Understanding of agents, workflows, and multi-agent systems
@@ -60,8 +64,8 @@ Always have this as a safety limit!
 ```python
 def exit_loop(tool_context: ToolContext):
     """Signal that refinement is complete."""
-    tool_context.actions.escalate = True
-    return {}
+    tool_context.actions.end_of_agent = True
+    return {"text": "Loop exited successfully. The agent has determined the task is complete."}
 
 refiner = Agent(
     tools=[exit_loop],
@@ -146,8 +150,9 @@ def exit_loop(tool_context: ToolContext):
     Called by the refiner when critic approves the essay.
     """
     print(f"  [Exit Loop] Called by {tool_context.agent_name} - Essay approved!")
-    tool_context.actions.escalate = True  # Signal to stop looping
-    return {}
+    tool_context.actions.end_of_agent = True  # Signal to stop looping
+    # Return a minimal valid content part so the backend always produces a valid LlmResponse
+    return {"text": "Loop exited successfully. The agent has determined the task is complete."}
 
 # =====================================================
 # PHASE 1: Initial Writer (Runs ONCE before loop)
@@ -225,12 +230,15 @@ refiner = Agent(
         "**Your Task:**\n"
         "IF the critique says 'APPROVED - Essay is complete.':\n"
         "  Call the 'exit_loop' function immediately. Do NOT output any text.\n"
+        "  This means your response should ONLY be the function call, nothing else.\n"
         "\n"
-        "ELSE (critique contains improvement suggestions):\n"
-        "  Carefully apply the suggested improvements to the essay.\n"
-        "  Output ONLY the improved essay text, no meta-commentary.\n"
+        "ELSE (the critique contains improvement suggestions):\n"
+        "  Apply the suggested improvements to create a better version of the essay.\n"
+        "  Output ONLY the improved essay text, no explanations or meta-commentary.\n"
+        "  Do NOT call any functions when improving the essay.\n"
         "\n"
-        "Remember: Either call exit_loop OR output improved essay."
+        "IMPORTANT: You must EITHER call exit_loop OR output improved essay text.\n"
+        "Never do both in the same response."
     ),
     output_key="current_essay"  # Overwrites essay with improved version!
 )
@@ -312,7 +320,7 @@ Final Output: Refined essay from state['current_essay']
 2. **Exit Tool Pattern**:
    - Critic outputs special phrase "APPROVED..."
    - Refiner detects phrase and calls `exit_loop()`
-   - `tool_context.actions.escalate = True` signals stop
+   - `tool_context.actions.end_of_agent = True` signals stop
    
 3. **Safety Net**: `max_iterations=5` prevents infinite loop if approval never comes
 
@@ -437,18 +445,18 @@ Final Output: [Displays refined version 3]
    - Run critic AGAIN → evaluates NEW state['current_essay']
    - Run refiner AGAIN → either improves OR calls exit_loop
 4. **Continue** until:
-   - `exit_loop()` called → `tool_context.actions.escalate = True`
+   - `exit_loop()` called → `tool_context.actions.end_of_agent = True`
    - OR `max_iterations` reached
 
 **Tool Context Actions:**
 
 ```python
 def exit_loop(tool_context: ToolContext):
-    tool_context.actions.escalate = True  # THIS stops the loop!
-    return {}
+    tool_context.actions.end_of_agent = True  # THIS stops the loop!
+    return {"text": "Loop exited successfully. The agent has determined the task is complete."}
 ```
 
-When escalate=True, ADK stops the LoopAgent immediately.
+When end_of_agent=True, ADK stops the LoopAgent immediately.
 
 **State Overwriting Pattern:**
 
@@ -470,7 +478,7 @@ When escalate=True, ADK stops the LoopAgent immediately.
 
 ✅ **Safety net essential** - max_iterations prevents infinite loops
 
-✅ **Tool escalation** - `tool_context.actions.escalate = True` stops loop
+✅ **Tool escalation** - `tool_context.actions.end_of_agent = True` stops loop
 
 ## Best Practices
 
@@ -557,23 +565,22 @@ And you understand how to build iterative refinement systems!
 
 ## Complete Code Reference
 
-**essay_refiner/__init__.py**
+**Working Implementation**: See [`tutorial_implementation/tutorial07/`](../tutorial_implementation/tutorial07/) for a complete, tested version with comprehensive documentation.
 
-```python
-from . import agent
-```
+**🚀 Ready to run the code?** The implementation is fully functional with 22 passing tests. Just follow the Quick Start instructions below!
 
-**essay_refiner/.env**
+**Key Files:**
+- [`essay_refiner/agent.py`](../tutorial_implementation/tutorial07/essay_refiner/agent.py) - Complete LoopAgent orchestration with critic-refiner pattern
+- [`tests/test_agent.py`](../tutorial_implementation/tutorial07/tests/test_agent.py) - 22 comprehensive tests covering all functionality
+- [`README.md`](../tutorial_implementation/tutorial07/README.md) - Detailed implementation guide and architecture overview
+- [`Makefile`](../tutorial_implementation/tutorial07/Makefile) - Development commands for testing and deployment
 
+**Quick Start with Working Code:**
 ```bash
-GOOGLE_GENAI_USE_VERTEXAI=FALSE
-GOOGLE_API_KEY=your-api-key-here
-```
-
-**essay_refiner/agent.py**
-
-```python
-# See Step 3 above for complete code
+cd tutorial_implementation/tutorial07/
+make setup  # Install dependencies
+make test   # Run all tests (22 passing)
+make dev    # Start development server
 ```
 
 Congratulations! You've mastered iterative refinement with loop agents! 🎯🔄📝
