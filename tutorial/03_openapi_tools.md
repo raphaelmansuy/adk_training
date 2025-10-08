@@ -80,6 +80,8 @@ toolset = OpenAPIToolset(spec=api_spec)
 
 **API**: https://api.chucknorris.io/
 
+**Implementation**: [tutorial_implementation/tutorial03](../tutorial_implementation/tutorial03/) - Complete working example with tests
+
 ---
 
 ## Implementation
@@ -113,7 +115,7 @@ generate tools from an API specification without writing tool functions.
 """
 
 from google.adk.agents import Agent
-from google.adk.tools import OpenAPIToolset
+from google.adk.tools.openapi_tool import OpenAPIToolset
 
 # ============================================================================
 # OPENAPI SPECIFICATION
@@ -250,7 +252,7 @@ CHUCK_NORRIS_SPEC = {
 # - get_random_joke(category: Optional[str])
 # - search_jokes(query: str)
 # - get_categories()
-chuck_norris_toolset = OpenAPIToolset(spec=CHUCK_NORRIS_SPEC)
+chuck_norris_toolset = OpenAPIToolset(spec_dict=CHUCK_NORRIS_SPEC)
 
 # ============================================================================
 # AGENT DEFINITION
@@ -302,38 +304,6 @@ GOOGLE_GENAI_USE_VERTEXAI=FALSE
 GOOGLE_API_KEY=your_api_key_here
 ```
 
-**chuck_norris_agent/README.md**:
-```markdown
-# Chuck Norris Fact Assistant
-
-An agent demonstrating OpenAPIToolset usage with the Chuck Norris API.
-
-## Setup
-
-```bash
-pip install google-adk
-export GOOGLE_API_KEY=your_api_key_here
-```
-
-## Run
-
-```bash
-# Interactive web UI
-adk web chuck_norris_agent
-
-# Terminal
-adk run chuck_norris_agent
-```
-
-## Try
-
-- "Tell me a random Chuck Norris joke"
-- "Find jokes about programming"
-- "What categories are available?"
-- "Give me a random dev joke"
-```
-
----
 
 ## Running the Agent
 
@@ -497,6 +467,15 @@ async def search_jokes(query: str) -> Dict:
 
 ### 3. Agent Tool Usage
 
+The Agent constructor accepts toolsets directly - ADK handles the async tool loading internally:
+
+```python
+root_agent = Agent(
+    ...,
+    tools=[chuck_norris_toolset]  # Pass toolset directly, not get_tools()
+)
+```
+
 ```
 User: "Find jokes about code"
   ↓
@@ -605,7 +584,33 @@ OpenAPIToolset(
 4. Review agent instruction (does it mention the tool's purpose?)
 5. Check Events tab: Is LLM considering the tool?
 
-### Issue 2: Invalid API Response
+### Issue 2: Import Errors
+
+**Problem**: `ImportError: cannot import name 'OpenAPIToolset'`
+
+**Solutions**:
+1. Use correct import path: `from google.adk.tools.openapi_tool import OpenAPIToolset`
+2. Verify `google-adk` is installed: `pip install google-adk`
+3. Check ADK version compatibility
+
+### Issue 3: Constructor Parameter Errors
+
+**Problem**: `TypeError: OpenAPIToolset.__init__() got an unexpected keyword argument 'spec'`
+
+**Solutions**:
+1. Use `spec_dict` parameter instead of `spec`: `OpenAPIToolset(spec_dict=my_spec)`
+2. Verify the parameter name in your ADK version
+
+### Issue 4: Async Tool Loading Issues
+
+**Problem**: `ValidationError: Input should be a valid list [type=list_type, input_value=<coroutine object>]`
+
+**Solutions**:
+1. Pass the toolset directly: `tools=[my_toolset]` not `tools=my_toolset.get_tools()`
+2. `get_tools()` is async and returns a coroutine - let ADK handle tool loading internally
+3. If you need to access tools directly, await the call: `tools = await my_toolset.get_tools()`
+
+### Issue 5: Invalid API Response
 
 **Problem**: Tool returns error or unexpected data
 
