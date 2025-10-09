@@ -230,6 +230,7 @@ sidebar_label: Learning Paths
 - **Mental Models**: Core concepts and architectural patterns
 - **Tutorial Series**: 34 comprehensive implementation guides
 - **Research**: ADK source code analysis and examples
+- **ADK Cheat Sheet**: [Quick reference guide](adk-cheat-sheet.md) for commands, patterns, and troubleshooting
 
 ### Practice Projects
 

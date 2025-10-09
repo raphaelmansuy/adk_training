@@ -195,6 +195,12 @@ This mental models guide is organized into focused sections for optimal learning
 - Terminology definitions
 - Quick reference tables
 
+### [ADK Cheat Sheet →](adk-cheat-sheet.md)
+
+- Quick reference guide
+- Commands, patterns, and best practices
+- Troubleshooting and common issues
+
 ## 🎯 Key Principles & Rules of Thumb
 
 ### The 10 Commandments of ADK Development
