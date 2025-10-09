@@ -16,6 +16,7 @@ sidebar_label: Production & Deployment
 ## 🏭 Deployment Environments
 
 ### Local Development
+
 ```bash
 # Quick development testing
 adk web agent_name
@@ -25,6 +26,7 @@ adk run agent_name --config config.yaml
 ```
 
 ### Cloud Run (Serverless)
+
 ```bash
 # Deploy to Cloud Run
 adk deploy cloud_run agent_name
@@ -34,6 +36,7 @@ adk deploy cloud_run agent_name
 ```
 
 ### Vertex AI Agent Engine (Managed)
+
 ```bash
 # Enterprise deployment
 adk deploy agent_engine agent_name
@@ -43,6 +46,7 @@ adk deploy agent_engine agent_name
 ```
 
 ### GKE (Kubernetes)
+
 ```bash
 # Custom infrastructure
 adk deploy gke agent_name
@@ -55,6 +59,7 @@ adk deploy gke agent_name
 ## [CALLB] Observability & Monitoring
 
 ### Events (What Happened)
+
 ```python
 # Enable event logging
 runner = Runner(
@@ -69,6 +74,7 @@ runner = Runner(
 ```
 
 ### Tracing (Why It Happened)
+
 ```python
 # Detailed execution traces
 runner = Runner(
@@ -81,6 +87,7 @@ runner = Runner(
 ```
 
 ### Callbacks (Custom Monitoring)
+
 ```python
 def monitor_agent(context, result):
     # Custom metrics
@@ -94,6 +101,7 @@ agent = Agent(
 ```
 
 ### Evaluation (Quality Metrics)
+
 ```python
 # Automated testing
 adk eval agent_name --test-set my_tests.evalset.json
@@ -109,11 +117,13 @@ adk eval agent_name --test-set my_tests.evalset.json
 ## 💾 Service Configuration
 
 ### Development (InMemory)
+
 ```python
 runner = Runner()  # All services default to InMemory
 ```
 
 ### Production (Persistent)
+
 ```python
 runner = Runner(
     session_service=PostgresSessionService(uri="..."),

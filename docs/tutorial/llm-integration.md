@@ -52,6 +52,7 @@ sidebar_label: LLM Integration
 ### Instruction Patterns
 
 **Role-Based Instructions**:
+
 ```python
 # Clear role definition
 instruction = """
@@ -73,6 +74,7 @@ You are a research analyst specializing in:
 ```
 
 **Constraint-Based Instructions**:
+
 ```python
 # Behavioral constraints
 instruction = """
@@ -95,6 +97,7 @@ Response format:
 ```
 
 **State-Aware Instructions**:
+
 ```python
 # Dynamic context injection
 instruction = """
@@ -135,6 +138,7 @@ search_agent = Agent(
 ```
 
 **Grounding Patterns**:
+
 - **Factual Questions**: "What is the current population of Tokyo?"
 - **Current Events**: "What happened in the news today?"
 - **Real-time Data**: "What's the current stock price of AAPL?"
@@ -235,14 +239,14 @@ reasoning_agent = Agent(
 
 ### When to Use Each Approach
 
-| Scenario | Built-in Thinking | Plan-ReAct | None |
-|----------|------------------|------------|------|
-| Complex reasoning needed | ✅ | ✅ | ❌ |
-| Want visible reasoning | ✅ | ✅ | ❌ |
-| Multi-step problems | ✅ | ✅ | 🤔 |
-| Need replanning | ❌ | ✅ | ❌ |
-| Simple queries | ❌ | ❌ | ✅ |
-| Speed critical | ❌ | ❌ | ✅ |
+| Scenario                 | Built-in Thinking | Plan-ReAct | None |
+| ------------------------ | ----------------- | ---------- | ---- |
+| Complex reasoning needed | ✅                | ✅         | ❌   |
+| Want visible reasoning   | ✅                | ✅         | ❌   |
+| Multi-step problems      | ✅                | ✅         | 🤔   |
+| Need replanning          | ❌                | ✅         | ❌   |
+| Simple queries           | ❌                | ❌         | ✅   |
+| Speed critical           | ❌                | ❌         | ✅   |
 
 ---
 
@@ -260,7 +264,7 @@ conversational_agent = Agent(
     instruction="""
     You are a helpful assistant. Previous conversation:
     {conversation_history}
-    
+
     Current user: {user:name}
     Current task: {current_task}
     """,
@@ -310,7 +314,7 @@ robust_agent = Agent(
     - Web search if database is down
     - Simplified analysis if detailed data unavailable
     - Clear explanation of limitations
-    
+
     Always provide value even with partial information.
     """,
     tools=[primary_tool, fallback_tool]
@@ -418,14 +422,14 @@ def prune_context(history, max_tokens=4000):
     """Keep recent and relevant messages"""
     relevant = []
     total_tokens = 0
-    
+
     for msg in reversed(history):
         if total_tokens + len(msg) > max_tokens:
             break
         if is_relevant(msg):  # Custom relevance function
             relevant.insert(0, msg)
             total_tokens += len(msg)
-    
+
     return relevant
 
 # Efficient context usage
@@ -448,7 +452,7 @@ def get_cached_response(query):
     key = hash(query)
     if key in cache:
         return cache[key]
-    
+
     response = agent.run(query)
     cache[key] = response
     return response
@@ -468,6 +472,7 @@ def semantic_cache(query):
 ### Response Analysis
 
 **Track LLM Behavior**:
+
 ```python
 # Enable detailed logging
 import logging
@@ -487,6 +492,7 @@ for event in result.events:
 ### Prompt Iteration
 
 **A/B Testing Prompts**:
+
 ```python
 # Test different prompt versions
 prompts = {
@@ -504,14 +510,14 @@ for version, prompt in prompts.items():
 
 ### Common Issues & Solutions
 
-| Issue | Symptom | Solution |
-|-------|---------|----------|
-| Hallucinations | Makes up facts | Add grounding tools, fact-checking |
-| Verbose responses | Too much text | Set length limits, structured formats |
-| Off-topic answers | Ignores constraints | Clear instructions, role definitions |
-| Inconsistent style | Varies between responses | Consistent persona, examples |
-| Tool misuse | Wrong tool for task | Better tool descriptions, examples |
-| Context loss | Forgets conversation | State management, context injection |
+| Issue              | Symptom                  | Solution                              |
+| ------------------ | ------------------------ | ------------------------------------- |
+| Hallucinations     | Makes up facts           | Add grounding tools, fact-checking    |
+| Verbose responses  | Too much text            | Set length limits, structured formats |
+| Off-topic answers  | Ignores constraints      | Clear instructions, role definitions  |
+| Inconsistent style | Varies between responses | Consistent persona, examples          |
+| Tool misuse        | Wrong tool for task      | Better tool descriptions, examples    |
+| Context loss       | Forgets conversation     | State management, context injection   |
 
 ---
 

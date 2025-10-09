@@ -1,7 +1,7 @@
 # ADK Training Hub - Quick Start Makefile
 # User-friendly commands for the entire project
 
-.PHONY: help setup docs dev test clean tutorials
+.PHONY: help setup docs dev test clean tutorials format-md
 
 # Default target - show help
 help:
@@ -15,6 +15,7 @@ help:
 	@echo ""
 	@echo "Development Commands:"
 	@echo "  make test      - Run all tests across tutorials"
+	@echo "  make format-md - Format all markdown files"
 	@echo "  make clean     - Clean up all generated files"
 	@echo ""
 	@echo "📚 Documentation: https://raphaelmansuy.github.io/adk_training/"

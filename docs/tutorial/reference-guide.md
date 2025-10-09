@@ -68,14 +68,15 @@ refiner = LoopAgent(
 ## 🔧 Tool Implementations
 
 ### Function Tool
+
 ```python
 def search_database(query: str) -> Dict[str, Any]:
     """
     Search the database for relevant information.
-    
+
     Args:
         query: Search query string
-        
+
     Returns:
         Dict with status, report, and data
     """
@@ -95,6 +96,7 @@ def search_database(query: str) -> Dict[str, Any]:
 ```
 
 ### OpenAPI Tool
+
 ```python
 from google.adk.tools import OpenAPIToolset
 
@@ -112,6 +114,7 @@ agent = Agent(
 ```
 
 ### MCP Tool
+
 ```python
 from google.adk.tools import MCPToolset
 from google.adk.tools.mcp import StdioConnectionParams
@@ -130,6 +133,7 @@ filesystem_tools = MCPToolset(
 ## 💾 State Management
 
 ### State Scopes
+
 ```python
 # Session state (conversation-scoped)
 state['session:user_query'] = query
@@ -148,13 +152,14 @@ state['temp:cache'] = cached_data
 ```
 
 ### State Interpolation
+
 ```python
 agent = Agent(
     name="personalized_agent",
     instruction=f"""
-    Welcome back {state['user:name']}! 
+    Welcome back {state['user:name']}!
     Your last query was: {state['session:last_query']}
-    
+
     Current preferences: {state['user:preferences']}
     """,
     tools=[personalized_tools]
@@ -166,6 +171,7 @@ agent = Agent(
 ## 🚀 Deployment Configurations
 
 ### Local Development
+
 ```bash
 # Install ADK
 pip install google-adk
@@ -178,6 +184,7 @@ adk web agent_name
 ```
 
 ### Cloud Run Deployment
+
 ```python
 # Dockerfile
 FROM python:3.11-slim
@@ -199,6 +206,7 @@ gcloud run deploy agent-service \
 ```
 
 ### Vertex AI Agent Engine
+
 ```yaml
 # agent.yaml
 name: my-agent
@@ -218,6 +226,7 @@ adk deploy agent_engine --config agent.yaml
 ## 📊 Monitoring & Observability
 
 ### Event Tracking
+
 ```python
 from google.adk.observability import EventTracker
 
@@ -241,6 +250,7 @@ tracker.track_event(
 ```
 
 ### Error Handling
+
 ```python
 from google.adk.error_handling import ErrorHandler
 
@@ -261,27 +271,28 @@ def safe_agent_call(query):
 ## 🧪 Testing Patterns
 
 ### Unit Test Structure
+
 ```python
 import pytest
 from unittest.mock import Mock, patch
 
 class TestMyAgent:
-    
+
     def test_agent_initialization(self):
         agent = Agent(name="test", model="gemini-2.0-flash")
         assert agent.name == "test"
         assert agent.model == "gemini-2.0-flash"
-    
+
     @patch('google.adk.agents.Agent.run')
     def test_agent_response(self, mock_run):
         mock_run.return_value = {"response": "Hello!"}
-        
+
         agent = Agent(name="test")
         result = agent.run("Hi")
-        
+
         assert result["response"] == "Hello!"
         mock_run.assert_called_once_with("Hi")
-    
+
     def test_tool_execution(self):
         # Test tool functions in isolation
         result = search_database("test query")
@@ -290,22 +301,23 @@ class TestMyAgent:
 ```
 
 ### Integration Testing
+
 ```python
 class TestAgentIntegration:
-    
+
     def test_full_workflow(self):
         # Test complete agent workflows
         workflow = create_etl_pipeline()
         result = workflow.run(test_data)
-        
+
         assert result["status"] == "success"
         assert len(result["processed_data"]) > 0
-    
+
     def test_api_integration(self):
         # Test external API integrations
         with patch('requests.get') as mock_get:
             mock_get.return_value.json.return_value = {"weather": "sunny"}
-            
+
             result = weather_agent.run("What's the weather?")
             assert "sunny" in result["response"]
 ```
@@ -315,6 +327,7 @@ class TestAgentIntegration:
 ## ⚙️ Configuration Templates
 
 ### Environment Variables
+
 ```bash
 # .env file
 GOOGLE_API_KEY=your_api_key_here
@@ -325,6 +338,7 @@ LOG_LEVEL=INFO
 ```
 
 ### YAML Configuration
+
 ```yaml
 # config.yaml
 agent:
@@ -337,7 +351,7 @@ tools:
   - type: openapi
     url: https://api.example.com/swagger.json
     api_key: ${API_KEY}
-  
+
   - type: function
     name: search_database
     function: myapp.tools.search_database
@@ -362,32 +376,40 @@ monitoring:
 ## 🚨 Common Issues & Solutions
 
 ### Agent Not Responding
+
 **Problem**: Agent returns empty or null responses
 **Solutions**:
+
 - Check API key validity
 - Verify model name spelling
 - Ensure proper instruction formatting
 - Check rate limits
 
 ### Tool Execution Failures
+
 **Problem**: Tools return error status
 **Solutions**:
+
 - Validate tool function signatures
 - Check external service connectivity
 - Verify authentication credentials
 - Review error logs for details
 
 ### State Persistence Issues
+
 **Problem**: State not persisting between calls
 **Solutions**:
+
 - Use correct state scope prefixes
 - Check state backend configuration
 - Verify session/user identification
 - Review state serialization
 
 ### Performance Problems
+
 **Problem**: Slow response times
 **Solutions**:
+
 - Switch to faster models (flash variants)
 - Implement parallel processing
 - Add caching layers
@@ -399,37 +421,38 @@ monitoring:
 
 ### Core Classes
 
-| Class | Purpose | Key Methods |
-|-------|---------|-------------|
-| `Agent` | Basic agent implementation | `run()`, `run_async()` |
-| `SequentialAgent` | Ordered workflow execution | `add_agent()`, `run()` |
-| `ParallelAgent` | Concurrent task execution | `add_agent()`, `run()` |
-| `LoopAgent` | Iterative refinement | `set_max_iterations()`, `run()` |
-| `RemoteA2aAgent` | Distributed agent communication | `connect()`, `run()` |
+| Class             | Purpose                         | Key Methods                     |
+| ----------------- | ------------------------------- | ------------------------------- |
+| `Agent`           | Basic agent implementation      | `run()`, `run_async()`          |
+| `SequentialAgent` | Ordered workflow execution      | `add_agent()`, `run()`          |
+| `ParallelAgent`   | Concurrent task execution       | `add_agent()`, `run()`          |
+| `LoopAgent`       | Iterative refinement            | `set_max_iterations()`, `run()` |
+| `RemoteA2aAgent`  | Distributed agent communication | `connect()`, `run()`            |
 
 ### Tool Classes
 
-| Class | Purpose | Key Features |
-|-------|---------|--------------|
-| `FunctionTool` | Custom Python functions | Error handling, type hints |
-| `OpenAPIToolset` | REST API integration | Auto-generation, auth |
-| `MCPToolset` | Protocol-based tools | Interoperability, security |
-| `AgentTool` | Agent-as-tool pattern | Composition, delegation |
+| Class            | Purpose                 | Key Features               |
+| ---------------- | ----------------------- | -------------------------- |
+| `FunctionTool`   | Custom Python functions | Error handling, type hints |
+| `OpenAPIToolset` | REST API integration    | Auto-generation, auth      |
+| `MCPToolset`     | Protocol-based tools    | Interoperability, security |
+| `AgentTool`      | Agent-as-tool pattern   | Composition, delegation    |
 
 ### State Management
 
-| Scope | Lifetime | Use Case |
-|-------|----------|----------|
-| `session:` | Conversation | Context, history |
-| `user:` | User account | Preferences, settings |
-| `app:` | Application | Global config, features |
-| `temp:` | Request | Caching, temporary data |
+| Scope      | Lifetime     | Use Case                |
+| ---------- | ------------ | ----------------------- |
+| `session:` | Conversation | Context, history        |
+| `user:`    | User account | Preferences, settings   |
+| `app:`     | Application  | Global config, features |
+| `temp:`    | Request      | Caching, temporary data |
 
 ---
 
 ## 🎯 Quick Start Templates
 
 ### Hello World Agent
+
 ```python
 from google.adk.agents import Agent
 
@@ -447,6 +470,7 @@ if __name__ == "__main__":
 ```
 
 ### Tool-Enabled Agent
+
 ```python
 from google.adk.agents import Agent
 
@@ -463,6 +487,7 @@ agent = Agent(
 ```
 
 ### Workflow Agent
+
 ```python
 from google.adk.agents import SequentialAgent, Agent
 

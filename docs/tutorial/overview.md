@@ -22,27 +22,27 @@ sidebar_label: Overview
 Think of an AI agent like a **human office worker**:
 
 ```text
-┌─────────────────────────────────────────────────────────────┐
-│                        AI AGENT                             │
-│                                                             │
-│  [BRAIN] BRAIN (Model)        [MEM] MEMORY (Context)        │
-│  - Reasoning             - Short-term: Session State        │
-│  - Decision making       - Long-term: Memory Service        │
-│  - Language understanding - Working memory: temp: state     │
-│                                                             │
+┌───────────────────────────────────────────────────────────────┐
+│                        AI AGENT                               │
+│                                                               │
+│  [BRAIN] BRAIN (Model)        [MEM] MEMORY (Context)          │
+│  - Reasoning             - Short-term: Session State          │
+│  - Decision making       - Long-term: Memory Service          │
+│  - Language understanding - Working memory: temp: state       │
+│                                                               │
 │  [TOOLS] TOOLS (Capabilities) [INSTR] INSTRUCTIONS (Behavior) │
-│  - Search web            - Personality                      │
-│  - Execute code          - Rules & constraints              │
-│  - Call APIs             - Task guidance                    │
-│  - File operations       - Examples                         │
-│                                                             │
+│  - Search web            - Personality                        │
+│  - Execute code          - Rules & constraints                │
+│  - Call APIs             - Task guidance                      │
+│  - File operations       - Examples                           │
+│                                                               │
 │  [FLOW] WORKFLOWS (Process)   [CALLB] CALLBACKS (Supervision) │
-│  - Sequential steps      - Before/after hooks               │
-│  - Parallel tasks        - Guardrails                       │
-│  - Iterative loops       - Logging                          │
-│  - Dynamic routing       - Policy enforcement               │
-│                                                             │
-└─────────────────────────────────────────────────────────────┘
+│  - Sequential steps      - Before/after hooks                 │
+│  - Parallel tasks        - Guardrails                         │
+│  - Iterative loops       - Logging                            │
+│  - Dynamic routing       - Policy enforcement                 │
+│                                                               │
+└───────────────────────────────────────────────────────────────┘
 ```
 
 **Key Insight**: An agent is NOT just an LLM. It's a **complete system** with:
@@ -88,14 +88,14 @@ flowchart LR
 │                      AGENT TYPES                             │
 ├──────────────────────────────────────────────────────────────┤
 │                                                              │
-│ [BRAIN] LLM AGENT (Thinker)                                   │
+│ [BRAIN] LLM AGENT (Thinker)                                  │
 │    "I reason and decide dynamically"                         │
 │    - Powered by language model                               │
 │    - Flexible, creative, adaptive                            │
 │    - Uses: Conversations, analysis, creative tasks           │
 │    Source: agents/llm_agent.py                               │
 │                                                              │
-│ [FLOW] WORKFLOW AGENT (Manager)                                  │
+│ [FLOW] WORKFLOW AGENT (Manager)                              │
 │    "I follow a strict process"                               │
 │    - Deterministic execution                                 │
 │    - Orchestrates other agents                               │
@@ -250,4 +250,3 @@ This mental models guide is organized into focused sections for optimal learning
 **Maintenance**: Update as ADK evolves (weekly releases)
 
 **🏆 You now have the foundation to build exceptional AI agents with Google ADK!**
-

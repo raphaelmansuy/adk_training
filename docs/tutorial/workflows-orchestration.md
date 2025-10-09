@@ -106,6 +106,7 @@ content_pipeline = SequentialAgent(
 ### Sequential Workflow Execution
 
 **Execution Flow**:
+
 ```
 User Query → Research Agent → Writer Agent → Editor Agent → Final Result
 
@@ -120,6 +121,7 @@ User Query → Research Agent → Writer Agent → Editor Agent → Final Result
 ### Advanced Sequential Patterns
 
 **Conditional Branching**:
+
 ```python
 # Dynamic routing based on content type
 def route_by_topic(context, result):
@@ -201,6 +203,7 @@ parallel_research = ParallelAgent(
 ### Parallel Execution Flow
 
 **Fan-out → Execute → Gather**:
+
 ```
 User Query
     │
@@ -221,6 +224,7 @@ User Query
 ### Parallel with Sequential Merger
 
 **Complete Research Pipeline**:
+
 ```python
 # Parallel research phase
 parallel_research = ParallelAgent(
@@ -236,7 +240,7 @@ synthesis_agent = Agent(
     Web: {web_findings}
     Database: {db_findings}
     Experts: {expert_insights}
-    
+
     Create a comprehensive report.
     """,
     output_key="final_report"
@@ -273,13 +277,13 @@ critic_agent = Agent(
     model="gemini-2.5-flash",
     instruction="""
     Evaluate the content quality: {content_draft}
-    
+
     Rate on scale 1-10 for:
     - Accuracy
     - Completeness
     - Clarity
     - Engagement
-    
+
     If score < 8, provide specific improvement suggestions.
     """,
     output_key="critique"
@@ -292,7 +296,7 @@ refiner_agent = Agent(
     instruction="""
     Improve the content based on critique: {critique}
     Original: {content_draft}
-    
+
     Address all the critic's suggestions.
     """,
     output_key="improved_content"
@@ -309,6 +313,7 @@ quality_loop = LoopAgent(
 ### Loop Execution Flow
 
 **Generate → Critique → Refine → Repeat**:
+
 ```
 Initial Content
        │
@@ -335,6 +340,7 @@ Quality Check   │
 ### Advanced Loop Patterns
 
 **Conditional Exit**:
+
 ```python
 def should_continue_loop(context, result):
     """Custom exit condition"""
@@ -351,6 +357,7 @@ quality_loop = LoopAgent(
 ```
 
 **Multi-Agent Loop**:
+
 ```python
 # Complex iterative process
 brainstorm_agent = Agent(name="brainstormer", ...)
@@ -459,14 +466,14 @@ content_workflow = SequentialAgent(
 
 ### When to Use Each Pattern
 
-| Scenario | Sequential | Parallel | Loop |
-|----------|------------|----------|------|
-| Order matters | ✅ Yes | ❌ No | ❌ No |
-| Independent tasks | ❌ No | ✅ Yes | ❌ No |
-| Need speed | ❌ No | ✅ Yes | ❌ No |
-| Iterative refinement | ❌ No | ❌ No | ✅ Yes |
-| Quality > speed | ❌ No | ❌ No | ✅ Yes |
-| Dependencies | ✅ Yes | ❌ No | 🤔 Maybe |
+| Scenario             | Sequential | Parallel | Loop     |
+| -------------------- | ---------- | -------- | -------- |
+| Order matters        | ✅ Yes     | ❌ No    | ❌ No    |
+| Independent tasks    | ❌ No      | ✅ Yes   | ❌ No    |
+| Need speed           | ❌ No      | ✅ Yes   | ❌ No    |
+| Iterative refinement | ❌ No      | ❌ No    | ✅ Yes   |
+| Quality > speed      | ❌ No      | ❌ No    | ✅ Yes   |
+| Dependencies         | ✅ Yes     | ❌ No    | 🤔 Maybe |
 
 ### Workflow Selection Guide
 
@@ -502,11 +509,13 @@ Need to orchestrate multiple agents?
 ### Parallel Execution Benefits
 
 **Speed Improvements**:
+
 - **Independent Tasks**: 3x faster with 3 parallel agents
 - **I/O Bound**: Network requests, API calls, file operations
 - **CPU Bound**: Distribute across agents with different models
 
 **Cost Considerations**:
+
 - **Token Efficiency**: Same total tokens, faster execution
 - **Model Selection**: Use smaller models for parallel tasks
 - **Caching**: Cache intermediate results to avoid recomputation
@@ -514,6 +523,7 @@ Need to orchestrate multiple agents?
 ### Optimization Strategies
 
 **Batch Processing**:
+
 ```python
 # Process multiple items in parallel
 batch_processor = ParallelAgent(
@@ -531,6 +541,7 @@ sequential_processor = SequentialAgent(
 ```
 
 **Early Exit Optimization**:
+
 ```python
 # Stop when good enough
 quality_loop = LoopAgent(
@@ -547,6 +558,7 @@ quality_loop = LoopAgent(
 ### State Inspection
 
 **Track Data Flow**:
+
 ```python
 # Enable state logging
 import logging
@@ -563,6 +575,7 @@ for event in result.events:
 ### Workflow Visualization
 
 **Execution Graph**:
+
 ```python
 # Generate workflow diagram
 workflow_graph = content_pipeline.get_execution_graph()
@@ -575,13 +588,13 @@ print(performance_report)  # Timing, bottlenecks, optimization suggestions
 
 ### Common Issues & Solutions
 
-| Issue | Symptom | Solution |
-|-------|---------|----------|
-| State not passed | Agent can't access previous results | Check `output_key` and state interpolation |
-| Parallel slowdown | Sequential execution instead of parallel | Verify agents are truly independent |
-| Loop never exits | Infinite refinement cycles | Set `max_iterations`, add exit conditions |
-| Memory bloat | State growing too large | Use `temp:` scope, clean up intermediate data |
-| Race conditions | Non-deterministic results | Ensure proper state synchronization |
+| Issue             | Symptom                                  | Solution                                      |
+| ----------------- | ---------------------------------------- | --------------------------------------------- |
+| State not passed  | Agent can't access previous results      | Check `output_key` and state interpolation    |
+| Parallel slowdown | Sequential execution instead of parallel | Verify agents are truly independent           |
+| Loop never exits  | Infinite refinement cycles               | Set `max_iterations`, add exit conditions     |
+| Memory bloat      | State growing too large                  | Use `temp:` scope, clean up intermediate data |
+| Race conditions   | Non-deterministic results                | Ensure proper state synchronization           |
 
 ---
 

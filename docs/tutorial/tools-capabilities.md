@@ -22,7 +22,7 @@ sidebar_label: Tools & Capabilities
 │                      TOOL ECOSYSTEM                          │
 ├──────────────────────────────────────────────────────────────┤
 │                                                              │
-│ [TOOLS] FUNCTION TOOLS (Custom Skills)                        │
+│ [TOOLS] FUNCTION TOOLS (Custom Skills)                       │
 │    "Python functions = agent capabilities"                   │
 │    def search_database(query: str) -> dict:                  │
 │        return {...}                                          │
@@ -49,7 +49,7 @@ sidebar_label: Tools & Capabilities
 │    Use: Search, maps, code, enterprise data                  │
 │    Source: tools/google_*_tool.py                            │
 │                                                              │
-│ [FRAMEWORK] FRAMEWORK TOOLS (Third-party)                     │
+│ [FRAMEWORK] FRAMEWORK TOOLS (Third-party)                    │
 │    "100+ tools from LangChain/CrewAI"                        │
 │    LangchainTool(tool=TavilySearchResults())                 │
 │    CrewaiTool(tool=SerperDevTool(), name="search")           │
@@ -73,18 +73,18 @@ from google.adk.tools import FunctionTool
 def search_database(query: str, limit: int = 10) -> Dict[str, Any]:
     """
     Search the company database for relevant information.
-    
+
     Args:
         query: Search query string
         limit: Maximum number of results to return
-        
+
     Returns:
         Dict with search results and metadata
     """
     try:
         # Your custom logic here
         results = database.search(query, limit=limit)
-        
+
         return {
             'status': 'success',
             'report': f'Found {len(results)} results for "{query}"',
@@ -120,6 +120,7 @@ agent = Agent(
 ### Function Tool Best Practices
 
 **Return Format Standard**:
+
 ```python
 # Always return structured dict
 {
@@ -130,6 +131,7 @@ agent = Agent(
 ```
 
 **Error Handling**:
+
 ```python
 def robust_tool(param: str) -> Dict[str, Any]:
     try:
@@ -155,6 +157,7 @@ def robust_tool(param: str) -> Dict[str, Any]:
 ```
 
 **Tool Design Principles**:
+
 1. **Single Responsibility**: One tool, one clear purpose
 2. **Structured Returns**: Always return the standard format
 3. **Comprehensive Error Handling**: Handle all expected error cases
@@ -196,6 +199,7 @@ agent = Agent(
 ### OpenAPI Tool Features
 
 **Automatic Parameter Mapping**:
+
 ```python
 # API Spec: GET /repos/{owner}/{repo}/issues
 # Becomes tool: get_issues(owner: str, repo: str, state?: str)
@@ -206,6 +210,7 @@ agent = Agent(
 ```
 
 **Authentication Handling**:
+
 ```python
 # With API key
 api_tools = OpenAPIToolset(
@@ -231,6 +236,7 @@ api_tools = OpenAPIToolset(
 ### Common OpenAPI Patterns
 
 **CRUD Operations**:
+
 ```python
 # Database API
 db_tools = OpenAPIToolset(spec_url="https://db-api.company.com/spec.json")
@@ -270,6 +276,7 @@ AFTER MCP (Standardized Protocol)
 ### MCP Tool Usage
 
 **Stdio Connection (Local)**:
+
 ```python
 from google.adk.tools.mcp_tool import MCPToolset
 
@@ -299,6 +306,7 @@ agent = Agent(
 ```
 
 **HTTP Connection (Remote)**:
+
 ```python
 # Remote MCP server
 remote_tools = MCPToolset(
@@ -310,13 +318,13 @@ remote_tools = MCPToolset(
 
 ### MCP vs Custom Tools
 
-| Aspect | Custom Tools | MCP Tools |
-|--------|-------------|-----------|
-| Setup | Write Python code | Install MCP server |
-| Reusability | Single agent | Any agent |
-| Discovery | Manual | Automatic |
-| Authentication | Custom | Built-in OAuth2 |
-| Community | N/A | 100+ servers |
+| Aspect         | Custom Tools      | MCP Tools          |
+| -------------- | ----------------- | ------------------ |
+| Setup          | Write Python code | Install MCP server |
+| Reusability    | Single agent      | Any agent          |
+| Discovery      | Manual            | Automatic          |
+| Authentication | Custom            | Built-in OAuth2    |
+| Community      | N/A               | 100+ servers       |
 
 ---
 
@@ -346,6 +354,7 @@ search_agent = Agent(
 ```
 
 **Search Capabilities**:
+
 - Real-time web results
 - Factual grounding
 - Current events and data
@@ -471,6 +480,7 @@ User: "Check weather in SF, LA, NYC"
 ```
 
 **Performance Benefits**:
+
 - **Speed**: Independent tasks run in parallel
 - **Cost**: Same token cost, faster execution
 - **Scalability**: Handle multiple requests simultaneously
@@ -478,6 +488,7 @@ User: "Check weather in SF, LA, NYC"
 ### Parallel Tool Patterns
 
 **Fan-out/Fan-in**:
+
 ```python
 # Research multiple sources in parallel
 parallel_research = ParallelAgent(
@@ -526,15 +537,15 @@ Need a Capability?
 
 ### Tool Selection Matrix
 
-| Use Case | FunctionTool | OpenAPIToolset | MCPToolset | Built-in | Framework |
-|----------|-------------|----------------|------------|----------|-----------|
-| Custom business logic | ✅ | ❌ | ❌ | ❌ | ❌ |
-| REST API integration | ❌ | ✅ | ❌ | ❌ | ❌ |
-| File system access | ❌ | ❌ | ✅ | ❌ | ❌ |
-| Web search | ❌ | ❌ | ❌ | ✅ | ✅ |
-| Location services | ❌ | ❌ | ❌ | ✅ | ❌ |
-| Code execution | ❌ | ❌ | ❌ | ✅ | ❌ |
-| Existing tool reuse | ❌ | ❌ | ❌ | ❌ | ✅ |
+| Use Case              | FunctionTool | OpenAPIToolset | MCPToolset | Built-in | Framework |
+| --------------------- | ------------ | -------------- | ---------- | -------- | --------- |
+| Custom business logic | ✅           | ❌             | ❌         | ❌       | ❌        |
+| REST API integration  | ❌           | ✅             | ❌         | ❌       | ❌        |
+| File system access    | ❌           | ❌             | ✅         | ❌       | ❌        |
+| Web search            | ❌           | ❌             | ❌         | ✅       | ✅        |
+| Location services     | ❌           | ❌             | ❌         | ✅       | ❌        |
+| Code execution        | ❌           | ❌             | ❌         | ✅       | ❌        |
+| Existing tool reuse   | ❌           | ❌             | ❌         | ❌       | ✅        |
 
 ---
 
@@ -556,12 +567,12 @@ def test_tool():
     result = search_tool("test query")
     assert result['status'] == 'success'
     assert 'data' in result
-    
+
     # Test error case
     result = search_tool("")  # Invalid input
     assert result['status'] == 'error'
     assert 'error' in result
-    
+
     # Test edge cases
     result = search_tool("nonexistent")
     assert result['status'] == 'success'  # Valid query, no results
@@ -578,30 +589,30 @@ def comprehensive_tool(
 ) -> Dict[str, Any]:
     """
     Comprehensive search across multiple data sources.
-    
+
     This tool searches databases, APIs, and files to provide
     comprehensive results for user queries.
-    
+
     Args:
         query: Search query string (required)
         filters: Optional filters to narrow results
             - date_range: {"start": "2024-01-01", "end": "2024-12-31"}
             - categories: ["tech", "business"]
         limit: Maximum results to return (default: 100, max: 1000)
-    
+
     Returns:
         Dict containing:
         - status: "success" or "error"
         - report: Human-readable summary
         - data: Structured results with metadata
-        
+
     Examples:
         # Basic search
         tool("machine learning")
-        
+
         # Filtered search
         tool("AI trends", filters={"categories": ["tech"]}, limit=50)
-    
+
     Raises:
         No explicit exceptions - all errors returned in result dict
     """
@@ -638,10 +649,10 @@ def timed_tool(*args, **kwargs):
     start_time = time.time()
     result = original_tool(*args, **kwargs)
     duration = time.time() - start_time
-    
+
     # Log performance
     print(f"Tool execution: {duration:.2f}s")
-    
+
     # Add to result
     result['execution_time'] = duration
     return result
