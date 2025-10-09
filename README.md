@@ -15,7 +15,11 @@ This project provides a complete learning journey through Google ADK, featuring:
 
 > **📊 Completion Status: 12/34 tutorials implemented (35%)**
 
-## 📚 What's ADK?
+## � Documentation
+
+📚 **[View Interactive Documentation](https://raphaelmansuy.github.io/adk_training/)** - Complete tutorial series with working examples, mental models, and Mermaid diagrams
+
+## �📚 What's ADK?
 
 Google Agent Development Kit (ADK) is a powerful framework for building AI agents that combine:
 
