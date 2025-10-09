@@ -1,0 +1,54 @@
+{
+  "eval_set_id": "simple_kb_search_test",
+  "name": "Simple Knowledge Base Search Test",
+  "description": "Test for simple knowledge base search functionality",
+  "eval_cases": [
+    {
+      "eval_id": "password_reset_test",
+      "conversation": [
+        {
+          "invocation_id": "invocation_1",
+          "user_content": {
+            "role": "user",
+            "parts": [
+              {
+                "text": "How do I reset my password?"
+              }
+            ]
+          },
+          "final_response": {
+            "role": "model",
+            "parts": [
+              {
+                "text": "To reset your password, go to Settings > Security > Reset Password. You'll receive an email with reset instructions within 5 minutes."
+              }
+            ]
+          },
+          "intermediate_data": {
+            "tool_uses": [
+              {
+                "id": "call_1",
+                "name": "search_knowledge_base",
+                "args": {
+                  "query": "How do I reset my password?"
+                }
+              }
+            ],
+            "tool_responses": [
+              {
+                "id": "call_1",
+                "name": "search_knowledge_base",
+                "response": {
+                  "status": "success",
+                  "report": "Found password reset information",
+                  "data": "To reset your password, go to Settings > Security > Reset Password. You'll receive an email with reset instructions within 5 minutes."
+                }
+              }
+            ]
+          }
+        }
+      ]
+    }
+  ],
+  "creation_timestamp": 1759974000.0
+}

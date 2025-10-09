@@ -1,0 +1,100 @@
+{
+  "eval_set_id": "multi_turn_conversation_test",
+  "name": "Multi-turn Conversation Test",
+  "description": "Test for multi-turn conversation with follow-up ticket creation",
+  "eval_cases": [
+    {
+      "eval_id": "password_reset_followup_test",
+      "conversation": [
+        {
+          "invocation_id": "invocation_1",
+          "user_content": {
+            "role": "user",
+            "parts": [
+              {
+                "text": "How do I reset my password?"
+              }
+            ]
+          },
+          "final_response": {
+            "role": "model",
+            "parts": [
+              {
+                "text": "To reset your password, go to Settings > Security > Reset Password. You'll receive an email with reset instructions within 5 minutes."
+              }
+            ]
+          },
+          "intermediate_data": {
+            "tool_uses": [
+              {
+                "id": "call_1",
+                "name": "search_knowledge_base",
+                "args": {
+                  "query": "password reset"
+                }
+              }
+            ],
+            "tool_responses": [
+              {
+                "id": "call_1",
+                "name": "search_knowledge_base",
+                "response": {
+                  "status": "success",
+                  "report": "Found password reset information",
+                  "data": "To reset your password, go to Settings > Security > Reset Password. You'll receive an email with reset instructions within 5 minutes."
+                }
+              }
+            ]
+          }
+        },
+        {
+          "invocation_id": "invocation_2",
+          "user_content": {
+            "role": "user",
+            "parts": [
+              {
+                "text": "That didn't work, can you help me more?"
+              }
+            ]
+          },
+          "final_response": {
+            "role": "model",
+            "parts": [
+              {
+                "text": "I'll create a support ticket for you to get more personalized help with your password reset issue."
+              }
+            ]
+          },
+          "intermediate_data": {
+            "tool_uses": [
+              {
+                "id": "call_2",
+                "name": "create_ticket",
+                "args": {
+                  "issue": "Password reset not working",
+                  "priority": "normal"
+                }
+              }
+            ],
+            "tool_responses": [
+              {
+                "id": "call_2",
+                "name": "create_ticket",
+                "response": {
+                  "status": "success",
+                  "report": "Support ticket created",
+                  "data": {
+                    "ticket_id": "TICK-67890",
+                    "priority": "normal",
+                    "response_time": "48 hours"
+                  }
+                }
+              }
+            ]
+          }
+        }
+      ]
+    }
+  ],
+  "creation_timestamp": 1759974000.0
+}

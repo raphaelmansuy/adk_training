@@ -26,6 +26,33 @@ Learn how to systematically test and evaluate AI agents using pytest and FastAPI
 
 ---
 
+## Quick Start
+
+The easiest way to get started is with our working implementation:
+
+```bash
+cd tutorial_implementation/tutorial10
+make setup
+make dev
+```
+
+Then open `http://localhost:8000` in your browser!
+
+**What You'll Get**:
+
+- Complete customer support agent with 3 tools
+- 28 comprehensive tests (19 passing unit tests)
+- Evaluation framework with test files
+- Production-ready patterns and documentation
+
+**Links**:
+
+- **[Working Implementation](tutorial_implementation/tutorial10/)** - Complete code and tests
+- **[Test Results](tutorial_implementation/tutorial10/README.md#test-results)** - Expected output
+- **[Demo Prompts](tutorial_implementation/tutorial10/README.md#demo-prompts)** - Try these examples
+
+---
+
 ## Prerequisites
 
 - Python 3.9+

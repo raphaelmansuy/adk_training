@@ -1,0 +1,59 @@
+{
+  "eval_set_id": "ticket_creation_test",
+  "name": "Ticket Creation Test",
+  "description": "Test for ticket creation workflow with knowledge base search",
+  "eval_cases": [
+    {
+      "eval_id": "urgent_account_lock_test",
+      "conversation": [
+        {
+          "invocation_id": "invocation_1",
+          "user_content": {
+            "role": "user",
+            "parts": [
+              {
+                "text": "My account is completely locked and I can't access anything. This is urgent!"
+              }
+            ]
+          },
+          "final_response": {
+            "role": "model",
+            "parts": [
+              {
+                "text": "I've created a high-priority ticket (TICK-*) to address your account lockout. The expected response time is 4 hours."
+              }
+            ]
+          },
+          "intermediate_data": {
+            "tool_uses": [
+              {
+                "id": "call_1",
+                "name": "create_ticket",
+                "args": {
+                  "issue": "Account locked and inaccessible",
+                  "priority": "urgent"
+                }
+              }
+            ],
+            "tool_responses": [
+              {
+                "id": "call_1",
+                "name": "create_ticket",
+                "response": {
+                  "status": "success",
+                  "report": "Urgent priority ticket created",
+                  "data": {
+                    "ticket_id": "TICK-12345",
+                    "priority": "urgent",
+                    "response_time": "4 hours"
+                  }
+                }
+              }
+            ]
+          }
+        }
+      ]
+    }
+  ],
+  "creation_timestamp": 1759974000.0
+}
