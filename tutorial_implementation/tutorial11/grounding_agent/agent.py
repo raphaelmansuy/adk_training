@@ -5,16 +5,63 @@ This agent demonstrates web grounding capabilities using Google Search
 and other built-in ADK tools for accessing current information.
 """
 
-from typing import Dict, Any
+import os
+from typing import Dict, Any, List
 from datetime import datetime
 
 from google.adk.agents import Agent
 from google.adk.tools import (
     google_search,
+    google_maps_grounding,
     FunctionTool
 )
 from google.adk.tools.tool_context import ToolContext
 from google.genai import types
+
+
+# ============================================================================
+# ENVIRONMENT DETECTION & TOOL CONFIGURATION
+# ============================================================================
+
+def is_vertexai_enabled() -> bool:
+    """
+    Check if VertexAI is enabled via environment variable.
+
+    Returns:
+        True if GOOGLE_GENAI_USE_VERTEXAI=1, False otherwise
+    """
+    return os.environ.get('GOOGLE_GENAI_USE_VERTEXAI') == '1'
+
+
+def get_available_grounding_tools() -> List:
+    """
+    Get available grounding tools based on environment configuration.
+
+    Returns:
+        List of available grounding tools
+    """
+    tools = [google_search]  # Always available
+
+    # Add maps grounding only if VertexAI is enabled
+    if is_vertexai_enabled():
+        tools.append(google_maps_grounding)
+
+    return tools
+
+
+def get_agent_capabilities_description() -> str:
+    """
+    Get description of agent capabilities based on available tools.
+
+    Returns:
+        String describing available capabilities
+    """
+    capabilities = ["web search for current information"]
+
+    if is_vertexai_enabled():
+        capabilities.append("location-based queries and maps grounding")
+
+    return " and ".join(capabilities)
 
 
 # ============================================================================
@@ -114,21 +161,22 @@ def save_research_findings(
 # GROUNDING AGENTS
 # ============================================================================
 
-# Basic grounding agent with google_search only
+# Basic grounding agent with dynamic tool selection
 basic_grounding_agent = Agent(
     name="basic_grounding_agent",
     model="gemini-2.0-flash",
-    description="Basic web grounding agent using Google Search",
-    instruction="""You are a web research assistant with access to current information via Google Search.
+    description="Basic web grounding agent with conditional maps support",
+    instruction=f"""You are a web research assistant with access to {get_agent_capabilities_description()}.
 
 When asked questions:
 1. Use google_search to find current, accurate information
-2. Provide clear, factual answers based on search results
-3. Always cite that information comes from web search
-4. If information seems outdated or uncertain, mention this
+{"2. Use google_maps_grounding for location-based queries when available" if is_vertexai_enabled() else ""}
+{("3. " if is_vertexai_enabled() else "2. ")}Provide clear, factual answers based on search results
+{("4. " if is_vertexai_enabled() else "3. ")}Always cite that information comes from web search
+{("5. " if is_vertexai_enabled() else "4. ")}If information seems outdated or uncertain, mention this
 
 Be helpful, accurate, and indicate when you're using search capabilities.""",
-    tools=[google_search],
+    tools=get_available_grounding_tools(),
     output_key="grounding_response"
 )
 
@@ -136,18 +184,18 @@ Be helpful, accurate, and indicate when you're using search capabilities.""",
 advanced_grounding_agent = Agent(
     name="advanced_grounding_agent",
     model="gemini-2.0-flash",
-    description="Advanced grounding agent with search and analysis tools",
-    instruction="""You are an advanced research assistant with web search and analysis capabilities.
+    description="Advanced grounding agent with search, analysis, and conditional maps tools",
+    instruction=f"""You are an advanced research assistant with {get_agent_capabilities_description()} and analysis capabilities.
 
 For research tasks:
 1. Use google_search to find current information
-2. Use analyze_search_results to process and summarize findings
-3. Use save_research_findings to preserve important research
-4. Provide a comprehensive summary
+{"2. Use google_maps_grounding for location-based research when available" if is_vertexai_enabled() else ""}
+{("3. " if is_vertexai_enabled() else "2. ")}Use analyze_search_results to process and summarize findings
+{("4. " if is_vertexai_enabled() else "3. ")}Use save_research_findings to preserve important research
+{("5. " if is_vertexai_enabled() else "4. ")}Provide a comprehensive summary
 
 Always be thorough, cite your sources, and explain your process.""",
-    tools=[
-        google_search,  # Will work alone
+    tools=get_available_grounding_tools() + [
         FunctionTool(analyze_search_results),
         FunctionTool(save_research_findings)
     ],
@@ -155,19 +203,21 @@ Always be thorough, cite your sources, and explain your process.""",
 )
 
 # Research assistant - focuses on analysis capabilities
-# Demonstrates custom tools that would work with search in future versions
+# Demonstrates custom tools that work with grounding tools
 research_assistant = Agent(
     name="research_assistant",
     model="gemini-2.0-flash",
-    description="Research assistant with analysis and documentation tools",
-    instruction="""You are a research assistant specializing in analyzing and documenting information.
+    description="Research assistant with analysis, documentation, and conditional maps tools",
+    instruction=f"""You are a research assistant specializing in analyzing and documenting information.
 
 Your capabilities:
+- **Web Research**: Access to {get_agent_capabilities_description()}
 - **Analysis**: Use analyze_search_results to process and analyze content
 - **Documentation**: Use save_research_findings to preserve research
+{"- **Location Research**: Use google_maps_grounding for geographic queries when available" if is_vertexai_enabled() else ""}
 
 Research Process:
-1. Analyze provided information using analyze_search_results
+1. {"Use google_search and google_maps_grounding to gather information when available, otherwise " if is_vertexai_enabled() else ""}Analyze provided information using analyze_search_results
 2. Synthesize findings into clear, actionable insights
 3. Document important research using save_research_findings
 
@@ -176,8 +226,8 @@ Guidelines:
 - Provide timestamps for time-sensitive information
 - Save significant findings for future reference
 
-Note: Web search integration will be added once ADK supports mixing built-in and custom tools.""",
-    tools=[
+Note: Full web search integration available when VertexAI is enabled.""",
+    tools=get_available_grounding_tools() + [
         FunctionTool(analyze_search_results),
         FunctionTool(save_research_findings)
     ],
@@ -189,4 +239,5 @@ Note: Web search integration will be added once ADK supports mixing built-in and
 )
 
 # Default agent (used by ADK web interface)
-root_agent = basic_grounding_agent
+# Use advanced agent if VertexAI is enabled (includes maps grounding), otherwise basic agent
+root_agent = advanced_grounding_agent if is_vertexai_enabled() else basic_grounding_agent
