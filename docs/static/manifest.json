@@ -1,0 +1,110 @@
+{
+  "name": "ADK Training Hub",
+  "short_name": "ADK Hub",
+  "description": "Master Google Agent Development Kit from first principles to production deployment. Build intelligent AI agents with comprehensive tutorials and hands-on examples.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#25c2a0",
+  "orientation": "portrait-primary",
+  "categories": ["education", "developer tools", "productivity"],
+  "lang": "en-US",
+  "dir": "ltr",
+  "icons": [
+    {
+      "src": "/img/ADK-72.png",
+      "sizes": "72x72",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/img/ADK-96.png",
+      "sizes": "96x96",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/img/ADK-128.png",
+      "sizes": "128x128",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/img/ADK-144.png",
+      "sizes": "144x144",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/img/ADK-152.png",
+      "sizes": "152x152",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/img/ADK-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/img/ADK-384.png",
+      "sizes": "384x384",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/img/ADK-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "screenshots": [
+    {
+      "src": "/img/docusaurus-social-card.jpg",
+      "sizes": "1200x630",
+      "type": "image/jpeg",
+      "form_factor": "wide",
+      "label": "ADK Training Hub Homepage"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Tutorial Index",
+      "short_name": "Tutorials",
+      "description": "Browse all available ADK tutorials",
+      "url": "/docs/tutorial_index",
+      "icons": [
+        {
+          "src": "/img/ADK-96.png",
+          "sizes": "96x96"
+        }
+      ]
+    },
+    {
+      "name": "Mental Models",
+      "short_name": "Models",
+      "description": "Learn ADK mental frameworks",
+      "url": "/docs/overview",
+      "icons": [
+        {
+          "src": "/img/ADK-96.png",
+          "sizes": "96x96"
+        }
+      ]
+    },
+    {
+      "name": "Hello World Agent",
+      "short_name": "Start Here",
+      "description": "Begin your ADK journey",
+      "url": "/docs/hello_world_agent",
+      "icons": [
+        {
+          "src": "/img/ADK-96.png",
+          "sizes": "96x96"
+        }
+      ]
+    }
+  ]
+}
