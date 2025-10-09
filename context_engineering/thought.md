@@ -1182,7 +1182,7 @@ During debugging of Tutorial 02, encountered persistent "Failed to load agents" 
 
 ### Deep Investigation Process
 
-1. **Source Code Analysis**: Examined `research/adk-python/src/google/adk/cli/` for agent loading logic
+1. **Source Code Analysis**: Examined `https://github.com/google/adk-python/blob/main/src/google/adk/cli/` for agent loading logic
 2. **Pattern Recognition**: Compared working Tutorial 01 vs failing Tutorial 02
 3. **Directory Structure Analysis**: Tested `adk web` from different locations
 4. **Error Reproduction**: Verified exact failure conditions
@@ -1259,7 +1259,7 @@ This discovery affects **ALL ADK tutorials** - they must document running `adk w
 
 ### Source Verification
 
-- **Confirmed in**: `research/adk-python/src/google/adk/cli/fast_api.py`
+- **Confirmed in**: `https://github.com/google/adk-python/blob/main/src/google/adk/cli/fast_api.py`
 - **Agent loading logic**: Scans subdirectories for `root_agent` variables
 - **Directory requirement**: Must be run from parent of agent folders
 
@@ -1297,7 +1297,7 @@ Never assume intuitive behavior with ADK. Always verify against source code. Thi
 
 **Phase 1A: Source Code Investigation** 🔄 STARTING NOW
 
-- Explore `research/adk-python/src/google/adk/cli/` for server patterns
+- Explore `https://github.com/google/adk-python/blob/main/src/google/adk/cli/` for server patterns
 - Examine FastAPI integration in `adk_web_server.py`
 - Study `api_server.py` for REST API patterns
 - Review Live API implementation for WebSocket patterns

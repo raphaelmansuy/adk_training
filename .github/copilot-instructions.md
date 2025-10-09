@@ -165,7 +165,7 @@ loop_agent = LoopAgent(
 - `tutorial_implementation/`: Executable code for each tutorial
 - `research/`: ADK source code analysis and integration examples
 - `test_tutorials/`: Automated testing framework with 70+ tests
-- `research/adk-python/`: Official ADK source code and documentation
+- `https://github.com/google/adk-python`: Official ADK source code and documentation
 
 ## Deployment Options
 

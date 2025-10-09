@@ -2367,7 +2367,7 @@ pip install google-adk
 pip install git+https://github.com/google/adk-python.git@main
 ```
 
-**Source Code**: `research/adk-python/` (local copy for research)
+**Source Code**: `https://github.com/google/adk-python` (official GitHub repository)
 
 **Official Documentation**: https://google.github.io/adk-docs/
 
@@ -3695,7 +3695,7 @@ from google.adk.tools.langchain_tool import LangchainTool
 
 - **Purpose**: Synthesize ALL ADK + GenAI concepts into clear mental frameworks
 - **Audience**: Developers learning ADK (beginner to advanced)
-- **Source of Truth**: `research/adk-python/` + Official docs + 28 tutorials
+- **Source of Truth**: `https://github.com/google/adk-python` + Official docs + 28 tutorials
 - **Emphasis**: "exception high stake mission, work non stop to achieve it"
 
 ### Approach

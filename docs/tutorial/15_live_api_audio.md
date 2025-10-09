@@ -987,7 +987,7 @@ You've mastered the Live API for real-time voice interactions:
 
 - [Live API Documentation](https://cloud.google.com/vertex-ai/generative-ai/docs/model-reference/gemini-live)
 - [Audio Configuration Guide](https://cloud.google.com/vertex-ai/generative-ai/docs/speech)
-- [Sample: live_bidi_streaming_single_agent](research/adk-python/contributing/samples/live_bidi_streaming_single_agent/)
+- [Sample: live_bidi_streaming_single_agent](https://github.com/google/adk-python/tree/main/contributing/samples/live_bidi_streaming_single_agent/)
 
 ---
 

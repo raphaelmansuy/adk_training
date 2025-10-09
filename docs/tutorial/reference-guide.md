@@ -508,7 +508,7 @@ workflow = SequentialAgent(
 
 ## 🔗 Additional Resources
 
-- **Official Documentation**: `research/adk-python/docs/`
+- **Official Documentation**: `https://github.com/google/adk-python/tree/main/docs`
 - **Tutorial Implementations**: `tutorial_implementation/`
 - **Research & Examples**: `research/`
 - **Community Forums**: GitHub Issues, Stack Overflow

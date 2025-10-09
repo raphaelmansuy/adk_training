@@ -73,7 +73,7 @@ flowchart LR
     style G fill:#FFE5F5,stroke:#FF6B9D,stroke-width:2px,color:#000
 ```
 
-**Source**: `research/adk-python/src/google/adk/agents/base_agent.py`
+**Source**: `https://github.com/google/adk-python/blob/main/src/google/adk/agents/base_agent.py`
 
 ---
 
@@ -258,7 +258,7 @@ This mental models guide is organized into focused sections for optimal learning
 
 **Reference**: Check the [Glossary](glossary.md) for definitions of key ADK terms and concepts.
 
-**Source Code**: All mental models are derived from the official ADK source code in `research/adk-python/`. When in doubt, refer to the source code for truth.
+**Source Code**: All mental models are derived from the official ADK source code in `https://github.com/google/adk-python`. When in doubt, refer to the source code for truth.
 
 ---
 
@@ -266,7 +266,7 @@ This mental models guide is organized into focused sections for optimal learning
 
 **Created**: 2025-01-26
 **Version**: 1.0
-**Source**: Research from `research/adk-python/` + 28 comprehensive tutorials
+**Source**: Research from `https://github.com/google/adk-python` + 28 comprehensive tutorials
 **Purpose**: Mental models for mastering Google ADK and Generative AI
 **Audience**: Developers learning ADK from beginner to advanced
 **Maintenance**: Update as ADK evolves (weekly releases)

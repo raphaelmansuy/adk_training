@@ -61,13 +61,16 @@ Successfully created a comprehensive ADK Cheat Sheet with 700+ lines covering al
 - **Documentation Completeness**: Fills gap between tutorials and API docs
 
 ## Source of Truth
+
 All information derived from:
-- Official ADK source code in `research/adk-python/`
+
+- Official ADK source code in `https://github.com/google/adk-python`
 - 34 tutorial implementations
 - Google ADK documentation (v1.15)
 - Production deployment patterns
 
 ## Next Steps
+
 - Monitor usage and gather feedback
 - Update as ADK evolves
 - Consider adding more advanced examples

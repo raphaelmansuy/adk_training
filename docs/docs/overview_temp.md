@@ -11,7 +11,7 @@ image: /img/docusaurus-social-card.jpg
 
 **🎯 Purpose**: A comprehensive mental framework for understanding Google Agent Development Kit (ADK) and Generative AI concepts from first principles.
 
-**📚 Source of Truth**: `research/adk-python/` + Official Google Documentation + 34 Tutorials
+**📚 Source of Truth**: `https://github.com/google/adk-python` + Official Google Documentation + 34 Tutorials
 
 **🎓 Status**: Complete mental model synthesis covering all ADK patterns and Generative AI fundamentals
 
@@ -75,7 +75,7 @@ flowchart LR
     style G fill:#FFE5F5,stroke:#FF6B9D,stroke-width:2px,color:#000
 ```
 
-**Source**: `research/adk-python/src/google/adk/agents/base_agent.py`
+**Source**: `https://github.com/google/adk-python/blob/main/src/google/adk/agents/base_agent.py`
 
 ---
 
@@ -147,7 +147,7 @@ Checker  Gatherer Team  Team  Check
 - **Invocation Context**: Children inherit parent's context
 - **Communication**: Via state keys, transfer_to_agent, or AgentTool
 
-**Source**: `research/adk-python/src/google/adk/agents/base_agent.py` (parent/child relationships)
+**Source**: `https://github.com/google/adk-python/blob/main/src/google/adk/agents/base_agent.py` (parent/child relationships)
 
 ### 3. The State vs Memory Model
 
@@ -208,7 +208,7 @@ flowchart TD
 - **Use Memory for**: Long-term knowledge, historical patterns, learned preferences
 - **Use Artifacts for**: Files, binary data, large content
 
-**Source**: `research/adk-python/src/google/adk/sessions/`
+**Source**: `https://github.com/google/adk-python/tree/main/src/google/adk/sessions/`
 
 ---
 
@@ -308,7 +308,7 @@ User: "Check weather in SF, LA, NYC"
 
 **Key Insight**: ADK automatically parallelizes multiple tool calls via `asyncio.gather()`
 
-**Source**: `research/adk-python/src/google/adk/flows/llm_flows/functions.py`
+**Source**: `https://github.com/google/adk-python/blob/main/src/google/adk/flows/llm_flows/functions.py`
 
 ---
 
@@ -462,7 +462,7 @@ quality_loop = LoopAgent(
 )
 ```
 
-**Source**: `research/adk-python/src/google/adk/agents/workflow_agents/`
+**Source**: `https://github.com/google/adk-python/tree/main/src/google/adk/agents/workflow_agents/`
 
 ---
 
@@ -541,7 +541,7 @@ Use tools when needed.
 """
 ```
 
-**Source**: `research/adk-python/src/google/adk/agents/agent.py` (instruction parameter)
+**Source**: `https://github.com/google/adk-python/blob/main/src/google/adk/agents/agent.py` (instruction parameter)
 
 ### 7. The Grounding = Real-World Connection Model
 
@@ -601,7 +601,7 @@ Need current information?
 
 **Key Insight**: Without grounding, LLMs hallucinate. With grounding, they cite facts.
 
-**Source**: `research/adk-python/src/google/adk/tools/google_*_tool.py`
+**Source**: `https://github.com/google/adk-python/tree/main/src/google/adk/tools/google_*_tool.py`
 
 ### 8. The Thinking = Reasoning Process Model
 
@@ -666,7 +666,7 @@ Need current information?
 | Simple queries           | ❌             | ❌               | ✅   |
 | Speed critical           | ❌             | ❌               | ✅   |
 
-**Source**: `research/adk-python/src/google/adk/planners/`
+**Source**: `https://github.com/google/adk-python/tree/main/src/google/adk/planners/`
 
 ---
 
@@ -744,7 +744,7 @@ runner = Runner(
 )
 ```
 
-**Source**: `research/adk-python/src/google/adk/cli/cli_deploy.py`
+**Source**: `https://github.com/google/adk-python/blob/main/src/google/adk/cli/cli_deploy.py`
 
 ### 10. The Observability = Visibility Model
 
@@ -811,7 +811,7 @@ Production:
   └─ Cloud Trace + Callbacks + Eval (full observability)
 ```
 
-**Source**: `research/adk-python/src/google/adk/events/`, `research/adk-python/src/google/adk/evaluation/`
+**Source**: `https://github.com/google/adk-python/tree/main/src/google/adk/events/`, `https://github.com/google/adk-python/tree/main/src/google/adk/evaluation/`
 
 ---
 
@@ -876,7 +876,7 @@ Production:
 | Long responses     | SSE  | User sees progress       |
 | Interactive dialog | BIDI | Back-and-forth           |
 
-**Source**: `research/adk-python/src/google/adk/models/gemini_llm_connection.py`
+**Source**: `https://github.com/google/adk-python/blob/main/src/google/adk/models/gemini_llm_connection.py`
 
 ### 12. The MCP = Standardized Tool Protocol Model
 
@@ -941,7 +941,7 @@ mcp_tools = MCPToolset(
 | Authentication | Custom            | Built-in OAuth2    |
 | Community      | N/A               | 100+ servers       |
 
-**Source**: `research/adk-python/src/google/adk/tools/mcp_tool/`
+**Source**: `https://github.com/google/adk-python/tree/main/src/google/adk/tools/mcp_tool/`
 
 ### 13. The A2A = Agent Collaboration Model
 
@@ -1016,7 +1016,7 @@ local_agent = Agent(
 #   → Local agent uses results
 ```
 
-**Source**: `research/adk-python/src/google/adk/agents/remote_a2a_agent.py`
+**Source**: `https://github.com/google/adk-python/blob/main/src/google/adk/agents/remote_a2a_agent.py`
 
 ---
 
@@ -1320,7 +1320,7 @@ START: What are you building?
 **Quick reference to find truth in source code**:
 
 ```
-research/adk-python/src/google/adk/
+https://github.com/google/adk-python/blob/main/src/google/adk/
 ├── agents/
 │   ├── agent.py                    ← Agent class (main)
 │   ├── llm_agent.py                ← LLM-powered agents (legacy)
@@ -1450,7 +1450,7 @@ research/adk-python/src/google/adk/
 
 **Created**: 2025-01-26
 **Version**: 1.0
-**Source**: Research from `research/adk-python/` + 28 comprehensive tutorials
+**Source**: Research from `https://github.com/google/adk-python` + 28 comprehensive tutorials
 **Purpose**: Mental models for mastering Google ADK and Generative AI
 **Audience**: Developers learning ADK from beginner to advanced
 **Maintenance**: Update as ADK evolves (weekly releases)

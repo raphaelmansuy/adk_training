@@ -981,7 +981,7 @@ You've mastered Agent-to-Agent communication:
 **Resources**:
 
 - [A2A Protocol Specification](https://google.github.io/adk-docs/a2a/)
-- [Sample: a2a_auth](research/adk-python/contributing/samples/a2a_auth/)
+- [Sample: a2a_auth](https://github.com/google/adk-python/tree/main/contributing/samples/a2a_auth/)
 - [Agent Card Schema](https://google.github.io/adk-docs/a2a/agent-card/)
 
 ---

@@ -1447,7 +1447,7 @@ You've mastered MCP integration and authentication for extended agent capabiliti
 
 - [MCP Specification](https://spec.modelcontextprotocol.io/)
 - [Official MCP Servers](https://github.com/modelcontextprotocol/servers)
-- [Sample: mcp_stdio_server_agent](research/adk-python/contributing/samples/mcp_stdio_server_agent/)
+- [Sample: mcp_stdio_server_agent](https://github.com/google/adk-python/tree/main/contributing/samples/mcp_stdio_server_agent/)
 
 ---
 
