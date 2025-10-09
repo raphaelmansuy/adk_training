@@ -34,6 +34,7 @@ const sidebars: SidebarsConfig = {
         'decision-frameworks',
         'learning-paths',
         'reference-guide',
+        'contact',
       ],
     },
     {

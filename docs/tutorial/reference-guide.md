@@ -513,5 +513,6 @@ workflow = SequentialAgent(
 - **Research & Examples**: `research/`
 - **Community Forums**: GitHub Issues, Stack Overflow
 - **API Reference**: Inline code documentation
+- **[Contact the Author](contact.md)**: Get in touch with Raphaël MANSUY
 
 **🎯 This completes the Mental Models section. Return to the [main overview](overview.md) for navigation.**

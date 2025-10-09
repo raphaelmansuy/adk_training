@@ -164,6 +164,15 @@ const config: Config = {
             },
           ],
         },
+        {
+          title: 'Contact',
+          items: [
+            {
+              label: 'Contact the Author',
+              to: '/docs/contact',
+            },
+          ],
+        },
       ],
       copyright: `Copyright © ${new Date().getFullYear()} ADK Training Project. Built with Docusaurus.`,
     },
