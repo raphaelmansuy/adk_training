@@ -51,7 +51,7 @@ Welcome to the most comprehensive Google Agent Development Kit (ADK) tutorial se
 Master the foundations of agent development.
 
 #### Tutorial 01: Hello World Agent
-**File**: `tutorial/01_hello_world_agent.md` (438 lines)
+**File**: `docs/tutorial/01_hello_world_agent.md` (438 lines)
 
 **You'll Learn**:
 - Agent class basics
@@ -66,7 +66,7 @@ Master the foundations of agent development.
 ---
 
 #### Tutorial 02: Function Tools
-**File**: `tutorial/02_function_tools.md` (437 lines)
+**File**: `docs/tutorial/02_function_tools.md` (437 lines)
 
 **You'll Learn**:
 - Custom Python functions as tools
@@ -81,7 +81,7 @@ Master the foundations of agent development.
 ---
 
 #### Tutorial 03: OpenAPI Tools
-**File**: `tutorial/03_openapi_tools.md` (730 lines)
+**File**: `docs/tutorial/03_openapi_tools.md` (730 lines)
 
 **You'll Learn**:
 - OpenAPIToolset usage
@@ -100,7 +100,7 @@ Master the foundations of agent development.
 Build sophisticated multi-agent workflows.
 
 #### Tutorial 04: Sequential Workflows
-**File**: `tutorial/04_sequential_workflows.md` (600 lines)
+**File**: `docs/tutorial/04_sequential_workflows.md` (600 lines)
 
 **You'll Learn**:
 - SequentialAgent orchestration
@@ -115,7 +115,7 @@ Build sophisticated multi-agent workflows.
 ---
 
 #### Tutorial 05: Parallel Processing
-**File**: `tutorial/05_parallel_processing.md` (550 lines)
+**File**: `docs/tutorial/05_parallel_processing.md` (550 lines)
 
 **You'll Learn**:
 - ParallelAgent execution
@@ -130,7 +130,7 @@ Build sophisticated multi-agent workflows.
 ---
 
 #### Tutorial 06: Multi-Agent Systems
-**File**: `tutorial/06_multi_agent_systems.md` (650 lines)
+**File**: `docs/tutorial/06_multi_agent_systems.md` (650 lines)
 
 **You'll Learn**:
 - Nested orchestration
@@ -149,7 +149,7 @@ Build sophisticated multi-agent workflows.
 Master production-ready features and enterprise deployment.
 
 #### Tutorial 07: Loop Agents
-**File**: `tutorial/07_loop_agents.md` (580 lines)
+**File**: `docs/tutorial/07_loop_agents.md` (580 lines)
 
 **You'll Learn**:
 - LoopAgent patterns
@@ -164,7 +164,7 @@ Master production-ready features and enterprise deployment.
 ---
 
 #### Tutorial 08: State & Memory
-**File**: `tutorial/08_state_memory.md` (650 lines)
+**File**: `docs/tutorial/08_state_memory.md` (650 lines)
 
 **You'll Learn**:
 - Session state management
@@ -179,7 +179,7 @@ Master production-ready features and enterprise deployment.
 ---
 
 #### Tutorial 09: Callbacks & Guardrails
-**File**: `tutorial/09_callbacks_guardrails.md` (1100 lines)
+**File**: `docs/tutorial/09_callbacks_guardrails.md` (1100 lines)
 
 **You'll Learn**:
 - All 6 callback types
@@ -194,7 +194,7 @@ Master production-ready features and enterprise deployment.
 ---
 
 #### Tutorial 10: Evaluation & Testing
-**File**: `tutorial/10_evaluation_testing.md` (2,484 lines)
+**File**: `docs/tutorial/10_evaluation_testing.md` (2,484 lines)
 
 **You'll Learn**:
 - Test file creation
@@ -209,7 +209,7 @@ Master production-ready features and enterprise deployment.
 ---
 
 #### Tutorial 11: Built-in Tools & Grounding
-**File**: `tutorial/11_built_in_tools_grounding.md` (1,881 lines)
+**File**: `docs/tutorial/11_built_in_tools_grounding.md` (1,881 lines)
 
 **You'll Learn**:
 - Using `google_search` for web grounding
@@ -226,7 +226,7 @@ Master production-ready features and enterprise deployment.
 ---
 
 #### Tutorial 12: Planners & Thinking
-**File**: `tutorial/12_planners_thinking.md` (1,231 lines)
+**File**: `docs/tutorial/12_planners_thinking.md` (1,231 lines)
 
 **You'll Learn**:
 - Advanced planning and reasoning patterns
@@ -242,7 +242,7 @@ Master production-ready features and enterprise deployment.
 ---
 
 #### Tutorial 13: Code Execution
-**File**: `tutorial/13_code_execution.md` (1,086 lines)
+**File**: `docs/tutorial/13_code_execution.md` (1,086 lines)
 
 **You'll Learn**:
 - Safe code execution environments
@@ -258,7 +258,7 @@ Master production-ready features and enterprise deployment.
 ---
 
 #### Tutorial 14: Streaming & SSE
-**File**: `tutorial/14_streaming_sse.md` (979 lines)
+**File**: `docs/tutorial/14_streaming_sse.md` (979 lines)
 
 **You'll Learn**:
 - Server-Sent Events (SSE) implementation
@@ -274,7 +274,7 @@ Master production-ready features and enterprise deployment.
 ---
 
 #### Tutorial 15: Live API Audio
-**File**: `tutorial/15_live_api_audio.md` (938 lines)
+**File**: `docs/tutorial/15_live_api_audio.md` (938 lines)
 
 **You'll Learn**:
 - Audio input processing
@@ -290,7 +290,7 @@ Master production-ready features and enterprise deployment.
 ---
 
 #### Tutorial 16: MCP Integration
-**File**: `tutorial/16_mcp_integration.md` (1,390 lines)
+**File**: `docs/tutorial/16_mcp_integration.md` (1,390 lines)
 
 **You'll Learn**:
 - Model Context Protocol (MCP) fundamentals
@@ -306,7 +306,7 @@ Master production-ready features and enterprise deployment.
 ---
 
 #### Tutorial 17: Agent-to-Agent Communication
-**File**: `tutorial/17_agent_to_agent.md` (930 lines)
+**File**: `docs/tutorial/17_agent_to_agent.md` (930 lines)
 
 **You'll Learn**:
 - Inter-agent communication patterns
@@ -322,7 +322,7 @@ Master production-ready features and enterprise deployment.
 ---
 
 #### Tutorial 18: Events & Observability
-**File**: `tutorial/18_events_observability.md` (998 lines)
+**File**: `docs/tutorial/18_events_observability.md` (998 lines)
 
 **You'll Learn**:
 - Event-driven agent patterns
@@ -338,7 +338,7 @@ Master production-ready features and enterprise deployment.
 ---
 
 #### Tutorial 19: Artifacts & Files
-**File**: `tutorial/19_artifacts_files.md` (1,004 lines)
+**File**: `docs/tutorial/19_artifacts_files.md` (1,004 lines)
 
 **You'll Learn**:
 - File handling and processing
@@ -354,7 +354,7 @@ Master production-ready features and enterprise deployment.
 ---
 
 #### Tutorial 20: YAML Configuration
-**File**: `tutorial/20_yaml_configuration.md` (826 lines)
+**File**: `docs/tutorial/20_yaml_configuration.md` (826 lines)
 
 **You'll Learn**:
 - YAML-based agent configuration
@@ -370,7 +370,7 @@ Master production-ready features and enterprise deployment.
 ---
 
 #### Tutorial 21: Multimodal Image
-**File**: `tutorial/21_multimodal_image.md` (900 lines)
+**File**: `docs/tutorial/21_multimodal_image.md` (900 lines)
 
 **You'll Learn**:
 - Image processing and analysis
@@ -386,7 +386,7 @@ Master production-ready features and enterprise deployment.
 ---
 
 #### Tutorial 22: Model Selection
-**File**: `tutorial/22_model_selection.md` (1,297 lines)
+**File**: `docs/tutorial/22_model_selection.md` (1,297 lines)
 
 **You'll Learn**:
 - Gemini model family overview and comparison
@@ -404,7 +404,7 @@ Master production-ready features and enterprise deployment.
 ---
 
 #### Tutorial 23: Production Deployment
-**File**: `tutorial/23_production_deployment.md` (813 lines)
+**File**: `docs/tutorial/23_production_deployment.md` (813 lines)
 
 **You'll Learn**:
 - Production deployment strategies
@@ -420,7 +420,7 @@ Master production-ready features and enterprise deployment.
 ---
 
 #### Tutorial 24: Advanced Observability
-**File**: `tutorial/24_advanced_observability.md` (720 lines)
+**File**: `docs/tutorial/24_advanced_observability.md` (720 lines)
 
 **You'll Learn**:
 - Advanced monitoring techniques
@@ -436,7 +436,7 @@ Master production-ready features and enterprise deployment.
 ---
 
 #### Tutorial 25: Best Practices
-**File**: `tutorial/25_best_practices.md` (954 lines)
+**File**: `docs/tutorial/25_best_practices.md` (954 lines)
 
 **You'll Learn**:
 - ADK development best practices
@@ -452,7 +452,7 @@ Master production-ready features and enterprise deployment.
 ---
 
 #### Tutorial 26: Google AgentSpace
-**File**: `tutorial/26_google_agentspace.md` (920 lines)
+**File**: `docs/tutorial/26_google_agentspace.md` (920 lines)
 
 **You'll Learn**:
 - AgentSpace platform overview
@@ -471,7 +471,7 @@ Master production-ready features and enterprise deployment.
 ---
 
 #### Tutorial 27: Third-Party Framework Tools
-**File**: `tutorial/27_third_party_tools.md` (820 lines)
+**File**: `docs/tutorial/27_third_party_tools.md` (820 lines)
 
 **You'll Learn**:
 - LangChain tools integration (100+ tools)
@@ -488,7 +488,7 @@ Master production-ready features and enterprise deployment.
 ---
 
 #### Tutorial 28: Using Other LLMs
-**File**: `tutorial/28_using_other_llms.md` (950 lines)
+**File**: `docs/tutorial/28_using_other_llms.md` (950 lines)
 
 **You'll Learn**:
 - OpenAI integration (GPT-4o, GPT-4o-mini)
@@ -512,7 +512,7 @@ Master user interface integration with modern web frameworks and platforms.
 
 #### Tutorial 29: UI Integration Intro
 
-**File**: `tutorial/29_ui_integration_intro.md` (1,071 lines)
+**File**: `docs/tutorial/29_ui_integration_intro.md` (1,071 lines)
 
 **You'll Learn**:
 - AG-UI Protocol fundamentals
@@ -529,7 +529,7 @@ Master user interface integration with modern web frameworks and platforms.
 
 #### Tutorial 30: Next.js ADK Integration
 
-**File**: `tutorial/30_nextjs_adk_integration.md` (1,360 lines)
+**File**: `docs/tutorial/30_nextjs_adk_integration.md` (1,360 lines)
 
 **You'll Learn**:
 - CopilotKit integration with Next.js
@@ -546,7 +546,7 @@ Master user interface integration with modern web frameworks and platforms.
 
 #### Tutorial 31: React Vite ADK Integration
 
-**File**: `tutorial/31_react_vite_adk_integration.md` (1,239 lines)
+**File**: `docs/tutorial/31_react_vite_adk_integration.md` (1,239 lines)
 
 **You'll Learn**:
 - CopilotKit integration with Vite + React
@@ -563,7 +563,7 @@ Master user interface integration with modern web frameworks and platforms.
 
 #### Tutorial 32: Streamlit ADK Integration
 
-**File**: `tutorial/32_streamlit_adk_integration.md` (1,743 lines)
+**File**: `docs/tutorial/32_streamlit_adk_integration.md` (1,743 lines)
 
 **You'll Learn**:
 - Direct ADK integration with Streamlit
@@ -580,7 +580,7 @@ Master user interface integration with modern web frameworks and platforms.
 
 #### Tutorial 33: Slack ADK Integration
 
-**File**: `tutorial/33_slack_adk_integration.md` (1,669 lines)
+**File**: `docs/tutorial/33_slack_adk_integration.md` (1,669 lines)
 
 **You'll Learn**:
 - Slack app development with ADK
@@ -597,7 +597,7 @@ Master user interface integration with modern web frameworks and platforms.
 
 #### Tutorial 34: PubSub ADK Integration
 
-**File**: `tutorial/34_pubsub_adk_integration.md` (1,711 lines)
+**File**: `docs/tutorial/34_pubsub_adk_integration.md` (1,711 lines)
 
 **You'll Learn**:
 - Google Cloud Pub/Sub integration

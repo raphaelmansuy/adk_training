@@ -149,7 +149,7 @@ loop_agent = LoopAgent(
 ## Key Files & Directories
 
 - `overview.md`: Mental models and architectural concepts
-- `tutorial/`: 28 comprehensive tutorials (01_hello_world_agent.md through 34_pubsub_adk_integration.md)
+- `docs/tutorial/`: 28 comprehensive tutorials (01_hello_world_agent.md through 34_pubsub_adk_integration.md)
 - `tutorial_implementation/`: Executable code for each tutorial
 - `research/`: ADK source code analysis and integration examples
 - `test_tutorials/`: Automated testing framework with 70+ tests
@@ -181,7 +181,7 @@ loop_agent = LoopAgent(
 ## Getting Help
 
 - Read `overview.md` first for mental models and decision frameworks
-- Check `tutorial/XX_tutorial_name.md` for detailed implementation guides
+- Check `docs/tutorial/XX_tutorial_name.md` for detailed implementation guides
 - Run `make demo` in any tutorial directory for quick examples
 - Use `adk web` for interactive experimentation
 - Check `test_tutorials/` for working examples and test patterns

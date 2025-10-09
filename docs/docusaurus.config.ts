@@ -45,12 +45,12 @@ const config: Config = {
       'classic',
       {
         docs: {
-          path: path.resolve(__dirname, '../tutorial'), // Absolute path to tutorial directory
+          path: path.resolve(__dirname, './tutorial'), // Absolute path to tutorial directory
           sidebarPath: './sidebars.ts',
           // Please change this to your repo.
           // Remove this to remove the "edit this page" links.
           editUrl:
-            'https://github.com/raphaelmansuy/adk_training/edit/main/tutorial/',
+            'https://github.com/raphaelmansuy/adk_training/edit/main/docs/tutorial/',
         },
         blog: {
           showReadingTime: true,
@@ -88,7 +88,7 @@ const config: Config = {
       title: 'ADK Training Hub',
       logo: {
         alt: 'ADK Training Hub Logo',
-        src: 'img/logo.svg',
+        src: 'img/ADK-512-color.svg',
       },
       items: [
         {
@@ -118,7 +118,7 @@ const config: Config = {
           items: [
             {
               label: 'Tutorials',
-              to: '/docs/tutorial/01_hello_world_agent',
+              to: '/docs/hello_world_agent',
             },
             {
               label: 'Mental Models',
@@ -126,7 +126,7 @@ const config: Config = {
             },
             {
               label: 'Code Examples',
-              to: '/docs/tutorial/01_hello_world_agent',
+              to: '/docs/hello_world_agent',
             },
           ],
         },

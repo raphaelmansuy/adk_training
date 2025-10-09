@@ -309,7 +309,7 @@ critic.instruction += """
 
 ## 📚 Integration with Tutorial
 
-This implementation perfectly demonstrates the concepts from [`../tutorial/07_loop_agents.md`](../tutorial/07_loop_agents.md):
+This implementation perfectly demonstrates the concepts from [`../../docs/tutorial/07_loop_agents.md`](../../docs/tutorial/07_loop_agents.md):
 
 - ✅ **LoopAgent mechanics** with max_iterations safety
 - ✅ **Critic → Refiner pattern** for iterative improvement

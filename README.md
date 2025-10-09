@@ -34,7 +34,7 @@ Google Agent Development Kit (ADK) is a powerful framework for building AI agent
 ├── TABLE_OF_CONTENTS.md           # Complete tutorial series guide
 ├── scratchpad.md                  # Quick reference patterns
 ├── thought.md                     # Tutorial design and research notes
-├── tutorial/                      # 34 comprehensive tutorials
+├── docs/tutorial/                 # 34 comprehensive tutorials
 │   ├── 01_hello_world_agent.md    # ✅ COMPLETED - Agent basics
 │   ├── 02_function_tools.md       # ✅ COMPLETED - Custom tools
 │   ├── 03_openapi_tools.md        # ✅ COMPLETED - REST API integration
@@ -119,7 +119,7 @@ git clone <repository-url>
 cd adk_training
 
 # Start with Tutorial 01
-# Follow the tutorial/01_hello_world_agent.md guide
+# Follow the docs/tutorial/01_hello_world_agent.md guide
 ```
 
 ## 📖 Learning Path

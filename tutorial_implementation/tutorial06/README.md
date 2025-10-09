@@ -240,7 +240,7 @@ This implementation follows the established tutorial pattern:
 
 ## Links
 
-- **Tutorial**: [Tutorial 06: Multi-Agent Systems](../tutorial/06_multi_agent_systems.md)
+- **Tutorial**: [Tutorial 06: Multi-Agent Systems](../../docs/tutorial/06_multi_agent_systems.md)
 - **ADK Documentation**: google.github.io/adk-docs/
 - **Previous Tutorial**: [Tutorial 05 Implementation](../tutorial05/)
 

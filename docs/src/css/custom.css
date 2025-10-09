@@ -4,27 +4,122 @@
  * work well for content-centric websites.
  */
 
-/* You can override the default Infima variables here. */
+/* Enhanced color scheme inspired by modern AI/tech brands */
 :root {
-  --ifm-color-primary: #2e8555;
-  --ifm-color-primary-dark: #29784c;
-  --ifm-color-primary-darker: #277148;
-  --ifm-color-primary-darkest: #205d3b;
-  --ifm-color-primary-light: #33925d;
-  --ifm-color-primary-lighter: #359962;
-  --ifm-color-primary-lightest: #3cad6e;
+  /* Primary ADK brand colors */
+  --ifm-color-primary: #3b82f6;
+  --ifm-color-primary-dark: #2563eb;
+  --ifm-color-primary-darker: #1d4ed8;
+  --ifm-color-primary-darkest: #1e40af;
+  --ifm-color-primary-light: #60a5fa;
+  --ifm-color-primary-lighter: #93c5fd;
+  --ifm-color-primary-lightest: #dbeafe;
+  
+  /* ADK accent colors */
+  --adk-purple: #8b5cf6;
+  --adk-green: #10b981;
+  --adk-orange: #f59e0b;
+  --adk-red: #ef4444;
+  
+  /* Enhanced typography */
+  --ifm-font-family-base: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Inter', Roboto, system-ui, sans-serif;
+  --ifm-heading-font-family: var(--ifm-font-family-base);
+  --ifm-heading-font-weight: 700;
+  --ifm-font-weight-bold: 600;
+  
+  /* Enhanced spacing and sizing */
+  --ifm-spacing-horizontal: 1.5rem;
+  --ifm-container-width-xl: 1440px;
   --ifm-code-font-size: 95%;
   --docusaurus-highlighted-code-line-bg: rgba(0, 0, 0, 0.1);
+  
+  /* Custom shadows */
+  --adk-shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+  --adk-shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+  --adk-shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+  --adk-shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+  
+  /* Background gradients */
+  --adk-gradient-hero: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
+  --adk-gradient-feature: linear-gradient(145deg, #f0f9ff 0%, #e0e7ff 100%);
 }
 
-/* For readability concerns, you should choose a lighter palette in dark mode. */
+/* Dark mode enhancements */
 [data-theme='dark'] {
-  --ifm-color-primary: #25c2a0;
-  --ifm-color-primary-dark: #21af90;
-  --ifm-color-primary-darker: #1fa588;
-  --ifm-color-primary-darkest: #1a8870;
-  --ifm-color-primary-light: #29d5b0;
-  --ifm-color-primary-lighter: #32d8b4;
-  --ifm-color-primary-lightest: #4fddbf;
+  --ifm-color-primary: #60a5fa;
+  --ifm-color-primary-dark: #3b82f6;
+  --ifm-color-primary-darker: #2563eb;
+  --ifm-color-primary-darkest: #1d4ed8;
+  --ifm-color-primary-light: #93c5fd;
+  --ifm-color-primary-lighter: #bfdbfe;
+  --ifm-color-primary-lightest: #dbeafe;
   --docusaurus-highlighted-code-line-bg: rgba(0, 0, 0, 0.3);
+  
+  /* Dark mode gradients */
+  --adk-gradient-hero: linear-gradient(135deg, #1e293b 0%, #334155 50%, #475569 100%);
+  --adk-gradient-feature: linear-gradient(145deg, #0f172a 0%, #1e293b 100%);
+}
+
+/* Enhanced global styles */
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  font-feature-settings: 'rlig' 1, 'calt' 1;
+}
+
+/* Improved heading styles */
+h1, h2, h3, h4, h5, h6 {
+  font-weight: var(--ifm-heading-font-weight);
+  letter-spacing: -0.025em;
+}
+
+/* Enhanced button styles */
+.button {
+  border-radius: 8px;
+  font-weight: 600;
+  transition: all 0.2s ease-in-out;
+  border: none;
+}
+
+.button:hover {
+  transform: translateY(-1px);
+  box-shadow: var(--adk-shadow-lg);
+}
+
+.button--primary {
+  background: linear-gradient(135deg, var(--ifm-color-primary) 0%, var(--adk-purple) 100%);
+}
+
+.button--secondary {
+  background: rgba(255, 255, 255, 0.9);
+  color: var(--ifm-color-primary);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+[data-theme='dark'] .button--secondary {
+  background: rgba(30, 41, 59, 0.8);
+  color: var(--ifm-color-primary-light);
+  border: 1px solid rgba(148, 163, 184, 0.2);
+}
+
+/* Card enhancements */
+.card {
+  border: none;
+  border-radius: 12px;
+  box-shadow: var(--adk-shadow-md);
+  transition: all 0.3s ease-in-out;
+  overflow: hidden;
+}
+
+.card:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--adk-shadow-xl);
+}
+
+/* Container improvements */
+.container {
+  max-width: var(--ifm-container-width-xl);
 }

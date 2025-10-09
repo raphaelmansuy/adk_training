@@ -185,7 +185,7 @@ pytest tests/ -v -s
 
 ## Links
 
-- **Tutorial**: [Tutorial 10: Evaluation & Testing](../../tutorial/10_evaluation_testing.md)
+- **Tutorial**: [Tutorial 10: Evaluation & Testing](../../../docs/tutorial/10_evaluation_testing.md)
 - **ADK Documentation**: <https://google.github.io/adk-docs/>
 - **Google AI Studio**: <https://aistudio.google.com/>
 

@@ -209,7 +209,7 @@ This implementation follows the established tutorial pattern:
 
 ## Links
 
-- **Tutorial**: [Tutorial 05: Parallel Processing](../tutorial/05_parallel_processing.md)
+- **Tutorial**: [Tutorial 05: Parallel Processing](../../docs/tutorial/05_parallel_processing.md)
 - **ADK Documentation**: google.github.io/adk-docs/
 - **Previous Tutorial**: [Tutorial 04 Implementation](../tutorial04/)
 

@@ -1,6 +1,6 @@
 # Tutorial 11: Built-in Tools & Grounding - Grounding Agent
 
-**Tutorial Link**: [Tutorial 11: Built-in Tools & Grounding](../tutorial/11_built_in_tools_grounding.md)
+**Tutorial Link**: [Tutorial 11: Built-in Tools & Grounding](../../docs/tutorial/11_built_in_tools_grounding.md)
 
 This implementation demonstrates web grounding capabilities using Google Search and other built-in ADK tools for accessing current information.
 
@@ -443,7 +443,7 @@ agent = Agent(model='gemini-2.0-flash', tools=[google_search])
 
 ## 📚 Learn More
 
-- **Tutorial**: [Tutorial 11: Built-in Tools & Grounding](../tutorial/11_built_in_tools_grounding.md)
+- **Tutorial**: [Tutorial 11: Built-in Tools & Grounding](../../docs/tutorial/11_built_in_tools_grounding.md)
 - **ADK Docs**: [Built-in Tools](https://google.github.io/adk-docs/tools/built-in-tools/)
 - **Grounding**: [Web Grounding Enterprise](https://cloud.google.com/vertex-ai/generative-ai/docs/grounding/web-grounding-enterprise)
 

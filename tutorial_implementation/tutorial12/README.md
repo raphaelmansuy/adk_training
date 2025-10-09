@@ -323,7 +323,7 @@ export ADK_DEBUG=1
 
 ## Links
 
-- **Tutorial**: [Tutorial 12: Planners & Thinking Configuration](../../tutorial/12_planners_thinking.md)
+- **Tutorial**: [Tutorial 12: Planners & Thinking Configuration](../../../docs/tutorial/12_planners_thinking.md)
 - **ADK Documentation**: https://google.github.io/adk-docs/
 - **Gemini Models**: https://cloud.google.com/vertex-ai/generative-ai/docs/model-reference/gemini
 
