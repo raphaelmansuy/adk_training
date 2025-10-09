@@ -27,6 +27,14 @@ learning_objectives:
 implementation_link: "https://github.com/raphaelmansuy/adk_training/tree/main/tutorial_implementation/tutorial31"
 ---
 
+:::danger UNDER CONSTRUCTION
+
+**This tutorial is currently under construction and may contain errors, incomplete information, or outdated code examples.**
+
+Please check back later for the completed version. If you encounter issues, refer to the working implementation in the [tutorial repository](https://github.com/raphaelmansuy/adk_training/tree/main/tutorial_implementation/tutorial31).
+
+:::
+
 # Tutorial 31: React Vite + ADK Integration (AG-UI Protocol)
 
 **Estimated Reading Time**: 60-70 minutes  

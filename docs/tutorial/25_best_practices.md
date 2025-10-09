@@ -31,6 +31,15 @@ learning_objectives:
 implementation_link: "https://github.com/raphaelmansuy/adk_training/tree/main/tutorial_implementation/tutorial25"
 ---
 
+:::danger UNDER CONSTRUCTION
+
+**This tutorial is currently under construction and may contain errors, incomplete information, or outdated code examples.**
+
+Please check back later for the completed version. If you encounter issues, refer to the working implementation in the [tutorial repository](https://github.com/raphaelmansuy/adk_training/tree/main/tutorial_implementation/tutorial25).
+
+:::
+---
+
 # Tutorial 25: Best Practices & Production Patterns
 
 **Goal**: Master production-ready patterns, architectural decisions, optimization strategies, security best practices, and comprehensive guidelines for building robust agent systems.

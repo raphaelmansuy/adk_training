@@ -28,6 +28,14 @@ learning_objectives:
 implementation_link: "https://github.com/raphaelmansuy/adk_training/tree/main/tutorial_implementation/tutorial18"
 ---
 
+:::danger UNDER CONSTRUCTION
+
+**This tutorial is currently under construction and may contain errors, incomplete information, or outdated code examples.**
+
+Please check back later for the completed version. If you encounter issues, refer to the working implementation in the [tutorial repository](https://github.com/raphaelmansuy/adk_training/tree/main/tutorial_implementation/tutorial18).
+
+:::
+
 # Tutorial 18: Events & Observability
 
 **Goal**: Master event tracking and observability patterns to monitor agent behavior, debug issues, and gain insights into agent decision-making processes in production systems.

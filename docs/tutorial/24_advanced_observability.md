@@ -31,6 +31,15 @@ learning_objectives:
 implementation_link: "https://github.com/raphaelmansuy/adk_training/tree/main/tutorial_implementation/tutorial24"
 ---
 
+:::danger UNDER CONSTRUCTION
+
+**This tutorial is currently under construction and may contain errors, incomplete information, or outdated code examples.**
+
+Please check back later for the completed version. If you encounter issues, refer to the working implementation in the [tutorial repository](https://github.com/raphaelmansuy/adk_training/tree/main/tutorial_implementation/tutorial24).
+
+:::
+---
+
 # Tutorial 24: Advanced Observability & Monitoring
 
 **Goal**: Master advanced observability patterns including plugin systems, Cloud Trace integration, custom metrics, distributed tracing, and production monitoring dashboards.

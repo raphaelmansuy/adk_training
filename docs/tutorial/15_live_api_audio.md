@@ -30,6 +30,14 @@ learning_objectives:
 implementation_link: "https://github.com/raphaelmansuy/adk_training/tree/main/tutorial_implementation/tutorial15"
 ---
 
+:::danger UNDER CONSTRUCTION
+
+**This tutorial is currently under construction and may contain errors, incomplete information, or outdated code examples.**
+
+Please check back later for the completed version. If you encounter issues, refer to the working implementation in the [tutorial repository](https://github.com/raphaelmansuy/adk_training/tree/main/tutorial_implementation/tutorial15).
+
+:::
+
 # Tutorial 15: Live API & Bidirectional Streaming with Audio
 
 **Goal**: Master the Live API for bidirectional streaming, enabling real-time voice conversations, audio input/output, and interactive multimodal experiences with your AI agents.

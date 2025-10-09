@@ -31,6 +31,15 @@ learning_objectives:
 implementation_link: "https://github.com/raphaelmansuy/adk_training/tree/main/tutorial_implementation/tutorial30"
 ---
 
+:::danger UNDER CONSTRUCTION
+
+**This tutorial is currently under construction and may contain errors, incomplete information, or outdated code examples.**
+
+Please check back later for the completed version. If you encounter issues, refer to the working implementation in the [tutorial repository](https://github.com/raphaelmansuy/adk_training/tree/main/tutorial_implementation/tutorial30).
+
+:::
+---
+
 # Tutorial 30: Next.js 15 + ADK Integration (AG-UI Protocol)
 
 **Estimated Reading Time**: 65-75 minutes  

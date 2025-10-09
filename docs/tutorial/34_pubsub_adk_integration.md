@@ -4,6 +4,14 @@ id: pubsub_adk_integration
 
 # Tutorial 34: Google Cloud Pub/Sub + Event-Driven Agents
 
+:::danger UNDER CONSTRUCTION
+
+**This tutorial is currently under construction and may contain errors, incomplete information, or outdated code examples.**
+
+Please check back later for the completed version. If you encounter issues, refer to the working implementation in the [tutorial repository](https://github.com/raphaelmansuy/adk_training/tree/main/tutorial_implementation/tutorial34).
+
+:::
+
 **Estimated Reading Time**: 70-80 minutes  
 **Difficulty Level**: Advanced  
 **Prerequisites**: Tutorial 29 (UI Integration Intro), Tutorial 1-3 (ADK Basics), Google Cloud project

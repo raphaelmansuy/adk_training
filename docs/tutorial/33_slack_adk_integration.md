@@ -4,6 +4,14 @@ id: slack_adk_integration
 
 # Tutorial 33: Slack Bot Integration with ADK
 
+:::danger UNDER CONSTRUCTION
+
+**This tutorial is currently under construction and may contain errors, incomplete information, or outdated code examples.**
+
+Please check back later for the completed version. If you encounter issues, refer to the working implementation in the [tutorial repository](https://github.com/raphaelmansuy/adk_training/tree/main/tutorial_implementation/tutorial33).
+
+:::
+
 **Estimated Reading Time**: 60-70 minutes  
 **Difficulty Level**: Intermediate to Advanced  
 **Prerequisites**: Tutorial 29 (UI Integration Intro), Tutorial 1-3 (ADK Basics), Slack workspace admin access

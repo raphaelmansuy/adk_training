@@ -33,6 +33,14 @@ learning_objectives:
 implementation_link: "https://github.com/raphaelmansuy/adk_training/tree/main/tutorial_implementation/tutorial17"
 ---
 
+:::danger UNDER CONSTRUCTION
+
+**This tutorial is currently under construction and may contain errors, incomplete information, or outdated code examples.**
+
+Please check back later for the completed version. If you encounter issues, refer to the working implementation in the [tutorial repository](https://github.com/raphaelmansuy/adk_training/tree/main/tutorial_implementation/tutorial17).
+
+:::
+
 # Tutorial 17: Agent-to-Agent (A2A) Communication
 
 **Goal**: Enable agents to communicate and collaborate with other remote agents using the Agent-to-Agent (A2A) protocol, creating distributed multi-agent systems.

@@ -30,6 +30,14 @@ learning_objectives:
 implementation_link: "https://github.com/raphaelmansuy/adk_training/tree/main/tutorial_implementation/tutorial13"
 ---
 
+:::danger UNDER CONSTRUCTION
+
+**This tutorial is currently under construction and may contain errors, incomplete information, or outdated code examples.**
+
+Please check back later for the completed version. If you encounter issues, refer to the working implementation in the [tutorial repository](https://github.com/raphaelmansuy/adk_training/tree/main/tutorial_implementation/tutorial13).
+
+:::
+
 # Tutorial 13: Code Execution
 
 **Goal**: Enable your agents to write and execute Python code for calculations, data analysis, and complex computations using Gemini 2.0+'s built-in code execution capability.

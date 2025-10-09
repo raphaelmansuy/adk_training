@@ -26,6 +26,14 @@ learning_objectives:
 implementation_link: "https://github.com/raphaelmansuy/adk_training/tree/main/tutorial_implementation/tutorial19"
 ---
 
+:::danger UNDER CONSTRUCTION
+
+**This tutorial is currently under construction and may contain errors, incomplete information, or outdated code examples.**
+
+Please check back later for the completed version. If you encounter issues, refer to the working implementation in the [tutorial repository](https://github.com/raphaelmansuy/adk_training/tree/main/tutorial_implementation/tutorial19).
+
+:::
+
 # Tutorial 19: Artifacts & File Management
 
 **Goal**: Master artifact storage, versioning, and retrieval to enable agents to create, manage, and track files across sessions, providing persistent state and audit trails.

@@ -26,6 +26,14 @@ learning_objectives:
 implementation_link: "https://github.com/raphaelmansuy/adk_training/tree/main/tutorial_implementation/tutorial26"
 ---
 
+:::danger UNDER CONSTRUCTION
+
+**This tutorial is currently under construction and may contain errors, incomplete information, or outdated code examples.**
+
+Please check back later for the completed version. If you encounter issues, refer to the working implementation in the [tutorial repository](https://github.com/raphaelmansuy/adk_training/tree/main/tutorial_implementation/tutorial26).
+
+:::
+
 # Tutorial 26: Google AgentSpace - Enterprise Agent Management
 
 **Goal**: Deploy and manage AI agents at enterprise scale using Google Cloud's AgentSpace platform

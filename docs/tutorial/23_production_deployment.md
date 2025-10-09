@@ -31,6 +31,15 @@ learning_objectives:
 implementation_link: "https://github.com/raphaelmansuy/adk_training/tree/main/tutorial_implementation/tutorial23"
 ---
 
+:::danger UNDER CONSTRUCTION
+
+**This tutorial is currently under construction and may contain errors, incomplete information, or outdated code examples.**
+
+Please check back later for the completed version. If you encounter issues, refer to the working implementation in the [tutorial repository](https://github.com/raphaelmansuy/adk_training/tree/main/tutorial_implementation/tutorial23).
+
+:::
+---
+
 # Tutorial 23: Production Deployment Strategies
 
 **Goal**: Master production deployment patterns including local servers, Cloud Run, Agent Engine, and GKE deployments with best practices for scalability, reliability, and monitoring.

@@ -4,6 +4,14 @@ id: ui_integration_intro
 
 # Tutorial 29: Introduction to UI Integration & AG-UI Protocol
 
+:::danger UNDER CONSTRUCTION
+
+**This tutorial is currently under construction and may contain errors, incomplete information, or outdated code examples.**
+
+Please check back later for the completed version. If you encounter issues, refer to the working implementation in the [tutorial repository](https://github.com/raphaelmansuy/adk_training/tree/main/tutorial_implementation/tutorial29).
+
+:::
+
 **Estimated Reading Time**: 35-45 minutes  
 **Difficulty Level**: Intermediate  
 **Prerequisites**: Tutorials 1-3 (ADK Basics), Tutorial 14 (Streaming & SSE)
