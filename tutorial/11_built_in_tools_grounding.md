@@ -222,6 +222,113 @@ os.environ['GOOGLE_GENAI_USE_VERTEXAI'] = '0'
 # Maps grounding requires VertexAI
 ```
 
+### Conditional Environment Detection
+
+For production applications, implement conditional tool loading based on environment:
+
+```python
+from google.adk.agents import Agent
+from google.adk.tools import google_search, google_maps_grounding
+
+def is_vertexai_enabled() -> bool:
+    """Check if VertexAI is enabled via environment variable."""
+    return os.environ.get('GOOGLE_GENAI_USE_VERTEXAI') == '1'
+
+def get_available_grounding_tools():
+    """Get available grounding tools based on environment."""
+    tools = [google_search]  # Always available
+    
+    # Add maps grounding only if VertexAI is enabled
+    if is_vertexai_enabled():
+        tools.append(google_maps_grounding)
+    
+    return tools
+
+def get_agent_capabilities_description() -> str:
+    """Get description of agent capabilities based on available tools."""
+    capabilities = ["web search for current information"]
+    
+    if is_vertexai_enabled():
+        capabilities.append("location-based queries and maps grounding")
+    
+    return " and ".join(capabilities)
+
+# Create agent with conditional tools
+agent = Agent(
+    model='gemini-2.0-flash',
+    name='conditional_grounding_agent',
+    instruction=f"""You are a research assistant with access to {get_agent_capabilities_description()}.
+
+When asked questions:
+1. Use google_search to find current, accurate information
+{"2. Use google_maps_grounding for location-based queries when available" if is_vertexai_enabled() else ""}
+{("3. " if is_vertexai_enabled() else "2. ")}Provide clear, factual answers based on search results
+{("4. " if is_vertexai_enabled() else "3. ")}Always cite that information comes from web search
+{("5. " if is_vertexai_enabled() else "4. ")}If information seems outdated or uncertain, mention this
+
+Be helpful, accurate, and indicate when you're using search capabilities.""",
+    tools=get_available_grounding_tools()
+)
+```
+
+This approach ensures your agent works in both AI Studio (web search only) and VertexAI (web search + maps) environments automatically.
+
+### Agent Selection Flow
+
+```mermaid
+flowchart TD
+    A[Application Start] --> B{VertexAI Enabled?}
+    B -->|No| C[AI Studio Mode]
+    B -->|Yes| D[VertexAI Mode]
+
+    C --> E[Load basic_grounding_agent]
+    D --> F[Load advanced_grounding_agent]
+
+    E --> G[Available Tools: google_search]
+    F --> H[Available Tools: google_search + google_maps_grounding + custom tools]
+
+    G --> I[Capabilities: Web search only]
+    H --> J[Capabilities: Web search + Maps + Analysis]
+
+    I --> K[Use for: Basic research queries]
+    J --> L[Use for: Advanced research + Location queries]
+
+    style A fill:#e1f5fe,stroke:#01579b,stroke-width:2px
+    style B fill:#fff3e0,stroke:#e65100,stroke-width:2px
+    style C fill:#f3e5f5,stroke:#4a148c,stroke-width:2px
+    style D fill:#e8f5e8,stroke:#1b5e20,stroke-width:2px
+    style E fill:#fce4ec,stroke:#880e4f,stroke-width:2px
+    style F fill:#e0f2f1,stroke:#004d40,stroke-width:2px
+```
+
+### Environment Detection Logic
+
+```mermaid
+flowchart TD
+    START([Start Application]) --> CHECK{os.environ.get<br/>'GOOGLE_GENAI_USE_VERTEXAI'<br/>== '1'?}
+
+    CHECK -->|True| VERTEXAI[VertexAI Mode<br/>✅ Maps Available]
+    CHECK -->|False| STUDIO[AI Studio Mode<br/>❌ Maps Unavailable]
+
+    VERTEXAI --> LOAD_ADVANCED[Load advanced_grounding_agent<br/>Tools: search + maps + custom]
+    STUDIO --> LOAD_BASIC[Load basic_grounding_agent<br/>Tools: search only]
+
+    LOAD_ADVANCED --> CAPABILITIES_ADV[Capabilities:<br/>• Web search<br/>• Maps grounding<br/>• Content analysis<br/>• Research saving]
+    LOAD_BASIC --> CAPABILITIES_BASIC[Capabilities:<br/>• Web search only]
+
+    CAPABILITIES_ADV --> READY_ADV[🚀 Ready for advanced queries]
+    CAPABILITIES_BASIC --> READY_BASIC[🔍 Ready for basic research]
+
+    style START fill:#e1f5fe,stroke:#01579b,stroke-width:3px
+    style CHECK fill:#fff3e0,stroke:#e65100,stroke-width:2px
+    style VERTEXAI fill:#e8f5e8,stroke:#1b5e20,stroke-width:2px
+    style STUDIO fill:#fce4ec,stroke:#880e4f,stroke-width:2px
+    style LOAD_ADVANCED fill:#f3e5f5,stroke:#4a148c,stroke-width:2px
+    style LOAD_BASIC fill:#e0f2f1,stroke:#004d40,stroke-width:2px
+    style READY_ADV fill:#e8f5e8,stroke:#2e7d32,stroke-width:2px
+    style READY_BASIC fill:#fff8e1,stroke:#f57f17,stroke-width:2px
+```
+
 ---
 
 ## 3. Enterprise Web Search Tool
@@ -259,6 +366,7 @@ print(result.content.parts[0].text)
 ### When to Use Enterprise Search
 
 **Use `enterprise_web_search` when**:
+
 - Operating in corporate/regulated environments
 - Need audit trails for information sources
 - Require content filtering and compliance
@@ -266,12 +374,60 @@ print(result.content.parts[0].text)
 - Building enterprise applications
 
 **Use `google_search` when**:
+
 - Building consumer applications
 - Need general web information
 - Don't have enterprise compliance requirements
 - Want simpler setup
 
 ---
+
+### Agent Hierarchy & Tool Composition
+
+```mermaid
+graph TD
+    subgraph "Agent Types"
+        A[basic_grounding_agent<br/>Simple web search]
+        B[advanced_grounding_agent<br/>Full research suite]
+        C[research_assistant<br/>Production research]
+    end
+
+    subgraph "Tool Categories"
+        D[Built-in Tools]
+        E[Custom Tools]
+    end
+
+    subgraph "Built-in Tools"
+        F[google_search<br/>Web grounding]
+        G[google_maps_grounding<br/>Location queries<br/>VertexAI only]
+    end
+
+    subgraph "Custom Tools"
+        H[analyze_search_results<br/>Content analysis]
+        I[save_research_findings<br/>Artifact storage]
+    end
+
+    A --> D
+    B --> D
+    B --> E
+    C --> D
+    C --> E
+
+    D --> F
+    D --> G
+    E --> H
+    E --> I
+
+    style A fill:#e3f2fd,stroke:#1565c0,stroke-width:2px
+    style B fill:#f3e5f5,stroke:#6a1b9a,stroke-width:2px
+    style C fill:#e8f5e8,stroke:#2e7d32,stroke-width:2px
+    style D fill:#fff3e0,stroke:#ef6c00,stroke-width:2px
+    style E fill:#fce4ec,stroke:#c2185b,stroke-width:2px
+    style F fill:#e0f2f1,stroke:#00695c,stroke-width:2px
+    style G fill:#f1f8e9,stroke:#558b2f,stroke-width:2px
+    style H fill:#ede7f6,stroke:#4527a0,stroke-width:2px
+    style I fill:#fff8e1,stroke:#f57f17,stroke-width:2px
+```
 
 ## 4. GoogleSearchAgentTool (Workaround)
 
@@ -393,6 +549,39 @@ main_agent = Agent(
 ## 5. Real-World Example: Research Assistant
 
 Let's build a production-ready research assistant that can search the web, process results, and provide citations.
+
+### Research Workflow
+
+```mermaid
+sequenceDiagram
+    participant U as User
+    participant A as Agent
+    participant S as google_search
+    participant M as google_maps_grounding
+    participant T1 as analyze_search_results
+    participant T2 as save_research_findings
+
+    U->>A: Research query
+    A->>S: Search web for information
+    S-->>A: Search results
+    A->>M: Location-based queries (if VertexAI)
+    M-->>A: Maps data (if available)
+    A->>T1: Analyze search results
+    T1-->>A: Analysis insights
+    A->>T2: Save research findings
+    T2-->>A: Saved artifact confirmation
+    A-->>U: Comprehensive research response
+
+    Note over S,M: Built-in tools (automatic)
+    Note over T1,T2: Custom tools (manual implementation)
+
+    style U fill:#e3f2fd,stroke:#1565c0
+    style A fill:#f3e5f5,stroke:#6a1b9a
+    style S fill:#e8f5e8,stroke:#2e7d32
+    style M fill:#fff3e0,stroke:#ef6c00
+    style T1 fill:#fce4ec,stroke:#c2185b
+    style T2 fill:#e0f2f1,stroke:#00695c
+```
 
 ### Complete Implementation
 
@@ -629,7 +818,7 @@ result = runner.run(
 )
 ```
 
-**When to use**: 
+**When to use**:
 - Multi-session conversations
 - Resuming previous work
 - Accessing historical context
@@ -1862,6 +2051,8 @@ You've mastered ADK's complete builtin tools ecosystem:
 - [ ] Using GoogleSearchAgentTool for mixing tools
 - [ ] Setting appropriate temperature (0.1-0.3 for facts)
 - [ ] Checking VertexAI vs AI Studio requirements
+- [ ] **NEW**: Implementing conditional VertexAI detection for maps grounding
+- [ ] **NEW**: Using environment-aware agent configuration
 - [ ] Memory management for multi-session agents
 - [ ] Workflow control for complex agent systems
 - [ ] Enterprise tool permissions configured
