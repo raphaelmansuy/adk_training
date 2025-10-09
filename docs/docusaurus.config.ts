@@ -5,6 +5,39 @@ import * as path from 'path';
 
 // This runs in Node.js - Don't use client-side code here (browser APIs, JSX...)
 
+/**
+ * 🌟 Community & Social Features Added:
+ *
+ * 1. Enhanced Footer Links:
+ *    - Twitter/X
+ *    - Newsletter Signup
+ *    - Calendly for scheduling calls
+ *
+ * 2. Navbar Social Links:
+ *    - Twitter icon in navbar
+ *
+ * 3. Comments System:
+ *    - Giscus integration ready (requires manual setup)
+ *    - TODO: Create custom Giscus component in src/components/Comments.tsx
+ *    - TODO: Add @giscus/react to package.json
+ *
+ * 4. Social Sharing:
+ *    - Ready for custom social sharing component
+ *    - TODO: Create src/components/SocialShare.tsx
+ *
+ * 5. Enhanced Metadata:
+ *    - LinkedIn Open Graph tags
+ *    - Additional social profiles in structured data
+ *
+ * Manual Setup Instructions:
+ * 1. Install Giscus: npm install @giscus/react
+ * 2. Create src/components/Comments.tsx with Giscus component
+ * 3. Create src/components/SocialShare.tsx for sharing buttons
+ * 4. Get your Giscus repo ID and category ID from: https://giscus.app/
+ * 5. Update social media URLs with your actual profiles
+ * 6. Set up newsletter service and update URL
+ */
+
 const config: Config = {
   title: 'ADK Training Hub',
   tagline: 'Master Google Agent Development Kit from First Principles',
@@ -62,6 +95,7 @@ const config: Config = {
         sameAs: [
           'https://github.com/raphaelmansuy',
           'https://github.com/raphaelmansuy/adk_training',
+          'https://twitter.com/raphaelmansuy',
         ],
       }),
     },
@@ -173,6 +207,8 @@ const config: Config = {
         language: ['en'],
       },
     ],
+    // TODO: Add Giscus plugin when available
+    // TODO: Add social sharing plugin
   ],
 
   themeConfig: {
@@ -194,6 +230,10 @@ const config: Config = {
       { name: 'twitter:card', content: 'summary_large_image' },
       { name: 'twitter:site', content: '@raphaelmansuy' },
       { name: 'twitter:creator', content: '@raphaelmansuy' },
+
+      // LinkedIn meta tags
+      { property: 'og:type', content: 'website' },
+      { property: 'og:site_name', content: 'ADK Training Hub' },
 
       // Google Search Console verification
       { name: 'google-site-verification', content: 'YOUR_VERIFICATION_CODE' }, // Replace with your actual verification code
@@ -226,6 +266,11 @@ const config: Config = {
         {
           href: 'https://github.com/raphaelmansuy/adk_training',
           label: 'GitHub',
+          position: 'right',
+        },
+        {
+          href: 'https://twitter.com/raphaelmansuy',
+          label: 'Twitter',
           position: 'right',
         },
       ],
@@ -265,6 +310,14 @@ const config: Config = {
               label: 'Discussions',
               href: 'https://github.com/raphaelmansuy/adk_training/discussions',
             },
+            {
+              label: 'Twitter/X',
+              href: 'https://twitter.com/raphaelmansuy',
+            },
+            {
+              label: 'Newsletter',
+              href: 'https://newsletter.adk-training.com',
+            },
           ],
         },
         {
@@ -291,6 +344,14 @@ const config: Config = {
               label: 'Contact the Author',
               to: '/docs/contact',
             },
+            {
+              label: 'Newsletter Signup',
+              href: 'https://newsletter.adk-training.com',
+            },
+            {
+              label: 'Schedule a Call',
+              href: 'https://calendly.com/raphaelmansuy',
+            },
           ],
         },
       ],
@@ -303,6 +364,9 @@ const config: Config = {
     mermaid: {
       theme: { light: 'default', dark: 'dark' },
     },
+    // TODO: Add community features config when plugins are available
+    // giscus: { ... },
+    // share: { ... },
   } satisfies Preset.ThemeConfig,
 };
 

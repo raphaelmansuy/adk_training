@@ -38,7 +38,7 @@ function HomepageHeader() {
             </Link>
             <Link
               className={styles.secondaryButton}
-              to="/docs/hello_world_agent">
+              to="/docs/tutorial_index">
               📚 Browse Tutorials
             </Link>
           </div>

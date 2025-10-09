@@ -18,6 +18,8 @@ image: /img/docusaurus-social-card.jpg
 implementation_link: "https://github.com/raphaelmansuy/adk_training/tree/main/tutorial_implementation/tutorial01"
 ---
 
+import Comments from '@site/src/components/Comments';
+
 ## Overview
 
 Build your first AI agent with Google Agent Development Kit (ADK). This tutorial starts from absolute zero - you'll create a simple conversational agent that can chat with users. No prior ADK experience needed!
@@ -317,3 +319,7 @@ root_agent = Agent(
 ```
 
 Congratulations! You've built your first ADK agent! 🎉
+
+---
+
+<Comments />
