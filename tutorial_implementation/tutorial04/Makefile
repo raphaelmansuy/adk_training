@@ -73,9 +73,19 @@ clean:
 
 # Check environment (internal use)
 check-env:
-	@if [ -z "$$GOOGLE_API_KEY" ]; then \
-		echo "❌ Error: GOOGLE_API_KEY environment variable not set"; \
-		echo "   Please set it with: export GOOGLE_API_KEY=your_key_here"; \
+	@if [ -z "$$GOOGLE_API_KEY" ] && [ -z "$$GOOGLE_APPLICATION_CREDENTIALS" ]; then \
+		echo "❌ Error: Authentication not configured"; \
+		echo ""; \
+		echo "Choose one of the following authentication methods:"; \
+		echo ""; \
+		echo "🔑 Method 1 - API Key (Gemini API):"; \
+		echo "   export GOOGLE_API_KEY=your_api_key_here"; \
 		echo "   Get a free key at: https://aistudio.google.com/app/apikey"; \
+		echo ""; \
+		echo "🔐 Method 2 - Service Account (VertexAI):"; \
+		echo "   export GOOGLE_APPLICATION_CREDENTIALS=/path/to/service-account.json"; \
+		echo "   export GOOGLE_CLOUD_PROJECT=your_project_id"; \
+		echo "   Create credentials at: https://console.cloud.google.com/iam-admin/serviceaccounts"; \
+		echo ""; \
 		exit 1; \
 	fi
