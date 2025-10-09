@@ -1,7 +1,0 @@
-streamlit>=1.39.0
-google-genai>=1.15.0
-pandas>=2.2.0
-plotly>=5.24.0
-pytest>=8.0.0
-pytest-json-report>=1.5.0
-numpy>=1.26.0
