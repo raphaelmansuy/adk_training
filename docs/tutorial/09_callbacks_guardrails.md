@@ -1079,10 +1079,7 @@ def test_before_model_blocks_profanity():
 
 ## Next Steps
 
-1. **Explore Evaluation**: Tutorial 10 shows how to test callback behavior
-2. **Production Deployment**: Set up logging infrastructure for callbacks
-3. **Advanced Patterns**: Combine callbacks with Plugins for modular guardrails
-4. **Monitoring**: Integrate with observability tools (AgentOps, Arize AX)
+🚀 **Tutorial 10: Evaluation & Testing** - Learn systematic testing of agent behavior and callbacks
 
 **Exercises**:
 

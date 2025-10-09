@@ -840,4 +840,6 @@ async def api_call_with_retry():
 
 **Congratulations!** You can now connect your agents to any OpenAPI-compliant REST API without writing manual tool code. This opens up integration with thousands of web services!
 
-**Next**: Tutorial 04 - Sequential Workflows (orchestrate multiple agents in pipelines)
+## Next Steps
+
+🚀 **Tutorial 04: Sequential Workflows** - Learn to orchestrate multiple agents in ordered pipelines

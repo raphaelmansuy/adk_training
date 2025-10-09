@@ -302,4 +302,4 @@ sidebar_label: Learning Paths
 4. **Continuous Learning**: ADK evolves rapidly - stay updated with latest patterns
 5. **Community Engagement**: Join discussions, contribute to open source, share knowledge
 
-**🔗 Next**: Use the [Reference Guide](reference-guide.md) for quick lookups and configuration examples.
+**🔗 Next**: Use the [Reference Guide](reference-guide.md) for quick lookups and configuration examples. Check the [Glossary](glossary.md) for definitions of key terms.

@@ -137,11 +137,15 @@ This mental models guide is organized into focused sections for optimal learning
 - Tool selection and implementation patterns
 - Parallel tool execution
 
+**🎓 Tutorials**: [02](../tutorial/02_function_tools.md), [03](../tutorial/03_openapi_tools.md), [11](../tutorial/11_built_in_tools_grounding.md), [16](../tutorial/16_mcp_integration.md)
+
 ### [Workflows & Orchestration →](workflows-orchestration.md)
 
 - Sequential, parallel, and loop workflow patterns
 - Complex pipeline construction
 - Performance optimization
+
+**🎓 Tutorials**: [04](../tutorial/04_sequential_workflows.md), [05](../tutorial/05_parallel_processing.md), [06](../tutorial/06_multi_agent_systems.md), [07](../tutorial/07_loop_agents.md)
 
 ### [LLM Integration →](llm-integration.md)
 
@@ -149,17 +153,23 @@ This mental models guide is organized into focused sections for optimal learning
 - Grounding and real-world connection
 - Thinking and reasoning frameworks
 
+**🎓 Tutorials**: [12](../tutorial/12_planners_thinking.md), [22](../tutorial/22_model_selection.md), [28](../tutorial/28_using_other_llms.md)
+
 ### [Production & Deployment →](production-deployment.md)
 
 - Deployment environments and strategies
 - Observability and monitoring
 - Service configuration
 
+**🎓 Tutorials**: [23](../tutorial/23_production_deployment.md), [24](../tutorial/24_advanced_observability.md), [25](../tutorial/25_best_practices.md)
+
 ### [Advanced Patterns →](advanced-patterns.md)
 
 - Streaming and real-time interaction
 - MCP protocol and standardization
 - Agent-to-agent communication
+
+**🎓 Tutorials**: [13](../tutorial/13_code_execution.md), [14](../tutorial/14_streaming_sse.md), [15](../tutorial/15_live_api_audio.md), [17](../tutorial/17_agent_to_agent.md)
 
 ### [Decision Frameworks →](decision-frameworks.md)
 
@@ -179,7 +189,11 @@ This mental models guide is organized into focused sections for optimal learning
 - Quick reference tables
 - API and configuration guides
 
----
+### [Glossary →](glossary.md)
+
+- ADK terms and concepts
+- Terminology definitions
+- Quick reference tables
 
 ## 🎯 Key Principles & Rules of Thumb
 
@@ -235,6 +249,8 @@ This mental models guide is organized into focused sections for optimal learning
 **Recommended Path**: Start with this overview, then follow the [Foundation Learning Path](learning-paths.md#path-1-foundation-start-here) for a structured approach to mastering ADK.
 
 **Quick Start**: If you're new to ADK, begin with [Tutorial 01: Hello World Agent](../tutorial/01_hello_world_agent.md) after reading this overview.
+
+**Reference**: Check the [Glossary](glossary.md) for definitions of key ADK terms and concepts.
 
 **Source Code**: All mental models are derived from the official ADK source code in `research/adk-python/`. When in doubt, refer to the source code for truth.
 

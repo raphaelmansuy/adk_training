@@ -829,10 +829,8 @@ root_agent = Agent(
 
 ## Next Steps
 
-1. **Explore Callbacks**: Tutorial 09 shows how to add guardrails and monitoring
-2. **Learn Evaluation**: Tutorial 10 demonstrates testing state management
-3. **Production Deployment**: Set up persistent SessionService and Memory Bank
-4. **Advanced Memory**: Combine multiple memory services for different knowledge types
+🚀 **Tutorial 09: Callbacks & Guardrails** - Add safety controls and monitoring to your agents
+🚀 **Tutorial 10: Evaluation & Testing** - Learn systematic testing of state management
 
 **Exercises**:
 

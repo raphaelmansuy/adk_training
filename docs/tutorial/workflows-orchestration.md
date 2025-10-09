@@ -604,7 +604,12 @@ print(performance_report)  # Timing, bottlenecks, optimization suggestions
 - **[Tools & Capabilities →](tools-capabilities.md)**: What agents can do
 - **[LLM Integration →](llm-integration.md)**: How LLMs drive workflows
 
----
+### 🎓 Hands-On Tutorials
+
+- **[Tutorial 04: Sequential Workflows](../tutorial/04_sequential_workflows.md)**: Build ordered agent pipelines
+- **[Tutorial 05: Parallel Processing](../tutorial/05_parallel_processing.md)**: Run agents simultaneously for speed
+- **[Tutorial 06: Multi-Agent Systems](../tutorial/06_multi_agent_systems.md)**: Complex agent coordination
+- **[Tutorial 07: Loop Agents](../tutorial/07_loop_agents.md)**: Iterative refinement patterns
 
 ## 🎯 Key Takeaways
 
