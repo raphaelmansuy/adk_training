@@ -20,7 +20,7 @@
             "role": "model",
             "parts": [
               {
-                "text": "I've created a high-priority ticket (TICK-*) to address your account lockout. The expected response time is 4 hours."
+                "text": "I found an article about account management. It suggests going to example.com/account to manage your account settings. Since your account is locked and you can't access it, I can create an urgent support ticket to get this resolved as quickly as possible. Would you like me to do that?"
               }
             ]
           },
@@ -28,25 +28,20 @@
             "tool_uses": [
               {
                 "id": "call_1",
-                "name": "create_ticket",
+                "name": "search_knowledge_base",
                 "args": {
-                  "issue": "Account locked and inaccessible",
-                  "priority": "urgent"
+                  "query": "account locked"
                 }
               }
             ],
             "tool_responses": [
               {
                 "id": "call_1",
-                "name": "create_ticket",
+                "name": "search_knowledge_base",
                 "response": {
                   "status": "success",
-                  "report": "Urgent priority ticket created",
-                  "data": {
-                    "ticket_id": "TICK-12345",
-                    "priority": "urgent",
-                    "response_time": "4 hours"
-                  }
+                  "report": "Found article about account management",
+                  "data": "Go to example.com/account to manage your account settings."
                 }
               }
             ]

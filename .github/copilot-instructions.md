@@ -228,3 +228,11 @@ setup:
 **Key Difference from Tutorial 01**: Tutorial 01 uses `pip install -e .` and `adk web` dropdown, while initial Tutorial 10 tried `adk web support_agent` which doesn't work without package installation.
 
 **Learned During**: Tutorial 10 implementation - agent couldn't be selected in ADK web interface until proper package installation was implemented.
+
+
+## What you must ensure
+
+- If you want to report what you have done, updated or achieve never report that in the tutorial or in the implementation. It must be done in a ./log directory at the root of the project. 
+
+Use path: ./log/YYYYMMDD_HHMMSS_description_of_your_change.md
+- Never commit any file that contains secrets or API keys. 
