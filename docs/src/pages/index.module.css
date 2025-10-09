@@ -1,0 +1,62 @@
+/**
+ * CSS files with the .module.css suffix will be treated as CSS modules
+ * and scoped locally.
+ */
+
+.heroBanner {
+  padding: 4rem 0;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+@media screen and (max-width: 996px) {
+  .heroBanner {
+    padding: 2rem;
+  }
+}
+
+.buttons {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.learningPaths {
+  padding: 4rem 0;
+  background-color: var(--ifm-background-color);
+}
+
+.learningPaths .card {
+  height: 100%;
+  margin-bottom: 1rem;
+}
+
+.learningPaths .card__header h3 {
+  margin: 0;
+  color: var(--ifm-color-primary);
+}
+
+.learningPaths .card__body ul {
+  padding-left: 1.5rem;
+}
+
+.stats {
+  padding: 4rem 0;
+  background-color: var(--ifm-color-emphasis-100);
+  text-align: center;
+}
+
+.stats h2 {
+  font-size: 3rem;
+  font-weight: bold;
+  margin: 0;
+  color: var(--ifm-color-primary);
+}
+
+.stats p {
+  font-size: 1.2rem;
+  margin: 0.5rem 0 2rem 0;
+  color: var(--ifm-color-emphasis-700);
+}
