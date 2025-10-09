@@ -160,6 +160,19 @@ const config: Config = {
         anonymizeIP: true,
       },
     ],
+    [
+      '@easyops-cn/docusaurus-search-local',
+      {
+        // https://github.com/easyops-cn/docusaurus-search-local
+        hashed: true,
+        indexDocs: true,
+        indexBlog: true,
+        indexPages: false,
+        docsRouteBasePath: '/docs',
+        blogRouteBasePath: '/blog',
+        language: ['en'],
+      },
+    ],
   ],
 
   themeConfig: {
