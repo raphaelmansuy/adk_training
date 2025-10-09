@@ -1,6 +1,6 @@
 # Google ADK Tutorial Series - Table of Contents
 
-**🎉 Status: COMPLETE - All 28 tutorials + Mental Models Overview finished!**
+**🎉 Status: COMPLETE - All 34 tutorials + Mental Models Overview finished!**
 
 Welcome to the most comprehensive Google Agent Development Kit (ADK) tutorial series. This guide will take you from zero to production-ready AI agents, including enterprise deployment, third-party integrations, and multi-provider LLM support.
 
@@ -11,7 +11,7 @@ Welcome to the most comprehensive Google Agent Development Kit (ADK) tutorial se
 **NEW**: Before diving into tutorials, read the comprehensive mental models document!
 
 ### **Overview: Mental Models for Mastery**
-**File**: `overview.md` (1,357 lines)
+**File**: `overview.md` (1,446 lines)
 
 **What You'll Learn**:
 - 15+ core mental models for understanding ADK
@@ -25,7 +25,7 @@ Welcome to the most comprehensive Google Agent Development Kit (ADK) tutorial se
 - Provides "why" and "when" (tutorials provide "how")
 - Clear analogies (RAM vs Hard Drive, Assembly Lines, USB Protocol)
 - Decision trees for every major pattern choice
-- Synthesizes all 28 tutorials into cohesive frameworks
+- Synthesizes all 34 tutorials into cohesive frameworks
 - Accelerates learning via mental frameworks
 
 **Time**: 2 hours (comprehensive read)
@@ -194,7 +194,7 @@ Master production-ready features and enterprise deployment.
 ---
 
 #### Tutorial 10: Evaluation & Testing
-**File**: `tutorial/10_evaluation_testing.md` (700 lines)
+**File**: `tutorial/10_evaluation_testing.md` (2,484 lines)
 
 **You'll Learn**:
 - Test file creation
@@ -203,6 +203,249 @@ Master production-ready features and enterprise deployment.
 - CI/CD integration
 
 **Use Case**: Customer support agent testing
+
+**Time**: 1.5 hours
+
+---
+
+#### Tutorial 11: Built-in Tools & Grounding
+**File**: `tutorial/11_built_in_tools_grounding.md` (1,881 lines)
+
+**You'll Learn**:
+- Using `google_search` for web grounding
+- Implementing location-based queries with `google_maps_grounding`
+- Enterprise compliance search with `enterprise_web_search`
+- Understanding `GoogleSearchAgentTool` workaround
+- Tracking grounding metadata
+- Building a production research assistant
+
+**Use Case**: Current information access and research assistant
+
+**Time**: 1 hour
+
+---
+
+#### Tutorial 12: Planners & Thinking
+**File**: `tutorial/12_planners_thinking.md` (1,231 lines)
+
+**You'll Learn**:
+- Advanced planning and reasoning patterns
+- Thinking frameworks for complex tasks
+- Decision-making strategies
+- Problem decomposition techniques
+- Strategic agent behavior
+
+**Use Case**: Complex problem-solving and strategic planning
+
+**Time**: 1.5 hours
+
+---
+
+#### Tutorial 13: Code Execution
+**File**: `tutorial/13_code_execution.md` (1,086 lines)
+
+**You'll Learn**:
+- Safe code execution environments
+- Dynamic code generation and testing
+- Sandboxed execution patterns
+- Code validation and error handling
+- Programming assistant capabilities
+
+**Use Case**: Code generation and execution assistant
+
+**Time**: 1.5 hours
+
+---
+
+#### Tutorial 14: Streaming & SSE
+**File**: `tutorial/14_streaming_sse.md` (979 lines)
+
+**You'll Learn**:
+- Server-Sent Events (SSE) implementation
+- Real-time streaming responses
+- Progressive output patterns
+- WebSocket alternatives
+- Performance optimization for streaming
+
+**Use Case**: Real-time chat and streaming interfaces
+
+**Time**: 1 hour
+
+---
+
+#### Tutorial 15: Live API Audio
+**File**: `tutorial/15_live_api_audio.md` (938 lines)
+
+**You'll Learn**:
+- Audio input processing
+- Speech-to-text integration
+- Voice command handling
+- Audio stream processing
+- Multimodal audio capabilities
+
+**Use Case**: Voice-enabled assistant and audio processing
+
+**Time**: 1 hour
+
+---
+
+#### Tutorial 16: MCP Integration
+**File**: `tutorial/16_mcp_integration.md` (1,390 lines)
+
+**You'll Learn**:
+- Model Context Protocol (MCP) fundamentals
+- MCP server integration
+- Standardized tool protocols
+- Cross-platform agent communication
+- MCP ecosystem utilization
+
+**Use Case**: Standardized agent-tool integration
+
+**Time**: 1.5 hours
+
+---
+
+#### Tutorial 17: Agent-to-Agent Communication
+**File**: `tutorial/17_agent_to_agent.md` (930 lines)
+
+**You'll Learn**:
+- Inter-agent communication patterns
+- Message passing protocols
+- Agent coordination strategies
+- Distributed agent systems
+- Communication security and reliability
+
+**Use Case**: Multi-agent collaboration systems
+
+**Time**: 1 hour
+
+---
+
+#### Tutorial 18: Events & Observability
+**File**: `tutorial/18_events_observability.md` (998 lines)
+
+**You'll Learn**:
+- Event-driven agent patterns
+- Observability and monitoring
+- Event logging and tracking
+- Performance metrics collection
+- Debugging and troubleshooting techniques
+
+**Use Case**: Production monitoring and debugging
+
+**Time**: 1.5 hours
+
+---
+
+#### Tutorial 19: Artifacts & Files
+**File**: `tutorial/19_artifacts_files.md` (1,004 lines)
+
+**You'll Learn**:
+- File handling and processing
+- Artifact generation and management
+- Document processing capabilities
+- File I/O operations
+- Data persistence patterns
+
+**Use Case**: Document processing and file management
+
+**Time**: 1 hour
+
+---
+
+#### Tutorial 20: YAML Configuration
+**File**: `tutorial/20_yaml_configuration.md` (826 lines)
+
+**You'll Learn**:
+- YAML-based agent configuration
+- Declarative agent definitions
+- Configuration management
+- Environment-specific settings
+- Configuration validation
+
+**Use Case**: Configurable and deployable agents
+
+**Time**: 1 hour
+
+---
+
+#### Tutorial 21: Multimodal Image
+**File**: `tutorial/21_multimodal_image.md` (900 lines)
+
+**You'll Learn**:
+- Image processing and analysis
+- Vision capabilities integration
+- Image understanding and description
+- Visual content processing
+- Multimodal agent patterns
+
+**Use Case**: Image analysis and visual assistant
+
+**Time**: 1 hour
+
+---
+
+#### Tutorial 22: Model Selection
+**File**: `tutorial/22_model_selection.md` (1,297 lines)
+
+**You'll Learn**:
+- Gemini model family overview and comparison
+- Model capability matrix (vision, thinking, code execution, etc.)
+- Performance vs cost tradeoffs
+- Context window and token limits
+- Model selection decision framework
+- Testing and benchmarking strategies
+- Migration strategies between models
+
+**Use Case**: Optimal model selection for specific use cases
+
+**Time**: 1.5 hours
+
+---
+
+#### Tutorial 23: Production Deployment
+**File**: `tutorial/23_production_deployment.md` (813 lines)
+
+**You'll Learn**:
+- Production deployment strategies
+- Scalability considerations
+- Infrastructure requirements
+- Performance optimization
+- Production monitoring and maintenance
+
+**Use Case**: Enterprise-grade agent deployment
+
+**Time**: 1.5 hours
+
+---
+
+#### Tutorial 24: Advanced Observability
+**File**: `tutorial/24_advanced_observability.md` (720 lines)
+
+**You'll Learn**:
+- Advanced monitoring techniques
+- Performance profiling
+- Error tracking and alerting
+- System health monitoring
+- Advanced debugging strategies
+
+**Use Case**: Enterprise observability and monitoring
+
+**Time**: 1 hour
+
+---
+
+#### Tutorial 25: Best Practices
+**File**: `tutorial/25_best_practices.md` (954 lines)
+
+**You'll Learn**:
+- ADK development best practices
+- Code organization patterns
+- Performance optimization techniques
+- Security considerations
+- Maintenance and evolution strategies
+
+**Use Case**: Production-ready agent development
 
 **Time**: 1.5 hours
 
@@ -263,6 +506,112 @@ Master production-ready features and enterprise deployment.
 
 ---
 
+### UI Integration Tutorials
+
+Master user interface integration with modern web frameworks and platforms.
+
+#### Tutorial 29: UI Integration Intro
+
+**File**: `tutorial/29_ui_integration_intro.md` (1,071 lines)
+
+**You'll Learn**:
+- AG-UI Protocol fundamentals
+- UI integration approaches and patterns
+- Decision framework for choosing integration methods
+- Architecture patterns for production deployment
+- Integration with React, Next.js, Streamlit, and Slack
+
+**Use Case**: Understanding UI integration landscape and choosing the right approach
+
+**Time**: 1.5 hours
+
+---
+
+#### Tutorial 30: Next.js ADK Integration
+
+**File**: `tutorial/30_nextjs_adk_integration.md` (1,360 lines)
+
+**You'll Learn**:
+- CopilotKit integration with Next.js
+- React component patterns for ADK agents
+- Real-time streaming and chat interfaces
+- State management between frontend and backend
+- Production deployment with Vercel
+
+**Use Case**: Building web applications with ADK agents using Next.js
+
+**Time**: 2 hours
+
+---
+
+#### Tutorial 31: React Vite ADK Integration
+
+**File**: `tutorial/31_react_vite_adk_integration.md` (1,239 lines)
+
+**You'll Learn**:
+- CopilotKit integration with Vite + React
+- Modern React patterns for AI interfaces
+- Component-based agent interactions
+- Build optimization and performance
+- Development workflow with hot reloading
+
+**Use Case**: Fast development of AI-powered React applications
+
+**Time**: 1.5 hours
+
+---
+
+#### Tutorial 32: Streamlit ADK Integration
+
+**File**: `tutorial/32_streamlit_adk_integration.md` (1,743 lines)
+
+**You'll Learn**:
+- Direct ADK integration with Streamlit
+- Python-based UI development
+- Interactive agent interfaces
+- Data visualization with agent outputs
+- Rapid prototyping and deployment
+
+**Use Case**: Python-based AI applications and data science interfaces
+
+**Time**: 2 hours
+
+---
+
+#### Tutorial 33: Slack ADK Integration
+
+**File**: `tutorial/33_slack_adk_integration.md` (1,669 lines)
+
+**You'll Learn**:
+- Slack app development with ADK
+- Event-driven agent interactions
+- Real-time messaging and responses
+- Slack-specific UI patterns
+- Enterprise integration and security
+
+**Use Case**: AI assistants in Slack workspaces and enterprise communication
+
+**Time**: 2 hours
+
+---
+
+#### Tutorial 34: PubSub ADK Integration
+
+**File**: `tutorial/34_pubsub_adk_integration.md` (1,711 lines)
+
+**You'll Learn**:
+- Google Cloud Pub/Sub integration
+- Event-driven agent architectures
+- Asynchronous message processing
+- Scalable agent communication
+- Enterprise messaging patterns
+
+**Use Case**: Event-driven AI systems and enterprise messaging
+
+**Time**: 2 hours
+
+---
+
 ## Reference Documentation
 
 ### scratchpad.md
@@ -312,11 +661,16 @@ Master production-ready features and enterprise deployment.
 
 **Agents**:
 - Basic agents: Tutorial 01
-- Multi-agent: Tutorials 04-06
+- Multi-agent: Tutorials 04-06, 17
+- Workflow agents: Tutorials 04-07
+- Loop agents: Tutorial 07
 
 **Tools**:
 - Function tools: Tutorial 02
 - OpenAPI tools: Tutorial 03
+- Built-in tools: Tutorial 11
+- Third-party tools: Tutorial 27
+- MCP tools: Tutorial 16
 
 **Workflows**:
 - Sequential: Tutorial 04
@@ -324,17 +678,31 @@ Master production-ready features and enterprise deployment.
 - Loop: Tutorial 07
 - Combined: Tutorial 06
 
-**State**:
+**State & Memory**:
 - Session state: Tutorial 08
 - Memory service: Tutorial 08
+- State management: Tutorials 08, 20
 
-**Control**:
+**Control & Quality**:
 - Callbacks: Tutorial 09
 - Guardrails: Tutorial 09
-
-**Quality**:
 - Evaluation: Tutorial 10
 - Testing: Tutorial 10
+- Observability: Tutorials 18, 24
+
+**Advanced Features**:
+- Streaming & SSE: Tutorial 14
+- Code execution: Tutorial 13
+- Multimodal: Tutorials 15, 21
+- Model selection: Tutorial 22
+- Configuration: Tutorial 20
+- Files & artifacts: Tutorial 19
+
+**Integration**:
+- UI frameworks: Tutorials 29-32
+- Slack: Tutorial 33
+- PubSub: Tutorial 34
+- Enterprise deployment: Tutorials 23, 26
 
 ### By Complexity
 
@@ -342,13 +710,16 @@ Master production-ready features and enterprise deployment.
 - Tutorials 01, 02, 03
 
 **Medium** (2-4 agents):
-- Tutorials 04, 05, 07
+- Tutorials 04, 05, 07, 11-25
 
 **Complex** (5+ agents):
 - Tutorial 06
 
 **Production Features**:
-- Tutorials 08, 09, 10
+- Tutorials 08, 09, 10, 22, 23, 24, 26
+
+**Integration Features**:
+- Tutorials 27, 28, 29-34
 
 ### By Use Case Domain
 
@@ -359,9 +730,18 @@ Master production-ready features and enterprise deployment.
 **Education**: Tutorial 08
 **Moderation**: Tutorial 09
 **Customer Support**: Tutorial 10
-**Enterprise Deployment**: Tutorial 26
-**Research & Integration**: Tutorial 27
+**Research & Information**: Tutorials 11, 27
+**Code & Development**: Tutorial 13
+**Real-time Features**: Tutorial 14
+**Audio & Multimodal**: Tutorials 15, 21
+**Integration & APIs**: Tutorials 16, 17, 19
+**Monitoring & Observability**: Tutorials 18, 24
+**Configuration**: Tutorial 20
+**Model Optimization**: Tutorial 22
+**Deployment**: Tutorials 23, 26
+**Best Practices**: Tutorial 25
 **Multi-Provider AI**: Tutorial 28
+**UI Development**: Tutorials 29-34
 
 ---
 
@@ -379,6 +759,30 @@ Master production-ready features and enterprise deployment.
 | 08 | 3.9+ | ✓ | ✓ | 01-02 |
 | 09 | 3.9+ | ✓ | ✓ | 01-02, 08 |
 | 10 | 3.9+ | ✓ | ✓ | 01-02, pytest |
+| 11 | 3.9+ | ✓ | ✓ | 01-02, Gemini 2.0+ |
+| 12 | 3.9+ | ✓ | ✓ | 01-02 |
+| 13 | 3.9+ | ✓ | ✓ | 01-02 |
+| 14 | 3.9+ | ✓ | ✓ | 01-02 |
+| 15 | 3.9+ | ✓ | ✓ | 01-02 |
+| 16 | 3.9+ | ✓ | ✓ | 01-02 |
+| 17 | 3.9+ | ✓ | ✓ | 01-02 |
+| 18 | 3.9+ | ✓ | ✓ | 01-02 |
+| 19 | 3.9+ | ✓ | ✓ | 01-02 |
+| 20 | 3.9+ | ✓ | ✓ | 01-02 |
+| 21 | 3.9+ | ✓ | ✓ | 01-02 |
+| 22 | 3.9+ | ✓ | ✓ | 01-02 |
+| 23 | 3.9+ | ✓ | ✓ | 01-02 |
+| 24 | 3.9+ | ✓ | ✓ | 01-02 |
+| 25 | 3.9+ | ✓ | ✓ | 01-02 |
+| 26 | 3.9+ | ✓ | ✓ | 01-02 |
+| 27 | 3.9+ | ✓ | ✓ | 01-02 |
+| 28 | 3.9+ | ✓ | ✓ | 01-02 |
+| 29 | 3.9+ | ✓ | ✓ | 01-02 |
+| 30 | 3.9+ | ✓ | ✓ | 01-02, Node.js |
+| 31 | 3.9+ | ✓ | ✓ | 01-02, Node.js |
+| 32 | 3.9+ | ✓ | ✓ | 01-02 |
+| 33 | 3.9+ | ✓ | ✓ | 01-02 |
+| 34 | 3.9+ | ✓ | ✓ | 01-02, GCP |
 
 ---
 
@@ -457,6 +861,29 @@ Follow tutorials 01-10 in order.
 **Time**: ~6 hours
 
 ---
+
+### Path 7: UI Integration Specialist
+**Goal**: Build user interfaces for ADK agents
+
+1. Tutorial 01 (basics)
+2. Tutorial 29 (UI integration intro)
+3. Tutorial 30 (Next.js) OR Tutorial 31 (React/Vite) OR Tutorial 32 (Streamlit)
+4. Tutorial 33 (Slack) OR Tutorial 34 (PubSub)
+
+**Time**: ~6-8 hours
+
+---
+
+### Path 8: Complete Enterprise Solution
+**Goal**: Full-stack AI agent development
+
+1. Tutorials 01-10 (foundation)
+2. Tutorial 22 (model selection)
+3. Tutorial 23 (production deployment)
+4. Tutorial 26 (AgentSpace)
+5. Tutorial 29-32 (UI integration)
+
+**Time**: ~20 hours
 
 ## Code Examples Index
 
@@ -548,20 +975,21 @@ pytest tests/test_agent.py
 
 ## Statistics
 
-**Total Content**: 12,000+ lines
-**Tutorial Content**: 9,125+ lines (28 tutorials)
-**Documentation**: 2,875+ lines
+**Total Content**: 40,000+ lines
+**Tutorial Content**: 36,682+ lines (34 tutorials)
+**Documentation**: 3,318+ lines
 
-**Average Tutorial Length**: 681 lines
-**Longest Tutorial**: Tutorial 28 (950 lines)
-**Shortest Tutorial**: Tutorial 02 (437 lines)
+**Average Tutorial Length**: 1,079 lines
+**Longest Tutorial**: Tutorial 10 (2,484 lines)
+**Shortest Tutorial**: Tutorial 01 (297 lines)
 
-**Real-World Examples**: 28+
-**Code Patterns**: 100+
-**Best Practices**: 150+
-**Troubleshooting Items**: 60+
+**Real-World Examples**: 34+
+**Code Patterns**: 150+
+**Best Practices**: 200+
+**Troubleshooting Items**: 80+
 **Supported LLM Providers**: 6 (Gemini, OpenAI, Claude, Ollama, Azure, Vertex AI)
 **Third-Party Tools**: 120+ (LangChain + CrewAI)
+**UI Integration Frameworks**: 5 (Next.js, React/Vite, Streamlit, Slack, PubSub)
 
 ---
 
@@ -574,7 +1002,7 @@ Tutorial 01. Follow the sequence.
 Not recommended, but see "Recommended Learning Paths" above.
 
 ### How long does it take?
-~12 hours for complete series, ~6 hours for production path.
+~20 hours for complete series, ~6 hours for production path.
 
 ### Do I need to know Python?
 Yes, basic Python knowledge required.
