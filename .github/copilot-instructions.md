@@ -196,3 +196,35 @@ ls -la | cat
 
 - If you are not sure seek the truth in ./research where we have the complete source code of ADK and associated projects. You can also check the official documentation of each project and Github repositories.
 - Never edit or producte .env files directly in the repository. Always use .env.example as a template and create your own .env file for local development.
+
+### ADK Agent Discovery (Critical for Web Interface)
+
+**Problem**: `adk web agent_name` fails to load agents in the web interface.
+
+**Root Cause**: ADK requires agents to be installed as Python packages to be discoverable.
+
+**Solution**: 
+1. Create `setup.py` in tutorial root directory:
+```python
+from setuptools import setup, find_packages
+
+setup(
+    name="agent_name",
+    version="0.1.0", 
+    packages=find_packages(),
+    install_requires=["google-genai>=1.15.0"],
+)
+```
+
+2. Update Makefile setup command:
+```makefile
+setup:
+	pip install -r requirements.txt
+	pip install -e .  # Installs agent as discoverable package
+```
+
+3. Use `adk web` (not `adk web agent_name`) to show agent dropdown in web interface.
+
+**Key Difference from Tutorial 01**: Tutorial 01 uses `pip install -e .` and `adk web` dropdown, while initial Tutorial 10 tried `adk web support_agent` which doesn't work without package installation.
+
+**Learned During**: Tutorial 10 implementation - agent couldn't be selected in ADK web interface until proper package installation was implemented.
