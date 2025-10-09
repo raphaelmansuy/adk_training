@@ -579,7 +579,7 @@ Agent: {
 | **Ordering** | Optional per message key |
 | **Retention** | 7 days default (configurable) |
 | **Throughput** | 100,000s messages/sec |
-| **Latency** | <100ms p99 |
+| **Latency** | &lt;100ms p99 |
 | **Durability** | Replicated across zones |
 
 ---

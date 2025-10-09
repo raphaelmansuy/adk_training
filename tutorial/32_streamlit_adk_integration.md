@@ -1707,7 +1707,7 @@ You now know how to:
 | Feature | Streamlit | Next.js | React Vite |
 |---------|-----------|---------|------------|
 | **Language** | Python only | TypeScript + Python | TypeScript + Python |
-| **Setup Time** | <5 min | ~15 min | ~10 min |
+| **Setup Time** | &lt;5 min | ~15 min | ~10 min |
 | **Architecture** | In-process | HTTP | HTTP |
 | **Latency** | ~0ms | ~50ms | ~50ms |
 | **Customization** | Medium | High | High |

@@ -320,13 +320,13 @@ article_writer = Agent(
         "the research below.\n"
         "\n"
         "**News Summary:**\n"
-        "{news_summary}\n"
+        "\{news_summary\}\n"
         "\n"
         "**Social Insights:**\n"
-        "{social_insights}\n"
+        "\{social_insights\}\n"
         "\n"
         "**Expert Quotes:**\n"
-        "{expert_quotes}\n"
+        "\{expert_quotes\}\n"
         "\n"
         "Write a 4-5 paragraph article that:\n"
         "- Opens with a compelling hook\n"
@@ -598,9 +598,9 @@ The automotive industry is undergoing its most dramatic transformation since the
    
 3. **State Management**:
    - Each pipeline saves to its own output_key
-   - Writer reads {news_summary}, {social_insights}, {expert_quotes}
-   - Editor reads {draft_article}
-   - Formatter reads {edited_article}
+   - Writer reads &#123;news_summary&#125;, &#123;social_insights&#125;, &#123;expert_quotes&#125;
+   - Editor reads &#123;draft_article&#125;
+   - Formatter reads &#123;edited_article&#125;
 
 **Performance Characteristics:**
 - **Without parallelism**: ~60 seconds (6 research agents + 3 creation agents)
@@ -648,7 +648,7 @@ The automotive industry is undergoing its most dramatic transformation since the
 
 **Problem**: "Writer agent missing research data"
 - **Solution**: Verify each pipeline sets its output_key
-- **Solution**: Check {key} names in writer instruction match exactly
+- **Solution**: Check &#123;key&#125; names in writer instruction match exactly
 
 **Problem**: "One research pipeline fails, whole system stops"
 - **Solution**: ParallelAgent waits for ALL - one failure blocks

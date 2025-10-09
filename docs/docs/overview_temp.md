@@ -1,3 +1,10 @@
+---
+id: overview
+title: Mental Models for ADK Mastery
+description: Comprehensive mental framework for understanding Google Agent Development Kit and Generative AI concepts from first principles
+sidebar_label: Overview
+---
+
 # Google ADK & Generative AI: Mental Models for Mastery
 
 **🎯 Purpose**: A comprehensive mental framework for understanding Google Agent Development Kit (ADK) and Generative AI concepts from first principles.

@@ -213,7 +213,7 @@ agent = ADKAgent(adk_agent=adk_agent, app_name="customer_support")
 **✅ Advantages**:
 
 - **Official Support** - Partnership with Google ADK team
-- **Pre-Built Components** - <CopilotChat>, <CopilotTextarea>
+- **Pre-Built Components** - `<CopilotChat>`, `<CopilotTextarea>`
 - **TypeScript SDK** - Type-safe React integration
 - **Extensive Examples** - Production-ready code
 - **Active Community** - Discord, GitHub discussions
@@ -768,7 +768,7 @@ START
 | Factor | AG-UI Protocol | Native API |
 |--------|---------------|------------|
 | **Setup Time** | ⚡ 10 minutes | 🔨 1-2 hours |
-| **UI Components** | ✅ Pre-built (<CopilotChat>) | ❌ Build yourself |
+| **UI Components** | ✅ Pre-built (`<CopilotChat>`) | ❌ Build yourself |
 | **TypeScript Support** | ✅ Full type safety | ⚠️ Manual types |
 | **Framework** | React/Next.js only | Any framework |
 | **Dependencies** | CopilotKit + ag_ui_adk | None (just ADK) |

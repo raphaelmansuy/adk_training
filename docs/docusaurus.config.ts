@@ -44,6 +44,7 @@ const config: Config = {
       'classic',
       {
         docs: {
+          path: '../tutorial', // Point to the root tutorial directory
           sidebarPath: './sidebars.ts',
           // Please change this to your repo.
           // Remove this to remove the "edit this page" links.

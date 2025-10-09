@@ -63,8 +63,8 @@ In this tutorial, you'll build a **real-time data analysis dashboard** using:
 
 | Feature | Benefit |
 |---------|---------|
-| **⚡ Instant Server Start** | Sub-second cold starts vs Next.js 3-5s |
-| **🔥 Lightning HMR** | Updates in <50ms, no page refresh |
+| **⚡ Instant Server Start** | Sub-second cold starts vs Next.js `3-5s` |
+| **🔥 Lightning HMR** | Updates in &lt;50ms, no page refresh |
 | **📦 Optimized Build** | Smaller bundle sizes (50-70% of Next.js) |
 | **🎯 Simple Config** | Single vite.config.js vs Next.js complexity |
 | **🚀 Fast CI/CD** | 2x-5x faster build times |
@@ -93,7 +93,7 @@ In this tutorial, you'll build a **real-time data analysis dashboard** using:
 │  ┌──────────────────────────────────────────────────────┐  │
 │  │  Vite Dev Server (Port 5173)                         │  │
 │  │  ├─ React 18 SPA                                     │  │
-│  │  ├─ <CopilotKit> provider                           │  │
+│  │  ├─ `<CopilotKit>` provider                           │  │
 │  │  ├─ Hot Module Replacement (HMR)                    │  │
 │  │  └─ Instant updates                                 │  │
 │  └──────────────────────────────────────────────────────┘  │
@@ -1006,8 +1006,8 @@ vercel --prod
 
 | Aspect | Vite | Next.js 15 |
 |--------|------|------------|
-| **Cold Start** | <1s | 3-5s |
-| **HMR Speed** | <50ms | 200-500ms |
+| **Cold Start** | &lt;1s | 3-5s |
+| **HMR Speed** | &lt;50ms | 200-500ms |
 | **Build Time** | 10-30s | 30-120s |
 | **Bundle Size** | 100-200KB | 200-400KB |
 | **Config** | Simple | Complex |
