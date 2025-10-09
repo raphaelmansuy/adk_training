@@ -37,7 +37,7 @@ function HomepageHeader() {
             </Link>
             <Link
               className={styles.secondaryButton}
-              to="/docs/tutorial/01_hello_world_agent">
+              to="/docs/hello_world_agent">
               📚 Browse Tutorials
             </Link>
           </div>
@@ -70,7 +70,7 @@ function LearningPaths() {
               <li>Sequential Workflows</li>
               <li>State Management</li>
             </ul>
-            <Link className={clsx("button button--primary", styles.pathButton)} to="/docs/tutorial/01_hello_world_agent">
+            <Link className={clsx("button button--primary", styles.pathButton)} to="/docs/hello_world_agent">
               Start Foundation Track →
             </Link>
           </div>
@@ -87,7 +87,7 @@ function LearningPaths() {
               <li>Loop Agents & Critics</li>
               <li>Event Handling</li>
             </ul>
-            <Link className={clsx("button button--primary", styles.pathButton)} to="/docs/tutorial/04_sequential_workflows">
+            <Link className={clsx("button button--primary", styles.pathButton)} to="/docs/sequential_workflows">
               Explore Workflows →
             </Link>
           </div>
@@ -104,7 +104,7 @@ function LearningPaths() {
               <li>Observability & Monitoring</li>
               <li>UI Integration</li>
             </ul>
-            <Link className={clsx("button button--primary", styles.pathButton)} to="/docs/tutorial/10_evaluation_testing">
+            <Link className={clsx("button button--primary", styles.pathButton)} to="/docs/evaluation_testing">
               Go Production →
             </Link>
           </div>

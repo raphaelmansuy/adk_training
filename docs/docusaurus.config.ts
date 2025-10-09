@@ -118,7 +118,7 @@ const config: Config = {
           items: [
             {
               label: 'Tutorials',
-              to: '/docs/hello_world_agent',
+              to: '/docs/01_hello_world_agent',
             },
             {
               label: 'Mental Models',
@@ -126,7 +126,7 @@ const config: Config = {
             },
             {
               label: 'Code Examples',
-              to: '/docs/hello_world_agent',
+              to: '/docs/01_hello_world_agent',
             },
           ],
         },

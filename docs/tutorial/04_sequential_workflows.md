@@ -24,7 +24,7 @@ implementation_link: "https://github.com/raphaelmansuy/adk_training/tree/main/tu
 
 Connect your agents to create sophisticated multi-step workflows! Learn how to chain multiple agents in a strict sequence where each agent's output feeds into the next - perfect for content creation, data processing, or quality control pipelines.
 
-**What You'll Build**: A Blog Post Generator Pip✅ **`\{key\}` syntax reads from state** - Next agent accesses previous resultsline with 4 stages:
+**What You'll Build**: A Blog Post Generator Pipeline with 4 stages:
 
 1. **Research Agent** - Gathers information about the topic
 2. **Writer Agent** - Creates a draft blog post from research
@@ -56,7 +56,7 @@ The **`SequentialAgent`** is a workflow orchestrator that executes sub-agents in
 Agents pass data to each other using **session state**:
 1. Agent defines `output_key="my_result"` 
 2. ADK automatically saves agent's response to `state['my_result']`
-3. Next agent reads it using `&#123;my_result&#125;` in its instruction
+3. Next agent reads it using `{my_result}` in its instruction
 
 This creates a data pipeline!
 
@@ -232,28 +232,29 @@ root_agent = blog_creation_pipeline
 
 **State Flow Visualization:**
 ```
+```text
 User Input: "Write about quantum computing"
     ↓
 Research Agent → state['research_findings'] = "• Quantum bits..."
     ↓
-Writer Agent (reads &#123;research_findings&#125;) → state['draft_post'] = "Quantum computing is..."
+Writer Agent (reads {research_findings}) → state['draft_post'] = "Quantum computing is..."
     ↓  
-Editor Agent (reads &#123;draft_post&#125;) → state['editorial_feedback'] = "Add more examples..."
+Editor Agent (reads {draft_post}) → state['editorial_feedback'] = "Add more examples..."
     ↓
-Formatter Agent (reads &#123;draft_post&#125;, &#123;editorial_feedback&#125;) → state['final_post'] = "# Quantum Computing\n\n..."
+Formatter Agent (reads {draft_post}, {editorial_feedback}) → state['final_post'] = "# Quantum Computing\n\n..."
     ↓
 Final Output: formatted blog post
 ```
 
 **Key Pattern:**
 1. **Define `output_key`** on each agent → saves response to state
-2. **Use `&#123;state_key&#125;` in instructions** → reads from state
+2. **Use `{state_key}` in instructions** → reads from state
 3. **Chain agents in `SequentialAgent`** → strict execution order
 
 **Why This Works:**
 - All agents share the same `InvocationContext`
 - State persists between agents in the sequence
-- `\{key\}` syntax auto-injects values into instructions
+- `{key}` syntax auto-injects values into instructions
 
 ## Step 4: Run the Pipeline
 
@@ -349,13 +350,13 @@ Unlike traditional computers that use bits (0 or 1), quantum computers use qubit
    - Waits for completion
    - Saves output to `state['research_findings']`
 3. **Next agent in sequence**:
-   - ADK injects `&#123;research_findings&#125;` into writer instruction
+   - ADK injects `{research_findings}` into writer instruction
    - Calls writer_agent.run()
    - Waits for completion
    - Saves output to `state['draft_post']`
 4. **Continue down the chain**:
-   - Editor reads `&#123;draft_post&#125;`
-   - Formatter reads `&#123;draft_post&#125;` AND `&#123;editorial_feedback&#125;`
+   - Editor reads `{draft_post}`
+   - Formatter reads `{draft_post}` AND `{editorial_feedback}`
 5. **Pipeline complete** → Returns final agent's output
 
 **Deterministic & Reliable:**
@@ -388,7 +389,7 @@ sequenceDiagram
 
 ✅ **output_key saves to state** - Each agent stores its result
 
-✅ **&#123;key&#125; syntax reads from state** - Next agent accesses previous results
+✅ **`{key}` syntax reads from state** - Next agent accesses previous results
 
 ✅ **Shared InvocationContext** - All agents in sequence share state
 
@@ -404,7 +405,7 @@ sequenceDiagram
 - Give each agent a specific, focused task
 - Use descriptive `output_key` names
 - Be explicit in instructions about what to output
-- Use state injection `\{key\}` for data flow
+- Use state injection `{key}` for data flow
 - Keep agents stateless (rely on state, not internal memory)
 
 **DON'T:**
@@ -418,14 +419,14 @@ sequenceDiagram
 
 **Problem**: "Next agent doesn't see previous agent's output"
 - **Solution**: Check that previous agent has `output_key` defined
-- **Solution**: Verify you're using `&#123;correct_key_name&#125;` in instruction
+- **Solution**: Verify you're using `{correct_key_name}` in instruction
 
 **Problem**: "Pipeline seems to skip agents"
 - **Solution**: All agents run, check Events tab to see their outputs
 - **Solution**: Agent might be outputting empty response
 
 **Problem**: "State values not injecting"
-- **Solution**: Use exact `&#123;key_name&#125;` matching the `output_key`
+- **Solution**: Use exact `{key_name}` matching the `output_key`
 - **Solution**: Keys are case-sensitive!
 
 **Problem**: "Pipeline takes too long"

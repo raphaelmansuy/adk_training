@@ -1,0 +1,22 @@
+# ADK Training Hub - Python Dependencies
+# Core dependencies for Google Agent Development Kit training
+
+# Core ADK framework
+google-adk>=1.15.1
+
+# Development and testing
+pytest>=7.0.0
+pytest-cov>=4.0.0
+
+# Code quality and formatting
+black>=23.0.0
+isort>=5.12.0
+flake8>=6.0.0
+
+# Documentation and development
+mkdocs>=1.5.0
+mkdocs-material>=9.0.0
+
+# Optional: Additional development tools
+# watchfiles>=0.20.0  # For file watching during development
+# jupyter>=1.0.0      # For notebook development

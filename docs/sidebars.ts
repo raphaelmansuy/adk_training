@@ -21,6 +21,23 @@ const sidebars: SidebarsConfig = {
     },
     {
       type: 'category',
+      label: 'Mental Models',
+      collapsed: false,
+      items: [
+        'overview',
+        'agent-architecture',
+        'tools-capabilities',
+        'workflows-orchestration',
+        'llm-integration',
+        'production-deployment',
+        'advanced-patterns',
+        'decision-frameworks',
+        'learning-paths',
+        'reference-guide',
+      ],
+    },
+    {
+      type: 'category',
       label: 'Foundation Tutorials',
       collapsed: false,
       items: [
