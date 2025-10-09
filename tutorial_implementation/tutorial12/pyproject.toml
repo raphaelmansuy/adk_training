@@ -1,0 +1,34 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "strategic_solver"
+version = "0.1.0"
+description = "Strategic Problem Solver - Tutorial 12: Planners & Thinking Configuration"
+readme = "README.md"
+requires-python = ">=3.9"
+dependencies = [
+    "google-adk>=1.15.0",
+    "google-genai>=1.15.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=7.0.0",
+    "pytest-asyncio>=0.21.0",
+    "pytest-cov>=4.0.0",
+]
+
+[tool.setuptools]
+packages = ["strategic_solver"]
+
+[tool.setuptools.package-dir]
+"" = "."
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = ["test_*.py"]
+python_classes = ["Test*"]
+python_functions = ["test_*"]
+addopts = "-v --cov=strategic_solver --cov-report=term-missing"

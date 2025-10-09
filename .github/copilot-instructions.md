@@ -236,3 +236,5 @@ setup:
 
 Use path: ./log/YYYYMMDD_HHMMSS_description_of_your_change.md
 - Never commit any file that contains secrets or API keys. 
+
+- Prefer a pyproject instead of a setup.py file.
