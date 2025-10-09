@@ -14,17 +14,20 @@ interface ThemeOption {
   };
 }
 
+// Default theme constant - easy to configure
+const DEFAULT_THEME_ID = 'dracula';
+
 const THEMES: ThemeOption[] = [
   {
-    id: 'adk-light',
-    name: 'ADK Light',
-    description: 'Clean and professional theme',
+    id: 'dracula',
+    name: 'Dracula',
+    description: 'Popular dark theme with purple accents',
     preview: {
-      background: '#f8f9fa',
-      text: '#2d3748',
-      keyword: '#3182ce',
-      string: '#38a169',
-      punctuation: '#4a5568',
+      background: '#282a36',
+      text: '#f8f8f2',
+      keyword: '#ff79c6',
+      string: '#f1fa8c',
+      punctuation: '#f8f8f2',
     },
   },
   {
@@ -40,6 +43,18 @@ const THEMES: ThemeOption[] = [
     },
   },
   {
+    id: 'synthwave',
+    name: 'Synthwave',
+    description: 'Retro futuristic theme',
+    preview: {
+      background: '#2a2139',
+      text: '#f8f8f2',
+      keyword: '#ff79c6',
+      string: '#f1fa8c',
+      punctuation: '#f8f8f2',
+    },
+  },
+  {
     id: 'ai-ml',
     name: 'AI/ML Theme',
     description: 'Neural network inspired',
@@ -49,6 +64,18 @@ const THEMES: ThemeOption[] = [
       keyword: '#00d4ff',
       string: '#00ff88',
       punctuation: '#8395a7',
+    },
+  },
+  {
+    id: 'adk-light',
+    name: 'ADK Light',
+    description: 'Clean and professional theme',
+    preview: {
+      background: '#f8f9fa',
+      text: '#2d3748',
+      keyword: '#3182ce',
+      string: '#38a169',
+      punctuation: '#4a5568',
     },
   },
   {
@@ -63,22 +90,10 @@ const THEMES: ThemeOption[] = [
       punctuation: '#3c4043',
     },
   },
-  {
-    id: 'synthwave',
-    name: 'Synthwave',
-    description: 'Retro futuristic theme',
-    preview: {
-      background: '#2a2139',
-      text: '#f8f8f2',
-      keyword: '#ff79c6',
-      string: '#f1fa8c',
-      punctuation: '#f8f8f2',
-    },
-  },
 ];
 
 export function SyntaxThemeSelector() {
-  const [currentTheme, setCurrentTheme] = useState<string>('adk-light');
+  const [currentTheme, setCurrentTheme] = useState<string>(DEFAULT_THEME_ID);
   const [isOpen, setIsOpen] = useState(false);
 
   useEffect(() => {
@@ -88,14 +103,22 @@ export function SyntaxThemeSelector() {
       setCurrentTheme(savedTheme);
       applyTheme(savedTheme);
     } else {
-      // Apply default theme
-      applyTheme('adk-light');
+      // Apply default theme (Dracula)
+      setCurrentTheme(DEFAULT_THEME_ID);
+      applyTheme(DEFAULT_THEME_ID);
     }
   }, []);
 
   const applyTheme = (themeId: string) => {
+    // Validate theme ID
+    if (!THEMES.find(t => t.id === themeId)) {
+      console.warn(`Invalid theme ID: ${themeId}. Using default theme.`);
+      themeId = DEFAULT_THEME_ID;
+    }
+
     // Remove all existing theme classes
-    document.documentElement.classList.forEach(className => {
+    const classList = Array.from(document.documentElement.classList);
+    classList.forEach(className => {
       if (className.startsWith('prism-theme-')) {
         document.documentElement.classList.remove(className);
       }
@@ -104,14 +127,37 @@ export function SyntaxThemeSelector() {
     // Add new theme class
     document.documentElement.classList.add(`prism-theme-${themeId}`);
 
-    // Store preference
-    localStorage.setItem('adk-syntax-theme', themeId);
+    // Debug logging (remove in production)
+    if (process.env.NODE_ENV === 'development') {
+      console.log('Applied theme:', themeId);
+      console.log('HTML classes:', document.documentElement.className);
+    }
+
+    // Store preference in localStorage
+    try {
+      localStorage.setItem('adk-syntax-theme', themeId);
+    } catch (error) {
+      console.warn('Failed to save theme preference:', error);
+    }
   };
 
   const handleThemeChange = (themeId: string) => {
-    setCurrentTheme(themeId);
-    applyTheme(themeId);
-    setIsOpen(false);
+    // Validate and apply theme
+    if (THEMES.find(t => t.id === themeId)) {
+      setCurrentTheme(themeId);
+      applyTheme(themeId);
+      setIsOpen(false);
+    } else {
+      console.error(`Invalid theme selected: ${themeId}`);
+    }
+  };
+
+  const handleKeyDown = (event: React.KeyboardEvent, themeId: string) => {
+    // Keyboard accessibility
+    if (event.key === 'Enter' || event.key === ' ') {
+      event.preventDefault();
+      handleThemeChange(themeId);
+    }
   };
 
   const currentThemeData = THEMES.find(t => t.id === currentTheme);
@@ -121,7 +167,12 @@ export function SyntaxThemeSelector() {
       <button
         className={styles.themeButton}
         onClick={() => setIsOpen(!isOpen)}
+        onKeyDown={(e) => {
+          if (e.key === 'Escape') setIsOpen(false);
+        }}
         aria-label="Change syntax highlighting theme"
+        aria-expanded={isOpen}
+        aria-haspopup="true"
       >
         <div className={styles.themePreview}>
           <div
@@ -132,7 +183,7 @@ export function SyntaxThemeSelector() {
           />
         </div>
         <span className={styles.themeName}>
-          {currentThemeData?.name}
+          {currentThemeData?.name || 'Select Theme'}
         </span>
         <svg
           className={`${styles.arrow} ${isOpen ? styles.arrowOpen : ''}`}
@@ -140,6 +191,7 @@ export function SyntaxThemeSelector() {
           height="12"
           viewBox="0 0 12 12"
           fill="none"
+          aria-hidden="true"
         >
           <path d="M3 4.5L6 7.5L9 4.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
         </svg>
@@ -150,6 +202,7 @@ export function SyntaxThemeSelector() {
           <div
             className={styles.overlay}
             onClick={() => setIsOpen(false)}
+            aria-hidden="true"
           />
           <div className={styles.themeDropdown}>
             <div className={styles.dropdownHeader}>
@@ -157,7 +210,7 @@ export function SyntaxThemeSelector() {
               <p>Select your preferred code highlighting style</p>
             </div>
 
-            <div className={styles.themeGrid}>
+            <div className={styles.themeGrid} role="listbox">
               {THEMES.map((theme) => (
                 <button
                   key={theme.id}
@@ -165,6 +218,10 @@ export function SyntaxThemeSelector() {
                     currentTheme === theme.id ? styles.active : ''
                   }`}
                   onClick={() => handleThemeChange(theme.id)}
+                  onKeyDown={(e) => handleKeyDown(e, theme.id)}
+                  role="option"
+                  aria-selected={currentTheme === theme.id}
+                  aria-label={`${theme.name}: ${theme.description}`}
                 >
                   <div className={styles.themePreview}>
                     <div

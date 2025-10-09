@@ -1,0 +1,169 @@
+/* Tabs Component Styles */
+
+.tabs {
+  margin: 20px 0;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.tabList {
+  display: flex;
+  background: var(--ifm-color-emphasis-100);
+  border-bottom: 1px solid var(--ifm-color-emphasis-200);
+}
+
+.tabButton {
+  flex: 1;
+  padding: 12px 16px;
+  background: transparent;
+  border: none;
+  border-bottom: 2px solid transparent;
+  color: var(--ifm-color-emphasis-700);
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  position: relative;
+}
+
+.tabButton:hover {
+  background: var(--ifm-color-emphasis-200);
+  color: var(--ifm-color-emphasis-900);
+}
+
+.tabButton.active {
+  background: var(--ifm-background-color);
+  color: var(--ifm-color-primary);
+  border-bottom-color: var(--ifm-color-primary);
+}
+
+.tabButton:focus {
+  outline: 2px solid var(--ifm-color-primary);
+  outline-offset: -2px;
+}
+
+.tabContent {
+  background: var(--ifm-background-color);
+  min-height: 200px;
+}
+
+.tabPanel {
+  padding: 20px;
+  opacity: 0;
+  transform: translateY(10px);
+  transition: all 0.3s ease;
+  display: none;
+}
+
+.tabPanel.active {
+  opacity: 1;
+  transform: translateY(0);
+  display: block;
+}
+
+.tabPanel p:last-child,
+.tabPanel ul:last-child,
+.tabPanel ol:last-child {
+  margin-bottom: 0;
+}
+
+.tabPanel h1,
+.tabPanel h2,
+.tabPanel h3,
+.tabPanel h4,
+.tabPanel h5,
+.tabPanel h6 {
+  margin-top: 0;
+  margin-bottom: 16px;
+}
+
+.tabPanel code {
+  background: var(--ifm-color-emphasis-100);
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-size: 0.9em;
+  font-family: 'JetBrains Mono', 'Fira Code', 'SF Mono', Monaco, 'Cascadia Code', 'Roboto Mono', Consolas, 'Courier New', monospace;
+}
+
+.tabPanel pre {
+  background: var(--ifm-color-emphasis-100);
+  padding: 16px;
+  border-radius: 8px;
+  overflow-x: auto;
+  margin: 16px 0;
+}
+
+.tabPanel pre code {
+  background: transparent;
+  padding: 0;
+}
+
+/* Dark mode adjustments */
+[data-theme='dark'] .tabList {
+  background: var(--ifm-color-emphasis-200);
+}
+
+[data-theme='dark'] .tabButton {
+  color: var(--ifm-color-emphasis-300);
+}
+
+[data-theme='dark'] .tabButton:hover {
+  background: var(--ifm-color-emphasis-300);
+  color: var(--ifm-color-emphasis-100);
+}
+
+[data-theme='dark'] .tabButton.active {
+  background: var(--ifm-background-color);
+  color: var(--ifm-color-primary);
+}
+
+[data-theme='dark'] .tabPanel code {
+  background: var(--ifm-color-emphasis-300);
+  color: var(--ifm-color-emphasis-100);
+}
+
+[data-theme='dark'] .tabPanel pre {
+  background: var(--ifm-color-emphasis-200);
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+  .tabList {
+    flex-direction: column;
+  }
+
+  .tabButton {
+    text-align: left;
+    border-bottom: none;
+    border-left: 2px solid transparent;
+  }
+
+  .tabButton.active {
+    border-bottom: none;
+    border-left-color: var(--ifm-color-primary);
+  }
+
+  .tabContent {
+    min-height: 150px;
+  }
+
+  .tabPanel {
+    padding: 16px;
+  }
+}
+
+/* Animation for tab transitions */
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.tabPanel.active {
+  animation: slideIn 0.3s ease-out;
+}

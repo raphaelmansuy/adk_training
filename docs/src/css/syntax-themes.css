@@ -1,25 +1,81 @@
 /* Custom Syntax Highlighting Themes for ADK Training Hub */
 
 /* ===========================================
+   Base Theme Variables (Default: Dracula)
+   =========================================== */
+:root {
+  --prism-background: #282a36;
+  --prism-text: #f8f8f2;
+  --prism-comment: #6272a4;
+  --prism-prolog: #6272a4;
+  --prism-doctype: #6272a4;
+  --prism-cdata: #6272a4;
+  --prism-keyword: #ff79c6;
+  --prism-namespace: #ff79c6;
+  --prism-string: #f1fa8c;
+  --prism-char: #f1fa8c;
+  --prism-number: #bd93f9;
+  --prism-boolean: #bd93f9;
+  --prism-function: #50fa7b;
+  --prism-variable: #ffb86c;
+  --prism-constant: #ffb86c;
+  --prism-property: #8be9fd;
+  --prism-attr-name: #8be9fd;
+  --prism-class: #ff79c6;
+  --prism-class-name: #ff79c6;
+  --prism-punctuation: #f8f8f2;
+  --prism-operator: #ff79c6;
+  --prism-entity: #50fa7b;
+  --prism-url: #f1fa8c;
+  --prism-symbol: #50fa7b;
+  --prism-selector: #ff79c6;
+  --prism-atrule: #50fa7b;
+  --prism-regex: #f1fa8c;
+  --prism-line-highlight: rgba(255, 121, 198, 0.1);
+  --prism-inline-code: #f8f8f2;
+  --prism-deletion: #ffb86c;
+  --prism-insertion: #f1fa8c;
+  --prism-italic: italic;
+  --prism-bold: bold;
+}
+
+/* ===========================================
    ADK Light Theme - Clean and Professional
    =========================================== */
 .prism-theme-adk-light {
   --prism-background: #f8f9fa;
   --prism-text: #2d3748;
   --prism-comment: #718096;
+  --prism-prolog: #718096;
+  --prism-doctype: #718096;
+  --prism-cdata: #718096;
   --prism-keyword: #3182ce;
+  --prism-namespace: #3182ce;
   --prism-string: #38a169;
+  --prism-char: #38a169;
   --prism-number: #d69e2e;
+  --prism-boolean: #d69e2e;
   --prism-function: #805ad5;
   --prism-variable: #e53e3e;
+  --prism-constant: #e53e3e;
   --prism-property: #3182ce;
+  --prism-attr-name: #3182ce;
   --prism-class: #2b6cb0;
+  --prism-class-name: #2b6cb0;
   --prism-punctuation: #4a5568;
   --prism-operator: #2d3748;
-  --prism-boolean: #d69e2e;
+  --prism-entity: #805ad5;
+  --prism-url: #38a169;
+  --prism-symbol: #805ad5;
+  --prism-selector: #3182ce;
+  --prism-atrule: #805ad5;
   --prism-regex: #38a169;
   --prism-line-highlight: rgba(49, 130, 206, 0.1);
   --prism-inline-code: #2d3748;
+  --prism-deletion: #e53e3e;
+  --prism-insertion: #38a169;
+  --prism-italic: italic;
+  --prism-bold: bold;
 }
 
 /* ===========================================
@@ -29,19 +85,36 @@
   --prism-background: #1a202c;
   --prism-text: #e2e8f0;
   --prism-comment: #718096;
+  --prism-prolog: #718096;
+  --prism-doctype: #718096;
+  --prism-cdata: #718096;
   --prism-keyword: #63b3ed;
+  --prism-namespace: #63b3ed;
   --prism-string: #68d391;
+  --prism-char: #68d391;
   --prism-number: #fbbf24;
+  --prism-boolean: #fbbf24;
   --prism-function: #a78bfa;
   --prism-variable: #fc8181;
+  --prism-constant: #fc8181;
   --prism-property: #63b3ed;
+  --prism-attr-name: #63b3ed;
   --prism-class: #4299e1;
+  --prism-class-name: #4299e1;
   --prism-punctuation: #a0aec0;
   --prism-operator: #e2e8f0;
-  --prism-boolean: #fbbf24;
+  --prism-entity: #a78bfa;
+  --prism-url: #68d391;
+  --prism-symbol: #a78bfa;
+  --prism-selector: #63b3ed;
+  --prism-atrule: #a78bfa;
   --prism-regex: #68d391;
   --prism-line-highlight: rgba(99, 179, 237, 0.1);
   --prism-inline-code: #e2e8f0;
+  --prism-deletion: #fc8181;
+  --prism-insertion: #68d391;
+  --prism-italic: italic;
+  --prism-bold: bold;
 }
 
 /* ===========================================
@@ -51,19 +124,36 @@
   --prism-background: #0f1419;
   --prism-text: #e6f3ff;
   --prism-comment: #5c6773;
+  --prism-prolog: #5c6773;
+  --prism-doctype: #5c6773;
+  --prism-cdata: #5c6773;
   --prism-keyword: #00d4ff;
+  --prism-namespace: #00d4ff;
   --prism-string: #00ff88;
+  --prism-char: #00ff88;
   --prism-number: #ffb347;
+  --prism-boolean: #ffb347;
   --prism-function: #ff6b9d;
   --prism-variable: #ff4757;
+  --prism-constant: #ff4757;
   --prism-property: #00d4ff;
+  --prism-attr-name: #00d4ff;
   --prism-class: #3742fa;
+  --prism-class-name: #3742fa;
   --prism-punctuation: #8395a7;
   --prism-operator: #e6f3ff;
-  --prism-boolean: #ffb347;
+  --prism-entity: #ff6b9d;
+  --prism-url: #00ff88;
+  --prism-symbol: #ff6b9d;
+  --prism-selector: #00d4ff;
+  --prism-atrule: #ff6b9d;
   --prism-regex: #00ff88;
   --prism-line-highlight: rgba(0, 212, 255, 0.1);
   --prism-inline-code: #e6f3ff;
+  --prism-deletion: #ff4757;
+  --prism-insertion: #00ff88;
+  --prism-italic: italic;
+  --prism-bold: bold;
 }
 
 /* ===========================================
@@ -73,19 +163,36 @@
   --prism-background: #fafafa;
   --prism-text: #202124;
   --prism-comment: #5f6368;
+  --prism-prolog: #5f6368;
+  --prism-doctype: #5f6368;
+  --prism-cdata: #5f6368;
   --prism-keyword: #1967d2;
+  --prism-namespace: #1967d2;
   --prism-string: #137333;
+  --prism-char: #137333;
   --prism-number: #ea8600;
+  --prism-boolean: #ea8600;
   --prism-function: #8e24aa;
   --prism-variable: #d93025;
+  --prism-constant: #d93025;
   --prism-property: #1967d2;
+  --prism-attr-name: #1967d2;
   --prism-class: #0d652d;
+  --prism-class-name: #0d652d;
   --prism-punctuation: #3c4043;
   --prism-operator: #202124;
-  --prism-boolean: #ea8600;
+  --prism-entity: #8e24aa;
+  --prism-url: #137333;
+  --prism-symbol: #8e24aa;
+  --prism-selector: #1967d2;
+  --prism-atrule: #8e24aa;
   --prism-regex: #137333;
   --prism-line-highlight: rgba(25, 103, 210, 0.1);
   --prism-inline-code: #202124;
+  --prism-deletion: #d93025;
+  --prism-insertion: #137333;
+  --prism-italic: italic;
+  --prism-bold: bold;
 }
 
 /* ===========================================
@@ -95,24 +202,99 @@
   --prism-background: #2a2139;
   --prism-text: #f8f8f2;
   --prism-comment: #6272a4;
+  --prism-prolog: #6272a4;
+  --prism-doctype: #6272a4;
+  --prism-cdata: #6272a4;
   --prism-keyword: #ff79c6;
+  --prism-namespace: #ff79c6;
   --prism-string: #f1fa8c;
+  --prism-char: #f1fa8c;
   --prism-number: #bd93f9;
+  --prism-boolean: #bd93f9;
   --prism-function: #50fa7b;
   --prism-variable: #ffb86c;
+  --prism-constant: #ffb86c;
   --prism-property: #8be9fd;
+  --prism-attr-name: #8be9fd;
   --prism-class: #ff79c6;
+  --prism-class-name: #ff79c6;
   --prism-punctuation: #f8f8f2;
   --prism-operator: #ff79c6;
-  --prism-boolean: #bd93f9;
+  --prism-entity: #50fa7b;
+  --prism-url: #f1fa8c;
+  --prism-symbol: #50fa7b;
+  --prism-selector: #ff79c6;
+  --prism-atrule: #50fa7b;
   --prism-regex: #f1fa8c;
   --prism-line-highlight: rgba(255, 121, 198, 0.1);
   --prism-inline-code: #f8f8f2;
+  --prism-deletion: #ffb86c;
+  --prism-insertion: #f1fa8c;
+  --prism-italic: italic;
+  --prism-bold: bold;
+}
+
+/* ===========================================
+   Dracula Theme - Popular Dark Theme
+   =========================================== */
+.prism-theme-dracula {
+  --prism-background: #282a36;
+  --prism-text: #f8f8f2;
+  --prism-comment: #6272a4;
+  --prism-prolog: #6272a4;
+  --prism-doctype: #6272a4;
+  --prism-cdata: #6272a4;
+  --prism-keyword: #ff79c6;
+  --prism-namespace: #ff79c6;
+  --prism-string: #f1fa8c;
+  --prism-char: #f1fa8c;
+  --prism-number: #bd93f9;
+  --prism-boolean: #bd93f9;
+  --prism-function: #50fa7b;
+  --prism-variable: #ffb86c;
+  --prism-constant: #ffb86c;
+  --prism-property: #8be9fd;
+  --prism-attr-name: #8be9fd;
+  --prism-class: #ff79c6;
+  --prism-class-name: #ff79c6;
+  --prism-punctuation: #f8f8f2;
+  --prism-operator: #ff79c6;
+  --prism-entity: #50fa7b;
+  --prism-url: #f1fa8c;
+  --prism-symbol: #50fa7b;
+  --prism-selector: #ff79c6;
+  --prism-atrule: #50fa7b;
+  --prism-regex: #f1fa8c;
+  --prism-line-highlight: rgba(255, 121, 198, 0.1);
+  --prism-inline-code: #f8f8f2;
+  --prism-deletion: #ffb86c;
+  --prism-insertion: #f1fa8c;
+  --prism-italic: italic;
+  --prism-bold: bold;
 }
 
 /* ===========================================
    Base Theme Styles
    =========================================== */
+pre code {
+  background: var(--prism-background) !important;
+  color: var(--prism-text) !important;
+  border-radius: 8px;
+  padding: 1rem;
+  font-family: 'JetBrains Mono', 'Fira Code', 'SF Mono', Monaco, 'Cascadia Code', 'Roboto Mono', Consolas, 'Courier New', monospace;
+  font-size: 14px;
+  line-height: 1.5;
+  overflow-x: auto;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+pre {
+  background: var(--prism-background) !important;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Also support the prism-code class if it exists */
 .prism-code {
   background: var(--prism-background) !important;
   color: var(--prism-text) !important;
@@ -130,6 +312,106 @@
 }
 
 /* Token Styles */
+.token.comment,
+.token.prolog,
+.token.doctype,
+.token.cdata {
+  color: var(--prism-comment);
+  font-style: italic;
+}
+
+.token.keyword,
+.token.namespace {
+  color: var(--prism-keyword);
+  font-weight: 600;
+}
+
+.token.string,
+.token.char {
+  color: var(--prism-string);
+}
+
+.token.number,
+.token.boolean {
+  color: var(--prism-number);
+  font-weight: 600;
+}
+
+.token.function {
+  color: var(--prism-function);
+  font-weight: 500;
+}
+
+.token.variable,
+.token.constant {
+  color: var(--prism-variable);
+}
+
+.token.property,
+.token.attr-name {
+  color: var(--prism-property);
+}
+
+.token.class-name {
+  color: var(--prism-class);
+  font-weight: 600;
+}
+
+.token.punctuation {
+  color: var(--prism-punctuation);
+}
+
+.token.operator {
+  color: var(--prism-operator);
+}
+
+.token.entity,
+.token.url,
+.language-css .token.string,
+.style .token.string {
+  color: var(--prism-entity);
+}
+
+.token.symbol {
+  color: var(--prism-symbol);
+}
+
+.token.selector {
+  color: var(--prism-selector);
+}
+
+.token.atrule {
+  color: var(--prism-atrule);
+}
+
+.token.regex,
+.token.important {
+  color: var(--prism-regex);
+}
+
+.token.bold {
+  font-weight: bold;
+}
+
+.token.italic {
+  font-style: italic;
+}
+
+.token.entity {
+  cursor: help;
+}
+
+.token.deleted {
+  color: var(--prism-deletion);
+  background: rgba(239, 68, 68, 0.1);
+}
+
+.token.inserted {
+  color: var(--prism-insertion);
+  background: rgba(34, 197, 94, 0.1);
+}
+
+/* Also support prism-code prefixed selectors for compatibility */
 .prism-code .token.comment,
 .prism-code .token.prolog,
 .prism-code .token.doctype,
@@ -138,17 +420,21 @@
   font-style: italic;
 }
 
-.prism-code .token.keyword {
+.prism-code .token.keyword,
+.prism-code .token.namespace {
   color: var(--prism-keyword);
   font-weight: 600;
 }
 
-.prism-code .token.string {
+.prism-code .token.string,
+.prism-code .token.char {
   color: var(--prism-string);
 }
 
-.prism-code .token.number {
+.prism-code .token.number,
+.prism-code .token.boolean {
   color: var(--prism-number);
+  font-weight: 600;
 }
 
 .prism-code .token.function {
@@ -156,7 +442,8 @@
   font-weight: 500;
 }
 
-.prism-code .token.variable {
+.prism-code .token.variable,
+.prism-code .token.constant {
   color: var(--prism-variable);
 }
 
@@ -178,16 +465,65 @@
   color: var(--prism-operator);
 }
 
-.prism-code .token.boolean {
-  color: var(--prism-boolean);
-  font-weight: 600;
+.prism-code .token.entity,
+.prism-code .token.url,
+.prism-code .language-css .token.string,
+.prism-code .style .token.string {
+  color: var(--prism-entity);
 }
 
-.prism-code .token.regex {
+.prism-code .token.symbol {
+  color: var(--prism-symbol);
+}
+
+.prism-code .token.selector {
+  color: var(--prism-selector);
+}
+
+.prism-code .token.atrule {
+  color: var(--prism-atrule);
+}
+
+.prism-code .token.regex,
+.prism-code .token.important,
+.prism-code .token.important {
   color: var(--prism-regex);
 }
 
+.prism-code .token.important {
+  font-weight: bold;
+}
+
+.prism-code .token.bold {
+  font-weight: bold;
+}
+
+.prism-code .token.italic {
+  font-style: italic;
+}
+
+.prism-code .token.entity {
+  cursor: help;
+}
+
+.prism-code .token.deleted {
+  color: var(--prism-deletion);
+  background: rgba(239, 68, 68, 0.1);
+}
+
+.prism-code .token.inserted {
+  color: var(--prism-insertion);
+  background: rgba(34, 197, 94, 0.1);
+}
+
 /* Line highlighting */
+.line-highlight {
+  background: var(--prism-line-highlight);
+  border-left: 3px solid var(--prism-keyword);
+  margin: 0 -1rem;
+  padding: 0 1rem;
+}
+
 .prism-code .line-highlight {
   background: var(--prism-line-highlight);
   border-left: 3px solid var(--prism-keyword);
@@ -196,6 +532,14 @@
 }
 
 /* Inline code */
+.token.inline-code {
+  background: rgba(0, 0, 0, 0.1);
+  color: var(--prism-inline-code);
+  padding: 2px 4px;
+  border-radius: 3px;
+  font-size: 0.9em;
+}
+
 .prism-code .token.inline-code {
   background: rgba(0, 0, 0, 0.1);
   color: var(--prism-inline-code);
@@ -207,10 +551,12 @@
 /* ===========================================
    Theme Transition Effects
    =========================================== */
+pre code,
 .prism-code {
   transition: all 0.3s ease;
 }
 
+pre code .token,
 .prism-code .token {
   transition: color 0.3s ease;
 }
@@ -219,6 +565,7 @@
    Responsive Design
    =========================================== */
 @media (max-width: 768px) {
+  pre code,
   .prism-code {
     font-size: 13px;
     padding: 0.75rem;
@@ -228,6 +575,7 @@
 /* ===========================================
    Copy Button Styling
    =========================================== */
+pre + .copy-button,
 .prism-code + .copy-button {
   background: var(--prism-keyword);
   color: white;
@@ -240,6 +588,284 @@
   transition: background 0.3s ease;
 }
 
+pre + .copy-button:hover,
 .prism-code + .copy-button:hover {
   background: var(--prism-function);
+}
+
+/* ===========================================
+   Mermaid Theme Integration
+   =========================================== */
+
+/* Base Mermaid Styles */
+.mermaid {
+  background: var(--prism-background) !important;
+  color: var(--prism-text) !important;
+  border-radius: 8px;
+  padding: 1rem;
+  margin: 1rem 0;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Mermaid Node Styles */
+.mermaid .node {
+  fill: var(--prism-background);
+  stroke: var(--prism-keyword);
+  stroke-width: 2px;
+  color: var(--prism-text);
+}
+
+.mermaid .node:hover {
+  fill: var(--prism-line-highlight);
+}
+
+.mermaid .node .label {
+  color: var(--prism-text);
+  font-weight: 500;
+}
+
+/* Mermaid Edge Styles */
+.mermaid .edgePath {
+  stroke: var(--prism-property);
+  stroke-width: 2px;
+  fill: none;
+}
+
+.mermaid .edgeLabel {
+  background: var(--prism-background);
+  color: var(--prism-comment);
+  border: 1px solid var(--prism-punctuation);
+  border-radius: 4px;
+  padding: 2px 6px;
+  font-size: 12px;
+}
+
+/* Mermaid Cluster Styles */
+.mermaid .cluster {
+  fill: var(--prism-line-highlight);
+  stroke: var(--prism-keyword);
+  stroke-width: 1px;
+}
+
+.mermaid .cluster .label {
+  color: var(--prism-text);
+  font-weight: 600;
+}
+
+/* Mermaid Flowchart Specific */
+.mermaid .flowchart-link {
+  stroke: var(--prism-function);
+  stroke-width: 2px;
+}
+
+.mermaid .flowchart-link:hover {
+  stroke: var(--prism-string);
+  stroke-width: 3px;
+}
+
+/* Mermaid Sequence Diagram */
+.mermaid .actor {
+  fill: var(--prism-class);
+  stroke: var(--prism-keyword);
+  stroke-width: 2px;
+}
+
+.mermaid .actor .label {
+  color: var(--prism-background);
+  font-weight: 600;
+}
+
+/* Mermaid State Diagram */
+.mermaid .state {
+  fill: var(--prism-line-highlight);
+  stroke: var(--prism-property);
+  stroke-width: 2px;
+}
+
+.mermaid .state.start-state,
+.mermaid .state.end-state {
+  fill: var(--prism-string);
+}
+
+/* Mermaid Class Diagram */
+.mermaid .class {
+  fill: var(--prism-background);
+  stroke: var(--prism-class);
+  stroke-width: 2px;
+}
+
+.mermaid .class .class-label {
+  color: var(--prism-text);
+  font-weight: 600;
+}
+
+/* Mermaid ER Diagram */
+.mermaid .er {
+  fill: var(--prism-background);
+  stroke: var(--prism-keyword);
+  stroke-width: 2px;
+}
+
+/* Mermaid Gantt Chart */
+.mermaid .task {
+  fill: var(--prism-function);
+}
+
+.mermaid .task.done {
+  fill: var(--prism-string);
+}
+
+.mermaid .task.active {
+  fill: var(--prism-keyword);
+}
+
+/* Mermaid Pie Chart */
+.mermaid .pie {
+  fill: var(--prism-background);
+  stroke: var(--prism-punctuation);
+  stroke-width: 1px;
+}
+
+/* Mermaid Journey */
+.mermaid .journey-section {
+  fill: var(--prism-line-highlight);
+  stroke: var(--prism-keyword);
+  stroke-width: 1px;
+}
+
+/* Mermaid Git Graph */
+.mermaid .commit {
+  fill: var(--prism-string);
+  stroke: var(--prism-keyword);
+  stroke-width: 2px;
+}
+
+.mermaid .branch {
+  stroke: var(--prism-function);
+  stroke-width: 3px;
+}
+
+/* Mermaid Kanban */
+.mermaid .kanban-column {
+  fill: var(--prism-background);
+  stroke: var(--prism-punctuation);
+  stroke-width: 1px;
+}
+
+.mermaid .kanban-task {
+  fill: var(--prism-line-highlight);
+  stroke: var(--prism-property);
+  stroke-width: 1px;
+}
+
+/* Mermaid Timeline */
+.mermaid .timeline-event {
+  fill: var(--prism-function);
+  stroke: var(--prism-keyword);
+  stroke-width: 2px;
+}
+
+/* Mermaid Sankey */
+.mermaid .sankey-node {
+  fill: var(--prism-class);
+  stroke: var(--prism-keyword);
+  stroke-width: 2px;
+}
+
+.mermaid .sankey-link {
+  fill: var(--prism-property);
+  stroke: none;
+}
+
+/* Mermaid Mindmap */
+.mermaid .mindmap-node {
+  fill: var(--prism-background);
+  stroke: var(--prism-keyword);
+  stroke-width: 2px;
+}
+
+.mermaid .mindmap-node.root {
+  fill: var(--prism-keyword);
+  color: var(--prism-background);
+}
+
+/* Mermaid Block Diagram */
+.mermaid .block {
+  fill: var(--prism-background);
+  stroke: var(--prism-property);
+  stroke-width: 2px;
+}
+
+/* Mermaid Packet Diagram */
+.mermaid .packet {
+  fill: var(--prism-function);
+  stroke: var(--prism-keyword);
+  stroke-width: 1px;
+}
+
+/* Mermaid C4 Diagram */
+.mermaid .c4-person {
+  fill: var(--prism-string);
+  stroke: var(--prism-keyword);
+  stroke-width: 2px;
+}
+
+.mermaid .c4-system {
+  fill: var(--prism-class);
+  stroke: var(--prism-property);
+  stroke-width: 2px;
+}
+
+.mermaid .c4-container {
+  fill: var(--prism-function);
+  stroke: var(--prism-keyword);
+  stroke-width: 2px;
+}
+
+.mermaid .c4-component {
+  fill: var(--prism-variable);
+  stroke: var(--prism-punctuation);
+  stroke-width: 2px;
+}
+
+/* Mermaid Theme Transitions */
+.mermaid {
+  transition: all 0.3s ease;
+}
+
+.mermaid .node,
+.mermaid .edgePath,
+.mermaid .cluster,
+.mermaid .actor,
+.mermaid .state,
+.mermaid .class,
+.mermaid .er,
+.mermaid .task,
+.mermaid .journey-section,
+.mermaid .commit,
+.mermaid .kanban-column,
+.mermaid .timeline-event,
+.mermaid .sankey-node,
+.mermaid .mindmap-node,
+.mermaid .block,
+.mermaid .packet,
+.mermaid .c4-person,
+.mermaid .c4-system,
+.mermaid .c4-container,
+.mermaid .c4-component {
+  transition: all 0.3s ease;
+}
+
+/* Responsive Mermaid */
+@media (max-width: 768px) {
+  .mermaid {
+    font-size: 12px;
+    padding: 0.75rem;
+  }
+
+  .mermaid .node .label,
+  .mermaid .cluster .label,
+  .mermaid .actor .label {
+    font-size: 11px;
+  }
 }
