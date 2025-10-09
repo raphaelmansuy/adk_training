@@ -1,0 +1,245 @@
+/* Custom Syntax Highlighting Themes for ADK Training Hub */
+
+/* ===========================================
+   ADK Light Theme - Clean and Professional
+   =========================================== */
+.prism-theme-adk-light {
+  --prism-background: #f8f9fa;
+  --prism-text: #2d3748;
+  --prism-comment: #718096;
+  --prism-keyword: #3182ce;
+  --prism-string: #38a169;
+  --prism-number: #d69e2e;
+  --prism-function: #805ad5;
+  --prism-variable: #e53e3e;
+  --prism-property: #3182ce;
+  --prism-class: #2b6cb0;
+  --prism-punctuation: #4a5568;
+  --prism-operator: #2d3748;
+  --prism-boolean: #d69e2e;
+  --prism-regex: #38a169;
+  --prism-line-highlight: rgba(49, 130, 206, 0.1);
+  --prism-inline-code: #2d3748;
+}
+
+/* ===========================================
+   ADK Dark Theme - Modern and Readable
+   =========================================== */
+.prism-theme-adk-dark {
+  --prism-background: #1a202c;
+  --prism-text: #e2e8f0;
+  --prism-comment: #718096;
+  --prism-keyword: #63b3ed;
+  --prism-string: #68d391;
+  --prism-number: #fbbf24;
+  --prism-function: #a78bfa;
+  --prism-variable: #fc8181;
+  --prism-property: #63b3ed;
+  --prism-class: #4299e1;
+  --prism-punctuation: #a0aec0;
+  --prism-operator: #e2e8f0;
+  --prism-boolean: #fbbf24;
+  --prism-regex: #68d391;
+  --prism-line-highlight: rgba(99, 179, 237, 0.1);
+  --prism-inline-code: #e2e8f0;
+}
+
+/* ===========================================
+   AI/ML Theme - Inspired by Neural Networks
+   =========================================== */
+.prism-theme-ai-ml {
+  --prism-background: #0f1419;
+  --prism-text: #e6f3ff;
+  --prism-comment: #5c6773;
+  --prism-keyword: #00d4ff;
+  --prism-string: #00ff88;
+  --prism-number: #ffb347;
+  --prism-function: #ff6b9d;
+  --prism-variable: #ff4757;
+  --prism-property: #00d4ff;
+  --prism-class: #3742fa;
+  --prism-punctuation: #8395a7;
+  --prism-operator: #e6f3ff;
+  --prism-boolean: #ffb347;
+  --prism-regex: #00ff88;
+  --prism-line-highlight: rgba(0, 212, 255, 0.1);
+  --prism-inline-code: #e6f3ff;
+}
+
+/* ===========================================
+   Google Theme - Inspired by Material Design
+   =========================================== */
+.prism-theme-google {
+  --prism-background: #fafafa;
+  --prism-text: #202124;
+  --prism-comment: #5f6368;
+  --prism-keyword: #1967d2;
+  --prism-string: #137333;
+  --prism-number: #ea8600;
+  --prism-function: #8e24aa;
+  --prism-variable: #d93025;
+  --prism-property: #1967d2;
+  --prism-class: #0d652d;
+  --prism-punctuation: #3c4043;
+  --prism-operator: #202124;
+  --prism-boolean: #ea8600;
+  --prism-regex: #137333;
+  --prism-line-highlight: rgba(25, 103, 210, 0.1);
+  --prism-inline-code: #202124;
+}
+
+/* ===========================================
+   Synthwave Theme - Retro Futuristic
+   =========================================== */
+.prism-theme-synthwave {
+  --prism-background: #2a2139;
+  --prism-text: #f8f8f2;
+  --prism-comment: #6272a4;
+  --prism-keyword: #ff79c6;
+  --prism-string: #f1fa8c;
+  --prism-number: #bd93f9;
+  --prism-function: #50fa7b;
+  --prism-variable: #ffb86c;
+  --prism-property: #8be9fd;
+  --prism-class: #ff79c6;
+  --prism-punctuation: #f8f8f2;
+  --prism-operator: #ff79c6;
+  --prism-boolean: #bd93f9;
+  --prism-regex: #f1fa8c;
+  --prism-line-highlight: rgba(255, 121, 198, 0.1);
+  --prism-inline-code: #f8f8f2;
+}
+
+/* ===========================================
+   Base Theme Styles
+   =========================================== */
+.prism-code {
+  background: var(--prism-background) !important;
+  color: var(--prism-text) !important;
+  border-radius: 8px;
+  padding: 1rem;
+  font-family: 'JetBrains Mono', 'Fira Code', 'SF Mono', Monaco, 'Cascadia Code', 'Roboto Mono', Consolas, 'Courier New', monospace;
+  font-size: 14px;
+  line-height: 1.5;
+  overflow-x: auto;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.prism-code[class*="language-"] {
+  background: var(--prism-background) !important;
+}
+
+/* Token Styles */
+.prism-code .token.comment,
+.prism-code .token.prolog,
+.prism-code .token.doctype,
+.prism-code .token.cdata {
+  color: var(--prism-comment);
+  font-style: italic;
+}
+
+.prism-code .token.keyword {
+  color: var(--prism-keyword);
+  font-weight: 600;
+}
+
+.prism-code .token.string {
+  color: var(--prism-string);
+}
+
+.prism-code .token.number {
+  color: var(--prism-number);
+}
+
+.prism-code .token.function {
+  color: var(--prism-function);
+  font-weight: 500;
+}
+
+.prism-code .token.variable {
+  color: var(--prism-variable);
+}
+
+.prism-code .token.property,
+.prism-code .token.attr-name {
+  color: var(--prism-property);
+}
+
+.prism-code .token.class-name {
+  color: var(--prism-class);
+  font-weight: 600;
+}
+
+.prism-code .token.punctuation {
+  color: var(--prism-punctuation);
+}
+
+.prism-code .token.operator {
+  color: var(--prism-operator);
+}
+
+.prism-code .token.boolean {
+  color: var(--prism-boolean);
+  font-weight: 600;
+}
+
+.prism-code .token.regex {
+  color: var(--prism-regex);
+}
+
+/* Line highlighting */
+.prism-code .line-highlight {
+  background: var(--prism-line-highlight);
+  border-left: 3px solid var(--prism-keyword);
+  margin: 0 -1rem;
+  padding: 0 1rem;
+}
+
+/* Inline code */
+.prism-code .token.inline-code {
+  background: rgba(0, 0, 0, 0.1);
+  color: var(--prism-inline-code);
+  padding: 2px 4px;
+  border-radius: 3px;
+  font-size: 0.9em;
+}
+
+/* ===========================================
+   Theme Transition Effects
+   =========================================== */
+.prism-code {
+  transition: all 0.3s ease;
+}
+
+.prism-code .token {
+  transition: color 0.3s ease;
+}
+
+/* ===========================================
+   Responsive Design
+   =========================================== */
+@media (max-width: 768px) {
+  .prism-code {
+    font-size: 13px;
+    padding: 0.75rem;
+  }
+}
+
+/* ===========================================
+   Copy Button Styling
+   =========================================== */
+.prism-code + .copy-button {
+  background: var(--prism-keyword);
+  color: white;
+  border: none;
+  padding: 8px 12px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 12px;
+  margin-top: 8px;
+  transition: background 0.3s ease;
+}
+
+.prism-code + .copy-button:hover {
+  background: var(--prism-function);
+}
