@@ -23,7 +23,7 @@ Think of an AI agent like a **human office worker**:
 │  - Decision making         - Long-term: Memory Service      │
 │  - Language understanding  - Working memory: temp: state    │
 │                                                             │
-│  🛠️ TOOLS (Capabilities)   📋 INSTRUCTIONS (Behavior)       │
+│  🛠️ TOOLS (Capabilities)   📋 INSTRUCTIONS (Behavior)        │
 │  - Search web              - Personality                    │
 │  - Execute code            - Rules & constraints            │
 │  - Call APIs               - Task guidance                  │
