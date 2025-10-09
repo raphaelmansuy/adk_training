@@ -50,9 +50,9 @@ implementation_link: "https://github.com/raphaelmansuy/adk_training/tree/main/tu
 **Benefits**:
 - 🔌 **Plug-and-Play**: Connect to existing MCP servers instantly
 - 🌐 **Community Ecosystem**: Leverage community-built tools
-- 🛠️ **Standardized Interface**: Consistent API across all tools
+- [TOOLS] **Standardized Interface**: Consistent API across all tools
 - 📦 **Rich Capabilities**: Filesystem, databases, APIs, and more
-- 🔄 **Reusable**: Same server works with multiple agents
+- [FLOW] **Reusable**: Same server works with multiple agents
 - 🚀 **Extensible**: Build custom servers when needed
 
 **MCP Ecosystem**:

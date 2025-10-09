@@ -13,7 +13,7 @@ sidebar_label: Workflows & Orchestration
 
 ---
 
-## 🔄 Workflow Patterns Overview
+## [FLOW] Workflow Patterns Overview
 
 **Mental Model**: Workflows are like **assembly line strategies** for agent orchestration:
 
@@ -22,7 +22,7 @@ sidebar_label: Workflows & Orchestration
 │                    WORKFLOW PATTERNS                         │
 ├──────────────────────────────────────────────────────────────┤
 │                                                              │
-│ 📋 SEQUENTIAL (Assembly Line)                                │
+│ [INSTR] SEQUENTIAL (Assembly Line)                                │
 │    "One step after another, in order order"                  │
 │                                                              │
 │    Step 1  →  Step 2  →  Step 3  →  Step 4                  │
@@ -32,7 +32,7 @@ sidebar_label: Workflows & Orchestration
 │    Pattern: Each step uses output from previous              │
 │    Source: agents/workflow_agents/sequential_agent.py        │
 │                                                              │
-│ ⚡ PARALLEL (Fan-out/Gather)                                 │
+│ │ [PARALLEL] PARALLEL (Fan-out/Gather)                         │                                 │
 │    "Multiple tasks at once, then combine"                    │
 │                                                              │
 │         ┌─── Task A ───┐                                     │
@@ -45,7 +45,7 @@ sidebar_label: Workflows & Orchestration
 │    Pattern: Fan-out → Execute → Gather                       │
 │    Source: agents/workflow_agents/parallel_agent.py          │
 │                                                              │
-│ 🔁 LOOP (Iterative Refinement)                               │
+│ [LOOP] LOOP (Iterative Refinement)                          │
 │    "Repeat until good enough or max iterations"              │
 │                                                              │
 │    ┌──────────────────┐                                      │
@@ -64,7 +64,7 @@ sidebar_label: Workflows & Orchestration
 
 ---
 
-## 📋 Sequential Workflows (Assembly Line)
+## [INSTR] Sequential Workflows (Assembly Line)
 
 ### Basic Sequential Pattern
 
@@ -368,7 +368,7 @@ development_loop = LoopAgent(
 
 ---
 
-## 🔄 Complex Workflow Composition
+## [FLOW] Complex Workflow Composition
 
 ### Nested Workflows
 

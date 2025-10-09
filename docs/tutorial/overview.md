@@ -15,7 +15,7 @@ sidebar_label: Overview
 
 ---
 
-## 🧠 Core Mental Model: The Agent as a System
+## [BRAIN] Core Mental Model: The Agent as a System
 
 ### The Agent = Human Worker Analogy
 
@@ -25,22 +25,22 @@ Think of an AI agent like a **human office worker**:
 ┌─────────────────────────────────────────────────────────────┐
 │                        AI AGENT                             │
 │                                                             │
-│  🧠 BRAIN (Model)          👁️ MEMORY (Context)             │
-│  - Reasoning               - Short-term: Session State      │
-│  - Decision making         - Long-term: Memory Service      │
-│  - Language understanding  - Working memory: temp: state    │
+│  [BRAIN] BRAIN (Model)        [MEM] MEMORY (Context)        │
+│  - Reasoning             - Short-term: Session State        │
+│  - Decision making       - Long-term: Memory Service        │
+│  - Language understanding - Working memory: temp: state     │
 │                                                             │
-│  🛠️ TOOLS (Capabilities)   📋 INSTRUCTIONS (Behavior)        │
-│  - Search web              - Personality                    │
-│  - Execute code            - Rules & constraints            │
-│  - Call APIs               - Task guidance                  │
-│  - File operations         - Examples                       │
+│  [TOOLS] TOOLS (Capabilities) [INSTR] INSTRUCTIONS (Behavior) │
+│  - Search web            - Personality                      │
+│  - Execute code          - Rules & constraints              │
+│  - Call APIs             - Task guidance                    │
+│  - File operations       - Examples                         │
 │                                                             │
-│  🔄 WORKFLOWS (Process)    👀 CALLBACKS (Supervision)        │
-│  - Sequential steps        - Before/after hooks             │
-│  - Parallel tasks          - Guardrails                     │
-│  - Iterative loops         - Logging                        │
-│  - Dynamic routing         - Policy enforcement             │
+│  [FLOW] WORKFLOWS (Process)   [CALLB] CALLBACKS (Supervision) │
+│  - Sequential steps      - Before/after hooks               │
+│  - Parallel tasks        - Guardrails                       │
+│  - Iterative loops       - Logging                          │
+│  - Dynamic routing       - Policy enforcement               │
 │                                                             │
 └─────────────────────────────────────────────────────────────┘
 ```
@@ -88,14 +88,14 @@ flowchart LR
 │                      AGENT TYPES                             │
 ├──────────────────────────────────────────────────────────────┤
 │                                                              │
-│ 🤖 LLM AGENT (Thinker)                                      │
+│ [BRAIN] LLM AGENT (Thinker)                                   │
 │    "I reason and decide dynamically"                         │
 │    - Powered by language model                               │
 │    - Flexible, creative, adaptive                            │
 │    - Uses: Conversations, analysis, creative tasks           │
 │    Source: agents/llm_agent.py                               │
 │                                                              │
-│ 🔄 WORKFLOW AGENT (Manager)                                  │
+│ [FLOW] WORKFLOW AGENT (Manager)                                  │
 │    "I follow a strict process"                               │
 │    - Deterministic execution                                 │
 │    - Orchestrates other agents                               │
@@ -103,7 +103,7 @@ flowchart LR
 │    Uses: Pipelines, coordination, iteration                  │
 │    Source: agents/workflow_agents/                           │
 │                                                              │
-│ 🔌 REMOTE AGENT (External Expert)                            │
+│ [REMOTE] REMOTE AGENT (External Expert)                      │
 │    "I'm a specialist from another service"                   │
 │    - HTTP-based agent communication                          │
 │    - A2A protocol                                            │

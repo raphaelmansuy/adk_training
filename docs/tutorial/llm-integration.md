@@ -24,24 +24,24 @@ sidebar_label: LLM Integration
 │                    PROMPT ANATOMY                            │
 ├──────────────────────────────────────────────────────────────┤
 │                                                              │
-│ 🎭 SYSTEM/INSTRUCTION (Operating System)                     │
+│ [INSTR] SYSTEM/INSTRUCTION (Operating System)                 │
 │    "You are a helpful research assistant..."                 │
 │    → Defines agent personality and behavior                  │
 │    → Sets constraints and rules                              │
 │    → Provides role context                                   │
 │                                                              │
-│ 📚 CONTEXT (Program Data)                                    │
+│ [MEM] CONTEXT (Program Data)                                │
 │    "Current state: {topic}, Previous: {history}"             │
 │    → Injected from session state                             │
 │    → Dynamic data via {key} syntax                           │
 │    → Tools available list                                    │
 │                                                              │
-│ 💬 USER MESSAGE (Function Call)                              │
+│ [USER] USER MESSAGE (Function Call)                          │
 │    "Research quantum computing trends"                       │
 │    → The actual task/query                                   │
 │    → Can be text, image, audio, video                        │
 │                                                              │
-│ 🛠️ TOOL RESULTS (Return Values)                              │
+│ [TOOLS] TOOL RESULTS (Return Values)                              │
 │    "search_result: {...}"                                    │
 │    → Feedback from tool execution                            │
 │    → Multi-turn conversation                                 │
@@ -184,7 +184,7 @@ location_agent = Agent(
 
 ---
 
-## 🧠 Thinking & Reasoning Frameworks
+## [BRAIN] Thinking & Reasoning Frameworks
 
 ### Built-in Thinking (Native Model Capability)
 
@@ -246,7 +246,7 @@ reasoning_agent = Agent(
 
 ---
 
-## 🔄 Multi-Turn Conversations
+## [FLOW] Multi-Turn Conversations
 
 ### Context Management
 

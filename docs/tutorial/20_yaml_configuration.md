@@ -53,7 +53,7 @@ implementation_link: "https://github.com/raphaelmansuy/adk_training/tree/main/tu
 
 - 🚀 **Rapid Prototyping**: Change configurations without coding
 - 📝 **Readable**: Human-friendly format
-- 🔄 **Version Control**: Easy to track config changes
+- [FLOW] **Version Control**: Easy to track config changes
 - 🎯 **Separation**: Configuration separate from implementation
 - 👥 **Accessibility**: Non-developers can modify agents
 - 🔧 **Reusable**: Share configurations across projects

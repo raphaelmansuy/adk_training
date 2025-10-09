@@ -52,7 +52,7 @@ implementation_link: "https://github.com/raphaelmansuy/adk_training/tree/main/tu
 - 🔍 **Discovery**: Find agents by capability via agent cards
 - 🔐 **Secure**: Built-in authentication and authorization
 - 🎯 **Specialization**: Each agent focuses on its expertise
-- 🔄 **Reusability**: Use same agent from multiple orchestrators
+- [FLOW] **Reusability**: Use same agent from multiple orchestrators
 - ⚡ **Scalability**: Scale agents independently
 
 **Use Cases**:

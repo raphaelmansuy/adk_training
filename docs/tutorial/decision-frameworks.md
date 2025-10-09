@@ -11,7 +11,7 @@ sidebar_label: Decision Frameworks
 
 ---
 
-## 🧠 Pattern Selection Framework
+## [BRAIN] Pattern Selection Framework
 
 ### Agent Type Decision Tree
 

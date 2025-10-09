@@ -22,26 +22,26 @@ sidebar_label: Tools & Capabilities
 │                      TOOL ECOSYSTEM                          │
 ├──────────────────────────────────────────────────────────────┤
 │                                                              │
-│ 🔧 FUNCTION TOOLS (Custom Skills)                            │
+│ [TOOLS] FUNCTION TOOLS (Custom Skills)                        │
 │    "Python functions = agent capabilities"                   │
 │    def search_database(query: str) -> dict:                  │
 │        return {...}                                          │
 │    Use: Custom business logic                                │
 │    Source: tools/function_tool.py                            │
 │                                                              │
-│ 🌐 OPENAPI TOOLS (API Access)                                │
+│ [API] OPENAPI TOOLS (API Access)                             │
 │    "REST APIs automatically become agent tools"              │
 │    OpenAPIToolset(spec_url="https://api.com/spec.json")      │
 │    Use: External services, third-party APIs                  │
 │    Source: tools/openapi_toolset.py                          │
 │                                                              │
-│ 🔌 MCP TOOLS (Standardized Protocol)                         │
+│ [MCP] MCP TOOLS (Standardized Protocol)                      │
 │    "Model Context Protocol = universal tool language"        │
 │    MCPToolset(server="filesystem", path="/data")             │
 │    Use: Filesystem, databases, standard services             │
 │    Source: tools/mcp_tool/                                   │
 │                                                              │
-│ 🏢 BUILTIN TOOLS (Google Cloud)                              │
+│ [BUILTIN] BUILTIN TOOLS (Google Cloud)                       │
 │    "Pre-built Google capabilities"                           │
 │    - google_search (web grounding)                           │
 │    - google_maps_grounding (location)                        │
@@ -49,7 +49,7 @@ sidebar_label: Tools & Capabilities
 │    Use: Search, maps, code, enterprise data                  │
 │    Source: tools/google_*_tool.py                            │
 │                                                              │
-│ 🔗 FRAMEWORK TOOLS (Third-party)                             │
+│ [FRAMEWORK] FRAMEWORK TOOLS (Third-party)                     │
 │    "100+ tools from LangChain/CrewAI"                        │
 │    LangchainTool(tool=TavilySearchResults())                 │
 │    CrewaiTool(tool=SerperDevTool(), name="search")           │
@@ -460,8 +460,8 @@ User: "Check weather in SF, LA, NYC"
          │
     ┌────┴────┬────────┬────────┐
     │         │        │        │
-  Task A   Task B   Task C    (Parallel)
-  SF       LA       NYC
+ Task A    Task B    Task C   (Parallel)
+    SF        LA        NYC
     │         │        │
     └────┬────┴────────┘
          │
@@ -503,7 +503,7 @@ research_pipeline = SequentialAgent(
 
 ---
 
-## 🛠️ Tool Selection Decision Tree
+## [TOOLS] Tool Selection Decision Tree
 
 ```
 Need a Capability?

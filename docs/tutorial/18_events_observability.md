@@ -51,7 +51,7 @@ implementation_link: "https://github.com/raphaelmansuy/adk_training/tree/main/tu
 - 🔍 **Visibility**: See exactly what agents are doing
 - 🐛 **Debugging**: Identify failures and bottlenecks
 - 📊 **Analytics**: Track performance metrics
-- 🔄 **State Tracking**: Monitor state changes over time
+- [FLOW] **State Tracking**: Monitor state changes over time
 - 🎯 **Optimization**: Find inefficiencies
 - 🚨 **Alerting**: Detect anomalies in real-time
 

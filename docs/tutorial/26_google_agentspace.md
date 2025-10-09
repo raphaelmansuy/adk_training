@@ -73,7 +73,7 @@ implementation_link: "https://github.com/raphaelmansuy/adk_training/tree/main/tu
 │  │  SharePoint · Drive · OneDrive · HubSpot · AEM  │    │
 │  └─────────────────────────────────────────────────┘    │
 │                                                           │
-└───────────────────────────────────────────────────────────┘
+└─────────────────────────────────────────────────────────┘
          ▲                                           ▲
          │                                           │
     Deploy from ADK                             Access via Web
@@ -143,7 +143,7 @@ Agent:
 User: "Research emerging trends in electric vehicle battery technology"
 
 Agent:
-📊 RESEARCH REPORT: EV Battery Technology Trends (2025)
+[REPORT] RESEARCH REPORT: EV Battery Technology Trends (2025)
 
 Key Findings:
 1. Solid-state batteries: 50% range improvement, commercial by 2026
@@ -1045,7 +1045,7 @@ You've learned how to deploy and manage agents at enterprise scale with Google A
 | Personal project | ❌ Run locally or Cloud Run |
 | Enterprise with 50+ users | ✅ AgentSpace with governance |
 | Need pre-built agents | ✅ Use Gallery agents |
-| Custom agent with complex logic | 🔄 Build with ADK → Deploy to AgentSpace |
+| Custom agent with complex logic | [FLOW] Build with ADK → Deploy to AgentSpace |
 | Manage multiple teams | ✅ AgentSpace with RBAC |
 | Need enterprise data connectors | ✅ SharePoint, Drive, Salesforce connectors |
 

@@ -43,10 +43,10 @@ implementation_link: "https://github.com/raphaelmansuy/adk_training/tree/main/tu
 
 Default agents react immediately to queries. **Planners** add a crucial step: **thinking before acting**. This leads to:
 
-- 🧠 **Better Reasoning**: Multi-step problem decomposition
+- [BRAIN] **Better Reasoning**: Multi-step problem decomposition
 - 🎯 **Improved Accuracy**: Plan validation before execution
 - 🔍 **Transparent Thinking**: See how agent reasons
-- 🔄 **Dynamic Replanning**: Adjust strategy based on results
+- [FLOW] **Dynamic Replanning**: Adjust strategy based on results
 - 💡 **Complex Problem Solving**: Handle multi-faceted challenges
 
 **Without Planner** (Direct Response):

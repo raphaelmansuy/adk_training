@@ -38,11 +38,11 @@ Learn how to systematically test and evaluate AI agents using pytest and AgentEv
 
 **Real-World Results**: Our test implementation achieved:
 
-- ✅ 22/22 tests passing (100% success rate)
-- ⚡ Fast execution (< 10 seconds for all tests)
-- 🔄 Automated evaluation with AgentEvaluator
-- 📊 Trajectory and response quality metrics
-- 🐛 Caught real issues during development
+- [SUCCESS] 22/22 tests passing (100% success rate)
+- [FAST] Fast execution (< 10 seconds for all tests)
+- [FLOW] Automated evaluation with AgentEvaluator
+- [METRICS] Trajectory and response quality metrics
+- [DEBUG] Caught real issues during development
 
 ---
 
@@ -59,7 +59,7 @@ def calculate_tax(income):
     return income * 0.25  # Deterministic - always returns 25% of income
 
 # Test: Simple assertion
-assert calculate_tax(100) == 25  # ✅ Always passes
+assert calculate_tax(100) == 25  # [PASS] Always passes
 ```
 
 **AI Agent Evaluation**:
@@ -440,10 +440,10 @@ tutorial10/
 
 **Key Differences from Traditional Testing**:
 
-- ✅ AgentEvaluator for trajectory/response evaluation
-- ✅ EvalSet JSON schema for structured test data
-- ✅ Async tests for evaluation (separate class)
-- ✅ Real API calls for evaluation (not mocked)
+- [DO] AgentEvaluator for trajectory/response evaluation
+- [DO] EvalSet JSON schema for structured test data
+- [DO] Async tests for evaluation (separate class)
+- [DO] Real API calls for evaluation (not mocked)
 
 ### Agent Testing Architecture
 
@@ -2167,27 +2167,27 @@ pytest tests/test_agent.py::TestAgentEvaluation -v -s
 
 **DO**:
 
-- ✅ Test common user flows (happy paths)
-- ✅ Test edge cases (error handling)
-- ✅ Test multi-turn conversations
-- ✅ Use realistic user inputs
-- ✅ Include varied phrasings
-- ✅ Test tools in isolation first
-- ✅ Use mock data for deterministic unit tests
-- ✅ Separate async evaluation tests
-- ✅ Add descriptive test names and docstrings
+- [DO] Test common user flows (happy paths)
+- [DO] Test edge cases (error handling)
+- [DO] Test multi-turn conversations
+- [DO] Use realistic user inputs
+- [DO] Include varied phrasings
+- [DO] Test tools in isolation first
+- [DO] Use mock data for deterministic unit tests
+- [DO] Separate async evaluation tests
+- [DO] Add descriptive test names and docstrings
 
 **DON'T**:
 
-- ❌ Test only perfect inputs
-- ❌ Use overly specific expected responses
-- ❌ Forget to test error cases
-- ❌ Create tests that are too brittle
-- ❌ Call internal methods (test public API only)
-- ❌ Assume data structure without verification
-- ❌ Use strict trajectory evaluation (LLMs vary)
-- ❌ Use high response matching thresholds (>0.5)
-- ❌ Mix sync and async tests in same class
+- [DON'T] Test only perfect inputs
+- [DON'T] Use overly specific expected responses
+- [DON'T] Forget to test error cases
+- [DON'T] Create tests that are too brittle
+- [DON'T] Call internal methods (test public API only)
+- [DON'T] Assume data structure without verification
+- [DON'T] Use strict trajectory evaluation (LLMs vary)
+- [DON'T] Use high response matching thresholds (>0.5)
+- [DON'T] Mix sync and async tests in same class
 
 ### Test Organization (From Real Experience)
 
@@ -2214,10 +2214,10 @@ class TestAgentEvaluation:
 
 **Benefits**:
 
-- ✅ Easy to run specific test types
-- ✅ Clear separation of concerns
-- ✅ Async tests isolated from sync tests
-- ✅ Better test discovery and reporting
+- [DO] Easy to run specific test types
+- [DO] Clear separation of concerns
+- [DO] Async tests isolated from sync tests
+- [DO] Better test discovery and reporting
 
 #### Pattern 2: Setup/Teardown
 
@@ -2231,8 +2231,8 @@ class TestToolFunctions:
 
 **Benefits**:
 
-- ✅ Tests are independent
-- ✅ No state leakage between tests
+- [DO] Tests are independent
+- [DO] No state leakage between tests
 - ✅ Easier debugging
 - ✅ Deterministic results
 

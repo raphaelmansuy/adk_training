@@ -312,7 +312,7 @@ state['report_id'] = artifact_id
 
 ---
 
-## 🔄 Agent Communication Patterns
+## [FLOW] Agent Communication Patterns
 
 ### Direct State Transfer
 

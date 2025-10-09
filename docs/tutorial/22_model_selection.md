@@ -54,7 +54,7 @@ implementation_link: "https://github.com/raphaelmansuy/adk_training/tree/main/tu
 - ⚡ **Performance**: Right speed for your application
 - 🎯 **Capability Match**: Models with features you require
 - 📊 **Quality**: Best results for your specific use case
-- 🔄 **Scalability**: Models that handle your load
+- [FLOW] **Scalability**: Models that handle your load
 
 **Decision Factors**:
 

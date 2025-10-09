@@ -51,9 +51,9 @@ implementation_link: "https://github.com/raphaelmansuy/adk_training/tree/main/tu
 
 **Benefits**:
 
-- 👁️ **Vision Understanding**: Analyze images, extract information
+- [MEM] **Vision Understanding**: Analyze images, extract information
 - 🎨 **Image Generation**: Create images from text descriptions
-- 🔄 **Multimodal Reasoning**: Combine visual and textual context
+- [FLOW] **Multimodal Reasoning**: Combine visual and textual context
 - 📊 **Visual Analytics**: Charts, graphs, diagrams analysis
 - 🏷️ **Object Detection**: Identify objects in images
 - 📝 **OCR**: Extract text from images
