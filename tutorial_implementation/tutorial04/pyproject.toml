@@ -1,0 +1,12 @@
+[build-system]
+requires = ["setuptools>=64", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "tutorial04"
+version = "0.1.0"
+description = "Tutorial 04: Sequential Workflows - Blog Pipeline Agent"
+requires-python = ">=3.9"
+dependencies = [
+    "google-adk>=1.15.1",
+]

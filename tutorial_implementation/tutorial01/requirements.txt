@@ -1,7 +1,7 @@
 # Tutorial 01: Hello World Agent - Python Dependencies
 
 # Core ADK framework
-google-adk>=1.0.0
+google-adk>=1.15.1
 
 # Development and testing
 pytest>=7.0.0

@@ -1,0 +1,12 @@
+[build-system]
+requires = ["setuptools>=64", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "tutorial06"
+version = "0.1.0"
+description = "Tutorial 06: Multi-Agent Systems - Content Publisher Agent"
+requires-python = ">=3.9"
+dependencies = [
+    "google-adk>=1.15.1",
+]

@@ -1,0 +1,17 @@
+[build-system]
+requires = ["setuptools>=64", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "tutorial02"
+version = "0.1.0"
+description = "Tutorial 02: Function Tools - Finance Assistant Agent"
+requires-python = ">=3.9"
+dependencies = [
+    "google-adk>=1.15.1",
+    "pytest>=7.0.0",
+    "pytest-sugar>=0.9.0",
+]
+
+[tool.setuptools]
+packages = ["finance_assistant", "parallel_demo"]

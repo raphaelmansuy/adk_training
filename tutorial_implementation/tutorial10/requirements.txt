@@ -1,4 +1,4 @@
-google-adk[eval]>=1.41.0
+google-adk[eval]>=1.15.1
 google-genai>=1.15.0
 pytest>=8.0.0
 pytest-asyncio>=0.23.0
