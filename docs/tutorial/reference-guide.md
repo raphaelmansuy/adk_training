@@ -7,7 +7,7 @@ sidebar_label: Reference Guide
 
 **🎯 Purpose**: Quick reference for common ADK patterns, configurations, and implementations.
 
-**📚 Source of Truth**: `research/adk-python/src/google/adk/` + production examples
+**📚 Source of Truth**: [google/adk-python/src/google/adk/](https://github.com/google/adk-python/tree/main/src/google/adk/) (ADK 1.15) + production examples
 
 ---
 

@@ -9,7 +9,7 @@ sidebar_label: LLM Integration
 
 **🎯 Purpose**: Master prompting, grounding, and reasoning techniques to get the best performance from language models.
 
-**📚 Source of Truth**: `research/adk-python/src/google/adk/models/` + `research/adk-python/src/google/adk/planners/`
+**📚 Source of Truth**: [google/adk-python/src/google/adk/models/](https://github.com/google/adk-python/tree/main/src/google/adk/models/) (ADK 1.15) + [google/adk-python/src/google/adk/planners/](https://github.com/google/adk-python/tree/main/src/google/adk/planners/) (ADK 1.15)
 
 ---
 

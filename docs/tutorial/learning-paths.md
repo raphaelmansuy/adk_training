@@ -7,7 +7,7 @@ sidebar_label: Learning Paths
 
 **🎯 Purpose**: Structured learning progression from ADK fundamentals to production mastery.
 
-**📚 Source of Truth**: `docs/tutorial/` + `tutorial_implementation/` + `research/`
+**📚 Source of Truth**: [docs/tutorial/](https://github.com/raphaelmansuy/adk_training/tree/main/docs/tutorial/) + [tutorial_implementation/](https://github.com/raphaelmansuy/adk_training/tree/main/tutorial_implementation/) + [research/](https://github.com/raphaelmansuy/adk_training/tree/main/research/) (ADK 1.15)
 
 ---
 

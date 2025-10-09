@@ -7,7 +7,7 @@ sidebar_label: Decision Frameworks
 
 **🎯 Purpose**: Master strategic decision-making for ADK implementation - when to use which patterns, tools, and deployment strategies.
 
-**📚 Source of Truth**: `research/adk-python/src/google/adk/` + production case studies
+**📚 Source of Truth**: [google/adk-python/src/google/adk/](https://github.com/google/adk-python/tree/main/src/google/adk/) (ADK 1.15) + production case studies
 
 ---
 

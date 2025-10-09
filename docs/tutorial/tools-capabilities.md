@@ -9,7 +9,7 @@ sidebar_label: Tools & Capabilities
 
 **🎯 Purpose**: Master ADK's tool ecosystem to extend agent capabilities beyond LLM reasoning.
 
-**📚 Source of Truth**: `research/adk-python/src/google/adk/tools/` + Tool implementation patterns
+**📚 Source of Truth**: [google/adk-python/src/google/adk/tools/](https://github.com/google/adk-python/tree/main/src/google/adk/tools/) (ADK 1.15) + Tool implementation patterns
 
 ---
 

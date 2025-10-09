@@ -9,7 +9,7 @@ sidebar_label: Production & Deployment
 
 **🎯 Purpose**: Deploy ADK agents to production with proper observability, scaling, and service management.
 
-**📚 Source of Truth**: `research/adk-python/src/google/adk/cli/` + Official deployment guides
+**📚 Source of Truth**: [google/adk-python/src/google/adk/cli/](https://github.com/google/adk-python/tree/main/src/google/adk/cli/) (ADK 1.15) + Official deployment guides
 
 ---
 

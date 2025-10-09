@@ -7,7 +7,7 @@ sidebar_label: Advanced Patterns
 
 **🎯 Purpose**: Explore cutting-edge ADK capabilities for real-time interaction, standardized protocols, and distributed agent systems.
 
-**📚 Source of Truth**: `research/adk-python/src/google/adk/agents/live_request_queue.py` + MCP/A2A implementations
+**📚 Source of Truth**: [google/adk-python/src/google/adk/agents/live_request_queue.py](https://github.com/google/adk-python/tree/main/src/google/adk/agents/live_request_queue.py) (ADK 1.15) + MCP/A2A implementations
 
 ---
 

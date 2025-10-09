@@ -9,7 +9,7 @@ sidebar_label: Workflows & Orchestration
 
 **🎯 Purpose**: Master workflow patterns to orchestrate complex agent behaviors and multi-step processes.
 
-**📚 Source of Truth**: `research/adk-python/src/google/adk/agents/workflow_agents/`
+**📚 Source of Truth**: [google/adk-python/src/google/adk/agents/workflow_agents/](https://github.com/google/adk-python/tree/main/src/google/adk/agents/workflow_agents/) (ADK 1.15)
 
 ---
 

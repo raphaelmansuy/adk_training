@@ -9,7 +9,7 @@ sidebar_label: Agent Architecture
 
 **🎯 Purpose**: Deep dive into agent composition, hierarchy patterns, and state management strategies in ADK.
 
-**📚 Source of Truth**: `research/adk-python/src/google/adk/agents/` + `research/adk-python/src/google/adk/sessions/`
+**📚 Source of Truth**: [google/adk-python/src/google/adk/agents/](https://github.com/google/adk-python/tree/main/src/google/adk/agents/) (ADK 1.15) + [google/adk-python/src/google/adk/sessions/](https://github.com/google/adk-python/tree/main/src/google/adk/sessions/) (ADK 1.15)
 
 ---
 

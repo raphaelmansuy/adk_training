@@ -9,7 +9,7 @@ sidebar_label: Overview
 
 **🎯 Purpose**: A comprehensive mental framework for understanding Google Agent Development Kit (ADK) and Generative AI concepts from first principles.
 
-**📚 Source of Truth**: `research/adk-python/` + Official Google Documentation + 28 Tutorials
+**📚 Source of Truth**: [google/adk-python](https://github.com/google/adk-python) (ADK 1.15) + Official Google Documentation + 28 Tutorials
 
 **🎓 Status**: Complete mental model synthesis covering all ADK patterns and Generative AI fundamentals
 
