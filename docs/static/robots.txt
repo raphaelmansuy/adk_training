@@ -1,0 +1,19 @@
+User-agent: *
+Allow: /
+
+# Block access to admin areas, API endpoints, and build artifacts
+Disallow: /admin/
+Disallow: /api/
+Disallow: /build/
+Disallow: /node_modules/
+Disallow: /.git/
+Disallow: /.github/
+
+# Allow access to sitemap
+Allow: /sitemap.xml
+
+# Crawl delay (optional - be respectful to your server)
+Crawl-delay: 1
+
+# Sitemap location
+Sitemap: https://raphaelmansuy.github.io/adk_training/sitemap.xml

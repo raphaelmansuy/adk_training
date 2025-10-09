@@ -4,6 +4,7 @@ import Link from '@docusaurus/Link';
 import useDocusaurusContext from '@docusaurus/useDocusaurusContext';
 import Layout from '@theme/Layout';
 import Heading from '@theme/Heading';
+import Head from '@docusaurus/Head';
 import { 
   ProgressIndicator, 
   GitHubStats, 
@@ -293,6 +294,86 @@ export default function Home(): ReactNode {
     <Layout
       title="ADK Training Hub - Master Google Agent Development Kit"
       description="Comprehensive training for Google ADK with 34 tutorials, mental models, and production-ready examples. Learn to build intelligent AI agents from first principles to deployment.">
+      <Head>
+        {/* Article Schema */}
+        <script type="application/ld+json">
+          {JSON.stringify({
+            '@context': 'https://schema.org',
+            '@type': 'Article',
+            headline: 'ADK Training Hub - Master Google Agent Development Kit',
+            description: 'Comprehensive training for Google ADK with 34 tutorials, mental models, and production-ready examples. Learn to build intelligent AI agents from first principles to deployment.',
+            image: 'https://raphaelmansuy.github.io/adk_training/img/docusaurus-social-card.jpg',
+            datePublished: '2025-01-01',
+            dateModified: '2025-10-09',
+            author: {
+              '@type': 'Person',
+              name: 'Raphael Mansuy',
+              url: 'https://github.com/raphaelmansuy'
+            },
+            publisher: {
+              '@type': 'Organization',
+              name: 'ADK Training Project',
+              logo: {
+                '@type': 'ImageObject',
+                url: 'https://raphaelmansuy.github.io/adk_training/img/ADK-512-color.svg'
+              }
+            },
+            mainEntityOfPage: {
+              '@type': 'WebPage',
+              '@id': 'https://raphaelmansuy.github.io/adk_training/'
+            },
+            keywords: ['Google ADK', 'Agent Development Kit', 'AI agents', 'tutorials', 'Google Gemini', 'machine learning']
+          })}
+        </script>
+
+        {/* Breadcrumb Schema */}
+        <script type="application/ld+json">
+          {JSON.stringify({
+            '@context': 'https://schema.org',
+            '@type': 'BreadcrumbList',
+            itemListElement: [
+              {
+                '@type': 'ListItem',
+                position: 1,
+                name: 'Home',
+                item: 'https://raphaelmansuy.github.io/adk_training/'
+              }
+            ]
+          })}
+        </script>
+
+        {/* Course/CourseInstance Schema for the learning platform */}
+        <script type="application/ld+json">
+          {JSON.stringify({
+            '@context': 'https://schema.org',
+            '@type': 'Course',
+            name: 'Google ADK Training Hub',
+            description: 'Complete training program for Google Agent Development Kit with 34 tutorials and production-ready examples.',
+            provider: {
+              '@type': 'Organization',
+              name: 'ADK Training Project',
+              url: 'https://raphaelmansuy.github.io/adk_training/'
+            },
+            courseMode: 'online',
+            educationalLevel: 'beginner to advanced',
+            teaches: [
+              'Google Agent Development Kit',
+              'AI Agent Development',
+              'Google Gemini Integration',
+              'Python Programming',
+              'Machine Learning'
+            ],
+            hasCourseInstance: {
+              '@type': 'CourseInstance',
+              courseMode: 'online',
+              instructor: {
+                '@type': 'Person',
+                name: 'Raphael Mansuy'
+              }
+            }
+          })}
+        </script>
+      </Head>
       <HomepageHeader />
       <main>
         <LearningPaths />

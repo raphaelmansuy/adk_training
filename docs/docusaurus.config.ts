@@ -40,6 +40,53 @@ const config: Config = {
     locales: ['en'],
   },
 
+  // Structured data for rich snippets
+  headTags: [
+    // Organization schema
+    {
+      tagName: 'script',
+      attributes: {
+        type: 'application/ld+json',
+      },
+      innerHTML: JSON.stringify({
+        '@context': 'https://schema.org',
+        '@type': 'Organization',
+        name: 'ADK Training Hub',
+        url: 'https://raphaelmansuy.github.io/adk_training/',
+        logo: 'https://raphaelmansuy.github.io/adk_training/img/ADK-512-color.svg',
+        description: 'Comprehensive training for Google Agent Development Kit with 34 tutorials, mental models, and production-ready examples.',
+        founder: {
+          '@type': 'Person',
+          name: 'Raphael Mansuy',
+        },
+        sameAs: [
+          'https://github.com/raphaelmansuy',
+          'https://github.com/raphaelmansuy/adk_training',
+        ],
+      }),
+    },
+
+    // Website schema
+    {
+      tagName: 'script',
+      attributes: {
+        type: 'application/ld+json',
+      },
+      innerHTML: JSON.stringify({
+        '@context': 'https://schema.org',
+        '@type': 'WebSite',
+        name: 'ADK Training Hub',
+        url: 'https://raphaelmansuy.github.io/adk_training/',
+        description: 'Master Google Agent Development Kit from first principles to production deployment.',
+        potentialAction: {
+          '@type': 'SearchAction',
+          target: 'https://raphaelmansuy.github.io/adk_training/search?q={search_term_string}',
+          'query-input': 'required name=search_term_string',
+        },
+      }),
+    },
+  ],
+
   presets: [
     [
       'classic',
@@ -70,6 +117,33 @@ const config: Config = {
         theme: {
           customCss: './src/css/custom.css',
         },
+        sitemap: {
+          lastmod: 'datetime',
+          changefreq: null, // Let individual pages control this
+          priority: null, // Use dynamic priority based on page type
+          ignorePatterns: ['/tags/**', '/search/**'],
+          createSitemapItems: async (params) => {
+            const { defaultCreateSitemapItems, ...rest } = params;
+            const items = await defaultCreateSitemapItems(rest);
+
+            return items.map((item) => {
+              // Set different priorities based on page type
+              if (item.url.includes('/docs/overview')) {
+                return { ...item, priority: 1.0, changefreq: 'monthly' };
+              }
+              if (item.url.includes('/docs/')) {
+                return { ...item, priority: 0.8, changefreq: 'weekly' };
+              }
+              if (item.url.includes('/blog')) {
+                return { ...item, priority: 0.6, changefreq: 'weekly' };
+              }
+              if (item.url === 'https://raphaelmansuy.github.io/adk_training/') {
+                return { ...item, priority: 1.0, changefreq: 'daily' };
+              }
+              return { ...item, priority: 0.5, changefreq: 'monthly' };
+            });
+          },
+        },
       } satisfies Preset.Options,
     ],
   ],
@@ -78,7 +152,40 @@ const config: Config = {
     '@docusaurus/theme-mermaid',
   ],
 
+  plugins: [
+    [
+      '@docusaurus/plugin-google-gtag',
+      {
+        trackingID: 'GA_MEASUREMENT_ID', // Replace with your actual GA4 measurement ID
+        anonymizeIP: true,
+      },
+    ],
+  ],
+
   themeConfig: {
+    // Enhanced metadata for better SEO
+    metadata: [
+      // Basic SEO meta tags
+      { name: 'keywords', content: 'Google ADK, Agent Development Kit, AI agents, machine learning, Google Gemini, tutorial, programming, Python, JavaScript' },
+      { name: 'author', content: 'Raphael Mansuy' },
+      { name: 'robots', content: 'index, follow' },
+      { name: 'language', content: 'English' },
+      { name: 'revisit-after', content: '7 days' },
+
+      // Open Graph meta tags
+      { property: 'og:type', content: 'website' },
+      { property: 'og:site_name', content: 'ADK Training Hub' },
+      { property: 'og:locale', content: 'en_US' },
+
+      // Twitter Card meta tags
+      { name: 'twitter:card', content: 'summary_large_image' },
+      { name: 'twitter:site', content: '@raphaelmansuy' },
+      { name: 'twitter:creator', content: '@raphaelmansuy' },
+
+      // Google Search Console verification
+      { name: 'google-site-verification', content: 'YOUR_VERIFICATION_CODE' }, // Replace with your actual verification code
+    ],
+
     // Replace with your project's social card
     image: 'img/docusaurus-social-card.jpg',
     colorMode: {
