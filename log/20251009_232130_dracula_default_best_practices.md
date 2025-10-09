@@ -27,7 +27,7 @@ recognized, and provides excellent readability for developers.
 Added a maintainable default theme constant:
 
 ```typescript
-const DEFAULT_THEME_ID = 'dracula';
+const DEFAULT_THEME_ID = "dracula";
 ```
 
 **Benefits:**
@@ -43,30 +43,30 @@ const DEFAULT_THEME_ID = 'dracula';
 ```typescript
 const applyTheme = (themeId: string) => {
   // Validate theme ID
-  if (!THEMES.find(t => t.id === themeId)) {
+  if (!THEMES.find((t) => t.id === themeId)) {
     console.warn(`Invalid theme ID: ${themeId}. Using default theme.`);
     themeId = DEFAULT_THEME_ID;
   }
   // ...
-}
+};
 ```
 
 **Error Handling:**
 
 ```typescript
 try {
-  localStorage.setItem('adk-syntax-theme', themeId);
+  localStorage.setItem("adk-syntax-theme", themeId);
 } catch (error) {
-  console.warn('Failed to save theme preference:', error);
+  console.warn("Failed to save theme preference:", error);
 }
 ```
 
 **Production-Friendly Logging:**
 
 ```typescript
-if (process.env.NODE_ENV === 'development') {
-  console.log('Applied theme:', themeId);
-  console.log('HTML classes:', document.documentElement.className);
+if (process.env.NODE_ENV === "development") {
+  console.log("Applied theme:", themeId);
+  console.log("HTML classes:", document.documentElement.className);
 }
 ```
 
@@ -103,7 +103,7 @@ if (process.env.NODE_ENV === 'development') {
 
 ```typescript
 const handleKeyDown = (event: React.KeyboardEvent, themeId: string) => {
-  if (event.key === 'Enter' || event.key === ' ') {
+  if (event.key === "Enter" || event.key === " ") {
     event.preventDefault();
     handleThemeChange(themeId);
   }
@@ -116,7 +116,7 @@ const handleKeyDown = (event: React.KeyboardEvent, themeId: string) => {
 
 ```typescript
 const handleThemeChange = (themeId: string) => {
-  if (THEMES.find(t => t.id === themeId)) {
+  if (THEMES.find((t) => t.id === themeId)) {
     setCurrentTheme(themeId);
     applyTheme(themeId);
     setIsOpen(false);
@@ -131,8 +131,8 @@ const handleThemeChange = (themeId: string) => {
 ```typescript
 // Convert to array to avoid iteration issues
 const classList = Array.from(document.documentElement.classList);
-classList.forEach(className => {
-  if (className.startsWith('prism-theme-')) {
+classList.forEach((className) => {
+  if (className.startsWith("prism-theme-")) {
     document.documentElement.classList.remove(className);
   }
 });
@@ -144,11 +144,11 @@ Changed default CSS variables in `:root` to match Dracula theme:
 
 ```css
 :root {
-  --prism-background: #282a36;  /* Dracula background */
-  --prism-text: #f8f8f2;        /* Dracula text */
-  --prism-keyword: #ff79c6;     /* Dracula pink */
-  --prism-string: #f1fa8c;      /* Dracula yellow */
-  --prism-function: #50fa7b;    /* Dracula green */
+  --prism-background: #282a36; /* Dracula background */
+  --prism-text: #f8f8f2; /* Dracula text */
+  --prism-keyword: #ff79c6; /* Dracula pink */
+  --prism-string: #f1fa8c; /* Dracula yellow */
+  --prism-function: #50fa7b; /* Dracula green */
   /* ... all Dracula colors ... */
 }
 ```

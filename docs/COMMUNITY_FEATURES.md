@@ -29,7 +29,7 @@ GitHub Discussions-based comments for community engagement.
 #### Usage in MDX Files (Comments)
 
 ```mdx
-import Comments from '@site/src/components/Comments';
+import Comments from "@site/src/components/Comments";
 
 # My Tutorial
 
@@ -45,7 +45,7 @@ Share buttons for Twitter, LinkedIn, Facebook, Reddit, and Email.
 #### Usage in MDX Files (Sharing)
 
 ```mdx
-import SocialShare from '@site/src/components/SocialShare';
+import SocialShare from "@site/src/components/SocialShare";
 
 # My Tutorial
 
@@ -77,8 +77,8 @@ Update these URLs in `docusaurus.config.ts`:
 Replace placeholder values in `src/components/Comments.tsx`:
 
 ```typescript
-repoId="R_kgDOLxxxxx" // Your actual repo ID
-categoryId="DIC_kwDOLxxxxx" // Your actual category ID
+repoId = "R_kgDOLxxxxx"; // Your actual repo ID
+categoryId = "DIC_kwDOLxxxxx"; // Your actual category ID
 ```
 
 ## Next Steps

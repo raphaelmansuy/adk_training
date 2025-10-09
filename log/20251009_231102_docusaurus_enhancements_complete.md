@@ -220,10 +220,12 @@ flowchart TD
 ### Tabs
 
 ```jsx
-<Tabs items={[
-  { label: 'Tab 1', content: <p>Content 1</p> },
-  { label: 'Tab 2', content: <p>Content 2</p> }
-]} />
+<Tabs
+  items={[
+    { label: "Tab 1", content: <p>Content 1</p> },
+    { label: "Tab 2", content: <p>Content 2</p> },
+  ]}
+/>
 ```
 
 ## 🔮 Future Enhancements

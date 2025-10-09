@@ -1,4 +1,3 @@
-
 # Created social card image
 
 Created `docs/static/img/docusaurus-social-card.jpg` from `docs/static/img/adk_tutorial.png`.

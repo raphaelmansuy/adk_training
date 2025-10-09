@@ -13,7 +13,7 @@ keywords:
     "data analysis",
     "BuiltInCodeExecutor",
   ]
-status: "draft"
+status: "completed"
 difficulty: "advanced"
 estimated_time: "1.5 hours"
 prerequisites:
@@ -30,15 +30,7 @@ learning_objectives:
 implementation_link: "https://github.com/raphaelmansuy/adk_training/tree/main/tutorial_implementation/tutorial13"
 ---
 
-:::danger UNDER CONSTRUCTION
-
-**This tutorial is currently under construction and may contain errors, incomplete information, or outdated code examples.**
-
-Please check back later for the completed version. If you encounter issues, refer to the working implementation in the [tutorial repository](https://github.com/raphaelmansuy/adk_training/tree/main/tutorial_implementation/tutorial13).
-
-:::
-
-# Tutorial 13: Code Execution
+## Overview
 
 **Goal**: Enable your agents to write and execute Python code for calculations, data analysis, and complex computations using Gemini 2.0+'s built-in code execution capability.
 
@@ -61,6 +53,22 @@ Please check back later for the completed version. If you encounter issues, refe
 
 ---
 
+## 🚀 Quick Start
+
+The fastest way to get started is with our working implementation:
+
+```bash
+cd tutorial_implementation/tutorial13
+make setup
+make dev
+```
+
+Then open `http://localhost:8000` in your browser and select "code_calculator"!
+
+**Or explore the complete implementation**: [Tutorial 13 Implementation](https://github.com/raphaelmansuy/adk_training/tree/main/tutorial_implementation/tutorial13)
+
+---
+
 ## Why Code Execution Matters
 
 AI models are excellent at reasoning but historically struggled with precise calculations. **Code execution** solves this by allowing models to:
@@ -73,7 +81,7 @@ AI models are excellent at reasoning but historically struggled with precise cal
 
 **Without Code Execution**:
 
-```
+```text
 User: "What's the factorial of 50?"
 Agent: "The factorial of 50 is approximately 3.04 × 10^64"
       ↑ Approximation, may be inaccurate
@@ -81,12 +89,126 @@ Agent: "The factorial of 50 is approximately 3.04 × 10^64"
 
 **With Code Execution**:
 
-```
+```text
 User: "What's the factorial of 50?"
 Agent: [Generates and executes: math.factorial(50)]
        "The factorial of 50 is exactly: 30414093201713378043612608166064768844377641568960512000000000000"
        ↑ Exact answer via code execution
 ```
+
+---
+
+## Building on Previous Tutorials
+
+Code execution represents a **quantum leap** from the function tools you learned in Tutorial 02. Let's see how it builds on previous concepts:
+
+### From Tutorial 01: Hello World Agent
+
+**Tutorial 01** taught you basic agent structure:
+
+```python
+# Tutorial 01 - Basic Agent
+agent = Agent(
+    model='gemini-2.0-flash',
+    name='hello_agent',
+    instruction='You are a helpful assistant.'
+)
+```
+
+**Tutorial 13** adds code execution capabilities:
+
+```python
+# Tutorial 13 - Agent with Code Execution
+agent = Agent(
+    model='gemini-2.0-flash',
+    name='calculator',
+    instruction='You can write and execute Python code.',
+    code_executor=BuiltInCodeExecutor()  # ← New capability
+)
+```
+
+### From Tutorial 02: Function Tools
+
+**Tutorial 02** showed how to create custom tools:
+
+```python
+# Tutorial 02 - Custom Function Tool
+def calculate_square(x: float) -> float:
+    """Calculate the square of a number."""
+    return x * x
+
+agent = Agent(
+    model='gemini-2.0-flash',
+    tools=[FunctionTool(calculate_square)]
+)
+```
+
+**Tutorial 13** enables **dynamic tool creation**:
+
+```python
+# Tutorial 13 - Dynamic Code Generation
+agent = Agent(
+    model='gemini-2.0-flash',
+    code_executor=BuiltInCodeExecutor()
+)
+
+# Agent can now create ANY mathematical function on demand
+result = runner.run("Create a function to calculate compound interest", agent=agent)
+# Agent generates and executes the exact code needed
+```
+
+### Evolution Comparison
+
+| Aspect            | Tutorial 02 (Function Tools) | Tutorial 13 (Code Execution)  |
+| ----------------- | ---------------------------- | ----------------------------- |
+| **Tool Creation** | Pre-defined functions        | Dynamic code generation       |
+| **Flexibility**   | Limited to coded tools       | Unlimited Python capabilities |
+| **Accuracy**      | Depends on implementation    | Exact mathematical precision  |
+| **Maintenance**   | Update code for new tools    | Agent learns new capabilities |
+| **Use Cases**     | Specific business logic      | Any computational task        |
+
+### Practical Example: Calculator Evolution
+
+**Before (Tutorial 02 style)**:
+
+```python
+# Limited to pre-built functions
+def add_numbers(a: float, b: float) -> float:
+    return a + b
+
+def multiply_numbers(a: float, b: float) -> float:
+    return a * b
+
+agent = Agent(
+    model='gemini-2.0-flash',
+    tools=[FunctionTool(add_numbers), FunctionTool(multiply_numbers)]
+)
+
+# Can only do: 2+2=4, 3*5=15
+```
+
+**After (Tutorial 13 style)**:
+
+```python
+# Unlimited computational power
+agent = Agent(
+    model='gemini-2.0-flash',
+    code_executor=BuiltInCodeExecutor()
+)
+
+# Can do ANYTHING:
+# - Matrix operations
+# - Statistical analysis
+# - Algorithm implementation
+# - Complex financial calculations
+# - Scientific computations
+```
+
+### Real-World Impact
+
+**Tutorial 02 Agent**: "I can add numbers and multiply them."
+
+**Tutorial 13 Agent**: "I can solve differential equations, perform statistical analysis, implement machine learning algorithms, calculate orbital mechanics, analyze financial portfolios, and much more - all with mathematical precision."
 
 ---
 
@@ -596,7 +718,7 @@ alone! Consider making extra principal payments to reduce this significantly.
 
 ## 4. Advanced Code Execution Patterns
 
-### Pattern 1: Data Visualization (Code Generation)
+### Pattern 1: Visualization Code Generation (For Local Execution)
 
 ```python
 viz_agent = Agent(
@@ -605,17 +727,25 @@ viz_agent = Agent(
     instruction="""
 Generate Python code for data visualizations using matplotlib.
 Show the code that would create the visualization.
+⚠️ IMPORTANT: This code is for users to run LOCALLY - matplotlib
+cannot be executed within ADK's sandboxed environment.
     """,
     code_executor=BuiltInCodeExecutor()
 )
 
 result = runner.run(
-    "Generate code to create a bar chart showing sales by quarter: Q1=50k, Q2=65k, Q3=72k, Q4=80k",
+    "Generate code to create a bar chart showing sales by quarter: " +
+    "Q1=50k, Q2=65k, Q3=72k, Q4=80k",
     agent=viz_agent
 )
 ```
 
-**Output** (code that user can run locally):
+**⚠️ CRITICAL LIMITATION**: The code below cannot be executed within
+ADK's code execution environment. This is **sample output** showing what
+the agent would generate for users to run on their own systems with
+matplotlib installed locally.
+
+**Output** (code for user to run locally - NOT executable in ADK):
 
 ```python
 import matplotlib.pyplot as plt
@@ -639,6 +769,21 @@ plt.tight_layout()
 plt.show()
 ```
 
+**What ADK Code Execution CANNOT Do:**
+
+- ❌ Generate actual graphics or charts
+- ❌ Use matplotlib, seaborn, plotly, or any visualization libraries
+- ❌ Display images or plots
+- ❌ Save chart files
+
+**What ADK Code Execution CAN Do:**
+
+- ✅ Generate matplotlib code as text for local execution
+- ✅ Perform all mathematical calculations
+- ✅ Create text-based data representations
+- ✅ Generate ASCII art or simple text charts
+- ✅ Analyze data and provide insights
+
 ### Pattern 2: Scientific Calculations
 
 ```python
@@ -652,7 +797,8 @@ science_agent = Agent(
 result = runner.run(
     """
 Calculate the orbital period of a satellite at 400km altitude above Earth.
-Use: G = 6.674×10^-11 N⋅m²/kg², Earth mass = 5.972×10^24 kg, Earth radius = 6371 km
+Use: G = 6.674×10^-11 N⋅m²/kg², Earth mass = 5.972×10^24 kg,
+Earth radius = 6371 km
     """,
     agent=science_agent
 )
@@ -664,7 +810,8 @@ Use: G = 6.674×10^-11 N⋅m²/kg², Earth mass = 5.972×10^24 kg, Earth radius 
 stats_agent = Agent(
     model='gemini-2.0-flash',
     name='statistician',
-    instruction='Perform statistical analysis including hypothesis testing and confidence intervals.',
+    instruction='Perform statistical analysis including hypothesis ' +
+        'testing and confidence intervals.',
     code_executor=BuiltInCodeExecutor()
 )
 
@@ -884,7 +1031,8 @@ agent = Agent(
 result = runner.run("What's 2+2?", agent=agent)
 
 # ✅ Complex calculation triggers code execution
-result = runner.run("Calculate the standard deviation of [1,2,3,4,5,6,7,8,9,10]", agent=agent)
+result = runner.run("Calculate the standard deviation of " +
+    "[1,2,3,4,5,6,7,8,9,10]", agent=agent)
 ```
 
 2. **Explicit instruction**:
@@ -1021,7 +1169,8 @@ async def test_complex_calculation():
 
     runner = Runner()
     result = await runner.run_async(
-        "Calculate compound interest: $1000 principal, 5% annual rate, 10 years, monthly compounding",
+        "Calculate compound interest: $1000 principal, 5% annual rate, " +
+        "10 years, monthly compounding",
         agent=agent
     )
 
@@ -1057,7 +1206,8 @@ async def test_algorithm_implementation():
 
 ### Code Execution Security
 
-**Important**: Code executes in Google's model environment, not locally. This provides security benefits:
+**Important**: Code executes in Google's model environment, not locally.
+This provides security benefits:
 
 ✅ **Isolated Environment**: Code runs in sandboxed model environment
 ✅ **No Local Access**: Cannot access your local file system
@@ -1145,4 +1295,6 @@ You've mastered code execution for AI agents:
 
 ---
 
-**🎉 Tutorial 13 Complete!** You now know how to build agents that can write and execute code for accurate calculations. Continue to Tutorial 14 to learn about streaming responses.
+**🎉 Tutorial 13 Complete!** You now know how to build agents that can
+write and execute code for accurate calculations. Continue to Tutorial 14
+to learn about streaming responses.

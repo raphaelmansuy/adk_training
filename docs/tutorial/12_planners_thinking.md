@@ -61,6 +61,49 @@ implementation_link: "https://github.com/raphaelmansuy/adk_training/tree/main/tu
 
 ---
 
+## 🚀 Quick Start
+
+### 1. Setup Environment
+
+```bash
+# Clone and navigate to the implementation
+cd tutorial_implementation/tutorial12
+
+# Install dependencies
+make setup
+
+# Copy environment template
+cp strategic_solver/.env.example strategic_solver/.env
+
+# Edit .env and add your Google AI API key
+# GOOGLE_API_KEY=your_actual_api_key_here
+```
+
+### 2. Run Development Server
+
+```bash
+# Start ADK web interface
+make dev
+
+# Open http://localhost:8000 in your browser
+# Select "strategic_solver" from the agent dropdown
+```
+
+### 3. Test the Implementation
+
+```bash
+# Run comprehensive test suite
+make test
+
+# See example queries you can test
+make examples
+
+# Run demo examples
+make demo
+```
+
+---
+
 ## Why Planners Matter
 
 Default agents react immediately to queries. **Planners** add a crucial step: **thinking before acting**. This leads to:

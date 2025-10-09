@@ -41,7 +41,7 @@ Added import to `src/css/custom.css`:
 
 ```css
 /* Import custom syntax highlighting themes */
-@import './syntax-themes.css';
+@import "./syntax-themes.css";
 ```
 
 ### 2. Disable Docusaurus Built-in Prism Themes
@@ -99,8 +99,8 @@ Enhanced `SyntaxThemeSelector.tsx` with console logging:
 ```typescript
 const applyTheme = (themeId: string) => {
   // Remove existing theme classes
-  document.documentElement.classList.forEach(className => {
-    if (className.startsWith('prism-theme-')) {
+  document.documentElement.classList.forEach((className) => {
+    if (className.startsWith("prism-theme-")) {
       document.documentElement.classList.remove(className);
     }
   });
@@ -109,11 +109,11 @@ const applyTheme = (themeId: string) => {
   document.documentElement.classList.add(`prism-theme-${themeId}`);
 
   // Debug logging
-  console.log('Applied theme:', themeId);
-  console.log('HTML classes:', document.documentElement.className);
+  console.log("Applied theme:", themeId);
+  console.log("HTML classes:", document.documentElement.className);
 
   // Store preference
-  localStorage.setItem('adk-syntax-theme', themeId);
+  localStorage.setItem("adk-syntax-theme", themeId);
 };
 ```
 
@@ -152,7 +152,7 @@ theme classes:
 ✅ **CSS Variables**: Variables cascade correctly to code blocks
 ✅ **Selector Coverage**: Both general and specific selectors work
 ✅ **Development Server**: Running successfully at
-  http://localhost:3000/adk_training/
+http://localhost:3000/adk_training/
 
 ## How It Works Now
 

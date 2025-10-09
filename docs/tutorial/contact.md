@@ -13,15 +13,15 @@ sidebar_label: Contact
 
 AI Engineer & Entrepreneur | Founder of Elitizon & Quantalogic
 
-| Platform | Link |
-|----------|------|
-| 💼 **LinkedIn** | [raphaelmansuy](https://www.linkedin.com/in/raphaelmansuy) |
-| 🐦 **Twitter** | [@raphaelmansuy](https://x.com/raphaelmansuy) |
-| ✍️ **Medium** | [@raphaelmansuy](https://medium.com/@raphaelmansuy) |
-| 🤖 **Elitizon** | [elitizon.com](https://elitizon.com) |
-| 📚 **Quantalogic** | [quantalogic.app](https://quantalogic.app) |
+| Platform           | Link                                                       |
+| ------------------ | ---------------------------------------------------------- |
+| 💼 **LinkedIn**    | [raphaelmansuy](https://www.linkedin.com/in/raphaelmansuy) |
+| 🐦 **Twitter**     | [@raphaelmansuy](https://x.com/raphaelmansuy)              |
+| ✍️ **Medium**      | [@raphaelmansuy](https://medium.com/@raphaelmansuy)        |
+| 🤖 **Elitizon**    | [elitizon.com](https://elitizon.com)                       |
+| 📚 **Quantalogic** | [quantalogic.app](https://quantalogic.app)                 |
 
-*Get in touch for AI consulting, collaboration opportunities, or questions about this ADK training repository.*
+_Get in touch for AI consulting, collaboration opportunities, or questions about this ADK training repository._
 
 ---
 

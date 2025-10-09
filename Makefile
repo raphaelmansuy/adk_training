@@ -46,6 +46,14 @@ dev: check-env
 	@echo "🤖 Starting ADK Web Interface..."
 	@echo "📱 Open http://localhost:8000 in your browser"
 	@echo "🎯 Select an agent from the dropdown menu"
+	@echo ""
+	@echo "💡 Example queries to try with code_calculator:"
+	@echo "   • 'Calculate the factorial of 50'"
+	@echo "   • 'What's the compound interest on $10,000 at 7% for 30 years?'"
+	@echo "   • 'Analyze this data: [10, 20, 30, 40, 50] - calculate mean and standard deviation'"
+	@echo "   • 'Implement binary search to find 42 in [1, 5, 12, 23, 42, 67, 89, 99]'"
+	@echo "   • 'Calculate the monthly payment for a $300,000 mortgage at 6.5% for 30 years'"
+	@echo ""
 	adk web
 
 # Run tests across all tutorials

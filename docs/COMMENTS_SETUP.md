@@ -30,8 +30,8 @@ Visit [https://giscus.app/](https://giscus.app/) and configure for your reposito
 Replace the placeholder values in `src/components/Comments.tsx`:
 
 ```typescript
-repoId="R_kgDOLxxxxx" // Replace with actual repo ID from giscus.app
-categoryId="DIC_kwDOLxxxxx" // Replace with actual category ID from giscus.app
+repoId = "R_kgDOLxxxxx"; // Replace with actual repo ID from giscus.app
+categoryId = "DIC_kwDOLxxxxx"; // Replace with actual category ID from giscus.app
 ```
 
 ### 3. Enable Discussions on GitHub

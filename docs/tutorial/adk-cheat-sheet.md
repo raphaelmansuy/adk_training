@@ -3,7 +3,15 @@ id: adk-cheat-sheet
 title: ADK Cheat Sheet - Quick Reference Guide
 description: Comprehensive cheat sheet for Google Agent Development Kit - commands, patterns, configurations, and best practices at your fingertips.
 sidebar_label: ADK Cheat Sheet
-keywords: ["ADK cheat sheet", "quick reference", "commands", "patterns", "best practices", "troubleshooting"]
+keywords:
+  [
+    "ADK cheat sheet",
+    "quick reference",
+    "commands",
+    "patterns",
+    "best practices",
+    "troubleshooting",
+  ]
 ---
 
 **🎯 Purpose**: Everything you need to know about Google ADK in one comprehensive reference.
@@ -707,4 +715,3 @@ api_key = get_secret('api-key')
 - **Glossary**: [ADK Glossary](glossary.md)
 
 **Last Updated**: October 2025 | **ADK Version**: 1.15
-

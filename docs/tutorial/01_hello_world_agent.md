@@ -5,7 +5,17 @@ description: "Complete beginner's guide to building your first AI agent with Goo
 sidebar_label: "01. Hello World Agent"
 sidebar_position: 1
 tags: ["beginner", "agent", "fundamentals", "adk-basics", "tutorial", "python"]
-keywords: ["google adk", "ai agent", "hello world", "beginner tutorial", "first agent", "python tutorial", "google gemini", "agent development kit"]
+keywords:
+  [
+    "google adk",
+    "ai agent",
+    "hello world",
+    "beginner tutorial",
+    "first agent",
+    "python tutorial",
+    "google gemini",
+    "agent development kit",
+  ]
 status: "completed"
 difficulty: "beginner"
 estimated_time: "30 minutes"

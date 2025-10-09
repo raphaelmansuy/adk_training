@@ -3,7 +3,14 @@ id: glossary
 title: Glossary - ADK Terms and Concepts
 description: Comprehensive glossary of Google Agent Development Kit (ADK) terms, concepts, and terminology used throughout the tutorials.
 sidebar_label: Glossary
-keywords: ["ADK glossary", "agent development kit terms", "ADK concepts", "terminology", "definitions"]
+keywords:
+  [
+    "ADK glossary",
+    "agent development kit terms",
+    "ADK concepts",
+    "terminology",
+    "definitions",
+  ]
 ---
 
 # Glossary - ADK Terms and Concepts
@@ -242,38 +249,38 @@ Agents that orchestrate other agents in structured patterns: sequential, paralle
 
 ### Agent Types
 
-| Type | Purpose | Example Use Case |
-|------|---------|------------------|
-| **LLM Agent** | Flexible reasoning and conversation | Customer support, content creation |
-| **Sequential Agent** | Ordered, dependent steps | Blog writing pipeline |
-| **Parallel Agent** | Independent concurrent tasks | Research gathering |
-| **Loop Agent** | Iterative refinement | Code review and improvement |
+| Type                 | Purpose                             | Example Use Case                   |
+| -------------------- | ----------------------------------- | ---------------------------------- |
+| **LLM Agent**        | Flexible reasoning and conversation | Customer support, content creation |
+| **Sequential Agent** | Ordered, dependent steps            | Blog writing pipeline              |
+| **Parallel Agent**   | Independent concurrent tasks        | Research gathering                 |
+| **Loop Agent**       | Iterative refinement                | Code review and improvement        |
 
 ### State Scopes
 
-| Prefix | Scope | Persistence | Example |
-|--------|-------|-------------|---------|
-| (none) | Current session | SessionService dependent | `state['topic']` |
-| `user:` | All user sessions | Persistent | `state['user:language']` |
-| `app:` | All users/sessions | Persistent | `state['app:settings']` |
-| `temp:` | Current invocation | Never persisted | `state['temp:calc']` |
+| Prefix  | Scope              | Persistence              | Example                  |
+| ------- | ------------------ | ------------------------ | ------------------------ |
+| (none)  | Current session    | SessionService dependent | `state['topic']`         |
+| `user:` | All user sessions  | Persistent               | `state['user:language']` |
+| `app:`  | All users/sessions | Persistent               | `state['app:settings']`  |
+| `temp:` | Current invocation | Never persisted          | `state['temp:calc']`     |
 
 ### Tool Types
 
-| Type | Source | Example |
-|------|--------|---------|
-| **Function Tools** | Python functions | Custom business logic |
-| **OpenAPI Tools** | REST API specs | Weather, news APIs |
-| **MCP Tools** | MCP servers | Filesystem, databases |
-| **Built-in Tools** | Google ADK | Search, maps, code execution |
+| Type               | Source           | Example                      |
+| ------------------ | ---------------- | ---------------------------- |
+| **Function Tools** | Python functions | Custom business logic        |
+| **OpenAPI Tools**  | REST API specs   | Weather, news APIs           |
+| **MCP Tools**      | MCP servers      | Filesystem, databases        |
+| **Built-in Tools** | Google ADK       | Search, maps, code execution |
 
 ### Workflow Patterns
 
-| Pattern | Execution | Use Case |
-|---------|-----------|----------|
-| **Sequential** | One after another | Assembly line processes |
-| **Parallel** | All at once | Independent research tasks |
-| **Loop** | Repeat until criteria met | Quality improvement cycles |
+| Pattern        | Execution                 | Use Case                   |
+| -------------- | ------------------------- | -------------------------- |
+| **Sequential** | One after another         | Assembly line processes    |
+| **Parallel**   | All at once               | Independent research tasks |
+| **Loop**       | Repeat until criteria met | Quality improvement cycles |
 
 ---
 

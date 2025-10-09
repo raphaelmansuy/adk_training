@@ -3,7 +3,21 @@ id: overview
 title: Mental Models for Google ADK Mastery - Complete Guide 2025
 description: Master Google Agent Development Kit with comprehensive mental frameworks, 34 tutorials, and production-ready examples. Learn AI agent development from first principles to deployment with Google Gemini.
 sidebar_label: Overview
-keywords: [Google ADK, Agent Development Kit, AI agents, mental models, Generative AI, Google Gemini, tutorial, machine learning, Python, JavaScript, production deployment, first principles]
+keywords:
+  [
+    Google ADK,
+    Agent Development Kit,
+    AI agents,
+    mental models,
+    Generative AI,
+    Google Gemini,
+    tutorial,
+    machine learning,
+    Python,
+    JavaScript,
+    production deployment,
+    first principles,
+  ]
 image: /img/docusaurus-social-card.jpg
 ---
 
