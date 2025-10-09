@@ -1,0 +1,4 @@
+google-adk
+pytest
+flake8
+black

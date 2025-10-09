@@ -1,0 +1,28 @@
+name: "Copilot Setup Steps"
+
+on:
+  workflow_dispatch:  # For manual testing
+  push:
+    paths:
+      - .github/workflows/copilot-setup-steps.yml
+  pull_request:
+    paths:
+      - .github/workflows/copilot-setup-steps.yml
+
+jobs:
+  copilot-setup-steps:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v5
+
+      # Example: Use the secret in a step (e.g., for authentication)
+      - name: Authenticate with API
+        env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}  # References the secret
+        run: |
+          # Use the provided GEMINI_API_KEY environment variable (avoid printing secrets in real workflows)
+          masked_key="${GEMINI_API_KEY:0:4}****"
+          echo "Using key: $masked_key"  # Replace with actual command

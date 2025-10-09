@@ -159,7 +159,7 @@ def before_agent_callback(callback_context: CallbackContext) -> Optional[types.C
         None: Allow agent to proceed
         Content: Skip agent execution, use returned content as response
     """
-    logger.info(f"[AGENT START] User: {callback_context.session.user_id}")
+    logger.info(f"[AGENT START] Session: {callback_context.invocation_id}")
     
     # Check if agent is in maintenance mode (app state)
     if callback_context.state.get('app:maintenance_mode', False):
@@ -1028,6 +1028,68 @@ def test_before_model_blocks_profanity():
 2. Implement caching in `before_model_callback` using state
 3. Create `after_tool_callback` that saves all results to a database
 4. Build custom PII filter that handles additional patterns
+
+---
+
+## Working Implementation
+
+A complete, production-ready implementation of this tutorial is available at:
+
+**📁 [tutorial_implementation/tutorial09/content_moderator/](tutorial_implementation/tutorial09/content_moderator/)**
+
+### What's Included
+
+- ✅ **Complete Agent**: Content moderator with all 6 callback types
+- ✅ **Comprehensive Tests**: 11 test cases covering all callback scenarios
+- ✅ **Production Features**: Logging, metrics, PII filtering, rate limiting
+- ✅ **Developer Tools**: Makefile, requirements.txt, detailed README
+- ✅ **Security**: Blocklist filtering, input validation, guardrails
+
+### Quick Start
+
+```bash
+cd tutorial_implementation/tutorial09/content_moderator
+make setup
+cp .env.example .env  # Add your GOOGLE_API_KEY
+make test             # Run comprehensive tests
+make dev              # Start ADK web interface
+```
+
+### Features Demonstrated
+
+**Guardrails & Safety**:
+- Blocks profanity before LLM calls
+- Filters PII from responses
+- Validates tool arguments
+- Rate limiting protection
+
+**Monitoring & Observability**:
+- Complete audit logging
+- Usage metrics tracking
+- State management across sessions
+- Performance monitoring
+
+**Callback Patterns**:
+- All 6 callback types implemented
+- Control flow examples (block vs allow)
+- State manipulation patterns
+- Error handling best practices
+
+### Test Coverage
+
+The implementation includes comprehensive tests for:
+- Maintenance mode blocking
+- Request counting
+- Profanity filtering
+- Safety instruction injection
+- PII redaction
+- Tool validation
+- Rate limiting
+- Result logging
+- Tool functionality
+- Usage statistics
+
+Run `make test` to see all callback patterns in action!
 
 ---
 
