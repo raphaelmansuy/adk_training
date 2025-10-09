@@ -1,16 +1,6 @@
-# Google ADK Tr> **📊 Completion Status: 12/34 tutorials implemented (35%)**
+# Google ADK Training Hub
 
-## 📚 Documentation
-
-📚 **[View Interactive Documentation](https://raphaelmansuy.github.io/adk_training/)** - Complete tutorial series with working examples, mental models, and Mermaid diagrams
-
-## 📚 What's ADK?Project
-
-A comprehensive train- - Code examples and best practices
-
-## 👨‍💻 About the Creator
-
-This project was created by **Raphaël MANSUY**, a Chief Technology Officer, Author, AI Strategist, and Data Engineering Expert based in Hong Kong SAR, China.
+A comprehensive training repository for Google Agent Development Kit (ADK), featuring 34 tutorials, mental models, research, and automated testing. The project teaches agent development from first principles to production deployment.
 
 This project provides a complete learning journey through Google ADK, featuring:
 
@@ -23,11 +13,11 @@ This project provides a complete learning journey through Google ADK, featuring:
 
 > **📊 Completion Status: 12/34 tutorials implemented (35%)**
 
-## � Documentation
+## 📚 Documentation
 
 📚 **[View Interactive Documentation](https://raphaelmansuy.github.io/adk_training/)** - Complete tutorial series with working examples, mental models, and Mermaid diagrams
 
-## �📚 What's ADK?
+## 📚 What's ADK?
 
 Google Agent Development Kit (ADK) is a powerful framework for building AI agents that combine:
 
@@ -140,7 +130,7 @@ Master the foundations of agent development.
 
 - Read `overview.md` - Mental models for ADK mastery
 - **Tutorial 01: Hello World Agent** ✅ - Agent basics
-- **Tutorial 02: Function Tools** ✅ - Custom tools  
+- **Tutorial 02: Function Tools** ✅ - Custom tools
 - **Tutorial 03: OpenAPI Tools** ✅ - REST API integration
 
 ### 2. Workflows (✅ COMPLETED - Tutorials 04-07)
@@ -253,7 +243,7 @@ The following tutorials have been fully implemented with working code, comprehen
 **Foundation Layer:**
 
 - **Tutorial 01**: Hello World Agent - Basic agent creation and interaction
-- **Tutorial 02**: Function Tools - Custom Python functions as callable tools  
+- **Tutorial 02**: Function Tools - Custom Python functions as callable tools
 - **Tutorial 03**: OpenAPI Tools - REST API integration via OpenAPI specifications
 
 **Workflow Layer:**
@@ -322,7 +312,7 @@ This project welcomes contributions! Areas for contribution:
 - Documentation enhancements
 - Code examples and best practices
 
-## �‍💻 About the Creator
+## 👨‍💻 About the Creator
 
 This project was created by **Raphaël MANSUY**, a Chief Technology Officer, Author, AI Strategist, and Data Engineering Expert based in Hong Kong SAR, China.
 
@@ -334,7 +324,7 @@ A thought leader in the AI community, Raphaël conducts daily reviews of AI rese
 
 Raphaël teaches AI courses at the University of Oxford's Lifelong Learning program, where he covers topics including Generative AI, Cloud computing, and MLOps.
 
-## �📄 License
+## 📄 License
 
 See individual component licenses:
 
