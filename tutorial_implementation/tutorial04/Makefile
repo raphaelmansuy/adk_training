@@ -19,10 +19,11 @@ help:
 setup:
 	@echo "📦 Installing dependencies..."
 	pip install -r requirements.txt
+	pip install -e .
 	@echo "✅ Setup complete!"
 
 # Start development server
-dev:
+dev: check-env
 	@echo "🚀 Starting ADK development server..."
 	@echo "Open http://localhost:8000 in your browser"
 	@echo "Select 'blog_pipeline' from the agent list"
@@ -69,3 +70,12 @@ clean:
 	find . -type d -name ".pytest_cache" -exec rm -rf {} +
 	find . -type d -name "*.egg-info" -exec rm -rf {} +
 	@echo "✅ Cleanup complete!"
+
+# Check environment (internal use)
+check-env:
+	@if [ -z "$$GOOGLE_API_KEY" ]; then \
+		echo "❌ Error: GOOGLE_API_KEY environment variable not set"; \
+		echo "   Please set it with: export GOOGLE_API_KEY=your_key_here"; \
+		echo "   Get a free key at: https://aistudio.google.com/app/apikey"; \
+		exit 1; \
+	fi

@@ -28,6 +28,7 @@ setup: install
 install:
 	@echo "📦 Installing dependencies..."
 	pip install google-adk pytest pytest-cov black flake8
+	pip install -e .
 
 # Testing
 test:
@@ -45,7 +46,7 @@ test-coverage:
 
 # Development
 dev: run
-run:
+run: check-env
 	@echo "🚀 Starting ADK development server..."
 	@echo "Open http://localhost:8000 and select 'essay_refiner'"
 	adk web
@@ -88,3 +89,12 @@ reset: clean
 	@echo "🔄 Resetting to clean state..."
 	@echo "Note: This removes all generated files but keeps source code"
 	# Add any additional reset logic here if needed
+
+# Check environment (internal use)
+check-env:
+	@if [ -z "$$GOOGLE_API_KEY" ]; then \
+		echo "❌ Error: GOOGLE_API_KEY environment variable not set"; \
+		echo "   Please set it with: export GOOGLE_API_KEY=your_key_here"; \
+		echo "   Get a free key at: https://aistudio.google.com/app/apikey"; \
+		exit 1; \
+	fi
