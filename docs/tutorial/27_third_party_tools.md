@@ -5,11 +5,23 @@ description: "Integrate third-party services and tools into agents using REST AP
 sidebar_label: "27. Third-Party Tools"
 sidebar_position: 27
 tags: ["advanced", "third-party", "integration", "apis", "external-services"]
-keywords: ["third-party tools", "external services", "api integration", "sdks", "custom toolsets"]
+keywords:
+  [
+    "third-party tools",
+    "external services",
+    "api integration",
+    "sdks",
+    "custom toolsets",
+  ]
 status: "draft"
 difficulty: "advanced"
 estimated_time: "2 hours"
-prerequisites: ["Tutorial 02: Function Tools", "Tutorial 03: OpenAPI Tools", "API integration experience"]
+prerequisites:
+  [
+    "Tutorial 02: Function Tools",
+    "Tutorial 03: OpenAPI Tools",
+    "API integration experience",
+  ]
 learning_objectives:
   - "Integrate third-party services with agents"
   - "Build custom toolsets for external APIs"
@@ -23,12 +35,14 @@ implementation_link: "https://github.com/raphaelmansuy/adk_training/tree/main/tu
 **Goal**: Integrate tools from LangChain, CrewAI, and other AI frameworks into your ADK agents
 
 **Prerequisites**:
+
 - Tutorial 01 (Hello World Agent)
 - Tutorial 02 (Function Tools)
 - Tutorial 06 (Agents & Orchestration)
 - Familiarity with Python package management
 
 **What You'll Learn**:
+
 - Integrating LangChain tools (100+ tools)
 - Integrating CrewAI tools (20+ tools)
 - Using AG-UI Protocol for framework-level integration
@@ -47,6 +61,7 @@ implementation_link: "https://github.com/raphaelmansuy/adk_training/tree/main/tu
 **The Solution**: Leverage existing tool ecosystems from mature AI frameworks.
 
 **What You Get**:
+
 - **LangChain**: 100+ tools (search, APIs, databases, etc.)
 - **CrewAI**: 20+ tools (web scraping, file operations, etc.)
 - **LangGraph**: State management and complex workflows
@@ -56,11 +71,11 @@ implementation_link: "https://github.com/raphaelmansuy/adk_training/tree/main/tu
 
 **Integration Approaches**:
 
-| Approach | Level | Use Case |
-|----------|-------|----------|
-| **LangchainTool** | Individual tools | "I need Tavily search in my ADK agent" |
-| **CrewaiTool** | Individual tools | "I need Serper search in my ADK agent" |
-| **AG-UI Protocol** | Framework-level | "I want LangGraph agents to talk to ADK agents" |
+| Approach           | Level            | Use Case                                        |
+| ------------------ | ---------------- | ----------------------------------------------- |
+| **LangchainTool**  | Individual tools | "I need Tavily search in my ADK agent"          |
+| **CrewaiTool**     | Individual tools | "I need Serper search in my ADK agent"          |
+| **AG-UI Protocol** | Framework-level  | "I want LangGraph agents to talk to ADK agents" |
 
 ---
 
@@ -81,6 +96,7 @@ pip install langchain langchain-community
 ### Using LangchainTool Wrapper
 
 **Pattern**:
+
 ```python
 from google.adk.tools.third_party import LangchainTool
 from langchain_community.tools import [YourLangChainTool]
@@ -115,7 +131,7 @@ os.environ['TAVILY_API_KEY'] = 'your-tavily-key'  # Get from tavily.com
 
 async def main():
     """Agent with LangChain Tavily search."""
-    
+
     # Create LangChain tool
     tavily_tool = TavilySearchResults(
         max_results=5,
@@ -123,10 +139,10 @@ async def main():
         include_answer=True,
         include_raw_content=False
     )
-    
+
     # Wrap with LangchainTool
     tavily_adk = LangchainTool(tool=tavily_tool)
-    
+
     # Create ADK agent
     agent = Agent(
         model='gemini-2.5-flash',
@@ -139,14 +155,14 @@ Cite your sources.
         """.strip(),
         tools=[tavily_adk]
     )
-    
+
     # Run query
     runner = Runner()
     result = await runner.run_async(
         "What are the latest developments in quantum computing? (2025)",
         agent=agent
     )
-    
+
     print(result.content.parts[0].text)
 
 
@@ -155,6 +171,7 @@ if __name__ == '__main__':
 ```
 
 **Output Example**:
+
 ```
 Based on recent web search results:
 
@@ -179,7 +196,7 @@ Based on recent web search results:
 
 Sources:
 - IBM Quantum Blog
-- Google Research Blog  
+- Google Research Blog
 - Nature Quantum Information
 - ArXiv preprints
 ```
@@ -240,6 +257,7 @@ Handle errors gracefully.
 ### Available LangChain Tools (100+)
 
 **Search & Research**:
+
 - `TavilySearchResults` - Web search optimized for AI
 - `DuckDuckGoSearchResults` - Privacy-focused search
 - `GoogleSearchResults` - Google search API
@@ -247,6 +265,7 @@ Handle errors gracefully.
 - `ArxivQueryRun` - Research papers
 
 **APIs & Services**:
+
 - `OpenWeatherMapQueryRun` - Weather data
 - `WolframAlphaQueryRun` - Computational knowledge
 - `YouTubeSearchTool` - YouTube video search
@@ -254,11 +273,13 @@ Handle errors gracefully.
 - `SlackToolkit` - Slack integration
 
 **Databases**:
+
 - `SQLDatabaseToolkit` - SQL query execution
 - `JSONToolkit` - JSON data operations
 - `CSVLoader` - CSV file handling
 
 **Code & Development**:
+
 - `PythonREPLTool` - Execute Python code
 - `TerminalTool` - Run shell commands
 - `FileManagementToolkit` - File operations
@@ -286,6 +307,7 @@ pip install crewai crewai-tools
 **⚠️ CRITICAL**: CrewAI tools **REQUIRE** `name` and `description` parameters!
 
 **Pattern**:
+
 ```python
 from google.adk.tools.third_party import CrewaiTool
 from crewai_tools import [YourCrewAITool]
@@ -322,17 +344,17 @@ os.environ['SERPER_API_KEY'] = 'your-serper-key'  # Get from serper.dev
 
 async def main():
     """Agent with CrewAI Serper search."""
-    
+
     # Create CrewAI tool
     serper_tool = SerperDevTool()
-    
+
     # Wrap with CrewaiTool - name and description REQUIRED!
     serper_adk = CrewaiTool(
         tool=serper_tool,
         name='serper_search',
         description='Search Google for current information on any topic'
     )
-    
+
     # Create ADK agent
     agent = Agent(
         model='gemini-2.5-flash',
@@ -345,14 +367,14 @@ Always cite sources with URLs.
         """.strip(),
         tools=[serper_adk]
     )
-    
+
     # Run query
     runner = Runner()
     result = await runner.run_async(
         "What is the current price of Bitcoin?",
         agent=agent
     )
-    
+
     print(result.content.parts[0].text)
 
 
@@ -420,24 +442,28 @@ agent = Agent(
 ### Available CrewAI Tools (20+)
 
 **Search & Web**:
+
 - `SerperDevTool` - Google search
 - `ScrapeWebsiteTool` - Website scraping
 - `WebsiteSearchTool` - Search within website
 - `SeleniumScrapingTool` - JavaScript-enabled scraping
 
 **File Operations**:
+
 - `FileReadTool` - Read file contents
 - `FileWriteTool` - Write to files
 - `DirectoryReadTool` - List directory contents
 - `DirectorySearchTool` - Search files in directory
 
 **Data & APIs**:
+
 - `JSONSearchTool` - Search JSON data
 - `XMLSearchTool` - Parse XML
 - `CSVSearchTool` - Query CSV files
 - `PDFSearchTool` - Extract from PDFs
 
 **Development**:
+
 - `CodeDocsSearchTool` - Search code documentation
 - `GithubSearchTool` - Search GitHub repositories
 - `CodeInterpreterTool` - Execute code
@@ -457,6 +483,7 @@ agent = Agent(
 **AG-UI (Agent-UI Protocol)** is an **open, event-based standard** for agent-human interaction.
 
 **Architecture**:
+
 ```
 ┌─────────────────────────────────────────────────────────┐
 │                    USER INTERFACE                        │
@@ -488,36 +515,43 @@ agent = Agent(
 **16 core event types** standardize agent-UI communication:
 
 **Run Management**:
+
 - `RUN_STARTED` - Agent run begins
 - `RUN_FINISHED` - Agent run completes
 - `RUN_FAILED` - Agent run errors
 
 **Messages**:
+
 - `TEXT_MESSAGE_CONTENT` - Text output from agent
 - `IMAGE_CONTENT` - Image generated/processed
 - `FILE_CONTENT` - File operations
 
 **Tool Execution**:
+
 - `TOOL_CALL_START` - Tool invocation begins
 - `TOOL_CALL_RESULT` - Tool returns result
 - `TOOL_CALL_FAILED` - Tool execution error
 
 **Thinking**:
+
 - `THINKING_START` - Agent reasoning begins
 - `THINKING_CONTENT` - Reasoning steps
 - `THINKING_END` - Reasoning complete
 
 **Artifacts**:
+
 - `ARTIFACT_CREATED` - New artifact generated
 - `ARTIFACT_UPDATED` - Artifact modified
 - `ARTIFACT_DELETED` - Artifact removed
 
 **User Input**:
+
 - `USER_INPUT_REQUESTED` - Agent asks for input
 
 ### Supported Frameworks
 
 **AG-UI compatible frameworks**:
+
 - ✅ **Google ADK** (native support)
 - ✅ **LangGraph** (via adapter)
 - ✅ **CrewAI** (via adapter)
@@ -564,10 +598,10 @@ async def multi_framework_workflow():
     AG-UI Protocol allows ADK and LangGraph agents to collaborate.
     Both emit standardized events that any UI can consume.
     """
-    
+
     # User query goes to LangGraph agent first
     lg_result = await langgraph_agent.run("Analyze this: Hello World")
-    
+
     # LangGraph result goes to ADK agent
     # AG-UI Protocol handles event translation automatically
     runner = Runner()
@@ -575,7 +609,7 @@ async def multi_framework_workflow():
         f"Process the analysis: {lg_result}",
         agent=adk_agent
     )
-    
+
     return final_result
 
 # All events (from both agents) conform to AG-UI standard
@@ -585,17 +619,20 @@ async def multi_framework_workflow():
 ### Benefits of AG-UI Protocol
 
 **For Developers**:
+
 - ✅ Use best tool from any framework
 - ✅ Switch frameworks without changing UI
 - ✅ Mix ADK agents with LangGraph/CrewAI agents
 - ✅ Standardized event handling
 
 **For Users**:
+
 - ✅ Consistent UI experience across frameworks
 - ✅ Better observability (standardized events)
 - ✅ Framework-agnostic frontends
 
 **For Organizations**:
+
 - ✅ Avoid framework lock-in
 - ✅ Reuse UI investments
 - ✅ Easier agent migration
@@ -606,20 +643,21 @@ async def multi_framework_workflow():
 
 ### Decision Matrix
 
-| Scenario | Use LangchainTool | Use CrewaiTool | Use AG-UI Protocol |
-|----------|-------------------|----------------|-------------------|
-| Need one specific tool (e.g., Tavily search) | ✅ Yes | ❌ No | ❌ Overkill |
-| Already using LangChain ecosystem | ✅ Yes | ❌ No | 🤔 Maybe |
-| Need CrewAI's specialized tools | ❌ No | ✅ Yes | ❌ Overkill |
-| Building multi-framework system | ❌ No | ❌ No | ✅ Yes |
-| Want framework-agnostic UI | ❌ No | ❌ No | ✅ Yes |
-| Need agent-to-agent communication | 🤔 Possible | 🤔 Possible | ✅ Ideal |
-| Prototyping quickly | ✅ Fast | ✅ Fast | ❌ Complex |
-| Enterprise production | 🤔 Maybe | 🤔 Maybe | ✅ Yes |
+| Scenario                                     | Use LangchainTool | Use CrewaiTool | Use AG-UI Protocol |
+| -------------------------------------------- | ----------------- | -------------- | ------------------ |
+| Need one specific tool (e.g., Tavily search) | ✅ Yes            | ❌ No          | ❌ Overkill        |
+| Already using LangChain ecosystem            | ✅ Yes            | ❌ No          | 🤔 Maybe           |
+| Need CrewAI's specialized tools              | ❌ No             | ✅ Yes         | ❌ Overkill        |
+| Building multi-framework system              | ❌ No             | ❌ No          | ✅ Yes             |
+| Want framework-agnostic UI                   | ❌ No             | ❌ No          | ✅ Yes             |
+| Need agent-to-agent communication            | 🤔 Possible       | 🤔 Possible    | ✅ Ideal           |
+| Prototyping quickly                          | ✅ Fast           | ✅ Fast        | ❌ Complex         |
+| Enterprise production                        | 🤔 Maybe          | 🤔 Maybe       | ✅ Yes             |
 
 ### Best Practices
 
 **✅ DO**:
+
 1. **Start simple**: Use LangchainTool/CrewaiTool for individual tools
 2. **Add only needed dependencies**: Don't install entire frameworks for one tool
 3. **Test thoroughly**: Third-party tools may have different error handling
@@ -628,6 +666,7 @@ async def multi_framework_workflow():
 6. **Use AG-UI** for complex multi-framework systems
 
 **❌ DON'T**:
+
 1. Mix tool-level and protocol-level integration unnecessarily
 2. Forget `name` and `description` for CrewaiTool
 3. Assume tool behavior matches ADK patterns
@@ -684,12 +723,12 @@ def save_research_report(title: str, content: str) -> str:
 
 async def main():
     """Comprehensive research agent."""
-    
+
     # LangChain tools
     tavily = LangchainTool(
         tool=TavilySearchResults(max_results=5, search_depth="advanced")
     )
-    
+
     wikipedia = LangchainTool(
         tool=WikipediaQueryRun(
             api_wrapper=WikipediaAPIWrapper(
@@ -698,29 +737,29 @@ async def main():
             )
         )
     )
-    
+
     arxiv = LangchainTool(
         tool=ArxivQueryRun(
             top_k_results=3
         )
     )
-    
+
     # CrewAI tools (name and description REQUIRED!)
     serper = CrewaiTool(
         tool=SerperDevTool(),
         name='google_search',
         description='Search Google for current information (backup to Tavily)'
     )
-    
+
     scraper = CrewaiTool(
         tool=ScrapeWebsiteTool(),
         name='scrape_website',
         description='Extract detailed content from specific URLs'
     )
-    
+
     # Native ADK tool
     save_report = FunctionTool(save_research_report)
-    
+
     # Create research agent with all tools
     research_agent = Agent(
         model='gemini-2.5-pro',  # Use Pro for complex research tasks
@@ -758,10 +797,10 @@ You are a professional research analyst with access to multiple information sour
         """.strip(),
         tools=[tavily, wikipedia, arxiv, serper, scraper, save_report]
     )
-    
+
     # Run comprehensive research query
     runner = Runner()
-    
+
     query = """
 Research the current state of autonomous vehicle technology:
 1. Latest industry developments (2025)
@@ -772,15 +811,15 @@ Research the current state of autonomous vehicle technology:
 
 Provide a comprehensive report and save it to file.
     """.strip()
-    
+
     print("\n" + "="*60)
     print("ADVANCED RESEARCH AGENT")
     print("="*60 + "\n")
     print(f"Query: {query}\n")
     print("Researching... (this may take 30-60 seconds)\n")
-    
+
     result = await runner.run_async(query, agent=research_agent)
-    
+
     print(result.content.parts[0].text)
     print("\n" + "="*60 + "\n")
 
@@ -870,6 +909,7 @@ pip install langchain-community
 **Error: "Tool execution failed"**
 
 Check environment variables:
+
 ```python
 import os
 print(os.environ.get('TAVILY_API_KEY'))  # Should not be None
@@ -878,6 +918,7 @@ print(os.environ.get('TAVILY_API_KEY'))  # Should not be None
 **Error: "Rate limit exceeded"**
 
 Most search APIs have rate limits. Add delays:
+
 ```python
 import time
 time.sleep(1)  # Between searches
@@ -888,6 +929,7 @@ time.sleep(1)  # Between searches
 **Error: "CrewaiTool missing required arguments"**
 
 **Fix**: Always provide `name` and `description`:
+
 ```python
 # ❌ WRONG
 tool = CrewaiTool(tool=serper_tool)
@@ -903,6 +945,7 @@ tool = CrewaiTool(
 **Error: "Tool not found in CrewAI"**
 
 Ensure correct package:
+
 ```bash
 pip install crewai-tools  # Not just 'crewai'
 ```
@@ -912,6 +955,7 @@ pip install crewai-tools  # Not just 'crewai'
 **Issue**: LangChain and CrewAI may have conflicting dependencies.
 
 **Solution**: Use virtual environments:
+
 ```bash
 # Create isolated environment
 python -m venv adk_env
@@ -943,15 +987,15 @@ You've learned how to integrate tools from LangChain, CrewAI, and other framewor
 
 **When to Use Each**:
 
-| Tool | Best For |
-|------|----------|
-| **Tavily (LangChain)** | Real-time web search optimized for AI |
-| **Serper (CrewAI)** | Google search, news, images |
-| **Wikipedia (LangChain)** | Background knowledge, definitions |
-| **Arxiv (LangChain)** | Academic papers, research |
-| **ScrapeWebsite (CrewAI)** | Detailed page analysis |
-| **PythonREPL (LangChain)** | Code execution |
-| **AG-UI Protocol** | Multi-framework agent systems |
+| Tool                       | Best For                              |
+| -------------------------- | ------------------------------------- |
+| **Tavily (LangChain)**     | Real-time web search optimized for AI |
+| **Serper (CrewAI)**        | Google search, news, images           |
+| **Wikipedia (LangChain)**  | Background knowledge, definitions     |
+| **Arxiv (LangChain)**      | Academic papers, research             |
+| **ScrapeWebsite (CrewAI)** | Detailed page analysis                |
+| **PythonREPL (LangChain)** | Code execution                        |
+| **AG-UI Protocol**         | Multi-framework agent systems         |
 
 **Production Checklist**:
 

@@ -1,7 +1,7 @@
 # ADK Training Hub - Quick Start Makefile
 # User-friendly commands for the entire project
 
-.PHONY: help setup docs dev test clean tutorials format-md
+.PHONY: help setup docs dev test clean format-md tutorials format-md
 
 # Default target - show help
 help:
@@ -16,7 +16,9 @@ help:
 	@echo "Development Commands:"
 	@echo "  make test      - Run all tests across tutorials"
 	@echo "  make format-md - Format all markdown files"
-	@echo "  make clean     - Clean up all generated files"
+		@echo "  clean        Clean up all generated files and caches"
+	@echo "  format-md    Format all markdown files with Prettier"
+	@echo ""
 	@echo ""
 	@echo "📚 Documentation: https://raphaelmansuy.github.io/adk_training/"
 	@echo "💡 First time? Run: make setup && make docs"
@@ -88,6 +90,17 @@ clean:
 	find . -type d -name "node_modules" -exec rm -rf {} +
 	find . -type d -name "build" -exec rm -rf {} +
 	@echo "✅ Cleanup complete!"
+
+# Format all markdown files
+format-md:
+	@echo "📝 Formatting all markdown files..."
+	@if command -v npx >/dev/null 2>&1; then \
+		find . -name "*.md" -not -path "./node_modules/*" -not -path "./.git/*" | xargs npx prettier --write --parser markdown; \
+		echo "✅ All markdown files formatted!"; \
+	else \
+		echo "❌ Error: npx not found. Please install Node.js and run 'make setup' first."; \
+		exit 1; \
+	fi
 
 # Check environment (internal use)
 check-env:

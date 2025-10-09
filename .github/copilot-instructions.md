@@ -1,11 +1,13 @@
 # Google ADK Training Project - AI Coding Guidelines
 
 ## Project Overview
+
 This is a comprehensive training repository for Google Agent Development Kit (ADK), featuring 28 tutorials, mental models, research, and automated testing. The project teaches agent development from first principles to production deployment.
 
 ## Architecture Patterns
 
 ### Agent Hierarchy & Composition
+
 - **Root Agent Convention**: Every agent module must export a `root_agent` variable as the main entry point
 - **Sequential Workflows**: Use `SequentialAgent` for ordered pipelines where each step depends on the previous
 - **Parallel Workflows**: Use `ParallelAgent` for independent tasks that can run simultaneously
@@ -13,12 +15,14 @@ This is a comprehensive training repository for Google Agent Development Kit (AD
 - **State Communication**: Agents communicate via `output_key` (saves to session state) and state interpolation `{key_name}`
 
 ### Tool Development Patterns
+
 - **Function Tools**: Python functions become callable tools - return structured dicts with `status`, `report`, and data fields
 - **OpenAPI Tools**: Use `OpenAPIToolset` for REST API integration with automatic tool generation
 - **MCP Tools**: Use `MCPToolset` for standardized protocol tools (filesystem, databases)
 - **Return Format**: Tools return `{'status': 'success/error', 'report': 'human readable', ...data}`
 
 ### State Management
+
 - **Session State**: `state['key']` for conversation-scoped data
 - **User State**: `state['user:key']` for cross-session user data
 - **App State**: `state['app:key']` for global application data
@@ -27,6 +31,7 @@ This is a comprehensive training repository for Google Agent Development Kit (AD
 ## Development Workflow
 
 ### Project Structure
+
 ```
 tutorial_implementation/tutorialXX/
 ├── Makefile              # Standard commands (setup, dev, test, demo)
@@ -42,12 +47,14 @@ tutorial_implementation/tutorialXX/
 ```
 
 ### Testing Patterns
+
 - **Unit Tests**: Mock external dependencies, test agent configuration and tool logic
 - **Integration Tests**: Test with real ADK components when GOOGLE_API_KEY available
 - **Test Organization**: Group by functionality (TestAgentConfig, TestTools, TestIntegration)
 - **Test Runner**: Use `pytest` with `pytest-cov` for coverage reporting
 
 ### Common Commands
+
 ```bash
 # Setup environment
 make setup              # Install dependencies
@@ -68,12 +75,14 @@ make clean              # Remove cache files and artifacts
 ## Integration Points
 
 ### UI Frameworks
+
 - **Next.js**: Use CopilotKit for React integration (`/api/copilotkit` endpoint)
 - **Vite**: Similar CopilotKit setup with different build configuration
 - **Streamlit**: Direct ADK integration without CopilotKit middleware
 - **FastAPI Backend**: Standard REST API with CORS configuration for frontend origins
 
 ### External Services
+
 - **Google ADK**: Core agent framework with Gemini models
 - **CopilotKit**: React component library for AI chat interfaces
 - **Google Cloud**: Vertex AI, Cloud Run, Cloud Storage for production deployment
@@ -82,6 +91,7 @@ make clean              # Remove cache files and artifacts
 ## Code Conventions
 
 ### Agent Definition
+
 ```python
 # Standard agent pattern
 root_agent = Agent(
@@ -95,14 +105,15 @@ root_agent = Agent(
 ```
 
 ### Tool Functions
+
 ```python
 def tool_name(param: Type) -> Dict[str, Any]:
     """
     Docstring explaining what the tool does.
-    
+
     Args:
         param: Description of parameter
-        
+
     Returns:
         Dict with status, report, and data fields
     """
@@ -116,13 +127,14 @@ def tool_name(param: Type) -> Dict[str, Any]:
         }
     except Exception as e:
         return {
-            'status': 'error', 
+            'status': 'error',
             'error': str(e),
             'report': 'Human-readable error message'
         }
 ```
 
 ### Workflow Composition
+
 ```python
 # Sequential pipeline
 sequential_agent = SequentialAgent(
@@ -133,7 +145,7 @@ sequential_agent = SequentialAgent(
 
 # Parallel execution
 parallel_agent = ParallelAgent(
-    name="ParallelName", 
+    name="ParallelName",
     sub_agents=[agent1, agent2, agent3],  # Execute simultaneously
     description="What the parallel tasks do"
 )
@@ -203,20 +215,23 @@ ls -la | cat
 
 **Root Cause**: ADK requires agents to be installed as Python packages to be discoverable.
 
-**Solution**: 
+**Solution**:
+
 1. Create `setup.py` in tutorial root directory:
+
 ```python
 from setuptools import setup, find_packages
 
 setup(
     name="agent_name",
-    version="0.1.0", 
+    version="0.1.0",
     packages=find_packages(),
     install_requires=["google-genai>=1.15.0"],
 )
 ```
 
 2. Update Makefile setup command:
+
 ```makefile
 setup:
 	pip install -r requirements.txt
@@ -229,12 +244,12 @@ setup:
 
 **Learned During**: Tutorial 10 implementation - agent couldn't be selected in ADK web interface until proper package installation was implemented.
 
-
 ## What you must ensure
 
-- If you want to report what you have done, updated or achieve never report that in the tutorial or in the implementation. It must be done in a ./log directory at the root of the project. 
+- If you want to report what you have done, updated or achieve never report that in the tutorial or in the implementation. It must be done in a ./log directory at the root of the project.
 
 Use path: ./log/YYYYMMDD_HHMMSS_description_of_your_change.md
-- Never commit any file that contains secrets or API keys. 
+
+- Never commit any file that contains secrets or API keys.
 
 - Prefer a pyproject instead of a setup.py file.

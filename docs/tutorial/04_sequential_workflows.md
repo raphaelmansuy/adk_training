@@ -5,11 +5,23 @@ description: "Chain multiple agents together in sequential workflows to create c
 sidebar_label: "04. Sequential Workflows"
 sidebar_position: 4
 tags: ["intermediate", "sequential", "workflows", "pipelines", "multi-agent"]
-keywords: ["sequential workflows", "agent pipelines", "multi-step", "SequentialAgent", "research pipeline"]
+keywords:
+  [
+    "sequential workflows",
+    "agent pipelines",
+    "multi-step",
+    "SequentialAgent",
+    "research pipeline",
+  ]
 status: "completed"
 difficulty: "intermediate"
 estimated_time: "1 hour"
-prerequisites: ["Tutorial 01: Hello World Agent", "Tutorial 02: Function Tools", "Tutorial 03: OpenAPI Tools"]
+prerequisites:
+  [
+    "Tutorial 01: Hello World Agent",
+    "Tutorial 02: Function Tools",
+    "Tutorial 03: OpenAPI Tools",
+  ]
 learning_objectives:
   - "Create SequentialAgent workflows for multi-step processes"
   - "Build research → analysis → report pipelines"
@@ -38,36 +50,43 @@ Each agent's output feeds into the next, creating a complete content creation pi
 ## Prerequisites
 
 - **Completed Tutorials 01-03** - Understanding of agents, tools, and OpenAPI
-- **Installed ADK** - `pip install google-adk`  
+- **Installed ADK** - `pip install google-adk`
 - **API key configured** - From Tutorial 01
 
 ## Core Concepts
 
 ### SequentialAgent
+
 The **`SequentialAgent`** is a workflow orchestrator that executes sub-agents in strict order. Unlike a regular agent, it's NOT powered by an LLM - it's deterministic and always runs agents in the exact sequence you define.
 
 **Key Characteristics:**
+
 - Executes sub-agents one at a time, in order
 - Each agent completes before the next starts
 - All agents share the same `InvocationContext` (shared state)
 - Perfect for pipelines where order matters
 
 ### Data Flow with output_key
+
 Agents pass data to each other using **session state**:
-1. Agent defines `output_key="my_result"` 
+
+1. Agent defines `output_key="my_result"`
 2. ADK automatically saves agent's response to `state['my_result']`
 3. Next agent reads it using `{my_result}` in its instruction
 
 This creates a data pipeline!
 
 ### When to Use Sequential Workflows
+
 Use `SequentialAgent` when:
+
 - ✅ Tasks MUST happen in specific order
 - ✅ Each step depends on previous step's output
 - ✅ You want predictable, deterministic execution
 - ✅ Building pipelines (ETL, content creation, review processes)
 
 Don't use when:
+
 - ❌ Tasks are independent (use `ParallelAgent` instead)
 - ❌ Need dynamic routing (use LLM-driven agent with sub-agents)
 
@@ -94,7 +113,8 @@ Copy your `.env` file from previous tutorials.
 
 ## Step 2: Set Up Package Import
 
-**blog_pipeline/__init__.py**
+**blog_pipeline/**init**.py**
+
 ```python
 from . import agent
 ```
@@ -102,6 +122,7 @@ from . import agent
 ## Step 3: Define the Pipeline Agents
 
 **blog_pipeline/agent.py**
+
 ```python
 from __future__ import annotations
 
@@ -231,27 +252,30 @@ root_agent = blog_creation_pipeline
 ### Code Breakdown
 
 **State Flow Visualization:**
-```
+
+````
 ```text
 User Input: "Write about quantum computing"
     ↓
 Research Agent → state['research_findings'] = "• Quantum bits..."
     ↓
 Writer Agent (reads {research_findings}) → state['draft_post'] = "Quantum computing is..."
-    ↓  
+    ↓
 Editor Agent (reads {draft_post}) → state['editorial_feedback'] = "Add more examples..."
     ↓
 Formatter Agent (reads {draft_post}, {editorial_feedback}) → state['final_post'] = "# Quantum Computing\n\n..."
     ↓
 Final Output: formatted blog post
-```
+````
 
 **Key Pattern:**
+
 1. **Define `output_key`** on each agent → saves response to state
 2. **Use `{state_key}` in instructions** → reads from state
 3. **Chain agents in `SequentialAgent`** → strict execution order
 
 **Why This Works:**
+
 - All agents share the same `InvocationContext`
 - State persists between agents in the sequence
 - `{key}` syntax auto-injects values into instructions
@@ -270,21 +294,25 @@ Open `http://localhost:8000` and select "blog_pipeline".
 ### Try These Prompts
 
 **Basic Usage:**
+
 ```
 Write a blog post about artificial intelligence
 ```
 
 **Specific Topic:**
+
 ```
 Create a blog post explaining how solar panels work
 ```
 
 **Technical Topic:**
+
 ```
 Write about the history of the Internet
 ```
 
 **Trending Topic:**
+
 ```
 Blog post about electric vehicles and their impact on climate
 ```
@@ -320,11 +348,11 @@ Research findings:
 • Quantum supremacy was demonstrated in 2019
 
 [Agent 2: Writer runs with research findings]
-Draft: "Quantum computing represents one of the most exciting frontiers in 
+Draft: "Quantum computing represents one of the most exciting frontiers in
 technology today..."
 
 [Agent 3: Editor runs with draft]
-Feedback: "Add a specific example of quantum supremacy. Clarify the temperature 
+Feedback: "Add a specific example of quantum supremacy. Clarify the temperature
 requirements. Consider adding a future outlook section."
 
 [Agent 4: Formatter runs with draft + feedback]
@@ -360,6 +388,7 @@ Unlike traditional computers that use bits (0 or 1), quantum computers use qubit
 5. **Pipeline complete** → Returns final agent's output
 
 **Deterministic & Reliable:**
+
 - Always same order
 - No LLM deciding order
 - Predictable behavior
@@ -373,13 +402,13 @@ sequenceDiagram
     participant W as Writer
     participant E as Editor
     participant F as Formatter
-    
+
     U->>R: Topic
     R->>W: research_findings
     W->>E: draft_post
     E->>F: draft_post + editorial_feedback
     F->>U: Final Post
-    
+
     Note over R,F: Each agent waits for previous to complete
 ```
 
@@ -402,6 +431,7 @@ sequenceDiagram
 ## Best Practices
 
 **DO:**
+
 - Give each agent a specific, focused task
 - Use descriptive `output_key` names
 - Be explicit in instructions about what to output
@@ -409,6 +439,7 @@ sequenceDiagram
 - Keep agents stateless (rely on state, not internal memory)
 
 **DON'T:**
+
 - Make agents try to do too much
 - Forget to set `output_key` (data won't flow!)
 - Use generic state keys like `result` or `data`
@@ -418,24 +449,29 @@ sequenceDiagram
 ## Common Issues
 
 **Problem**: "Next agent doesn't see previous agent's output"
+
 - **Solution**: Check that previous agent has `output_key` defined
 - **Solution**: Verify you're using `{correct_key_name}` in instruction
 
 **Problem**: "Pipeline seems to skip agents"
+
 - **Solution**: All agents run, check Events tab to see their outputs
 - **Solution**: Agent might be outputting empty response
 
 **Problem**: "State values not injecting"
+
 - **Solution**: Use exact `{key_name}` matching the `output_key`
 - **Solution**: Keys are case-sensitive!
 
 **Problem**: "Pipeline takes too long"
+
 - **Solution**: This is normal - agents run sequentially (one at a time)
 - **Solution**: Consider if some steps could be parallel instead
 
 ## What We Built
 
 You now have a complete content creation pipeline that:
+
 - Automatically researches topics
 - Writes engaging blog posts
 - Reviews for quality
@@ -446,6 +482,7 @@ And you understand how to build ANY sequential workflow!
 ## Real-World Applications
 
 **Sequential Workflows Are Perfect For:**
+
 - **Content Pipelines**: Research → Write → Edit → Publish
 - **Data Processing**: Extract → Transform → Validate → Load (ETL)
 - **Quality Control**: Create → Review → Fix → Approve
@@ -458,6 +495,7 @@ And you understand how to build ANY sequential workflow!
 🚀 **Tutorial 05: Parallel Processing** - Learn when and how to run agents concurrently for speed
 
 📖 **Further Reading**:
+
 - [Sequential Agents Documentation](https://google.github.io/adk-docs/agents/workflow-agents/sequential-agents/)
 - [State Management Guide](https://google.github.io/adk-docs/sessions/state/)
 - [Workflow Agents Overview](https://google.github.io/adk-docs/agents/workflow-agents/)
@@ -472,18 +510,21 @@ And you understand how to build ANY sequential workflow!
 
 ## Complete Code Reference
 
-**blog_pipeline/__init__.py**
+**blog_pipeline/**init**.py**
+
 ```python
 from . import agent
 ```
 
 **blog_pipeline/.env**
+
 ```bash
 GOOGLE_GENAI_USE_VERTEXAI=FALSE
 GOOGLE_API_KEY=your-api-key-here
 ```
 
 **blog_pipeline/agent.py**
+
 ```python
 # See Step 3 above for complete code
 ```

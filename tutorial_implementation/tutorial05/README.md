@@ -28,17 +28,20 @@ User Query → ParallelAgent (3 concurrent searches)
 ## Quick Start
 
 1. **Install dependencies:**
+
    ```bash
    make setup
    ```
 
 2. **Configure API key:**
+
    ```bash
    cp travel_planner/.env.example travel_planner/.env
    # Edit travel_planner/.env and add your Google AI API key
    ```
 
 3. **Start development server:**
+
    ```bash
    make dev
    ```
@@ -57,16 +60,21 @@ Try these prompts to see parallel processing in action:
 ## How It Works
 
 ### Parallel Execution
+
 The system uses `ParallelAgent` to run three searches simultaneously:
+
 - **Flight Finder**: Searches for available flights
 - **Hotel Finder**: Finds suitable accommodations
 - **Activity Finder**: Recommends local attractions
 
 ### Sequential Synthesis
+
 After all parallel searches complete, `SequentialAgent` runs the:
+
 - **Itinerary Builder**: Merges all results into a complete travel plan
 
 ### Performance Benefits
+
 - **Sequential**: ~30 seconds (3 agents × 10 seconds each)
 - **Parallel**: ~10 seconds (all 3 run concurrently)
 - **Result**: 3x faster execution for I/O-bound tasks
@@ -114,6 +122,7 @@ make test
 ```
 
 Tests cover:
+
 - ✅ Agent configurations and instructions
 - ✅ ParallelAgent structure and sub-agents
 - ✅ SequentialAgent pipeline flow
@@ -173,14 +182,17 @@ This pattern is perfect for:
 ### Common Issues
 
 **"Agents seem to run sequentially"**
+
 - Check Events tab - they should start simultaneously
 - May be limited by API rate limits
 
 **"Itinerary builder missing data"**
+
 - Verify parallel agents have `output_key` defined
 - Check `{key}` syntax in itinerary instruction
 
 **"Performance not improved"**
+
 - Parallel speedup depends on task type
 - I/O-bound tasks benefit most from parallelism
 
@@ -215,4 +227,4 @@ This implementation follows the established tutorial pattern:
 
 ---
 
-*Built with ❤️ for the ADK community*
+_Built with ❤️ for the ADK community_

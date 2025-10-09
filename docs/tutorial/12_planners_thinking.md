@@ -4,12 +4,32 @@ title: "Tutorial 12: Planners and Thinking - Strategic Agent Planning"
 description: "Implement planning and reasoning capabilities in agents using strategic thinking patterns, task decomposition, and execution planning."
 sidebar_label: "12. Planners & Thinking"
 sidebar_position: 12
-tags: ["advanced", "planning", "reasoning", "strategic-thinking", "task-decomposition"]
-keywords: ["agent planning", "strategic thinking", "reasoning", "task decomposition", "execution planning", "decision making"]
+tags:
+  [
+    "advanced",
+    "planning",
+    "reasoning",
+    "strategic-thinking",
+    "task-decomposition",
+  ]
+keywords:
+  [
+    "agent planning",
+    "strategic thinking",
+    "reasoning",
+    "task decomposition",
+    "execution planning",
+    "decision making",
+  ]
 status: "completed"
 difficulty: "advanced"
 estimated_time: "2 hours"
-prerequisites: ["Tutorial 01: Hello World Agent", "Tutorial 04: Sequential Workflows", "Tutorial 07: Loop Agents"]
+prerequisites:
+  [
+    "Tutorial 01: Hello World Agent",
+    "Tutorial 04: Sequential Workflows",
+    "Tutorial 07: Loop Agents",
+  ]
 learning_objectives:
   - "Implement strategic planning patterns in agents"
   - "Build task decomposition and execution systems"
@@ -23,11 +43,13 @@ implementation_link: "https://github.com/raphaelmansuy/adk_training/tree/main/tu
 **Goal**: Master advanced reasoning capabilities using Built-in Planners, Thinking Configuration, and structured Plan-ReAct patterns for complex problem-solving.
 
 **Prerequisites**:
+
 - Tutorial 01 (Hello World Agent)
 - Tutorial 02 (Function Tools)
 - Gemini 2.0+ model access
 
 **What You'll Learn**:
+
 - Using `BuiltInPlanner` with extended thinking
 - Implementing `PlanReActPlanner` for structured reasoning
 - Configuring `ThinkingConfig` for transparent reasoning
@@ -50,12 +72,14 @@ Default agents react immediately to queries. **Planners** add a crucial step: **
 - 💡 **Complex Problem Solving**: Handle multi-faceted challenges
 
 **Without Planner** (Direct Response):
+
 ```
 User: "Plan a trip to Japan"
 Agent: "Here's a trip plan..." [Immediate response]
 ```
 
 **With Planner** (Structured Reasoning):
+
 ```
 User: "Plan a trip to Japan"
 Agent:
@@ -66,11 +90,11 @@ Agent:
   4. Estimate costs
   5. Provide recommendations
   </PLAN>
-  
+
   <REASONING>
   Need to gather info first, then plan systematically...
   </REASONING>
-  
+
   <ACTION>
   Let me start by asking about your preferences...
   </ACTION>
@@ -117,6 +141,7 @@ print(result.content.parts[0].text)
 ```
 
 **Output includes thinking**:
+
 ```
 [Thinking]
 This is a complex global issue requiring multi-faceted approach.
@@ -153,12 +178,14 @@ thinking_config = types.ThinkingConfig(
 ```
 
 **When to show thinking**:
+
 - ✅ Educational applications (teach reasoning)
 - ✅ Debugging agent logic
 - ✅ Building trust (transparent AI)
 - ✅ Complex problem explanations
 
 **When to hide thinking**:
+
 - ✅ Production user-facing apps
 - ✅ When users want quick answers
 - ✅ API responses (efficiency)
@@ -171,7 +198,7 @@ thinking_config = types.ThinkingConfig(
 class BuiltInPlanner(BasePlanner):
     def __init__(self, thinking_config: types.ThinkingConfig = None):
         self.thinking_config = thinking_config or types.ThinkingConfig()
-    
+
     def apply_thinking_config(self, llm_request: LlmRequest):
         """Apply thinking config to LLM request."""
         if self.thinking_config:
@@ -227,6 +254,7 @@ print(result.content.parts[0].text)
 ```
 
 **Output structure**:
+
 ```
 <PLANNING>
 To build a house price prediction model, I need to:
@@ -262,14 +290,14 @@ Here's a complete plan for your ML model...
 
 PlanReActPlanner uses XML-like tags to structure reasoning:
 
-| Tag | Purpose | When Used |
-|-----|---------|-----------|
-| `<PLANNING>` | Initial plan | Start of task |
-| `<REASONING>` | Explain logic | Throughout process |
-| `<ACTION>` | Execute steps | When doing something |
-| `<OBSERVATION>` | Note results | After actions |
-| `<REPLANNING>` | Adjust plan | When strategy changes |
-| `<FINAL_ANSWER>` | Conclusion | End of task |
+| Tag              | Purpose       | When Used             |
+| ---------------- | ------------- | --------------------- |
+| `<PLANNING>`     | Initial plan  | Start of task         |
+| `<REASONING>`    | Explain logic | Throughout process    |
+| `<ACTION>`       | Execute steps | When doing something  |
+| `<OBSERVATION>`  | Note results  | After actions         |
+| `<REPLANNING>`   | Adjust plan   | When strategy changes |
+| `<FINAL_ANSWER>` | Conclusion    | End of task           |
 
 ### Replanning Example
 
@@ -305,6 +333,7 @@ print(result.content.parts[0].text)
 ```
 
 **Output shows replanning**:
+
 ```
 <PLANNING>
 Plan:
@@ -449,10 +478,10 @@ def assess_risk(factors: list[str]) -> dict:
         'technology': 6,
         'financial': 4
     }
-    
+
     total_risk = sum(risk_scores.get(f, 5) for f in factors)
     avg_risk = total_risk / len(factors) if factors else 5
-    
+
     return {
         'factors_assessed': factors,
         'risk_score': round(avg_risk, 2),
@@ -468,7 +497,7 @@ async def save_strategy_report(
     tool_context: ToolContext
 ) -> str:
     """Save strategic plan as artifact."""
-    
+
     timestamp = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
     report = f"""
 # Strategic Business Plan
@@ -485,13 +514,13 @@ Generated: {timestamp}
 - Planner: PlanReActPlanner
 - Model: gemini-2.0-flash
     """.strip()
-    
+
     filename = f"strategy_{problem[:30].replace(' ', '_')}.md"
     version = await tool_context.save_artifact(
         filename=filename,
         part=types.Part.from_text(report)
     )
-    
+
     return f"Strategy saved as {filename} (version {version})"
 
 
@@ -534,18 +563,18 @@ Think step-by-step and show your reasoning.
 
 async def solve_business_problem(problem: str):
     """Solve strategic business problem."""
-    
+
     print(f"\n{'='*70}")
     print(f"PROBLEM: {problem}")
     print(f"{'='*70}\n")
-    
+
     runner = Runner()
-    
+
     result = await runner.run_async(
         problem,
         agent=strategic_solver
     )
-    
+
     print("\n📊 STRATEGIC ANALYSIS:\n")
     print(result.content.parts[0].text)
     print(f"\n{'='*70}\n")
@@ -553,15 +582,15 @@ async def solve_business_problem(problem: str):
 
 async def main():
     """Run strategic problem-solving examples."""
-    
+
     # Example 1: Market entry strategy
     await solve_business_problem("""
-We're a mid-sized software company considering entering the 
+We're a mid-sized software company considering entering the
 healthcare AI market. Should we pursue this? What's the strategy?
     """)
-    
+
     await asyncio.sleep(2)
-    
+
     # Example 2: Investment decision
     await solve_business_problem("""
 We have $500,000 to invest in either:
@@ -569,9 +598,9 @@ A) Expanding current product line (15% annual return, medium risk)
 B) Entering new market (25% annual return, high risk)
 Which should we choose for a 5-year horizon?
     """)
-    
+
     await asyncio.sleep(2)
-    
+
     # Example 3: Risk mitigation
     await solve_business_problem("""
 Our startup faces:
@@ -590,7 +619,7 @@ if __name__ == '__main__':
 
 ```
 ======================================================================
-PROBLEM: We're a mid-sized software company considering entering the 
+PROBLEM: We're a mid-sized software company considering entering the
 healthcare AI market. Should we pursue this? What's the strategy?
 ======================================================================
 
@@ -713,7 +742,7 @@ from google.adk.types import LlmRequest, LlmResponse
 
 class MyCustomPlanner(BasePlanner):
     """Custom planning strategy."""
-    
+
     def build_planning_instruction(self, agent, context) -> str:
         """Inject custom planning instructions."""
         return """
@@ -738,7 +767,7 @@ STEP 4: VALIDATE
 - Did we achieve the goal?
 - What could be improved?
         """
-    
+
     def process_planning_response(self, response: LlmResponse) -> LlmResponse:
         """Process response after planning."""
         # Could modify response here
@@ -757,7 +786,7 @@ agent = Agent(
 ```python
 class DataSciencePlanner(BasePlanner):
     """Planner for data science workflows."""
-    
+
     def build_planning_instruction(self, agent, context) -> str:
         return """
 Follow the data science methodology:
@@ -808,12 +837,12 @@ ds_agent = Agent(
 
 ### When to Use Each Planner
 
-| Planner | Best For | Pros | Cons |
-|---------|----------|------|------|
-| **BuiltInPlanner** | Complex reasoning tasks | Native thinking, transparent, fast | Gemini 2.0+ only |
-| **PlanReActPlanner** | Multi-step workflows | Structured, replannable, debuggable | More verbose |
-| **BasePlanner (Custom)** | Domain-specific logic | Full control, tailored | More implementation work |
-| **No Planner** | Simple queries | Fast, minimal overhead | No structured reasoning |
+| Planner                  | Best For                | Pros                                | Cons                     |
+| ------------------------ | ----------------------- | ----------------------------------- | ------------------------ |
+| **BuiltInPlanner**       | Complex reasoning tasks | Native thinking, transparent, fast  | Gemini 2.0+ only         |
+| **PlanReActPlanner**     | Multi-step workflows    | Structured, replannable, debuggable | More verbose             |
+| **BasePlanner (Custom)** | Domain-specific logic   | Full control, tailored              | More implementation work |
+| **No Planner**           | Simple queries          | Fast, minimal overhead              | No structured reasoning  |
 
 ### Decision Tree
 
@@ -842,15 +871,15 @@ from google.genai import types
 
 async def compare_planners():
     """Compare planner performance."""
-    
+
     query = "Design a sustainable urban transportation system"
-    
+
     # No planner
     agent_default = Agent(
         model='gemini-2.0-flash',
         name='default'
     )
-    
+
     # BuiltInPlanner
     agent_builtin = Agent(
         model='gemini-2.0-flash',
@@ -859,21 +888,21 @@ async def compare_planners():
             thinking_config=types.ThinkingConfig(include_thoughts=True)
         )
     )
-    
+
     # PlanReActPlanner
     agent_planreact = Agent(
         model='gemini-2.0-flash',
         name='planreact',
         planner=PlanReActPlanner()
     )
-    
+
     runner = Runner()
-    
+
     for agent in [agent_default, agent_builtin, agent_planreact]:
         start = time.time()
         result = await runner.run_async(query, agent=agent)
         elapsed = time.time() - start
-        
+
         print(f"\n{'='*60}")
         print(f"Agent: {agent.name}")
         print(f"Time: {elapsed:.2f}s")
@@ -884,6 +913,7 @@ asyncio.run(compare_planners())
 ```
 
 **Typical Results**:
+
 - **No Planner**: 2-3s, 500-800 chars (direct answer)
 - **BuiltInPlanner**: 4-6s, 800-1200 chars (with thinking)
 - **PlanReActPlanner**: 5-8s, 1200-2000 chars (structured)
@@ -1138,20 +1168,20 @@ from google.genai import types
 @pytest.mark.asyncio
 async def test_builtin_planner_shows_thinking():
     """Test that thinking appears when include_thoughts=True."""
-    
+
     agent = Agent(
         model='gemini-2.0-flash',
         planner=BuiltInPlanner(
             thinking_config=types.ThinkingConfig(include_thoughts=True)
         )
     )
-    
+
     runner = Runner()
     result = await runner.run_async(
         "Explain quantum entanglement",
         agent=agent
     )
-    
+
     text = result.content.parts[0].text.lower()
     # Should contain thinking markers
     assert any(word in text for word in ['thinking', 'reasoning', 'consider'])
@@ -1160,18 +1190,18 @@ async def test_builtin_planner_shows_thinking():
 @pytest.mark.asyncio
 async def test_planreact_planner_structure():
     """Test that Plan-ReAct planner produces structured output."""
-    
+
     agent = Agent(
         model='gemini-2.0-flash',
         planner=PlanReActPlanner()
     )
-    
+
     runner = Runner()
     result = await runner.run_async(
         "Create a 3-step plan to learn Python",
         agent=agent
     )
-    
+
     text = result.content.parts[0].text
     # Should contain planning tags
     assert '<PLANNING>' in text or '<PLAN>' in text
@@ -1181,30 +1211,30 @@ async def test_planreact_planner_structure():
 @pytest.mark.asyncio
 async def test_planner_improves_complex_task():
     """Test that planner improves quality on complex task."""
-    
+
     complex_query = "Design a machine learning system for fraud detection"
-    
+
     # Without planner
     agent_no_planner = Agent(
         model='gemini-2.0-flash',
         name='no_planner'
     )
-    
+
     # With planner
     agent_with_planner = Agent(
         model='gemini-2.0-flash',
         name='with_planner',
         planner=PlanReActPlanner()
     )
-    
+
     runner = Runner()
-    
+
     result_no_planner = await runner.run_async(complex_query, agent=agent_no_planner)
     result_with_planner = await runner.run_async(complex_query, agent=agent_with_planner)
-    
+
     # Planned response should be more comprehensive
     assert len(result_with_planner.content.parts[0].text) > len(result_no_planner.content.parts[0].text)
-    
+
     # Planned response should mention key ML concepts
     planner_text = result_with_planner.content.parts[0].text.lower()
     ml_concepts = ['training', 'model', 'features', 'validation', 'accuracy']
@@ -1219,6 +1249,7 @@ async def test_planner_improves_complex_task():
 You've mastered advanced reasoning with planners and thinking configuration:
 
 **Key Takeaways**:
+
 - ✅ `BuiltInPlanner` uses Gemini 2.0+ native thinking for transparent reasoning
 - ✅ `ThinkingConfig` controls whether thinking is shown (`include_thoughts`)
 - ✅ `PlanReActPlanner` provides structured Plan → Reason → Act → Observe → Replan flow
@@ -1228,6 +1259,7 @@ You've mastered advanced reasoning with planners and thinking configuration:
 - ✅ Choose planner based on task complexity and requirements
 
 **Production Checklist**:
+
 - [ ] Using appropriate planner for task complexity
 - [ ] ThinkingConfig set correctly (show/hide based on use case)
 - [ ] Clear instructions for planning behavior
@@ -1237,11 +1269,13 @@ You've mastered advanced reasoning with planners and thinking configuration:
 - [ ] Model supports planning features (Gemini 2.0+)
 
 **Next Steps**:
+
 - **Tutorial 13**: Learn Code Execution for agents that can write and run Python
 - **Tutorial 14**: Implement Streaming for real-time response generation
 - **Tutorial 15**: Explore Live API for voice and bidirectional streaming
 
 **Resources**:
+
 - [ADK Planners Documentation](https://google.github.io/adk-docs/agents/planners/)
 - [Gemini Thinking Guide](https://cloud.google.com/vertex-ai/generative-ai/docs/model-reference/gemini)
 - [Plan-ReAct Pattern](https://arxiv.org/abs/2210.03629)

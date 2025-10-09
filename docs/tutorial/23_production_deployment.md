@@ -5,11 +5,24 @@ description: "Deploy agents to production environments using Cloud Run, Kubernet
 sidebar_label: "23. Production Deployment"
 sidebar_position: 23
 tags: ["advanced", "production", "deployment", "cloud-run", "kubernetes"]
-keywords: ["production deployment", "cloud run", "kubernetes", "vertex ai", "scalability", "reliability"]
+keywords:
+  [
+    "production deployment",
+    "cloud run",
+    "kubernetes",
+    "vertex ai",
+    "scalability",
+    "reliability",
+  ]
 status: "draft"
 difficulty: "advanced"
 estimated_time: "2.5 hours"
-prerequisites: ["Tutorial 01: Hello World Agent", "Google Cloud Platform account", "Docker knowledge"]
+prerequisites:
+  [
+    "Tutorial 01: Hello World Agent",
+    "Google Cloud Platform account",
+    "Docker knowledge",
+  ]
 learning_objectives:
   - "Deploy agents to Google Cloud Run"
   - "Configure production environments"
@@ -162,36 +175,36 @@ async def health_check():
 async def invoke_agent(request: QueryRequest):
     """
     Invoke agent with query.
-    
+
     Args:
         request: Query and configuration
-    
+
     Returns:
         Agent response
     """
-    
+
     try:
         # Update agent config if needed
         agent.generate_content_config = types.GenerateContentConfig(
             temperature=request.temperature,
             max_output_tokens=request.max_tokens
         )
-        
+
         # Run agent
         result = await runner.run_async(request.query, agent=agent)
-        
+
         # Extract response
         response_text = result.content.parts[0].text
-        
+
         # Estimate tokens
         token_count = len(response_text.split())
-        
+
         return QueryResponse(
             response=response_text,
             model=agent.model,
             tokens=token_count
         )
-    
+
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
@@ -304,32 +317,32 @@ apiVersion: serving.knative.dev/v1
 kind: Service
 metadata:
   name: agent-service
-  namespace: 'your-project-id'
+  namespace: "your-project-id"
 spec:
   template:
     metadata:
       annotations:
-        autoscaling.knative.dev/minScale: '1'
-        autoscaling.knative.dev/maxScale: '100'
-        run.googleapis.com/cpu-throttling: 'false'
+        autoscaling.knative.dev/minScale: "1"
+        autoscaling.knative.dev/maxScale: "100"
+        run.googleapis.com/cpu-throttling: "false"
     spec:
       containerConcurrency: 80
       timeoutSeconds: 300
       containers:
-      - image: gcr.io/your-project-id/agent-service
-        ports:
-        - containerPort: 8080
-        env:
-        - name: GOOGLE_CLOUD_PROJECT
-          value: 'your-project-id'
-        - name: GOOGLE_CLOUD_LOCATION
-          value: 'us-central1'
-        - name: GOOGLE_GENAI_USE_VERTEXAI
-          value: '1'
-        resources:
-          limits:
-            memory: 2Gi
-            cpu: '2'
+        - image: gcr.io/your-project-id/agent-service
+          ports:
+            - containerPort: 8080
+          env:
+            - name: GOOGLE_CLOUD_PROJECT
+              value: "your-project-id"
+            - name: GOOGLE_CLOUD_LOCATION
+              value: "us-central1"
+            - name: GOOGLE_GENAI_USE_VERTEXAI
+              value: "1"
+          resources:
+            limits:
+              memory: 2Gi
+              cpu: "2"
 ```
 
 ---
@@ -428,36 +441,36 @@ spec:
         app: agent-service
     spec:
       containers:
-      - name: agent-service
-        image: gcr.io/your-project-id/agent-service:latest
-        ports:
-        - containerPort: 8080
-        env:
-        - name: GOOGLE_CLOUD_PROJECT
-          value: "your-project-id"
-        - name: GOOGLE_CLOUD_LOCATION
-          value: "us-central1"
-        - name: GOOGLE_GENAI_USE_VERTEXAI
-          value: "1"
-        resources:
-          requests:
-            memory: "1Gi"
-            cpu: "500m"
-          limits:
-            memory: "2Gi"
-            cpu: "1"
-        livenessProbe:
-          httpGet:
-            path: /health
-            port: 8080
-          initialDelaySeconds: 30
-          periodSeconds: 10
-        readinessProbe:
-          httpGet:
-            path: /health
-            port: 8080
-          initialDelaySeconds: 5
-          periodSeconds: 5
+        - name: agent-service
+          image: gcr.io/your-project-id/agent-service:latest
+          ports:
+            - containerPort: 8080
+          env:
+            - name: GOOGLE_CLOUD_PROJECT
+              value: "your-project-id"
+            - name: GOOGLE_CLOUD_LOCATION
+              value: "us-central1"
+            - name: GOOGLE_GENAI_USE_VERTEXAI
+              value: "1"
+          resources:
+            requests:
+              memory: "1Gi"
+              cpu: "500m"
+            limits:
+              memory: "2Gi"
+              cpu: "1"
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 8080
+            initialDelaySeconds: 30
+            periodSeconds: 10
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 8080
+            initialDelaySeconds: 5
+            periodSeconds: 5
 ---
 apiVersion: v1
 kind: Service
@@ -468,9 +481,9 @@ spec:
   selector:
     app: agent-service
   ports:
-  - protocol: TCP
-    port: 80
-    targetPort: 8080
+    - protocol: TCP
+      port: 80
+      targetPort: 8080
 ---
 apiVersion: autoscaling/v2
 kind: HorizontalPodAutoscaler
@@ -484,18 +497,18 @@ spec:
   minReplicas: 3
   maxReplicas: 100
   metrics:
-  - type: Resource
-    resource:
-      name: cpu
-      target:
-        type: Utilization
-        averageUtilization: 70
-  - type: Resource
-    resource:
-      name: memory
-      target:
-        type: Utilization
-        averageUtilization: 80
+    - type: Resource
+      resource:
+        name: cpu
+        target:
+          type: Utilization
+          averageUtilization: 70
+    - type: Resource
+      resource:
+        name: memory
+        target:
+          type: Utilization
+          averageUtilization: 80
 ```
 
 **Step 2: Deploy to GKE**
@@ -569,41 +582,41 @@ from typing import Optional
 @dataclass
 class Config:
     """Application configuration."""
-    
+
     # Google Cloud
     project_id: str
     location: str
     use_vertexai: bool
-    
+
     # Model
     model: str
     temperature: float
     max_tokens: int
-    
+
     # Monitoring
     enable_tracing: bool
     log_level: str
-    
+
     # Security
     api_key: Optional[str]
     allowed_origins: list[str]
-    
+
     @classmethod
     def from_env(cls) -> 'Config':
         """Load configuration from environment variables."""
-        
+
         return cls(
             project_id=os.environ['GOOGLE_CLOUD_PROJECT'],
             location=os.environ.get('GOOGLE_CLOUD_LOCATION', 'us-central1'),
             use_vertexai=os.environ.get('GOOGLE_GENAI_USE_VERTEXAI', '1') == '1',
-            
+
             model=os.environ.get('MODEL', 'gemini-2.0-flash'),
             temperature=float(os.environ.get('TEMPERATURE', '0.5')),
             max_tokens=int(os.environ.get('MAX_TOKENS', '2048')),
-            
+
             enable_tracing=os.environ.get('ENABLE_TRACING', 'false').lower() == 'true',
             log_level=os.environ.get('LOG_LEVEL', 'INFO'),
-            
+
             api_key=os.environ.get('API_KEY'),
             allowed_origins=os.environ.get('ALLOWED_ORIGINS', '').split(',')
         )
@@ -642,12 +655,12 @@ error_count = 0
 @app.get("/health")
 async def health_check():
     """Comprehensive health check."""
-    
+
     uptime = (datetime.now() - service_start_time).total_seconds()
-    
+
     # Check critical dependencies
     vertex_ai_healthy = check_vertex_ai_connection()
-    
+
     health_status = {
         "status": "healthy" if vertex_ai_healthy else "degraded",
         "uptime_seconds": uptime,
@@ -658,7 +671,7 @@ async def health_check():
             "vertex_ai": "healthy" if vertex_ai_healthy else "unhealthy"
         }
     }
-    
+
     return health_status
 
 
@@ -676,14 +689,14 @@ def check_vertex_ai_connection() -> bool:
 async def track_requests(request, call_next):
     """Middleware to track requests."""
     global request_count, error_count
-    
+
     request_count += 1
-    
+
     response = await call_next(request)
-    
+
     if response.status_code >= 400:
         error_count += 1
-    
+
     return response
 ```
 
@@ -698,14 +711,14 @@ from google.cloud import secretmanager
 
 def get_secret(secret_id: str) -> str:
     """Retrieve secret from Secret Manager."""
-    
+
     client = secretmanager.SecretManagerServiceClient()
-    
+
     project_id = os.environ['GOOGLE_CLOUD_PROJECT']
     name = f"projects/{project_id}/secrets/{secret_id}/versions/latest"
-    
+
     response = client.access_secret_version(request={"name": name})
-    
+
     return response.payload.data.decode('UTF-8')
 
 
@@ -726,13 +739,13 @@ rate_limit_store = {}
 @app.middleware("http")
 async def rate_limit(request: Request, call_next):
     """Rate limiting middleware."""
-    
+
     client_ip = request.client.host
     current_time = time.time()
-    
+
     if client_ip in rate_limit_store:
         last_request, count = rate_limit_store[client_ip]
-        
+
         # Reset if more than 60 seconds
         if current_time - last_request > 60:
             rate_limit_store[client_ip] = (current_time, 1)
@@ -743,11 +756,11 @@ async def rate_limit(request: Request, call_next):
                     status_code=429,
                     content={"error": "Rate limit exceeded"}
                 )
-            
+
             rate_limit_store[client_ip] = (last_request, count + 1)
     else:
         rate_limit_store[client_ip] = (current_time, 1)
-    
+
     response = await call_next(request)
     return response
 ```
@@ -760,7 +773,7 @@ import json
 
 class JSONFormatter(logging.Formatter):
     """JSON log formatter for Cloud Logging."""
-    
+
     def format(self, record):
         log_obj = {
             "timestamp": self.formatTime(record),
@@ -770,10 +783,10 @@ class JSONFormatter(logging.Formatter):
             "function": record.funcName,
             "line": record.lineno
         }
-        
+
         if record.exc_info:
             log_obj["exception"] = self.formatException(record.exc_info)
-        
+
         return json.dumps(log_obj)
 
 

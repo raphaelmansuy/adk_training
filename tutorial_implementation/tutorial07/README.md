@@ -96,28 +96,33 @@ Final Output: Refined essay from state['current_essay']
 ### Key Components
 
 #### 1. Initial Writer Agent
+
 - **Purpose**: Creates the first draft essay
 - **Model**: gemini-2.0-flash
 - **Output**: `current_essay` (initial version)
 
 #### 2. Critic Agent
+
 - **Purpose**: Evaluates essay quality against criteria
 - **Criteria**: Thesis clarity, supporting arguments, grammar, engagement
 - **Output**: Either "APPROVED - Essay is complete." OR specific feedback
 - **Decision Logic**: Approves when quality meets standards
 
 #### 3. Refiner Agent
+
 - **Purpose**: Improves essay based on critique OR signals completion
 - **Tools**: `exit_loop` function for early termination
 - **Logic**: If critique says "APPROVED", calls exit_loop; else improves essay
 - **Output**: `current_essay` (overwrites with improved version)
 
 #### 4. Refinement Loop (LoopAgent)
+
 - **Sub-agents**: [critic, refiner]
 - **Max Iterations**: 5 (safety limit)
 - **Termination**: Either `exit_loop()` called OR 5 iterations reached
 
 #### 5. Complete System (SequentialAgent)
+
 - **Sub-agents**: [initial_writer, refinement_loop]
 - **Flow**: Write once → Refine iteratively → Output final essay
 
@@ -160,27 +165,32 @@ refiner.output_key = "current_essay"
 The implementation includes **62 comprehensive tests** covering:
 
 ### Individual Agent Tests (18 tests)
+
 - Agent configuration validation
 - Model and instruction completeness
 - Tool integration verification
 - Output key consistency
 
 ### Loop Logic Tests (12 tests)
+
 - LoopAgent structure and max_iterations
 - Exit tool functionality and context handling
 - Termination condition validation
 
 ### State Management Tests (10 tests)
+
 - Output key consistency patterns
 - State versioning through overwriting
 - Template variable usage
 
 ### System Integration Tests (12 tests)
+
 - Complete agent loading and imports
 - Nested agent structure validation
 - Type consistency checks
 
 ### Configuration Tests (10 tests)
+
 - Model consistency across agents
 - Description completeness
 - Agent name uniqueness
@@ -197,14 +207,17 @@ The implementation includes **62 comprehensive tests** covering:
 **Input**: "Write an essay about artificial intelligence"
 
 **Iteration 1**:
+
 - Critic: "Thesis vague, add specific AI examples, strengthen conclusion"
 - Refiner: Improves essay with concrete examples
 
 **Iteration 2**:
+
 - Critic: "Better structure needed between paragraphs"
 - Refiner: Adds transitions and improves flow
 
 **Iteration 3**:
+
 - Critic: "APPROVED - Essay is complete."
 - Refiner: Calls `exit_loop()` ✅
 
@@ -239,6 +252,7 @@ make reset          # Reset to clean state
 ## 🔍 Monitoring and Debugging
 
 ### Events Tab Analysis
+
 Open the **Events tab** in ADK to monitor:
 
 1. **InitialWriter** execution (once)
@@ -249,21 +263,25 @@ Open the **Events tab** in ADK to monitor:
 ### Common Debug Scenarios
 
 **Loop runs all 5 iterations**:
+
 - Critic too strict (never approves)
 - Refiner not calling exit_loop correctly
 - Approval phrase mismatch
 
 **Loop exits immediately**:
+
 - Critic too lenient (always approves)
 - Check critique evaluation logic
 
 **State not updating**:
+
 - Verify output_key consistency
 - Check template variable names
 
 ## 🎨 Customization Options
 
 ### Adjust Quality Standards
+
 Modify critic's evaluation criteria for different quality requirements:
 
 ```python
@@ -275,6 +293,7 @@ critic.instruction = "...meets MOST criteria adequately..."
 ```
 
 ### Change Max Iterations
+
 Adjust safety limit based on use case:
 
 ```python
@@ -286,6 +305,7 @@ refinement_loop.max_iterations = 3
 ```
 
 ### Add Quality Metrics
+
 Extend critic to evaluate additional aspects:
 
 ```python

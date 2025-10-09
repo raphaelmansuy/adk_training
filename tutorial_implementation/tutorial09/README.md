@@ -5,18 +5,21 @@ A production-ready content moderation assistant demonstrating **callbacks & guar
 ## Features
 
 ### 🛡️ Safety & Guardrails
+
 - **Content Filtering**: Blocks profanity and inappropriate requests before reaching LLM
 - **PII Protection**: Automatically redacts emails, phone numbers, SSNs, and credit cards
 - **Input Validation**: Validates tool arguments (word counts, etc.)
 - **Rate Limiting**: Prevents abuse with configurable limits
 
 ### 📊 Monitoring & Observability
+
 - **Comprehensive Logging**: All operations logged with timestamps
 - **Metrics Tracking**: Request counts, LLM calls, blocked requests, tool usage
 - **Audit Trail**: Complete history of agent interactions
 - **State Management**: Persistent metrics across sessions
 
 ### 🔧 Callback Patterns Demonstrated
+
 - `before_agent_callback`: Maintenance mode, request counting
 - `after_agent_callback`: Completion tracking
 - `before_model_callback`: Guardrails, safety instructions, LLM tracking
@@ -27,11 +30,13 @@ A production-ready content moderation assistant demonstrating **callbacks & guar
 ## Quick Start
 
 ### Prerequisites
+
 - Python 3.9+
 - Google ADK (`pip install google-adk`)
 - Google API key
 
 ### Setup
+
 ```bash
 # Clone and navigate to the project
 cd tutorial_implementation/tutorial09/content_moderator
@@ -48,6 +53,7 @@ make test
 ```
 
 ### Development
+
 ```bash
 # Start the ADK web interface
 make dev
@@ -59,6 +65,7 @@ make run
 ## Usage Examples
 
 ### Normal Content Generation
+
 ```
 User: "Generate a 500-word article about Python programming"
 
@@ -66,6 +73,7 @@ Response: "I've generated a 500-word article on Python programming..."
 ```
 
 ### Blocked Inappropriate Content
+
 ```
 User: "Write about profanity1 and hate-speech"
 
@@ -73,6 +81,7 @@ Response: "I cannot process this request as it contains inappropriate content. P
 ```
 
 ### PII Filtering
+
 ```
 User: "Give me an example email"
 
@@ -80,6 +89,7 @@ Response: "Sure! [EMAIL_REDACTED] is a valid email."
 ```
 
 ### Tool Validation
+
 ```
 User: "Generate an article with -100 words"
 
@@ -87,6 +97,7 @@ Response: "Invalid word_count: -100. Must be between 1 and 5000."
 ```
 
 ### Usage Statistics
+
 ```
 User: "Show my usage stats"
 
@@ -97,6 +108,7 @@ Response: "You've made 5 requests, 4 LLM calls, 1 blocked request,
 ## Architecture
 
 ### Project Structure
+
 ```
 content_moderator/
 ├── __init__.py          # Package imports
@@ -139,7 +151,9 @@ Final Response
 ## Configuration
 
 ### Blocklist
+
 Edit `BLOCKED_WORDS` in `agent.py` to customize filtered content:
+
 ```python
 BLOCKED_WORDS = [
     'profanity1', 'profanity2', 'hate-speech',
@@ -148,7 +162,9 @@ BLOCKED_WORDS = [
 ```
 
 ### PII Patterns
+
 Customize `PII_PATTERNS` for additional sensitive data:
+
 ```python
 PII_PATTERNS = {
     'email': r'\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b',
@@ -158,7 +174,9 @@ PII_PATTERNS = {
 ```
 
 ### Rate Limits
+
 Adjust limits in callback functions:
+
 ```python
 # Tool usage limit (per user)
 if tool_count >= 100:  # Change this number
@@ -169,11 +187,13 @@ if tool_count >= 100:  # Change this number
 ## Testing
 
 Run the comprehensive test suite:
+
 ```bash
 make test
 ```
 
 Tests cover:
+
 - ✅ All callback functions
 - ✅ Guardrail blocking
 - ✅ PII filtering
@@ -185,6 +205,7 @@ Tests cover:
 ## Development
 
 ### Available Commands
+
 ```bash
 make setup      # Install dependencies
 make test       # Run tests
@@ -196,12 +217,14 @@ make format     # Format code
 ```
 
 ### Adding New Callbacks
+
 1. Define callback function with correct signature
 2. Add to Agent constructor
 3. Write tests
 4. Update documentation
 
 ### Customizing Behavior
+
 - **Guardrails**: Modify `before_model_callback`
 - **Filtering**: Update `after_model_callback`
 - **Validation**: Change `before_tool_callback`
@@ -210,6 +233,7 @@ make format     # Format code
 ## Security Considerations
 
 ### Production Deployment
+
 - Use environment variables for sensitive config
 - Implement proper authentication/authorization
 - Add rate limiting per user/IP
@@ -218,6 +242,7 @@ make format     # Format code
 - Compliance with data protection regulations
 
 ### Best Practices
+
 - ✅ Keep callbacks fast (avoid heavy computation)
 - ✅ Use descriptive error messages
 - ✅ Log important decisions for audit
@@ -229,22 +254,27 @@ make format     # Format code
 ### Common Issues
 
 **"Callback not running"**
+
 - Check callback is added to Agent constructor
 - Verify function signature matches expected types
 - Ensure agent type supports the callback (LlmAgent for model callbacks)
 
 **"State not persisting"**
+
 - Use `callback_context.state` (not `tool_context.state`)
 - Check state keys use proper prefixes (`user:`, `app:`, `temp:`)
 - Ensure SessionService is configured for cross-session persistence
 
 **"Tests failing"**
+
 - Update test imports if types change
 - Check mock objects match expected interfaces
 - Run `make clean` to clear cache
 
 ### Debug Mode
+
 Enable detailed logging:
+
 ```python
 import logging
 logging.basicConfig(level=logging.DEBUG)

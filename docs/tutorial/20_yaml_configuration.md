@@ -5,7 +5,14 @@ description: "Configure agents using YAML files for declarative setup, easier ma
 sidebar_label: "20. YAML Configuration"
 sidebar_position: 20
 tags: ["intermediate", "yaml", "configuration", "declarative", "setup"]
-keywords: ["yaml configuration", "declarative setup", "agent config", "configuration management", "environment setup"]
+keywords:
+  [
+    "yaml configuration",
+    "declarative setup",
+    "agent config",
+    "configuration management",
+    "environment setup",
+  ]
 status: "draft"
 difficulty: "intermediate"
 estimated_time: "1 hour"
@@ -98,7 +105,7 @@ tools:
   - type: function
     name: get_weather
     description: Get current weather for a location
-    
+
 sub_agents:
   - name: specialized_agent
     model: gemini-2.0-flash
@@ -128,21 +135,21 @@ adk create --type=config my_agent_config
 
 ```yaml
 # Required fields
-name: agent_name              # Unique identifier
-model: gemini-2.0-flash       # Model to use
+name: agent_name # Unique identifier
+model: gemini-2.0-flash # Model to use
 
 # Optional fields
-description: "Agent purpose"   # Brief description
-instruction: |                # System instruction
+description: "Agent purpose" # Brief description
+instruction: | # System instruction
   Multi-line instruction
   for the agent
 
 # Content generation config
 generate_content_config:
-  temperature: 0.7            # 0.0-1.0 (creativity)
-  max_output_tokens: 2048     # Max response length
-  top_p: 0.95                 # Nucleus sampling
-  top_k: 40                   # Top-k sampling
+  temperature: 0.7 # 0.0-1.0 (creativity)
+  max_output_tokens: 2048 # Max response length
+  top_p: 0.95 # Nucleus sampling
+  top_k: 40 # Top-k sampling
 
 # Tools configuration
 tools:
@@ -189,17 +196,17 @@ description: Customer support orchestrator handling inquiries, orders, and techn
 
 instruction: |
   You are a customer support orchestrator. Your role is to:
-  
+
   1. Understand customer inquiries
   2. Route to appropriate specialized agents
   3. Coordinate responses from multiple agents
   4. Provide comprehensive solutions
-  
+
   Available specialized agents:
   - order_agent: Order status, tracking, cancellations
   - technical_agent: Technical issues, troubleshooting
   - billing_agent: Payment issues, refunds, invoices
-  
+
   Guidelines:
   - Always be polite and professional
   - Use specialized agents for their expertise
@@ -214,7 +221,7 @@ tools:
   - type: function
     name: check_customer_status
     description: Check if customer is premium member
-  
+
   - type: function
     name: log_interaction
     description: Log customer interaction for records
@@ -224,99 +231,99 @@ sub_agents:
   - name: order_agent
     model: gemini-2.0-flash
     description: Handles order-related inquiries
-    
+
     instruction: |
       You are an order management specialist. You can:
-      
+
       - Check order status
       - Track shipments
       - Process cancellations
       - Handle returns
-      
+
       Always provide order numbers and tracking information.
       Be specific about delivery dates and status.
-    
+
     generate_content_config:
       temperature: 0.3
       max_output_tokens: 1024
-    
+
     tools:
       - type: function
         name: get_order_status
         description: Get status of an order by ID
-      
+
       - type: function
         name: track_shipment
         description: Get shipment tracking information
-      
+
       - type: function
         name: cancel_order
         description: Cancel an order (requires authorization)
-  
+
   # Technical Support Agent
   - name: technical_agent
     model: gemini-2.0-flash
     description: Handles technical issues and troubleshooting
-    
+
     instruction: |
       You are a technical support specialist. You can:
-      
+
       - Diagnose technical problems
       - Provide step-by-step solutions
       - Escalate complex issues
       - Access knowledge base
-      
+
       Ask clarifying questions to understand the issue.
       Provide clear, actionable instructions.
       Use simple language for non-technical users.
-    
+
     generate_content_config:
       temperature: 0.4
       max_output_tokens: 1536
-    
+
     tools:
       - type: function
         name: search_knowledge_base
         description: Search technical documentation
-      
+
       - type: function
         name: run_diagnostic
         description: Run diagnostic tests
-      
+
       - type: function
         name: create_ticket
         description: Create support ticket for escalation
-  
+
   # Billing Agent
   - name: billing_agent
     model: gemini-2.0-flash
     description: Handles payment and billing inquiries
-    
+
     instruction: |
       You are a billing specialist. You can:
-      
+
       - Check payment status
       - Process refunds
       - Explain charges
       - Update payment methods
-      
+
       Always verify customer identity before discussing billing.
       Explain charges clearly and itemize when necessary.
       Follow company refund policies strictly.
-    
+
     generate_content_config:
       temperature: 0.2
       max_output_tokens: 1024
-    
+
     tools:
       - type: function
         name: get_billing_history
         description: Retrieve billing history
-      
+
       - type: function
         name: process_refund
         description: Process refund (requires approval for amounts > $100)
-      
+
       - type: function
         name: update_payment_method
         description: Update stored payment method
@@ -336,9 +343,9 @@ def check_customer_status(customer_id: str) -> str:
     """Check if customer is premium member."""
     # Simulated lookup
     premium_customers = ['CUST-001', 'CUST-003', 'CUST-005']
-    
+
     is_premium = customer_id in premium_customers
-    
+
     return f"Customer {customer_id} is {'premium' if is_premium else 'standard'} member"
 
 
@@ -346,7 +353,7 @@ def log_interaction(customer_id: str, interaction_type: str, summary: str) -> st
     """Log customer interaction."""
     # In production, would log to database
     print(f"[LOG] {customer_id} - {interaction_type}: {summary}")
-    
+
     return "Interaction logged successfully"
 
 
@@ -359,9 +366,9 @@ def get_order_status(order_id: str) -> str:
         'ORD-003': 'delivered',
         'ORD-004': 'cancelled'
     }
-    
+
     status = orders.get(order_id, 'not_found')
-    
+
     return f"Order {order_id} status: {status}"
 
 
@@ -380,9 +387,9 @@ def track_shipment(order_id: str) -> str:
             'estimated_delivery': 'Delivered on 2025-10-07'
         }
     }
-    
+
     info = tracking.get(order_id)
-    
+
     if info:
         return f"Tracking: {info['carrier']} {info['tracking_number']}, ETA: {info['estimated_delivery']}"
     else:
@@ -403,11 +410,11 @@ def search_knowledge_base(query: str) -> str:
         'connection': 'Check internet connection and restart the app',
         'error': 'Clear app cache: Settings > Apps > Clear Cache'
     }
-    
+
     for key, value in kb.items():
         if key in query.lower():
             return value
-    
+
     return "No matching article found"
 
 
@@ -421,7 +428,7 @@ def create_ticket(customer_id: str, issue: str, priority: str) -> str:
     """Create support ticket."""
     # In production, would create in ticketing system
     ticket_id = f"TKT-{hash(issue) % 10000:04d}"
-    
+
     return f"Support ticket {ticket_id} created with {priority} priority"
 
 
@@ -440,7 +447,7 @@ def process_refund(order_id: str, amount: float) -> str:
     """Process refund."""
     if amount > 100:
         return f"REQUIRES_APPROVAL: Refund of ${amount} for {order_id} needs manager approval"
-    
+
     return f"Refund of ${amount} approved for {order_id}. Funds will appear in 3-5 business days."
 
 
@@ -471,39 +478,39 @@ os.environ['GOOGLE_CLOUD_LOCATION'] = 'us-central1'
 
 async def main():
     """Load configuration and run agent."""
-    
+
     # Load agent from YAML configuration
     config = AgentConfig.from_yaml_file('root_agent.yaml')
-    
+
     # Create agent from configuration
     agent = config.to_agent()
-    
+
     # Create runner and session
     runner = Runner()
     session = Session()
-    
+
     # Test queries
     queries = [
         "I'm customer CUST-001 and I want to check my order ORD-001",
         "I need help with a login error",
         "I'd like a refund of $75 for order ORD-002"
     ]
-    
+
     for query in queries:
         print(f"\n{'='*70}")
         print(f"QUERY: {query}")
         print(f"{'='*70}\n")
-        
+
         result = await runner.run_async(
             query,
             agent=agent,
             session=session
         )
-        
+
         print("RESPONSE:")
         print(result.content.parts[0].text)
         print(f"\n{'='*70}")
-        
+
         await asyncio.sleep(2)
 
 
@@ -526,7 +533,7 @@ I've checked order ORD-001, and it's currently shipped! Here are the details:
 - Tracking Number: 1Z999AA10123456784
 - Estimated Delivery: October 10, 2025
 
-You can track your package at ups.com using the tracking number above. 
+You can track your package at ups.com using the tracking number above.
 Is there anything else I can help you with?
 
 ======================================================================
@@ -536,10 +543,10 @@ QUERY: I need help with a login error
 ======================================================================
 
 RESPONSE:
-I'll connect you with our technical support specialist to help with 
+I'll connect you with our technical support specialist to help with
 your login issue.
 
-The technical team suggests: To reset your password, go to Settings > 
+The technical team suggests: To reset your password, go to Settings >
 Security > Reset Password
 
 Additionally, I've run a diagnostic and recommend:
@@ -547,7 +554,7 @@ Additionally, I've run a diagnostic and recommend:
 2. Restart the application
 3. Try logging in again
 
-If the issue persists, I've created support ticket TKT-3847 with high 
+If the issue persists, I've created support ticket TKT-3847 with high
 priority for further investigation.
 
 Is this resolving your issue?
@@ -561,10 +568,10 @@ QUERY: I'd like a refund of $75 for order ORD-002
 RESPONSE:
 I'll connect you with our billing specialist to process your refund request.
 
-Good news! I've processed the refund of $75.00 for order ORD-002. 
+Good news! I've processed the refund of $75.00 for order ORD-002.
 The funds will appear in your original payment method within 3-5 business days.
 
-I've also logged this interaction for our records. Is there anything 
+I've also logged this interaction for our records. Is there anything
 else I can assist you with today?
 
 ======================================================================
@@ -638,7 +645,7 @@ generate_content_config:
 # Customer Support Orchestrator
 # Maintainer: support-team@example.com
 # Last Updated: 2025-10-08
-# 
+#
 # This agent routes customer inquiries to specialized agents:
 # - order_agent: Order management
 # - technical_agent: Technical support
@@ -658,13 +665,13 @@ from google.adk.agents.agent_config import AgentConfig
 
 def validate_config(yaml_path: str) -> bool:
     """Validate agent configuration."""
-    
+
     try:
         config = AgentConfig.from_yaml_file(yaml_path)
         agent = config.to_agent()
         print(f"✅ Configuration valid: {agent.name}")
         return True
-    
+
     except Exception as e:
         print(f"❌ Configuration error: {e}")
         return False
@@ -715,7 +722,7 @@ sub_agents:
   - name: faq_agent
     model: gemini-2.0-flash
     description: FAQ and basic questions
-  
+
   # Premium support only (filter in code)
   - name: premium_support_agent
     model: gemini-2.0-flash
@@ -759,6 +766,7 @@ if user.has_permission('data_export'):
 **Solutions**:
 
 1. **Check file path**:
+
 ```python
 import os
 config_path = 'root_agent.yaml'
@@ -767,6 +775,7 @@ print(f"Exists: {os.path.exists(config_path)}")
 ```
 
 2. **Specify absolute path**:
+
 ```python
 config = AgentConfig.from_yaml_file('/full/path/to/root_agent.yaml')
 ```

@@ -33,6 +33,7 @@ Then open `http://localhost:8000` in your browser and select "blog_pipeline".
 ## How It Works
 
 ### State Flow
+
 ```
 User Input → Research Agent → state['research_findings']
     ↓
@@ -134,6 +135,7 @@ cp blog_pipeline/.env.example blog_pipeline/.env
 ## Events & Debugging
 
 Open the **Events tab** in the ADK web UI to see:
+
 - Each agent starting and completing
 - State values being saved and injected
 - The exact sequence of execution

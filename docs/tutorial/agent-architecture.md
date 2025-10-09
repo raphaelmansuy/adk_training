@@ -271,14 +271,14 @@ runner = Runner(
 
 ### State vs Memory Decision Framework
 
-| Scenario | Use State | Use Memory | Example |
-|----------|-----------|------------|---------|
-| Current task progress | ✅ | ❌ | `state['step'] = 2` |
-| User identity | ✅ | ❌ | `state['user:name']` |
-| Working calculations | ✅ | ❌ | `state['temp:result']` |
-| Past conversations | ❌ | ✅ | Memory service |
-| Learned preferences | ❌ | ✅ | User behavior patterns |
-| Historical facts | ❌ | ✅ | Important knowledge |
+| Scenario              | Use State | Use Memory | Example                |
+| --------------------- | --------- | ---------- | ---------------------- |
+| Current task progress | ✅        | ❌         | `state['step'] = 2`    |
+| User identity         | ✅        | ❌         | `state['user:name']`   |
+| Working calculations  | ✅        | ❌         | `state['temp:result']` |
+| Past conversations    | ❌        | ✅         | Memory service         |
+| Learned preferences   | ❌        | ✅         | User behavior patterns |
+| Historical facts      | ❌        | ✅         | Important knowledge    |
 
 ### Artifacts for Large Content
 
@@ -475,12 +475,12 @@ runner = Runner(
 
 ### Common Issues & Solutions
 
-| Issue | Symptom | Solution |
-|-------|---------|----------|
-| State not shared | Agent can't see previous results | Use `output_key` and state interpolation |
-| Memory leaks | State growing indefinitely | Use `temp:` prefix for temporary data |
-| Circular dependencies | Agents waiting for each other | Redesign hierarchy, use ParallelAgent |
-| Performance degradation | Slow response times | Add ParallelAgent, reduce state size |
+| Issue                   | Symptom                          | Solution                                 |
+| ----------------------- | -------------------------------- | ---------------------------------------- |
+| State not shared        | Agent can't see previous results | Use `output_key` and state interpolation |
+| Memory leaks            | State growing indefinitely       | Use `temp:` prefix for temporary data    |
+| Circular dependencies   | Agents waiting for each other    | Redesign hierarchy, use ParallelAgent    |
+| Performance degradation | Slow response times              | Add ParallelAgent, reduce state size     |
 
 ---
 

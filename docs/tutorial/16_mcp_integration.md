@@ -5,11 +5,24 @@ description: "Integrate MCP servers for standardized tool access including files
 sidebar_label: "16. MCP Integration"
 sidebar_position: 16
 tags: ["advanced", "mcp", "protocol", "tools", "standardization"]
-keywords: ["model context protocol", "mcp servers", "standardized tools", "filesystem", "databases", "tool protocols"]
+keywords:
+  [
+    "model context protocol",
+    "mcp servers",
+    "standardized tools",
+    "filesystem",
+    "databases",
+    "tool protocols",
+  ]
 status: "draft"
 difficulty: "advanced"
 estimated_time: "2 hours"
-prerequisites: ["Tutorial 01: Hello World Agent", "Tutorial 02: Function Tools", "MCP server setup"]
+prerequisites:
+  [
+    "Tutorial 01: Hello World Agent",
+    "Tutorial 02: Function Tools",
+    "MCP server setup",
+  ]
 learning_objectives:
   - "Use MCPToolset for standardized tool access"
   - "Configure and connect to MCP servers"
@@ -23,12 +36,14 @@ implementation_link: "https://github.com/raphaelmansuy/adk_training/tree/main/tu
 **Goal**: Integrate external tools and services into your agents using the Model Context Protocol (MCP), expanding your agent's capabilities with community-built tool servers.
 
 **Prerequisites**:
+
 - Tutorial 01 (Hello World Agent)
 - Tutorial 02 (Function Tools)
 - Node.js installed (for MCP servers)
 - Basic understanding of protocols and APIs
 
 **What You'll Learn**:
+
 - Understanding Model Context Protocol (MCP)
 - Using `MCPToolset` to connect to MCP servers
 - Configuring stdio-based MCP connections
@@ -48,6 +63,7 @@ implementation_link: "https://github.com/raphaelmansuy/adk_training/tree/main/tu
 **Solution**: **Model Context Protocol (MCP)** is an open standard for connecting AI agents to external tools and data sources. Instead of writing custom integrations, use **pre-built MCP servers** from the community.
 
 **Benefits**:
+
 - 🔌 **Plug-and-Play**: Connect to existing MCP servers instantly
 - 🌐 **Community Ecosystem**: Leverage community-built tools
 - [TOOLS] **Standardized Interface**: Consistent API across all tools
@@ -56,6 +72,7 @@ implementation_link: "https://github.com/raphaelmansuy/adk_training/tree/main/tu
 - 🚀 **Extensible**: Build custom servers when needed
 
 **MCP Ecosystem**:
+
 - Official MCP servers: filesystem, GitHub, Slack, database, etc.
 - Community servers: 100+ available
 - Custom servers: Build your own for proprietary systems
@@ -73,6 +90,7 @@ implementation_link: "https://github.com/raphaelmansuy/adk_training/tree/main/tu
 - **Prompts**: Predefined instruction templates
 
 **Architecture**:
+
 ```
 Agent (ADK)
     ↓
@@ -90,6 +108,7 @@ External Service (filesystem, API, database, etc.)
 ### MCP Connection Types
 
 **Stdio** (Standard Input/Output):
+
 ```python
 from google.adk.tools.mcp_tool import MCPToolset, StdioConnectionParams
 
@@ -103,6 +122,7 @@ mcp_tools = MCPToolset(
 ```
 
 **HTTP** (coming soon):
+
 ```python
 # Future: HTTP-based connections
 # mcp_tools = MCPToolset(
@@ -210,17 +230,17 @@ os.environ['GOOGLE_CLOUD_LOCATION'] = 'us-central1'
 
 class DocumentOrganizer:
     """Intelligent document organizer using MCP."""
-    
+
     def __init__(self, base_directory: str):
         """
         Initialize document organizer.
-        
+
         Args:
             base_directory: Root directory to organize
         """
-        
+
         self.base_directory = base_directory
-        
+
         # Create MCP toolset for filesystem access
         self.mcp_tools = MCPToolset(
             connection_params=StdioConnectionParams(
@@ -233,7 +253,7 @@ class DocumentOrganizer:
             ),
             retry_on_closed_resource=True  # Auto-retry on connection issues
         )
-        
+
         # Create organizer agent
         self.agent = Agent(
             model='gemini-2.0-flash',
@@ -271,17 +291,17 @@ You have access to filesystem tools:
                 max_output_tokens=2048
             )
         )
-        
+
         self.runner = Runner()
         self.session = Session()
-    
+
     async def organize(self):
         """Organize documents in base directory."""
-        
+
         print(f"{'='*70}")
         print(f"ORGANIZING: {self.base_directory}")
         print(f"{'='*70}\n")
-        
+
         result = await self.runner.run_async(
             """
 Organize all files in the directory:
@@ -296,36 +316,36 @@ Start by listing the directory contents.
             agent=self.agent,
             session=self.session
         )
-        
+
         print("\n📊 ORGANIZATION REPORT:\n")
         print(result.content.parts[0].text)
         print(f"\n{'='*70}\n")
-    
+
     async def search_documents(self, query: str):
         """
         Search documents by content.
-        
+
         Args:
             query: Search query
         """
-        
+
         print(f"\n🔍 SEARCHING FOR: {query}\n")
-        
+
         result = await self.runner.run_async(
             f"Search all files for content related to: {query}",
             agent=self.agent,
             session=self.session
         )
-        
+
         print("RESULTS:\n")
         print(result.content.parts[0].text)
         print()
-    
+
     async def summarize_directory(self):
         """Generate directory summary."""
-        
+
         print("\n📁 DIRECTORY SUMMARY:\n")
-        
+
         result = await self.runner.run_async(
             """
 Generate a comprehensive directory summary:
@@ -338,26 +358,26 @@ Generate a comprehensive directory summary:
             agent=self.agent,
             session=self.session
         )
-        
+
         print(result.content.parts[0].text)
         print()
 
 
 async def main():
     """Main entry point."""
-    
+
     # Set base directory
     base_dir = '/Users/username/Documents/ToOrganize'
-    
+
     # Create organizer
     organizer = DocumentOrganizer(base_dir)
-    
+
     # Organize documents
     await organizer.organize()
-    
+
     # Search for specific content
     await organizer.search_documents('budget reports')
-    
+
     # Get summary
     await organizer.summarize_directory()
 
@@ -477,10 +497,10 @@ mcp_tools = MCPToolset(
         command='npx',
         args=['-y', '@modelcontextprotocol/server-filesystem', '/path']
     ),
-    
+
     # Session pooling configuration
     retry_on_closed_resource=True,  # Auto-retry on connection loss
-    
+
     # Pool automatically manages:
     # - Connection reuse
     # - Resource cleanup
@@ -542,38 +562,38 @@ MCP servers can expose **resources** (read-only data):
 
 ```javascript
 // custom-mcp-server.js
-import { Server } from '@modelcontextprotocol/sdk/server/index.js';
-import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js';
+import { Server } from "@modelcontextprotocol/sdk/server/index.js";
+import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
 
 // Create server
 const server = new Server(
   {
-    name: 'custom-calculator-server',
-    version: '1.0.0',
+    name: "custom-calculator-server",
+    version: "1.0.0",
   },
   {
     capabilities: {
       tools: {},
     },
-  }
+  },
 );
 
 // Register tool
-server.setRequestHandler('tools/list', async () => {
+server.setRequestHandler("tools/list", async () => {
   return {
     tools: [
       {
-        name: 'calculate',
-        description: 'Perform mathematical calculations',
+        name: "calculate",
+        description: "Perform mathematical calculations",
         inputSchema: {
-          type: 'object',
+          type: "object",
           properties: {
             expression: {
-              type: 'string',
-              description: 'Mathematical expression to evaluate',
+              type: "string",
+              description: "Mathematical expression to evaluate",
             },
           },
-          required: ['expression'],
+          required: ["expression"],
         },
       },
     ],
@@ -581,15 +601,15 @@ server.setRequestHandler('tools/list', async () => {
 });
 
 // Handle tool calls
-server.setRequestHandler('tools/call', async (request) => {
-  if (request.params.name === 'calculate') {
+server.setRequestHandler("tools/call", async (request) => {
+  if (request.params.name === "calculate") {
     const expression = request.params.arguments.expression;
     try {
       const result = eval(expression); // In production, use safe math parser
       return {
         content: [
           {
-            type: 'text',
+            type: "text",
             text: `Result: ${result}`,
           },
         ],
@@ -598,7 +618,7 @@ server.setRequestHandler('tools/call', async (request) => {
       return {
         content: [
           {
-            type: 'text',
+            type: "text",
             text: `Error: ${error.message}`,
           },
         ],
@@ -696,6 +716,7 @@ postgres = MCPToolset(
 ### Community MCP Servers
 
 Browse 100+ community servers at:
+
 - [MCP Server Registry](https://github.com/modelcontextprotocol/servers)
 - [Awesome MCP Servers](https://github.com/punkpeye/awesome-mcp-servers)
 
@@ -782,7 +803,7 @@ try:
             args=['-y', '@modelcontextprotocol/server-filesystem', directory]
         )
     )
-    
+
     result = runner.run(query, agent=agent)
 
 except Exception as e:
@@ -802,6 +823,7 @@ mcp_tools = MCPToolset(...)  # May fail silently
 **Problem**: Node.js not installed
 
 **Solution**:
+
 ```bash
 # Install Node.js
 # macOS:
@@ -821,12 +843,14 @@ npx --version
 **Solutions**:
 
 1. **Test server manually**:
+
 ```bash
 # Run server directly to see errors
 npx -y @modelcontextprotocol/server-filesystem /path/to/dir
 ```
 
 2. **Check path**:
+
 ```python
 import os
 
@@ -836,6 +860,7 @@ print(f"Absolute path: {os.path.abspath(directory)}")
 ```
 
 3. **Use correct command**:
+
 ```python
 # ✅ Correct
 StdioConnectionParams(
@@ -849,6 +874,7 @@ StdioConnectionParams(
 **Problem**: MCP server not exposing tools correctly
 
 **Solution**: Check server logs and tool discovery:
+
 ```python
 # Enable debug logging
 import logging
@@ -874,14 +900,14 @@ from google.adk.tools.mcp_tool import MCPToolset, StdioConnectionParams
 @pytest.mark.asyncio
 async def test_mcp_filesystem_read():
     """Test reading file via MCP."""
-    
+
     # Create temp directory and file
     with tempfile.TemporaryDirectory() as tmpdir:
         test_file = os.path.join(tmpdir, 'test.txt')
-        
+
         with open(test_file, 'w') as f:
             f.write('Hello MCP')
-        
+
         # Create MCP toolset
         mcp_tools = MCPToolset(
             connection_params=StdioConnectionParams(
@@ -889,19 +915,19 @@ async def test_mcp_filesystem_read():
                 args=['-y', '@modelcontextprotocol/server-filesystem', tmpdir]
             )
         )
-        
+
         # Create agent
         agent = Agent(
             model='gemini-2.0-flash',
             tools=[mcp_tools]
         )
-        
+
         runner = Runner()
         result = await runner.run_async(
             "Read the contents of test.txt",
             agent=agent
         )
-        
+
         # Verify
         text = result.content.parts[0].text
         assert 'Hello MCP' in text
@@ -910,7 +936,7 @@ async def test_mcp_filesystem_read():
 @pytest.mark.asyncio
 async def test_mcp_filesystem_write():
     """Test writing file via MCP."""
-    
+
     with tempfile.TemporaryDirectory() as tmpdir:
         mcp_tools = MCPToolset(
             connection_params=StdioConnectionParams(
@@ -918,22 +944,22 @@ async def test_mcp_filesystem_write():
                 args=['-y', '@modelcontextprotocol/server-filesystem', tmpdir]
             )
         )
-        
+
         agent = Agent(
             model='gemini-2.0-flash',
             tools=[mcp_tools]
         )
-        
+
         runner = Runner()
         result = await runner.run_async(
             "Create a file called output.txt with content: Test content",
             agent=agent
         )
-        
+
         # Verify file created
         output_file = os.path.join(tmpdir, 'output.txt')
         assert os.path.exists(output_file)
-        
+
         with open(output_file) as f:
             content = f.read()
             assert 'Test content' in content
@@ -992,6 +1018,7 @@ agent = Agent(
 ```
 
 **How It Works**:
+
 1. ADK automatically requests access token from `token_url`
 2. Token included in all MCP server requests
 3. Token refreshed automatically when expired
@@ -1077,7 +1104,7 @@ os.environ['GOOGLE_CLOUD_LOCATION'] = 'us-central1'
 
 async def main():
     """Demonstrate OAuth2-secured MCP integration."""
-    
+
     # OAuth2 configuration
     oauth2_credential = {
         'type': 'oauth2',
@@ -1086,7 +1113,7 @@ async def main():
         'client_secret': os.environ.get('OAUTH_CLIENT_SECRET'),
         'scopes': ['documents.read', 'documents.write']
     }
-    
+
     # Create MCP toolset with OAuth2
     secure_mcp_tools = MCPToolset(
         connection_params=StdioConnectionParams(
@@ -1100,7 +1127,7 @@ async def main():
         credential=oauth2_credential,
         retry_on_closed_resource=True
     )
-    
+
     # Create agent with authenticated MCP access
     agent = Agent(
         model='gemini-2.5-flash',
@@ -1118,14 +1145,14 @@ Always handle sensitive information appropriately.
         """.strip(),
         tools=[secure_mcp_tools]
     )
-    
+
     # Run queries with authentication
     runner = Runner()
-    
+
     print("\n" + "="*60)
     print("SECURE MCP SERVER WITH OAUTH2")
     print("="*60 + "\n")
-    
+
     # Query 1: Read secure document
     result1 = await runner.run_async(
         "Read the Q4 financial report from the secure archive.",
@@ -1133,9 +1160,9 @@ Always handle sensitive information appropriately.
     )
     print("📄 Q4 Report:\n")
     print(result1.content.parts[0].text)
-    
+
     await asyncio.sleep(1)
-    
+
     # Query 2: Create document
     result2 = await runner.run_async(
         "Create a summary document of key findings from the Q4 report.",
@@ -1143,7 +1170,7 @@ Always handle sensitive information appropriately.
     )
     print("\n\n📝 Summary Created:\n")
     print(result2.content.parts[0].text)
-    
+
     print("\n" + "="*60 + "\n")
 
 
@@ -1158,10 +1185,10 @@ if __name__ == '__main__':
 ```python
 class McpTool:
     """Individual MCP tool with authentication."""
-    
+
     def _get_headers(self, credential: dict) -> dict:
         """Generate authentication headers based on credential type."""
-        
+
         if credential['type'] == 'oauth2':
             # Fetch OAuth2 access token
             token = self._fetch_oauth2_token(
@@ -1171,27 +1198,28 @@ class McpTool:
                 scopes=credential.get('scopes', [])
             )
             return {'Authorization': f'Bearer {token}'}
-        
+
         elif credential['type'] == 'bearer':
             return {'Authorization': f"Bearer {credential['token']}"}
-        
+
         elif credential['type'] == 'basic':
             # Base64 encode username:password
             import base64
             creds = f"{credential['username']}:{credential['password']}"
             encoded = base64.b64encode(creds.encode()).decode()
             return {'Authorization': f'Basic {encoded}'}
-        
+
         elif credential['type'] == 'api_key':
             header_name = credential.get('header', 'Authorization')
             return {header_name: credential['key']}
-        
+
         return {}
 ```
 
 ### Best Practices for Authentication
 
 **DO**:
+
 - ✅ Use OAuth2 for production systems
 - ✅ Store credentials in environment variables (not hardcoded!)
 - ✅ Use least-privilege scopes (only necessary permissions)
@@ -1200,6 +1228,7 @@ class McpTool:
 - ✅ Test with expired tokens
 
 **DON'T**:
+
 - ❌ Commit credentials to version control
 - ❌ Use same credentials across environments (dev/prod)
 - ❌ Share credentials between agents
@@ -1236,16 +1265,16 @@ from google.cloud import secretmanager
 def get_oauth_credentials():
     """Fetch OAuth2 credentials from Secret Manager."""
     client = secretmanager.SecretManagerServiceClient()
-    
+
     # Fetch secrets
     client_id = client.access_secret_version(
         name="projects/PROJECT/secrets/oauth-client-id/versions/latest"
     ).payload.data.decode()
-    
+
     client_secret = client.access_secret_version(
         name="projects/PROJECT/secrets/oauth-client-secret/versions/latest"
     ).payload.data.decode()
-    
+
     return {
         'type': 'oauth2',
         'token_url': 'https://auth.company.com/oauth/token',
@@ -1268,7 +1297,7 @@ from unittest.mock import Mock, patch
 @pytest.mark.asyncio
 async def test_mcp_oauth2_authentication():
     """Test MCP with OAuth2 authentication."""
-    
+
     # Mock OAuth2 token endpoint
     with patch('requests.post') as mock_post:
         mock_post.return_value.json.return_value = {
@@ -1276,7 +1305,7 @@ async def test_mcp_oauth2_authentication():
             'token_type': 'Bearer',
             'expires_in': 3600
         }
-        
+
         # Create MCP toolset with OAuth2
         mcp_tools = MCPToolset(
             connection_params=StdioConnectionParams(
@@ -1290,22 +1319,22 @@ async def test_mcp_oauth2_authentication():
                 'client_secret': 'test-secret'
             }
         )
-        
+
         # Verify token was fetched
         mock_post.assert_called_once()
-        
+
         # Test agent with authenticated MCP
         agent = Agent(
             model='gemini-2.5-flash',
             tools=[mcp_tools]
         )
-        
+
         runner = Runner()
         result = await runner.run_async(
             "Test authenticated query",
             agent=agent
         )
-        
+
         # Verify authentication worked
         assert result is not None
 
@@ -1313,7 +1342,7 @@ async def test_mcp_oauth2_authentication():
 @pytest.mark.asyncio
 async def test_mcp_bearer_token():
     """Test MCP with bearer token."""
-    
+
     mcp_tools = MCPToolset(
         connection_params=StdioConnectionParams(
             command='npx',
@@ -1324,37 +1353,41 @@ async def test_mcp_bearer_token():
             'token': 'test-bearer-token'
         }
     )
-    
+
     agent = Agent(
         model='gemini-2.5-flash',
         tools=[mcp_tools]
     )
-    
+
     runner = Runner()
     result = await runner.run_async("Test query", agent=agent)
-    
+
     assert result is not None
 ```
 
 ### Troubleshooting Authentication
 
 **Error: "401 Unauthorized"**
+
 - Check credential type matches server expectation
 - Verify client_id and client_secret are correct
 - Check token hasn't expired
 - Verify scopes include necessary permissions
 
 **Error: "403 Forbidden"**
+
 - Check user has required permissions
 - Verify scopes are sufficient
 - Check rate limits not exceeded
 
 **Error: "Token refresh failed"**
+
 - Verify token_url is accessible
 - Check network connectivity
 - Verify OAuth2 server is operational
 
 **Error: "Invalid credentials"**
+
 - Double-check credential dictionary structure
 - Verify credential type ('oauth2', 'bearer', 'basic', 'api_key')
 - Check for typos in credential fields
@@ -1396,11 +1429,13 @@ You've mastered MCP integration and authentication for extended agent capabiliti
 - [ ] Appropriate permissions for file access
 
 **Next Steps**:
+
 - **Tutorial 17**: Learn Agent-to-Agent (A2A) communication
 - **Tutorial 18**: Master Events & Observability
 - **Tutorial 19**: Implement Artifacts & File Management
 
 **Resources**:
+
 - [MCP Specification](https://spec.modelcontextprotocol.io/)
 - [Official MCP Servers](https://github.com/modelcontextprotocol/servers)
 - [Sample: mcp_stdio_server_agent](research/adk-python/contributing/samples/mcp_stdio_server_agent/)

@@ -53,14 +53,14 @@ In this tutorial, you'll build a **team support assistant Slack bot** using:
 
 ### Why Slack + ADK?
 
-| Feature | Benefit |
-|---------|---------|
-| **Native Integration** | Users stay in their workflow |
-| **Thread Context** | Natural conversation threading |
-| **Rich Formatting** | Buttons, menus, blocks UI |
-| **Team Collaboration** | Multiple users can interact |
+| Feature                | Benefit                        |
+| ---------------------- | ------------------------------ |
+| **Native Integration** | Users stay in their workflow   |
+| **Thread Context**     | Natural conversation threading |
+| **Rich Formatting**    | Buttons, menus, blocks UI      |
+| **Team Collaboration** | Multiple users can interact    |
 | **Channel Visibility** | Transparent agent interactions |
-| **Mobile Support** | Works on Slack mobile apps |
+| **Mobile Support**     | Works on Slack mobile apps     |
 
 **When to use Slack + ADK:**
 
@@ -68,10 +68,10 @@ In this tutorial, you'll build a **team support assistant Slack bot** using:
 ✅ DevOps and incident response bots  
 ✅ HR and onboarding assistants  
 ✅ IT helpdesk automation  
-✅ Knowledge base access  
+✅ Knowledge base access
 
 ❌ Public-facing customer support → Use web UI (Tutorial 30)  
-❌ Data visualization dashboards → Use Streamlit (Tutorial 32)  
+❌ Data visualization dashboards → Use Streamlit (Tutorial 32)
 
 ---
 
@@ -109,6 +109,7 @@ Get from [Google AI Studio](https://makersuite.google.com/app/apikey)
 **2. Click "Create New App"**
 
 **3. Choose "From scratch"**
+
 - App Name: `Support Bot`
 - Workspace: Select your workspace
 
@@ -132,6 +133,7 @@ users:read            # Read user info
 **5. Enable Socket Mode**
 
 Go to **Socket Mode** → Enable → Create app-level token:
+
 - Token Name: `socket_token`
 - Scope: `connections:write`
 - Save token: `xapp-1-...`
@@ -253,30 +255,30 @@ def handle_mention(event, say, logger):
         text = event["text"]
         channel = event["channel"]
         thread_ts = event.get("thread_ts", event["ts"])
-        
+
         # Remove bot mention from text
         text = re.sub(r'<@[A-Z0-9]+>', '', text).strip()
-        
+
         if not text:
             say(
                 text="Hi! How can I help you?",
                 thread_ts=thread_ts
             )
             return
-        
+
         # Generate response using ADK Agent
         # ADK Agent maintains conversation context automatically
         full_response = agent(text)
-        
+
         # Format for Slack
         formatted_response = format_slack_message(full_response)
-        
+
         # Send response in thread
         say(
             text=formatted_response,
             thread_ts=thread_ts
         )
-        
+
     except Exception as e:
         logger.error(f"Error handling mention: {e}")
         say(
@@ -290,23 +292,23 @@ def handle_dm(event, say, logger):
     # Only respond to DMs (not channel messages)
     if event.get("channel_type") != "im":
         return
-    
+
     # Ignore bot messages
     if event.get("bot_id"):
         return
-    
+
     try:
         text = event["text"]
         channel = event["channel"]
-        
+
         # Generate response using ADK Agent
         # Agent maintains conversation history automatically
         full_response = agent(text)
-        
+
         # Format and send
         formatted_response = format_slack_message(full_response)
         say(text=formatted_response)
-        
+
     except Exception as e:
         logger.error(f"Error handling DM: {e}")
         say(text="Sorry, I encountered an error. Please try again!")
@@ -315,9 +317,9 @@ def handle_dm(event, say, logger):
 def handle_support_command(ack, say, command):
     """Handle /support slash command."""
     ack()
-    
+
     text = command.get("text", "")
-    
+
     if not text:
         say(
             text="Hi! Use `/support [your question]` to ask me anything!\n\n" +
@@ -326,14 +328,14 @@ def handle_support_command(ack, say, command):
                  "• `/support Where is the API documentation?`"
         )
         return
-    
+
     try:
         # Call agent directly for slash command
         full_response = agent(text)
-        
+
         formatted_response = format_slack_message(full_response)
         say(text=formatted_response)
-        
+
     except Exception as e:
         say(text=f"Sorry, I encountered an error: {str(e)}")
 
@@ -436,14 +438,14 @@ python bot.py
 
 ### Socket Mode vs HTTP Mode
 
-| Aspect | Socket Mode | HTTP Mode |
-|--------|-------------|-----------|
-| **Connection** | WebSocket (persistent) | HTTP webhooks |
-| **Setup** | Easy (no public URL) | Requires public endpoint |
-| **Use Case** | Development | Production |
-| **Latency** | Low (~50ms) | Medium (~100ms) |
-| **Reliability** | Reconnects automatically | Must handle retries |
-| **Deployment** | Local or any server | Cloud Run, Heroku, etc. |
+| Aspect          | Socket Mode              | HTTP Mode                |
+| --------------- | ------------------------ | ------------------------ |
+| **Connection**  | WebSocket (persistent)   | HTTP webhooks            |
+| **Setup**       | Easy (no public URL)     | Requires public endpoint |
+| **Use Case**    | Development              | Production               |
+| **Latency**     | Low (~50ms)              | Medium (~100ms)          |
+| **Reliability** | Reconnects automatically | Must handle retries      |
+| **Deployment**  | Local or any server      | Cloud Run, Heroku, etc.  |
 
 ---
 
@@ -472,14 +474,14 @@ def handle_mention(event, say):
     # Extract message
     text = remove_mention(event["text"])
     thread_ts = event.get("thread_ts", event["ts"])
-    
+
     # Get/create session for this thread
     session_id = f"{event['channel']}:{thread_ts}"
     session = get_or_create_session(session_id)
-    
+
     # Send to ADK agent
     response = send_to_agent(session, text)
-    
+
     # Reply in thread
     say(text=response, thread_ts=thread_ts)
 ```
@@ -593,36 +595,36 @@ Emergency (P0): Call phone number for system outages.""",
 def search_knowledge_base(query: str) -> dict:
     """
     Search the company knowledge base.
-    
+
     Args:
         query: Search query
-        
+
     Returns:
         Dict with matching article or error
     """
     query_lower = query.lower()
-    
+
     # Search by tags and content
     matches = []
     for key, article in KNOWLEDGE_BASE.items():
         score = 0
-        
+
         # Check tags
         for tag in article["tags"]:
             if tag in query_lower:
                 score += 2
-        
+
         # Check title
         if any(word in article["title"].lower() for word in query_lower.split()):
             score += 1
-        
+
         # Check content
         if any(word in article["content"].lower() for word in query_lower.split()):
             score += 0.5
-        
+
         if score > 0:
             matches.append((score, article))
-    
+
     if matches:
         # Return best match
         matches.sort(key=lambda x: x[0], reverse=True)
@@ -704,22 +706,22 @@ def handle_mention(event, say, logger):
         text = event["text"]
         channel = event["channel"]
         thread_ts = event.get("thread_ts", event["ts"])
-        
+
         # Remove mention
         text = re.sub(r'<@[A-Z0-9]+>', '', text).strip()
-        
+
         if not text:
             say(text="Hi! How can I help you?", thread_ts=thread_ts)
             return
-        
+
         # Call agent directly - ADK handles tool execution automatically
         # Agent maintains conversation context and executes tools as needed
         full_response = agent(text)
-        
+
         # Format and send
         formatted_response = format_slack_message(full_response)
         say(text=formatted_response, thread_ts=thread_ts)
-        
+
     except Exception as e:
         logger.error(f"Error: {e}")
         say(text="Sorry, I encountered an error!", thread_ts=thread_ts)
@@ -781,7 +783,7 @@ def create_action_blocks(message: str, actions: list) -> list:
             }
         }
     ]
-    
+
     if actions:
         blocks.append({
             "type": "actions",
@@ -799,14 +801,14 @@ def create_action_blocks(message: str, actions: list) -> list:
                 for action in actions
             ]
         })
-    
+
     return blocks
 
 # Enhanced knowledge base search with blocks
 def search_knowledge_base_with_blocks(query: str) -> dict:
     """Search and return formatted Slack blocks."""
     result = search_knowledge_base(query)
-    
+
     if result["found"]:
         return {
             "found": True,
@@ -840,16 +842,16 @@ def search_knowledge_base_with_blocks(query: str) -> dict:
 def handle_mention(event, say, client, logger):
     """Handle mentions with rich blocks."""
     # ... (same extraction logic)
-    
+
     # After getting response from agent
     # Check if knowledge base was used
     if "search_knowledge_base" in full_response:  # Simplified check
         # Extract query from response
         # Call search_knowledge_base_with_blocks
         # Send blocks instead of plain text
-        
+
         result = search_knowledge_base_with_blocks(text)
-        
+
         if result["found"]:
             say(
                 blocks=result["blocks"],
@@ -869,7 +871,7 @@ def handle_mention(event, say, client, logger):
 def handle_email_support(ack, body, say):
     """Handle email support button click."""
     ack()
-    
+
     say(
         text="📧 You can email our support team at support@company.com\n\n" +
              "We typically respond within 24 hours on business days.",
@@ -880,7 +882,7 @@ def handle_email_support(ack, body, say):
 def handle_open_ticket(ack, body, say):
     """Handle open ticket button click."""
     ack()
-    
+
     # Show modal for ticket creation
     client.views_open(
         trigger_id=body["trigger_id"],
@@ -971,17 +973,17 @@ from datetime import datetime
 def create_support_ticket(subject: str, description: str, priority: str = "normal") -> dict:
     """
     Create a support ticket.
-    
+
     Args:
         subject: Ticket subject
         description: Detailed description
         priority: Priority level (low, normal, high, urgent)
-        
+
     Returns:
         Dict with ticket details
     """
     ticket_id = f"TKT-{uuid.uuid4().hex[:8].upper()}"
-    
+
     # Mock ticket creation (replace with real ticketing system API)
     ticket = {
         "id": ticket_id,
@@ -992,7 +994,7 @@ def create_support_ticket(subject: str, description: str, priority: str = "norma
         "created_at": datetime.now().isoformat(),
         "url": f"https://support.company.com/tickets/{ticket_id}"
     }
-    
+
     return ticket
 
 # Add to agent tools
@@ -1043,8 +1045,9 @@ When creating tickets:
 `@Support Bot my laptop won't connect to VPN, tried everything`
 
 Bot creates a ticket and responds:
+
 > I've created ticket **TKT-A1B2C3D4** for your VPN issue. Our IT team will reach out within 4 hours.
-> 
+>
 > Track it here: https://support.company.com/tickets/TKT-A1B2C3D4
 
 🎫 Ticket created!
@@ -1063,7 +1066,7 @@ def get_user_info(user_id: str, client) -> dict:
     try:
         response = client.users_info(user=user_id)
         user = response["user"]
-        
+
         return {
             "name": user["real_name"],
             "email": user["profile"].get("email"),
@@ -1078,7 +1081,7 @@ def get_channel_info(channel_id: str, client) -> dict:
     try:
         response = client.conversations_info(channel=channel_id)
         channel = response["channel"]
-        
+
         return {
             "name": channel["name"],
             "topic": channel.get("topic", {}).get("value"),
@@ -1094,7 +1097,7 @@ def handle_mention(event, say, client, logger):
     # Get Slack context
     user_info = get_user_info(event["user"], client)
     channel_info = get_channel_info(event["channel"], client)
-    
+
     # Add context to agent message
     context = f"""User context:
 - Name: {user_info.get('name', 'Unknown')}
@@ -1106,10 +1109,10 @@ Channel context:
 - Topic: {channel_info.get('topic', 'N/A')}
 
 User question: {text}"""
-    
+
     # Send to agent with context - ADK Agent handles execution
     response = agent(context)
-    
+
     # ... process response
 ```
 
@@ -1134,10 +1137,10 @@ def send_daily_tip():
         "⏰ Reminder: Submit your timesheets before end of day Friday!",
         "🎉 Feature update: I can now create support tickets directly from Slack!"
     ]
-    
+
     import random
     tip = random.choice(tips)
-    
+
     app.client.chat_postMessage(
         channel="#general",
         text=tip
@@ -1187,14 +1190,14 @@ def handle_mention(event, say, client, logger_obj):
     """Handle mentions with analytics."""
     # Log event
     logger.info(f"Mention from user {event['user']} in channel {event['channel']}")
-    
+
     # Track stats
     stats["mentions"] += 1
     stats[f"user_{event['user']}"] += 1
     stats[f"channel_{event['channel']}"] += 1
-    
+
     # ... process mention
-    
+
     # Log response
     logger.info(f"Responded with {len(full_response)} characters")
     stats["responses"] += 1
@@ -1204,12 +1207,12 @@ def handle_mention(event, say, client, logger_obj):
 def handle_stats_command(ack, say, command):
     """Show bot usage statistics."""
     ack()
-    
+
     # Admin only
     if command["user_id"] not in ADMIN_USERS:
         say("Sorry, this command is for admins only!")
         return
-    
+
     message = f"""📊 *Support Bot Statistics*
 
 Total mentions: {stats['mentions']}
@@ -1223,14 +1226,14 @@ Top users:
 Top channels:
 {get_top_channels(stats, 5)}
 """
-    
+
     say(text=message)
 
 def get_top_users(stats, n=5):
     """Get top N users by interaction count."""
     user_stats = {k: v for k, v in stats.items() if k.startswith("user_")}
     sorted_users = sorted(user_stats.items(), key=lambda x: x[1], reverse=True)[:n]
-    
+
     return "\n".join([
         f"{i+1}. <@{user.replace('user_', '')}> - {count} interactions"
         for i, (user, count) in enumerate(sorted_users)
@@ -1362,14 +1365,14 @@ class RateLimiter:
         self.max_requests = max_requests
         self.window = window
         self.requests = defaultdict(list)
-    
+
     def is_allowed(self, user_id):
         now = time.time()
         self.requests[user_id] = [
             req_time for req_time in self.requests[user_id]
             if now - req_time < self.window
         ]
-        
+
         if len(self.requests[user_id]) < self.max_requests:
             self.requests[user_id].append(now)
             return True
@@ -1380,14 +1383,14 @@ rate_limiter = RateLimiter()
 @app.event("app_mention")
 def handle_mention(event, say):
     user_id = event["user"]
-    
+
     if not rate_limiter.is_allowed(user_id):
         say(
             text="⚠️ You're sending too many requests. Please wait a minute!",
             thread_ts=event.get("thread_ts", event["ts"])
         )
         return
-    
+
     # ... process normally
 ```
 
@@ -1432,23 +1435,23 @@ def log_metric(metric_name, value):
     """Log to Google Cloud Monitoring."""
     if os.getenv("ENVIRONMENT") != "production":
         return
-    
+
     client = monitoring_v3.MetricServiceClient()
     project_name = f"projects/{os.getenv('GCP_PROJECT')}"
-    
+
     series = monitoring_v3.TimeSeries()
     series.metric.type = f"custom.googleapis.com/slack_bot/{metric_name}"
-    
+
     # ... (same as previous tutorials)
-    
+
     client.create_time_series(name=project_name, time_series=[series])
 
 @app.event("app_mention")
 def handle_mention(event, say):
     start_time = time.time()
-    
+
     # ... process mention
-    
+
     latency = time.time() - start_time
     log_metric("response_latency", latency)
     log_metric("mentions", 1)
@@ -1463,12 +1466,12 @@ from datetime import datetime, timedelta
 def cleanup_old_sessions():
     """Remove sessions older than 24 hours."""
     cutoff = datetime.now() - timedelta(hours=24)
-    
+
     sessions_to_remove = []
     for session_id, session_data in sessions.items():
         if session_data.get("created_at", datetime.now()) < cutoff:
             sessions_to_remove.append(session_id)
-    
+
     for session_id in sessions_to_remove:
         del sessions[session_id]
         logger.info(f"Cleaned up session: {session_id}")
@@ -1486,6 +1489,7 @@ schedule.every().hour.do(cleanup_old_sessions)
 **Issue 1: Bot Not Responding**
 
 **Symptoms**:
+
 - Mention bot, no response
 - No errors in logs
 
@@ -1510,6 +1514,7 @@ curl https://your-bot.run.app/health
 **Issue 2: "Verification Failed" Error**
 
 **Symptoms**:
+
 - Slack says request URL verification failed
 - Events not reaching bot
 
@@ -1522,7 +1527,7 @@ def slack_events():
     # Slack sends challenge on initial setup
     if request.json and "challenge" in request.json:
         return {"challenge": request.json["challenge"]}
-    
+
     # Normal event handling
     return handler.handle(request)
 ```
@@ -1532,6 +1537,7 @@ def slack_events():
 **Issue 3: Rate Limit Errors**
 
 **Symptoms**:
+
 - `ratelimited` error from Slack API
 - Bot stops responding
 
@@ -1544,7 +1550,7 @@ import time
 def send_message_safely(channel, text, thread_ts=None):
     """Send message with rate limit handling."""
     max_retries = 5
-    
+
     for attempt in range(max_retries):
         try:
             app.client.chat_postMessage(
@@ -1568,6 +1574,7 @@ def send_message_safely(channel, text, thread_ts=None):
 **Issue 4: Tools Not Executing**
 
 **Symptoms**:
+
 - Agent doesn't call functions
 - Generic responses only
 
@@ -1604,6 +1611,7 @@ for event in response_stream:
 **Issue 5: Session State Lost**
 
 **Symptoms**:
+
 - Bot forgets conversation context
 - Each message treated as new conversation
 
@@ -1642,7 +1650,7 @@ You now know how to:
 ✅ Create rich Slack blocks and interactive buttons  
 ✅ Add knowledge base search and ticket creation  
 ✅ Deploy to production with HTTP mode  
-✅ Implement rate limiting, monitoring, and error handling  
+✅ Implement rate limiting, monitoring, and error handling
 
 ### Continue Learning
 

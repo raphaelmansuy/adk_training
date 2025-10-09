@@ -5,7 +5,15 @@ description: "Implement safety guardrails and monitoring callbacks to control ag
 sidebar_label: "09. Callbacks & Guardrails"
 sidebar_position: 9
 tags: ["advanced", "safety", "callbacks", "guardrails", "monitoring"]
-keywords: ["agent safety", "guardrails", "callbacks", "monitoring", "content filtering", "safety controls"]
+keywords:
+  [
+    "agent safety",
+    "guardrails",
+    "callbacks",
+    "monitoring",
+    "content filtering",
+    "safety controls",
+  ]
 status: "completed"
 difficulty: "advanced"
 estimated_time: "1.5 hours"
@@ -25,6 +33,7 @@ implementation_link: "https://github.com/raphaelmansuy/adk_training/tree/main/tu
 Learn how to use **callbacks** to observe, customize, and control agent behavior at specific execution points. This tutorial demonstrates a content moderation system with safety guardrails, logging, and request/response modification.
 
 **What You'll Build**: An intelligent content assistant that:
+
 - **Blocks** inappropriate requests before reaching the LLM (guardrails)
 - **Validates** tool arguments before execution
 - **Logs** all LLM calls and tool executions (monitoring)
@@ -50,6 +59,7 @@ Learn how to use **callbacks** to observe, customize, and control agent behavior
 ### What are Callbacks?
 
 **Callbacks** are functions you define that ADK automatically calls at specific execution points. They enable:
+
 - **Observability**: Logging and monitoring
 - **Control**: Blocking or modifying operations
 - **Customization**: Adapting behavior dynamically
@@ -58,14 +68,17 @@ Learn how to use **callbacks** to observe, customize, and control agent behavior
 ### Callback Types
 
 **Agent Lifecycle** (all agent types):
+
 - `before_agent_callback`: Before agent's main logic starts
 - `after_agent_callback`: After agent finishes
 
 **LLM Interaction** (LlmAgent only):
+
 - `before_model_callback`: Before LLM API call
 - `after_model_callback`: After LLM response received
 
 **Tool Execution** (LlmAgent only):
+
 - `before_tool_callback`: Before tool function runs
 - `after_tool_callback`: After tool function completes
 
@@ -74,6 +87,7 @@ Learn how to use **callbacks** to observe, customize, and control agent behavior
 **Return `None`** → Proceed normally (allow default behavior)
 
 **Return Object** → Override/skip operation:
+
 - `before_agent_callback` → `Content`: Skip agent execution
 - `before_model_callback` → `LlmResponse`: Skip LLM call, use returned response
 - `before_tool_callback` → `dict`: Skip tool execution, use returned result
@@ -86,6 +100,7 @@ Learn how to use **callbacks** to observe, customize, and control agent behavior
 ## Use Case: Content Moderation Assistant
 
 **Scenario**: Build a writing assistant that:
+
 - Blocks requests with profanity or hate speech
 - Validates tool arguments (e.g., no negative word counts)
 - Logs all LLM calls for audit trail
@@ -94,6 +109,7 @@ Learn how to use **callbacks** to observe, customize, and control agent behavior
 - Tracks usage metrics (LLM calls, tool uses, blocked requests)
 
 **Safety Requirements**:
+
 - ✅ Block inappropriate inputs (before they reach LLM)
 - ✅ Validate tool arguments (before execution)
 - ✅ Log everything (for compliance/debugging)
@@ -115,7 +131,8 @@ content_moderator/
 
 ### Complete Code
 
-**content_moderator/__init__.py**:
+**content_moderator/**init**.py**:
+
 ```python
 from .agent import root_agent
 
@@ -123,6 +140,7 @@ __all__ = ['root_agent']
 ```
 
 **content_moderator/agent.py**:
+
 ```python
 """
 Content Moderation Assistant - Demonstrates Callbacks & Guardrails
@@ -172,15 +190,15 @@ PII_PATTERNS = {
 def before_agent_callback(callback_context: CallbackContext) -> Optional[types.Content]:
     """
     Called before agent starts processing a request.
-    
+
     Use Case: Check if agent should even handle this request.
-    
+
     Returns:
         None: Allow agent to proceed
         Content: Skip agent execution, use returned content as response
     """
     logger.info(f"[AGENT START] Session: {callback_context.invocation_id}")
-    
+
     # Check if agent is in maintenance mode (app state)
     if callback_context.state.get('app:maintenance_mode', False):
         logger.warning("[AGENT BLOCKED] Maintenance mode active")
@@ -188,34 +206,34 @@ def before_agent_callback(callback_context: CallbackContext) -> Optional[types.C
             parts=[types.Part(text="System is currently under maintenance. Please try again later.")],
             role="model"
         )
-    
+
     # Increment request counter
     count = callback_context.state.get('user:request_count', 0)
     callback_context.state['user:request_count'] = count + 1
-    
+
     return None  # Allow agent to proceed
 
 
 def after_agent_callback(callback_context: CallbackContext, content: types.Content) -> Optional[types.Content]:
     """
     Called after agent completes processing.
-    
+
     Use Case: Post-process or validate final output.
-    
+
     Returns:
         None: Use agent's original output
         Content: Replace agent's output with this
     """
     logger.info(f"[AGENT COMPLETE] Generated {len(content.parts)} parts")
-    
+
     # Track successful completions
     callback_context.state['temp:agent_completed'] = True
-    
+
     # Could add standard disclaimer here
     # return types.Content(
     #     parts=content.parts + [types.Part(text="\n\n[This is AI-generated content]")]
     # )
-    
+
     return None  # Use original output
 
 
@@ -225,13 +243,13 @@ def before_model_callback(
 ) -> Optional[types.GenerateContentResponse]:
     """
     Called before sending request to LLM.
-    
+
     Use Cases:
     1. Guardrails: Block inappropriate requests
     2. Modification: Add safety instructions
     3. Caching: Return cached responses
     4. Logging: Track LLM usage
-    
+
     Returns:
         None: Allow LLM call to proceed
         LlmResponse: Skip LLM call, use this response instead
@@ -242,18 +260,18 @@ def before_model_callback(
         for part in content.parts:
             if part.text:
                 user_text += part.text
-    
+
     logger.info(f"[LLM REQUEST] Length: {len(user_text)} chars")
-    
+
     # GUARDRAIL: Check for blocked words
     for word in BLOCKED_WORDS:
         if word.lower() in user_text.lower():
             logger.warning(f"[LLM BLOCKED] Found blocked word: {word}")
-            
+
             # Track blocked requests
             blocked_count = callback_context.state.get('user:blocked_requests', 0)
             callback_context.state['user:blocked_requests'] = blocked_count + 1
-            
+
             # Return error response (skip LLM call)
             return types.GenerateContentResponse(
                 candidates=[
@@ -267,18 +285,18 @@ def before_model_callback(
                     )
                 ]
             )
-    
+
     # MODIFICATION: Add safety instruction
     safety_instruction = "\n\nIMPORTANT: Do not generate harmful, biased, or inappropriate content. If the request is unclear, ask for clarification."
-    
+
     # Modify system instruction
     if llm_request.config and llm_request.config.system_instruction:
         llm_request.config.system_instruction += safety_instruction
-    
+
     # Track LLM calls
     llm_count = callback_context.state.get('user:llm_calls', 0)
     callback_context.state['user:llm_calls'] = llm_count + 1
-    
+
     return None  # Allow LLM call with modifications
 
 
@@ -288,12 +306,12 @@ def after_model_callback(
 ) -> Optional[types.GenerateContentResponse]:
     """
     Called after receiving response from LLM.
-    
+
     Use Cases:
     1. Filtering: Remove PII or sensitive data
     2. Formatting: Standardize output format
     3. Logging: Track response quality
-    
+
     Returns:
         None: Use original LLM response
         LlmResponse: Replace with modified response
@@ -304,9 +322,9 @@ def after_model_callback(
         for part in llm_response.candidates[0].content.parts:
             if part.text:
                 response_text += part.text
-    
+
     logger.info(f"[LLM RESPONSE] Length: {len(response_text)} chars")
-    
+
     # FILTERING: Remove PII patterns
     filtered_text = response_text
     for pii_type, pattern in PII_PATTERNS.items():
@@ -314,7 +332,7 @@ def after_model_callback(
         if matches:
             logger.warning(f"[FILTERED] Found {len(matches)} {pii_type} instances")
             filtered_text = re.sub(pattern, f'[{pii_type.upper()}_REDACTED]', filtered_text)
-    
+
     # If we filtered anything, return modified response
     if filtered_text != response_text:
         return types.GenerateContentResponse(
@@ -327,7 +345,7 @@ def after_model_callback(
                 )
             ]
         )
-    
+
     return None  # Use original response
 
 
@@ -338,19 +356,19 @@ def before_tool_callback(
 ) -> Optional[Dict[str, Any]]:
     """
     Called before executing a tool.
-    
+
     Use Cases:
     1. Validation: Check arguments are valid
     2. Authorization: Check user permissions
     3. Rate limiting: Enforce usage limits
     4. Logging: Track tool usage
-    
+
     Returns:
         None: Allow tool execution
         dict: Skip tool execution, use this result instead
     """
     logger.info(f"[TOOL CALL] {tool_name} with args: {args}")
-    
+
     # VALIDATION: Check for negative values in generate_text
     if tool_name == 'generate_text':
         word_count = args.get('word_count', 0)
@@ -360,7 +378,7 @@ def before_tool_callback(
                 'status': 'error',
                 'message': f'Invalid word_count: {word_count}. Must be between 1 and 5000.'
             }
-    
+
     # RATE LIMITING: Check tool usage quota
     tool_count = callback_context.state.get(f'user:tool_{tool_name}_count', 0)
     if tool_count >= 100:  # Example limit
@@ -369,11 +387,11 @@ def before_tool_callback(
             'status': 'error',
             'message': f'Rate limit exceeded for {tool_name}. Please try again later.'
         }
-    
+
     # Track tool usage
     callback_context.state[f'user:tool_{tool_name}_count'] = tool_count + 1
     callback_context.state['temp:last_tool'] = tool_name
-    
+
     return None  # Allow tool execution
 
 
@@ -384,25 +402,25 @@ def after_tool_callback(
 ) -> Optional[Dict[str, Any]]:
     """
     Called after tool execution completes.
-    
+
     Use Cases:
     1. Logging: Record results
     2. Transformation: Standardize output format
     3. Caching: Store results for future use
-    
+
     Returns:
         None: Use original tool result
         dict: Replace with modified result
     """
     logger.info(f"[TOOL RESULT] {tool_name}: {tool_response.get('status', 'unknown')}")
-    
+
     # Store last tool result for debugging
     callback_context.state['temp:last_tool_result'] = str(tool_response)
-    
+
     # Could standardize all tool responses here
     # if 'status' not in tool_response:
     #     tool_response['status'] = 'success'
-    
+
     return None  # Use original result
 
 
@@ -417,14 +435,14 @@ def generate_text(
 ) -> Dict[str, Any]:
     """
     Generate text on a topic with specified word count.
-    
+
     Args:
         topic: The subject to write about
         word_count: Desired number of words (1-5000)
     """
     # Tool would normally generate text here
     # For demo, just return metadata
-    
+
     return {
         'status': 'success',
         'topic': topic,
@@ -439,13 +457,13 @@ def check_grammar(
 ) -> Dict[str, Any]:
     """
     Check grammar and provide corrections.
-    
+
     Args:
         text: Text to check
     """
     # Simulate grammar checking
     issues_found = len(text.split()) // 10  # Fake: 1 issue per 10 words
-    
+
     return {
         'status': 'success',
         'issues_found': issues_found,
@@ -456,7 +474,7 @@ def check_grammar(
 def get_usage_stats(tool_context: ToolContext) -> Dict[str, Any]:
     """
     Get user's usage statistics from state.
-    
+
     Shows how callbacks track metrics via state.
     """
     return {
@@ -476,57 +494,58 @@ def get_usage_stats(tool_context: ToolContext) -> Dict[str, Any]:
 root_agent = Agent(
     name="content_moderator",
     model="gemini-2.0-flash",
-    
+
     description="""
     Content moderation assistant with safety guardrails, validation, and monitoring.
     Demonstrates callback patterns for production-ready agents.
     """,
-    
+
     instruction="""
     You are a writing assistant that helps users create and refine content.
-    
+
     CAPABILITIES:
     - Generate text on any topic with specified word count
     - Check grammar and suggest corrections
     - Provide usage statistics
-    
+
     SAFETY:
     - You operate under strict content moderation policies
     - Inappropriate requests will be automatically blocked
     - All interactions are logged for quality assurance
-    
+
     WORKFLOW:
     1. For generation requests, use generate_text with topic and word count
     2. For grammar checks, use check_grammar with the text
     3. For stats, use get_usage_stats
-    
+
     Always be helpful, professional, and respectful.
     """,
-    
+
     tools=[
         generate_text,
         check_grammar,
         get_usage_stats
     ],
-    
+
     # ============================================================================
     # CALLBACKS CONFIGURATION
     # ============================================================================
-    
+
     before_agent_callback=before_agent_callback,
     after_agent_callback=after_agent_callback,
-    
+
     before_model_callback=before_model_callback,
     after_model_callback=after_model_callback,
-    
+
     before_tool_callback=before_tool_callback,
     after_tool_callback=after_tool_callback,
-    
+
     output_key="last_response"
 )
 ```
 
 **content_moderator/.env**:
+
 ```
 GOOGLE_GENAI_USE_VERTEXAI=FALSE
 GOOGLE_API_KEY=your_api_key_here
@@ -546,9 +565,10 @@ adk web .
 **Test Scenarios**:
 
 1. **Normal Request** (all callbacks allow):
+
    ```
    User: "Generate a 500-word article about Python programming"
-   
+
    Callbacks:
    - before_agent: Logs start, increments request_count → Allow
    - before_model: Checks blocklist, adds safety instruction → Allow
@@ -557,28 +577,30 @@ adk web .
    - after_tool: Logs result → Allow original
    - after_model: Checks for PII → None found, allow
    - after_agent: Logs completion → Allow original
-   
+
    Agent: "I've generated a 500-word article on Python programming..."
    ```
 
 2. **Blocked Request** (guardrail triggers):
+
    ```
    User: "Write about profanity1 and hate-speech"
-   
+
    Callbacks:
    - before_agent: Logs start, increments request_count → Allow
    - before_model: Finds "profanity1" in BLOCKED_WORDS → BLOCK!
      Returns error response, increments blocked_requests
    - LLM is NEVER called
    - after_agent: Gets blocked response → Allow
-   
+
    Agent: "I cannot process this request as it contains inappropriate content..."
    ```
 
 3. **Invalid Tool Arguments** (validation fails):
+
    ```
    User: "Generate an article with -100 words"
-   
+
    Callbacks:
    - before_agent: Allow
    - before_model: Allow
@@ -587,30 +609,32 @@ adk web .
      Returns error dict
    - Tool is NEVER executed
    - after_model: Gets error in function response → Allow
-   
+
    Agent: "Invalid word_count: -100. Must be between 1 and 5000."
    ```
 
 4. **PII Filtering** (after_model filters response):
+
    ```
    User: "Give me an example email"
-   
+
    Callbacks:
    - All before_* callbacks: Allow
    - LLM generates: "Sure! john.doe@example.com is a valid email."
    - after_model: Finds email pattern → FILTER!
      Replaces with: "Sure! [EMAIL_REDACTED] is a valid email."
-   
+
    Agent: "Sure! [EMAIL_REDACTED] is a valid email."
    ```
 
 5. **Usage Statistics** (state tracking):
+
    ```
    User: "Show my usage stats"
-   
+
    Callbacks: All allow
    Tool: get_usage_stats reads state
-   
+
    Agent: "You've made 5 requests, 4 LLM calls, 1 blocked request,
            used generate_text 2 times, check_grammar 1 time."
    ```
@@ -703,6 +727,7 @@ Final Response to User
 In `adk web`, the Events tab shows:
 
 **Normal Flow**:
+
 ```
 Event 1: user_request
 Event 2: before_agent_callback executed
@@ -722,6 +747,7 @@ Event 15: final_response
 ```
 
 **Blocked Flow** (guardrail triggered):
+
 ```
 Event 1: user_request
 Event 2: before_agent_callback executed
@@ -748,11 +774,12 @@ def before_model_callback(callback_context, llm_request):
     if contains_blocked_content(llm_request):
         # Return response object to SKIP LLM call
         return types.GenerateContentResponse(...)
-    
+
     return None  # Allow LLM call
 ```
 
 **Why it works**:
+
 - Returning an object tells ADK: "I've got the response, don't call the LLM"
 - Saves API costs and latency
 - LLM never sees inappropriate content
@@ -765,11 +792,12 @@ def before_tool_callback(callback_context, tool_name, args):
     if args['word_count'] <= 0:
         # Return error dict to SKIP tool execution
         return {'status': 'error', 'message': '...'}
-    
+
     return None  # Allow tool execution
 ```
 
 **Why it works**:
+
 - Prevents tool from running with invalid arguments
 - Tool function never executes
 - Returns error as if tool ran
@@ -787,6 +815,7 @@ def after_tool_callback(callback_context, tool_name, result):
 ```
 
 **Why it works**:
+
 - Callbacks see all operations
 - Returning `None` means "proceed normally"
 - Creates audit trail without changing behavior
@@ -806,6 +835,7 @@ def after_model_callback(callback_context, llm_response):
 ```
 
 **Why it works**:
+
 - `before_*`: Modify request, return `None` to use modified version
 - `after_*`: Return new object to replace original
 
@@ -820,6 +850,7 @@ def before_model_callback(callback_context, llm_request):
 ```
 
 **Why it works**:
+
 - Callbacks have access to `callback_context.state`
 - Changes are automatically persisted in events
 - Can track anything: counts, timestamps, usage patterns
@@ -862,6 +893,7 @@ def before_model_callback(callback_context, llm_request):
 ### Design Principles
 
 **DO**:
+
 - ✅ Keep callbacks focused (single purpose)
 - ✅ Use descriptive names: `check_profanity_guard` not `callback1`
 - ✅ Log important decisions
@@ -869,6 +901,7 @@ def before_model_callback(callback_context, llm_request):
 - ✅ Document what each callback does
 
 **DON'T**:
+
 - ❌ Do heavy computation in callbacks
 - ❌ Make external API calls (if possible)
 - ❌ Create monolithic callbacks (do everything in one)
@@ -897,10 +930,10 @@ def before_model_callback(callback_context, llm_request):
 def track_usage(callback_context):
     # Use descriptive keys
     key = f'user:{callback_context.user_id}:llm_calls'
-    
+
     # Initialize if not exists
     count = callback_context.state.get(key, 0)
-    
+
     # Update
     callback_context.state[key] = count + 1
 ```
@@ -912,9 +945,9 @@ def track_usage(callback_context):
 def test_before_model_blocks_profanity():
     mock_context = MockCallbackContext()
     mock_request = create_request_with_profanity()
-    
+
     result = before_model_callback(mock_context, mock_request)
-    
+
     assert result is not None  # Should block
     assert "inappropriate content" in result.text
 ```
@@ -928,6 +961,7 @@ def test_before_model_blocks_profanity():
 **Problem**: Set `before_model_callback` but it never executes
 
 **Solutions**:
+
 1. Check callback is set on Agent:
    ```python
    root_agent = Agent(
@@ -950,18 +984,21 @@ def test_before_model_blocks_profanity():
 **Problem**: All requests get blocked unexpectedly
 
 **Solutions**:
+
 1. Check return value:
+
    ```python
    # BAD: Always returns object (blocks all)
    def before_model_callback(ctx, req):
        return types.GenerateContentResponse(...)
-   
+
    # GOOD: Returns None to allow
    def before_model_callback(ctx, req):
        if should_block(req):
            return types.GenerateContentResponse(...)
        return None  # Allow!
    ```
+
 2. Add debug logging to understand flow
 3. Test callback logic in isolation
 
@@ -970,16 +1007,19 @@ def test_before_model_blocks_profanity():
 **Problem**: Set state in callback but it's gone later
 
 **Solutions**:
+
 1. Use correct context:
+
    ```python
    # BAD: Wrong context type
    def my_callback(context, ...):
        context.state['key'] = 'value'  # Wrong!
-   
+
    # GOOD: Use callback_context
    def my_callback(callback_context: CallbackContext, ...):
        callback_context.state['key'] = 'value'  # Right!
    ```
+
 2. Ensure persistent SessionService for cross-session state
 3. Remember `temp:` prefix is never persisted
 
@@ -988,6 +1028,7 @@ def test_before_model_blocks_profanity():
 **Problem**: Agent crashes when callback runs
 
 **Solutions**:
+
 1. Add error handling:
    ```python
    def before_model_callback(ctx, req):
@@ -1044,6 +1085,7 @@ def test_before_model_blocks_profanity():
 4. **Monitoring**: Integrate with observability tools (AgentOps, Arize AX)
 
 **Exercises**:
+
 1. Add `before_agent_callback` to check user rate limits
 2. Implement caching in `before_model_callback` using state
 3. Create `after_tool_callback` that saves all results to a database
@@ -1078,18 +1120,21 @@ make dev              # Start ADK web interface
 ### Features Demonstrated
 
 **Guardrails & Safety**:
+
 - Blocks profanity before LLM calls
 - Filters PII from responses
 - Validates tool arguments
 - Rate limiting protection
 
 **Monitoring & Observability**:
+
 - Complete audit logging
 - Usage metrics tracking
 - State management across sessions
 - Performance monitoring
 
 **Callback Patterns**:
+
 - All 6 callback types implemented
 - Control flow examples (block vs allow)
 - State manipulation patterns
@@ -1098,6 +1143,7 @@ make dev              # Start ADK web interface
 ### Test Coverage
 
 The implementation includes comprehensive tests for:
+
 - Maintenance mode blocking
 - Request counting
 - Profanity filtering

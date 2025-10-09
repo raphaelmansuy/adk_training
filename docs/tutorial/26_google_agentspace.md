@@ -5,11 +5,19 @@ description: "Deploy and manage agents on Google AgentSpace for enterprise-grade
 sidebar_label: "26. Google AgentSpace"
 sidebar_position: 26
 tags: ["advanced", "agentspace", "enterprise", "platform", "governance"]
-keywords: ["google agentspace", "enterprise platform", "agent governance", "collaboration", "orchestration"]
+keywords:
+  [
+    "google agentspace",
+    "enterprise platform",
+    "agent governance",
+    "collaboration",
+    "orchestration",
+  ]
 status: "draft"
 difficulty: "advanced"
 estimated_time: "2 hours"
-prerequisites: ["Tutorial 23: Production Deployment", "Google Cloud enterprise account"]
+prerequisites:
+  ["Tutorial 23: Production Deployment", "Google Cloud enterprise account"]
 learning_objectives:
   - "Deploy agents to Google AgentSpace"
   - "Configure enterprise agent governance"
@@ -23,12 +31,14 @@ implementation_link: "https://github.com/raphaelmansuy/adk_training/tree/main/tu
 **Goal**: Deploy and manage AI agents at enterprise scale using Google Cloud's AgentSpace platform
 
 **Prerequisites**:
+
 - Tutorial 01 (Hello World Agent)
 - Tutorial 02 (Function Tools)
 - Tutorial 06 (Agents & Orchestration)
 - Google Cloud account with billing enabled
 
 **What You'll Learn**:
+
 - Understanding Google AgentSpace architecture
 - Deploying ADK agents to AgentSpace
 - Using pre-built Google agents (Idea Generation, Deep Research, NotebookLM)
@@ -47,8 +57,9 @@ implementation_link: "https://github.com/raphaelmansuy/adk_training/tree/main/tu
 **Source**: https://cloud.google.com/products/agentspace?hl=en
 
 **Relationship to ADK**:
-- **ADK (Agent Development Kit)**: Framework for *building* agents
-- **AgentSpace**: Platform for *deploying and managing* agents
+
+- **ADK (Agent Development Kit)**: Framework for _building_ agents
+- **AgentSpace**: Platform for _deploying and managing_ agents
 - Think: **ADK = Development** | **AgentSpace = Operations**
 
 ```
@@ -81,16 +92,16 @@ implementation_link: "https://github.com/raphaelmansuy/adk_training/tree/main/tu
 
 **Why Use AgentSpace?**
 
-| Need | AgentSpace Solution |
-|------|---------------------|
-| Deploy ADK agents to production | Managed hosting with auto-scaling |
-| Manage multiple agents | Agent Gallery with discovery and sharing |
-| Control agent access | Role-based access control (RBAC) |
-| Monitor agent usage | Built-in observability and analytics |
-| Connect to enterprise data | Pre-built connectors (SharePoint, Drive, etc.) |
-| Ensure compliance | Governance policies and audit logs |
-| Low-code agent creation | Agent Designer for non-developers |
-| Quick start | Pre-built Google agents (Idea Generation, etc.) |
+| Need                            | AgentSpace Solution                             |
+| ------------------------------- | ----------------------------------------------- |
+| Deploy ADK agents to production | Managed hosting with auto-scaling               |
+| Manage multiple agents          | Agent Gallery with discovery and sharing        |
+| Control agent access            | Role-based access control (RBAC)                |
+| Monitor agent usage             | Built-in observability and analytics            |
+| Connect to enterprise data      | Pre-built connectors (SharePoint, Drive, etc.)  |
+| Ensure compliance               | Governance policies and audit logs              |
+| Low-code agent creation         | Agent Designer for non-developers               |
+| Quick start                     | Pre-built Google agents (Idea Generation, etc.) |
 
 ---
 
@@ -103,16 +114,18 @@ AgentSpace includes **production-ready agents** built by Google:
 **What it does**: Generates creative ideas based on prompts and context.
 
 **Use cases**:
+
 - Marketing campaigns
 - Product brainstorming
 - Content creation
 - Strategic planning
 
 **Example**:
+
 ```
 User: "Generate 5 marketing campaign ideas for our new sustainable product line"
 
-Agent: 
+Agent:
 1. "Green Future Challenge" - Social media campaign encouraging users to share sustainability wins
 2. "Carbon Countdown" - Interactive calculator showing environmental impact of switching products
 3. "Eco-Warriors Program" - Loyalty program with sustainability incentives
@@ -125,6 +138,7 @@ Agent:
 **What it does**: Conducts comprehensive research by searching, analyzing, and synthesizing information.
 
 **Use cases**:
+
 - Market research
 - Competitive analysis
 - Due diligence
@@ -132,6 +146,7 @@ Agent:
 - Technical investigations
 
 **Data sources**:
+
 - Google Search
 - Connected enterprise documents
 - Public datasets
@@ -139,6 +154,7 @@ Agent:
 - Research papers
 
 **Example**:
+
 ```
 User: "Research emerging trends in electric vehicle battery technology"
 
@@ -166,6 +182,7 @@ Sources: [15 citations from research papers, industry reports, news]
 **What it does**: AI-powered notebook for research, note-taking, and knowledge synthesis.
 
 **Features**:
+
 - Document upload and analysis
 - Interactive Q&A with documents
 - Automated summarization
@@ -173,12 +190,14 @@ Sources: [15 citations from research papers, industry reports, news]
 - Collaborative workspace
 
 **Use cases**:
+
 - Legal document review
 - Research paper analysis
 - Meeting notes and action items
 - Knowledge base creation
 
 **Example workflow**:
+
 1. Upload 10 technical whitepapers
 2. Ask: "What are the common security vulnerabilities across these papers?"
 3. NotebookLM analyzes all documents
@@ -203,24 +222,28 @@ Sources: [15 citations from research papers, industry reports, news]
 ### Example: Customer Support Agent
 
 **Step 1: Purpose**
+
 ```
 Name: "Customer Support Specialist"
 Description: "Helps customers with product questions, troubleshooting, and returns"
 ```
 
 **Step 2: Data Sources**
+
 - Knowledge Base (Drive folder)
 - Product Documentation (SharePoint)
 - FAQ Database
 - Order History (Salesforce)
 
 **Step 3: Tools**
+
 - Knowledge Search
 - Product Lookup
 - Order Tracking
 - Return Processing
 
 **Step 4: Instructions**
+
 ```
 You are a friendly and helpful customer support agent.
 
@@ -236,22 +259,24 @@ Response length: Concise (2-3 paragraphs max)
 ```
 
 **Step 5: Test**
+
 ```
 Test Query: "My order #12345 arrived damaged. What should I do?"
 
 Agent Response:
 "I'm sorry to hear your order arrived damaged! Let me help you with that.
 
-I've looked up order #12345, and I can start a return for you right away. 
+I've looked up order #12345, and I can start a return for you right away.
 You have two options:
 1. Free return shipping with a full refund (7-10 days)
 2. Immediate replacement with expedited shipping (2-3 days)
 
-Which would you prefer? I'll also include a 15% discount code for your next 
+Which would you prefer? I'll also include a 15% discount code for your next
 purchase as an apology for the inconvenience."
 ```
 
 **Step 6: Deploy**
+
 - Click "Publish to Gallery"
 - Set access permissions (team-wide, company-wide, or private)
 - Configure usage limits
@@ -266,6 +291,7 @@ purchase as an apology for the inconvenience."
 ### Features
 
 **For Users**:
+
 - Browse available agents
 - Search by category (Marketing, Engineering, Sales, HR)
 - View agent ratings and reviews
@@ -273,6 +299,7 @@ purchase as an apology for the inconvenience."
 - One-click installation
 
 **For Creators**:
+
 - Publish agents to company gallery
 - Track usage metrics
 - Receive feedback
@@ -282,6 +309,7 @@ purchase as an apology for the inconvenience."
 ### Example Categories
 
 **Marketing**:
+
 - Content Generator
 - SEO Optimizer
 - Campaign Planner
@@ -289,6 +317,7 @@ purchase as an apology for the inconvenience."
 - Brand Voice Analyzer
 
 **Sales**:
+
 - Lead Qualifier
 - Proposal Writer
 - Competitive Intel
@@ -296,6 +325,7 @@ purchase as an apology for the inconvenience."
 - Email Drafter
 
 **Engineering**:
+
 - Code Reviewer
 - Documentation Generator
 - Bug Analyzer
@@ -303,6 +333,7 @@ purchase as an apology for the inconvenience."
 - Architecture Advisor
 
 **HR**:
+
 - Resume Screener
 - Interview Scheduler
 - Onboarding Assistant
@@ -457,16 +488,16 @@ AgentSpace provides **pre-built connectors** for enterprise data sources.
 
 ### Available Connectors
 
-| Connector | Description | Use Cases |
-|-----------|-------------|-----------|
-| **Google Drive** | Access Drive files and folders | Document search, content analysis |
-| **SharePoint** | Connect to SharePoint sites | Knowledge base, policy documents |
-| **OneDrive** | Access OneDrive for Business | Personal files, team documents |
-| **HubSpot** | CRM and marketing data | Lead management, customer insights |
-| **Salesforce** | Sales and CRM data | Opportunity analysis, forecasting |
-| **Adobe AEM** | Digital asset management | Content discovery, asset metadata |
-| **BigQuery** | Data warehouse queries | Analytics, reporting, insights |
-| **Looker** | Business intelligence | Dashboard data, metrics |
+| Connector        | Description                    | Use Cases                          |
+| ---------------- | ------------------------------ | ---------------------------------- |
+| **Google Drive** | Access Drive files and folders | Document search, content analysis  |
+| **SharePoint**   | Connect to SharePoint sites    | Knowledge base, policy documents   |
+| **OneDrive**     | Access OneDrive for Business   | Personal files, team documents     |
+| **HubSpot**      | CRM and marketing data         | Lead management, customer insights |
+| **Salesforce**   | Sales and CRM data             | Opportunity analysis, forecasting  |
+| **Adobe AEM**    | Digital asset management       | Content discovery, asset metadata  |
+| **BigQuery**     | Data warehouse queries         | Analytics, reporting, insights     |
+| **Looker**       | Business intelligence          | Dashboard data, metrics            |
 
 ### Configuring Connectors
 
@@ -547,7 +578,7 @@ agents:
         access: [use, view_metrics, edit_config]
       - role: admins
         access: [all]
-  
+
   - id: hr-assistant
     permissions:
       - role: hr-team
@@ -555,7 +586,7 @@ agents:
       - role: employees
         access: [use]
       - role: contractors
-        access: []  # No access
+        access: [] # No access
 ```
 
 **Data Access Controls**:
@@ -566,12 +597,12 @@ data_governance:
     mode: strict
     allowed_fields: [name, email, department]
     redacted_fields: [ssn, salary, medical_info]
-  
+
   data_residency:
     primary: us-central1
     replicas: [europe-west1]
     prohibited_regions: [asia-pacific]
-  
+
   retention:
     conversations: 90_days
     logs: 1_year
@@ -581,6 +612,7 @@ data_governance:
 ### Usage Monitoring
 
 **Built-in Metrics**:
+
 - Queries per day/hour
 - Average response time
 - Error rates
@@ -629,7 +661,7 @@ budgets:
         action: notify_owner
       - threshold: 100%
         action: pause_agent
-  
+
   - team: marketing-team
     monthly_limit: $2000
     alerts:
@@ -638,6 +670,7 @@ budgets:
 ```
 
 **Cost Optimization**:
+
 - Model selection (2.5-flash for routine, 2.5-pro for complex)
 - Caching frequently accessed data
 - Batching queries when possible
@@ -653,6 +686,7 @@ budgets:
 **Base License**: **$25 USD per seat per month**
 
 **What's Included**:
+
 - Access to pre-built Google agents
 - Agent Designer (low-code builder)
 - Agent Gallery access
@@ -663,15 +697,16 @@ budgets:
 
 **Enterprise Add-ons**:
 
-| Feature | Additional Cost |
-|---------|----------------|
+| Feature                               | Additional Cost     |
+| ------------------------------------- | ------------------- |
 | Advanced connectors (Salesforce, AEM) | $10/connector/month |
-| Custom data residency | $50/month |
-| Advanced governance & audit logs | $100/month |
-| Dedicated support | $500/month |
-| SLA guarantees (99.9% uptime) | 20% of license cost |
+| Custom data residency                 | $50/month           |
+| Advanced governance & audit logs      | $100/month          |
+| Dedicated support                     | $500/month          |
+| SLA guarantees (99.9% uptime)         | 20% of license cost |
 
 **Usage-Based Costs** (on top of license):
+
 - **Model inference**: Same as Vertex AI pricing
   - gemini-2.5-flash: ~$0.075/1M input tokens
   - gemini-2.5-pro: ~$1.25/1M input tokens
@@ -793,7 +828,7 @@ Provide:
 # Deploy to AgentSpace
 if __name__ == '__main__':
     from google.adk.deployment import deploy_to_agentspace
-    
+
     deploy_to_agentspace(
         agent=lead_qualifier,
         project='company-agentspace',
@@ -821,7 +856,7 @@ connectors:
         - Opportunity
         - Account
         - Contact
-  
+
   - name: company-sharepoint
     type: sharepoint
     config:
@@ -831,7 +866,7 @@ connectors:
       paths:
         - /Policies/**
         - /ProductDocs/**
-  
+
   - name: engineering-github
     type: github
     config:
@@ -859,15 +894,15 @@ team_permissions:
   - team: marketing-team@company.com
     agents: [content-generator, seo-optimizer, campaign-planner]
     data_access: [sharepoint:marketing/**, drive:marketing/**]
-  
+
   - team: sales-team@company.com
     agents: [lead-qualifier, proposal-writer, competitive-intel]
     data_access: [salesforce:*, sharepoint:sales/**]
-  
+
   - team: engineering-team@company.com
     agents: [code-reviewer, doc-generator, bug-analyzer]
     data_access: [github:*, bigquery:analytics_db]
-  
+
   - team: hr-team@company.com
     agents: [resume-screener, interview-scheduler, onboarding-assistant]
     data_access: [sharepoint:hr/**, drive:hr/**]
@@ -936,6 +971,7 @@ exec_dashboard.publish(viewers=['executives@company.com'])
 ### Development Workflow
 
 **✅ DO**:
+
 1. **Build locally with ADK** → Test thoroughly → Deploy to AgentSpace
 2. **Version your agents** (v1.0, v1.1, etc.) for rollback capability
 3. **Use staging environment** before production deployment
@@ -944,6 +980,7 @@ exec_dashboard.publish(viewers=['executives@company.com'])
 6. **Document agent capabilities** in Agent Gallery
 
 **❌ DON'T**:
+
 1. Deploy untested agents directly to production
 2. Give all agents access to all data
 3. Ignore cost monitoring
@@ -954,6 +991,7 @@ exec_dashboard.publish(viewers=['executives@company.com'])
 ### Security
 
 **Agent Access**:
+
 - Use least-privilege principle for data connectors
 - Regularly audit agent permissions
 - Rotate API keys and credentials
@@ -961,6 +999,7 @@ exec_dashboard.publish(viewers=['executives@company.com'])
 - Monitor for unusual query patterns
 
 **Data Protection**:
+
 - Enable PII redaction for sensitive fields
 - Configure data residency requirements
 - Implement data retention policies
@@ -970,6 +1009,7 @@ exec_dashboard.publish(viewers=['executives@company.com'])
 ### Cost Optimization
 
 **Model Selection**:
+
 ```python
 # Use 2.5-flash for routine queries
 routine_agent = Agent(model='gemini-2.5-flash')  # Cheaper
@@ -979,11 +1019,13 @@ complex_agent = Agent(model='gemini-2.5-pro')    # More expensive
 ```
 
 **Caching**:
+
 - Cache frequently accessed documents
 - Use connector indexing for faster search
 - Implement response caching for common queries
 
 **Query Optimization**:
+
 - Set max token limits
 - Use concise instructions
 - Batch similar queries when possible
@@ -992,6 +1034,7 @@ complex_agent = Agent(model='gemini-2.5-pro')    # More expensive
 ### Monitoring & Alerts
 
 **Key Metrics to Track**:
+
 1. **Usage**: Queries per day, peak hours
 2. **Performance**: Average response time, error rate
 3. **Cost**: Daily/monthly spend by team
@@ -999,18 +1042,19 @@ complex_agent = Agent(model='gemini-2.5-pro')    # More expensive
 5. **Errors**: Failed queries, timeout rate
 
 **Alert Configuration**:
+
 ```yaml
 alerts:
   - name: High Error Rate
     condition: error_rate > 5%
     notification: ops-team@company.com
     severity: warning
-  
+
   - name: Budget Exceeded
     condition: monthly_cost > budget_limit
     notification: finance-team@company.com
     severity: critical
-  
+
   - name: Slow Response
     condition: p95_latency > 3s
     notification: eng-team@company.com
@@ -1038,16 +1082,16 @@ You've learned how to deploy and manage agents at enterprise scale with Google A
 
 **When to Use AgentSpace**:
 
-| Use Case | AgentSpace? |
-|----------|-------------|
-| Prototyping new agent | ❌ Use ADK locally |
-| Production deployment | ✅ Deploy to AgentSpace |
-| Personal project | ❌ Run locally or Cloud Run |
-| Enterprise with 50+ users | ✅ AgentSpace with governance |
-| Need pre-built agents | ✅ Use Gallery agents |
+| Use Case                        | AgentSpace?                                  |
+| ------------------------------- | -------------------------------------------- |
+| Prototyping new agent           | ❌ Use ADK locally                           |
+| Production deployment           | ✅ Deploy to AgentSpace                      |
+| Personal project                | ❌ Run locally or Cloud Run                  |
+| Enterprise with 50+ users       | ✅ AgentSpace with governance                |
+| Need pre-built agents           | ✅ Use Gallery agents                        |
 | Custom agent with complex logic | [FLOW] Build with ADK → Deploy to AgentSpace |
-| Manage multiple teams | ✅ AgentSpace with RBAC |
-| Need enterprise data connectors | ✅ SharePoint, Drive, Salesforce connectors |
+| Manage multiple teams           | ✅ AgentSpace with RBAC                      |
+| Need enterprise data connectors | ✅ SharePoint, Drive, Salesforce connectors  |
 
 **Production Deployment Checklist**:
 

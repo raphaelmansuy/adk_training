@@ -31,7 +31,7 @@ id: ui_integration_intro
 In this tutorial, you'll master the fundamentals of integrating Google ADK agents with user interfaces. You'll understand:
 
 - **The UI integration landscape** - Different approaches and when to use each
-- **AG-UI Protocol** - The official protocol for agent-UI communication  
+- **AG-UI Protocol** - The official protocol for agent-UI communication
 - **Integration patterns** - React/Next.js, Streamlit, Slack, and event-driven architectures
 - **Decision framework** - How to choose the right approach for your use case
 - **Architecture patterns** - Production-ready deployment strategies
@@ -105,13 +105,13 @@ Google ADK supports multiple UI integration paths, each optimized for different 
 
 ### Comparison Matrix
 
-| Approach | Best For | Complexity | Scalability | Time to Production |
-|----------|----------|------------|-------------|-------------------|
-| **AG-UI Protocol** | Modern web apps | Low | High | ⚡ Fast (hours) |
-| **Native API** | Custom frameworks | Medium | High | 🔨 Moderate (days) |
-| **Direct Python** | Data apps | Low | Medium | ⚡ Fast (hours) |
-| **Slack/Teams** | Team tools | Low | High | ⚡ Fast (hours) |
-| **Pub/Sub** | Event-driven | High | Very High | 🔨 Complex (weeks) |
+| Approach           | Best For          | Complexity | Scalability | Time to Production |
+| ------------------ | ----------------- | ---------- | ----------- | ------------------ |
+| **AG-UI Protocol** | Modern web apps   | Low        | High        | ⚡ Fast (hours)    |
+| **Native API**     | Custom frameworks | Medium     | High        | 🔨 Moderate (days) |
+| **Direct Python**  | Data apps         | Low        | Medium      | ⚡ Fast (hours)    |
+| **Slack/Teams**    | Team tools        | Low        | High        | ⚡ Fast (hours)    |
+| **Pub/Sub**        | Event-driven      | High       | Very High   | 🔨 Complex (weeks) |
 
 ---
 
@@ -180,7 +180,7 @@ AG-UI uses events for agent-UI communication:
 import { CopilotChat } from "@copilotkit/react-ui";
 
 // Drop-in chat UI with zero configuration
-<CopilotChat />
+<CopilotChat />;
 ```
 
 **3. Generative UI**
@@ -236,6 +236,7 @@ agent = ADKAgent(adk_agent=adk_agent, app_name="customer_support")
 ### Approach 1: AG-UI Protocol (Recommended for Web Apps)
 
 **When to Use**:
+
 - Building React/Next.js web applications
 - Need pre-built UI components
 - Want TypeScript type safety
@@ -309,6 +310,7 @@ add_adk_fastapi_endpoint(app, agent, path="/api/copilotkit")
 ### Approach 2: Native ADK API
 
 **When to Use**:
+
 - Building custom UI frameworks (Vue, Svelte, Angular)
 - Need full control over transport layer
 - Want to minimize dependencies
@@ -342,13 +344,13 @@ add_adk_fastapi_endpoint(app, agent, path="/api/copilotkit")
 
 ```typescript
 // Frontend (Any framework)
-const response = await fetch('http://localhost:8000/run', {
-  method: 'POST',
-  headers: { 'Content-Type': 'application/json' },
+const response = await fetch("http://localhost:8000/run", {
+  method: "POST",
+  headers: { "Content-Type": "application/json" },
   body: JSON.stringify({
-    session_id: 'user-123',
-    user_content: [{ text: 'What is ADK?' }]
-  })
+    session_id: "user-123",
+    user_content: [{ text: "What is ADK?" }],
+  }),
 });
 
 const result = await response.json();
@@ -377,6 +379,7 @@ agent = Agent(
 ### Approach 3: Direct Python Integration
 
 **When to Use**:
+
 - Building data apps with Streamlit
 - Internal tools and dashboards
 - ML/AI workflows
@@ -420,7 +423,7 @@ runner = Runner(app_name='streamlit_app', agent=agent)
 # Streamlit UI
 if prompt := st.chat_input("Ask me about your data"):
     st.chat_message("user").write(prompt)
-    
+
     # Proper ADK execution pattern
     import asyncio
     events = asyncio.run(runner.run_async(
@@ -429,7 +432,7 @@ if prompt := st.chat_input("Ask me about your data"):
         new_message=types.Content(parts=[types.Part(text=prompt)], role='user')
     ))
     response_text = ''.join([e.content.parts[0].text for e in events if hasattr(e, 'content')])
-    
+
     st.chat_message("assistant").write(response_text)
 ```
 
@@ -440,6 +443,7 @@ if prompt := st.chat_input("Ask me about your data"):
 ### Approach 4: Messaging Platform Integration
 
 **When to Use**:
+
 - Building team collaboration tools
 - Slack/Microsoft Teams bots
 - Enterprise internal tools
@@ -496,7 +500,7 @@ def handle_message(message, say):
         new_message=types.Content(parts=[types.Part(text=message['text'])], role='user')
     ))
     response_text = ''.join([e.content.parts[0].text for e in events if hasattr(e, 'content')])
-    
+
     # Reply in Slack thread
     say(response_text, thread_ts=message['ts'])
 
@@ -510,6 +514,7 @@ app.start(port=3000)
 ### Approach 5: Event-Driven Architecture
 
 **When to Use**:
+
 - High-scale systems (millions of events)
 - Asynchronous processing
 - Multiple subscribers (fan-out)
@@ -582,7 +587,7 @@ def callback(message):
         session_id=message.message_id,
         new_message=types.Content(parts=[types.Part(text=message.data.decode())], role='user')
     ))
-    
+
     # Publish result or acknowledge
     message.ack()
 
@@ -769,16 +774,16 @@ START
 
 #### AG-UI Protocol vs Native API
 
-| Factor | AG-UI Protocol | Native API |
-|--------|---------------|------------|
-| **Setup Time** | ⚡ 10 minutes | 🔨 1-2 hours |
-| **UI Components** | ✅ Pre-built (`<CopilotChat>`) | ❌ Build yourself |
-| **TypeScript Support** | ✅ Full type safety | ⚠️ Manual types |
-| **Framework** | React/Next.js only | Any framework |
-| **Dependencies** | CopilotKit + ag_ui_adk | None (just ADK) |
-| **Documentation** | ✅ Extensive | ✅ Good |
-| **Production Ready** | ✅ Yes (271 tests) | ✅ Yes |
-| **Customization** | 🔶 Medium (theme, props) | ✅ Full control |
+| Factor                 | AG-UI Protocol                 | Native API        |
+| ---------------------- | ------------------------------ | ----------------- |
+| **Setup Time**         | ⚡ 10 minutes                  | 🔨 1-2 hours      |
+| **UI Components**      | ✅ Pre-built (`<CopilotChat>`) | ❌ Build yourself |
+| **TypeScript Support** | ✅ Full type safety            | ⚠️ Manual types   |
+| **Framework**          | React/Next.js only             | Any framework     |
+| **Dependencies**       | CopilotKit + ag_ui_adk         | None (just ADK)   |
+| **Documentation**      | ✅ Extensive                   | ✅ Good           |
+| **Production Ready**   | ✅ Yes (271 tests)             | ✅ Yes            |
+| **Customization**      | 🔶 Medium (theme, props)       | ✅ Full control   |
 
 **Recommendation**: Use **AG-UI Protocol** for React/Next.js apps. Use **Native API** for other frameworks or when you need full control.
 
@@ -786,13 +791,13 @@ START
 
 #### Web vs Python vs Messaging
 
-| Use Case | Best Approach | Why? |
-|----------|--------------|------|
+| Use Case                 | Best Approach   | Why?                                 |
+| ------------------------ | --------------- | ------------------------------------ |
 | **Customer-facing SaaS** | AG-UI (Next.js) | Production-ready, scalable, great UX |
-| **Internal data tools** | Streamlit | Fast dev, Python-only, built-in UI |
-| **Team collaboration** | Slack/Teams | Native UX, no custom UI needed |
-| **Document processing** | Pub/Sub | Async, scalable, decoupled |
-| **Mobile app** | Native API | Framework-agnostic |
+| **Internal data tools**  | Streamlit       | Fast dev, Python-only, built-in UI   |
+| **Team collaboration**   | Slack/Teams     | Native UX, no custom UI needed       |
+| **Document processing**  | Pub/Sub         | Async, scalable, decoupled           |
+| **Mobile app**           | Native API      | Framework-agnostic                   |
 
 ---
 
@@ -920,7 +925,7 @@ async def chat(message: str):
     except Exception as e:
         # Log error for debugging
         logger.error(f"Agent error: {e}")
-        
+
         # Return friendly error to user
         raise HTTPException(
             status_code=500,
@@ -957,7 +962,7 @@ async def chat(request: Request, message: str):
 ```typescript
 // Frontend: Stream responses
 const { messages, sendMessage, isLoading } = useCopilotChat({
-  stream: true,  // Enable streaming
+  stream: true, // Enable streaming
 });
 
 // User sees partial responses as agent thinks
@@ -990,9 +995,9 @@ async def chat(message: str):
     with tracer.start_as_current_span("agent_chat"):
         span = trace.get_current_span()
         span.set_attribute("message_length", len(message))
-        
+
         response = await agent.send_message(message)
-        
+
         span.set_attribute("response_length", len(response.text))
         return response
 ```
@@ -1034,15 +1039,18 @@ Design scalable, event-driven agent architectures.
 ### Additional Resources
 
 **Official Documentation**:
+
 - [Google ADK Documentation](https://google.github.io/adk-docs/)
 - [AG-UI Protocol Docs](https://docs.copilotkit.ai)
 - [CopilotKit GitHub](https://github.com/CopilotKit/CopilotKit)
 
 **Sample Code**:
+
 - [ADK Samples Repository](https://github.com/google/adk-samples)
 - [gemini-fullstack Example](https://github.com/google/adk-samples/tree/main/gemini-fullstack)
 
 **Community**:
+
 - [CopilotKit Discord](https://discord.gg/copilotkit)
 - [Google AI Community](https://discuss.ai.google.dev)
 
@@ -1056,7 +1064,7 @@ Design scalable, event-driven agent architectures.
 ✅ **AG-UI Protocol**: Official, production-ready solution for React/Next.js  
 ✅ **Decision Framework**: Choose based on framework, scale, and use case  
 ✅ **Quick Start**: Get running in under 10 minutes  
-✅ **Best Practices**: Session management, error handling, streaming, monitoring  
+✅ **Best Practices**: Session management, error handling, streaming, monitoring
 
 ### What's Next
 

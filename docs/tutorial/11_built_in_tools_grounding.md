@@ -5,7 +5,15 @@ description: "Use ADK's built-in tools for web search, grounding, and informatio
 sidebar_label: "11. Built-in Tools & Grounding"
 sidebar_position: 11
 tags: ["intermediate", "built-in-tools", "grounding", "search", "web-access"]
-keywords: ["built-in tools", "grounding", "web search", "information retrieval", "Google Search", "real-world knowledge"]
+keywords:
+  [
+    "built-in tools",
+    "grounding",
+    "web search",
+    "information retrieval",
+    "Google Search",
+    "real-world knowledge",
+  ]
 status: "completed"
 difficulty: "intermediate"
 estimated_time: "1 hour"
@@ -22,12 +30,14 @@ implementation_link: "https://github.com/raphaelmansuy/adk_training/tree/main/tu
 
 **Goal**: Learn how to use Gemini 2.0+'s built-in tools for web grounding, location services, and enterprise search - enabling your agents to access current information from the internet.
 
-**Prerequisites**: 
+**Prerequisites**:
+
 - Tutorial 01 (Hello World Agent)
 - Tutorial 02 (Function Tools)
 - Gemini 2.0+ model access
 
 **What You'll Learn**:
+
 - Using `google_search` for web grounding
 - Implementing location-based queries with `google_maps_grounding`
 - Enterprise compliance search with `enterprise_web_search`
@@ -44,6 +54,7 @@ implementation_link: "https://github.com/raphaelmansuy/adk_training/tree/main/tu
 Traditional AI models have a knowledge cutoff date - they don't know about recent events, current news, or real-time information. Built-in tools solve this by allowing models to **ground their responses in current web data**.
 
 **Key Advantages**:
+
 - ✅ **Current Information**: Access to up-to-date web content
 - ✅ **No Local Execution**: Tools run inside the model (no infrastructure needed)
 - ✅ **Automatic Integration**: Results seamlessly incorporated into responses
@@ -87,6 +98,7 @@ print(result.content.parts[0].text)
 ```
 
 **What Happens**:
+
 1. Model receives question about current events
 2. Model decides to use `google_search` tool
 3. Search executes **inside model environment**
@@ -106,12 +118,13 @@ class GoogleSearchTool:
         llm_request.tools.append(
             types.Tool(google_search=types.GoogleSearch())
         )
-        
+
         # Model now knows it can search the web
         return llm_request
 ```
 
 **Key Details**:
+
 - No actual function implementation needed
 - Model handles search execution internally
 - Results appear in `GroundingMetadata`
@@ -142,6 +155,7 @@ result = runner.run(
 ```
 
 **GroundingMetadata Structure**:
+
 ```python
 {
     'web_search_queries': [
@@ -199,6 +213,7 @@ print(result.content.parts[0].text)
 ### Use Cases
 
 **Navigation**:
+
 ```python
 result = runner.run(
     "How do I get from JFK Airport to Central Park using public transit?",
@@ -207,6 +222,7 @@ result = runner.run(
 ```
 
 **Local Discovery**:
+
 ```python
 result = runner.run(
     "Find coffee shops open now near Stanford University.",
@@ -215,6 +231,7 @@ result = runner.run(
 ```
 
 **Geographic Context**:
+
 ```python
 result = runner.run(
     "What's the distance between Los Angeles and San Diego?",
@@ -225,6 +242,7 @@ result = runner.run(
 ### Important Constraints
 
 **VertexAI API Only**:
+
 ```python
 # ✅ Works with VertexAI
 import os
@@ -257,20 +275,20 @@ def is_vertexai_enabled() -> bool:
 def get_available_grounding_tools():
     """Get available grounding tools based on environment."""
     tools = [google_search]  # Always available
-    
+
     # Add maps grounding only if VertexAI is enabled
     if is_vertexai_enabled():
         tools.append(google_maps_grounding)
-    
+
     return tools
 
 def get_agent_capabilities_description() -> str:
     """Get description of agent capabilities based on available tools."""
     capabilities = ["web search for current information"]
-    
+
     if is_vertexai_enabled():
         capabilities.append("location-based queries and maps grounding")
-    
+
     return " and ".join(capabilities)
 
 # Create agent with conditional tools
@@ -525,18 +543,18 @@ class GoogleSearchAgentTool:
             model='gemini-2.0-flash',
             tools=[google_search]
         )
-    
+
     async def _run_async_impl(self, query: str, tool_context):
         """Run search via sub-agent."""
         runner = Runner()
         result = await runner.run_async(query, agent=self.search_agent)
-        
+
         # Forward grounding metadata to parent
         if 'temp:_adk_grounding_metadata' in result.state:
             tool_context.invocation_context.state[
                 'temp:_adk_grounding_metadata'
             ] = result.state['temp:_adk_grounding_metadata']
-        
+
         return result.content.parts[0].text
 ```
 
@@ -632,7 +650,7 @@ async def save_research_notes(
     tool_context: ToolContext
 ) -> str:
     """Save research findings as artifact."""
-    
+
     # Create research document
     timestamp = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
     document = f"""
@@ -647,14 +665,14 @@ Generated: {timestamp}
 - Generated by: Research Assistant
 - Model: gemini-2.0-flash
     """.strip()
-    
+
     # Save as artifact
     filename = f"research_{topic.replace(' ', '_')}.md"
     version = await tool_context.save_artifact(
         filename=filename,
         part=types.Part.from_text(document)
     )
-    
+
     return f"Research saved as {filename} (version {version})"
 
 
@@ -703,23 +721,23 @@ Be comprehensive but concise. Always cite your sources.
 
 async def conduct_research(topic: str):
     """Conduct comprehensive research on topic."""
-    
+
     print(f"\n{'='*60}")
     print(f"RESEARCH TOPIC: {topic}")
     print(f"{'='*60}\n")
-    
+
     runner = Runner()
-    
+
     # Run research
     result = await runner.run_async(
         f"Research this topic and provide a comprehensive summary: {topic}",
         agent=research_assistant
     )
-    
+
     # Display results
     print("\n📊 RESEARCH RESULTS:\n")
     print(result.content.parts[0].text)
-    
+
     # Check if grounding metadata available
     if 'temp:_adk_grounding_metadata' in result.state:
         metadata = result.state['temp:_adk_grounding_metadata']
@@ -727,28 +745,28 @@ async def conduct_research(topic: str):
             print("\n\n🔍 SEARCH QUERIES USED:")
             for query in metadata['web_search_queries']:
                 print(f"  - {query}")
-    
+
     print(f"\n{'='*60}\n")
 
 
 # Example usage
 async def main():
     """Run research examples."""
-    
+
     # Research recent technology
     await conduct_research(
         "Quantum computing breakthroughs in 2025"
     )
-    
+
     await asyncio.sleep(2)
-    
+
     # Research current events
     await conduct_research(
         "Latest developments in renewable energy technology"
     )
-    
+
     await asyncio.sleep(2)
-    
+
     # Research scientific topic
     await conduct_research(
         "CRISPR gene editing applications in medicine"
@@ -762,6 +780,7 @@ if __name__ == '__main__':
 ### Running the Research Assistant
 
 **Setup**:
+
 ```bash
 # Install dependencies
 pip install google-adk
@@ -776,6 +795,7 @@ python research_assistant.py
 ```
 
 **Expected Output**:
+
 ```
 ============================================================
 RESEARCH TOPIC: Quantum computing breakthroughs in 2025
@@ -839,6 +859,7 @@ result = runner.run(
 ```
 
 **When to use**:
+
 - Multi-session conversations
 - Resuming previous work
 - Accessing historical context
@@ -862,6 +883,7 @@ agent = Agent(
 ```
 
 **When to use**:
+
 - User preference initialization
 - Session setup
 - Context bootstrapping
@@ -889,6 +911,7 @@ result = runner.run(
 ```
 
 **When to use**:
+
 - Document retrieval
 - Data access
 - File management
@@ -924,6 +947,7 @@ You decide when work is finished.
 ```
 
 **When to use**:
+
 - Iterative processing
 - Agent-controlled termination
 - Dynamic execution length
@@ -958,6 +982,7 @@ result = runner.run(
 ```
 
 **When to use**:
+
 - Ambiguity resolution
 - User preference collection
 - Interactive workflows
@@ -1008,6 +1033,7 @@ result = runner.run(
 ```
 
 **When to use**:
+
 - Multi-agent orchestration
 - Specialist agent routing
 - Dynamic workflow routing
@@ -1048,6 +1074,7 @@ result = runner.run(
 ```
 
 **When to use**:
+
 - Document analysis
 - Web content summarization
 - External data integration
@@ -1094,12 +1121,14 @@ result = runner.run(
 ```
 
 **When to use**:
+
 - Enterprise document search
 - Internal knowledge bases
 - Compliance requirements
 - Corporate data access
 
 **Requirements**:
+
 - Google Cloud Project
 - Vertex AI Search configured
 - Data store created and populated
@@ -1154,6 +1183,7 @@ agent = Agent(
 ```
 
 **When to use**:
+
 - Leveraging LangChain ecosystem (100+ tools)
 - Existing LangChain integrations
 - Community-built tools
@@ -1190,6 +1220,7 @@ agent = Agent(
 **Critical**: CrewAI tools require explicit name and description (unlike LangChain).
 
 **When to use**:
+
 - CrewAI tool ecosystem (20+ tools)
 - Existing CrewAI workflows
 - Specialized CrewAI integrations
@@ -1252,6 +1283,7 @@ orchestrator = Agent(
 ```
 
 **When to use**:
+
 - Agent composition
 - Specialist delegation
 - Modular agent architectures
@@ -1278,6 +1310,7 @@ agent = Agent(
 ```
 
 **When to use**:
+
 - External tool servers
 - Third-party integrations
 - Standardized tool protocols
@@ -1305,6 +1338,7 @@ agent = Agent(
 ```
 
 **When to use**:
+
 - REST API integration
 - External service access
 - Auto-generated tool interfaces
@@ -1319,32 +1353,39 @@ agent = Agent(
 Here's the comprehensive list of all ADK builtin tools:
 
 ### Grounding Tools (3)
+
 - ✅ `google_search` - Web search grounding (Gemini 2.0+)
 - ✅ `google_maps_grounding` - Location-based queries (VertexAI only)
 - ✅ `enterprise_web_search` - Enterprise-compliant web search
 
 ### Memory Tools (3)
+
 - ✅ `load_memory` - Load persistent memory state
 - ✅ `preload_memory` - Preload memory before execution
 - ✅ `load_artifacts` - Load saved artifacts/documents
 
 ### Workflow Tools (3)
+
 - ✅ `exit_loop` - Agent-controlled termination
 - ✅ `get_user_choice` - Request user input
 - ✅ `transfer_to_agent` - Agent handoff
 
 ### Context Tools (1)
+
 - ✅ `url_context` - Load content from URLs
 
 ### Enterprise Tools (2)
+
 - ✅ `VertexAiSearchTool` - Enterprise search (Vertex AI Search)
 - ✅ `DiscoveryEngineSearchTool` - Legacy name for VertexAiSearchTool
 
 ### Integration Wrappers (2)
+
 - ✅ `LangchainTool` - Wrap LangChain tools
 - ✅ `CrewaiTool` - Wrap CrewAI tools
 
 ### Tool Classes (5)
+
 - ✅ `FunctionTool` - Wrap Python functions
 - ✅ `AgentTool` - Wrap agents as tools
 - ✅ `GoogleSearchAgentTool` - Wrapped google_search for mixing
@@ -1352,14 +1393,17 @@ Here's the comprehensive list of all ADK builtin tools:
 - ✅ `AsyncTool` - Base async tool class
 
 ### Toolsets (3)
+
 - ✅ `MCPToolset` - Model Context Protocol integration
 - ✅ `OpenAPIToolset` - REST API integration
 - ✅ `Toolset` - Base toolset class
 
 ### Framework Integration (1)
+
 - ✅ AG-UI Protocol - Agent-Human Interaction (via `research/ag-ui/`)
 
 ### Specialized Tools (2)
+
 - ✅ `McpTool` - Individual MCP tool wrapper
 - ✅ `OpenApiTool` - Individual OpenAPI endpoint wrapper
 
@@ -1458,24 +1502,24 @@ You decide the workflow based on user needs.
 
 async def main():
     """Run comprehensive agent system."""
-    
+
     runner = Runner()
-    
+
     print("="*60)
     print("COMPREHENSIVE AGENT SYSTEM")
     print("="*60 + "\n")
-    
+
     query = """
 Research the latest developments in quantum computing,
 analyze the key technological breakthroughs,
 and provide strategic recommendations.
     """
-    
+
     result = await runner.run_async(query, agent=orchestrator)
-    
+
     print("\n📊 RESULT:\n")
     print(result.content.parts[0].text)
-    
+
     print("\n" + "="*60 + "\n")
 
 
@@ -1484,6 +1528,7 @@ if __name__ == '__main__':
 ```
 
 **Expected Workflow**:
+
 1. Orchestrator receives query
 2. Loads any previous memory (if continuing session)
 3. Transfers to research_specialist
@@ -1729,6 +1774,7 @@ else:
 **Problem**: Using google_search with Gemini 1.x model
 
 **Solution**:
+
 ```python
 # ❌ This causes error
 agent = Agent(
@@ -1748,6 +1794,7 @@ agent = Agent(
 **Problem**: Trying to mix built-in and custom tools directly
 
 **Solution**:
+
 ```python
 # ❌ Doesn't work
 agent = Agent(
@@ -1767,6 +1814,7 @@ agent = Agent(
 **Problem**: Using AI Studio API instead of VertexAI
 
 **Solution**:
+
 ```python
 # ❌ AI Studio doesn't support maps
 os.environ['GOOGLE_GENAI_USE_VERTEXAI'] = '0'
@@ -1791,7 +1839,9 @@ agent = Agent(
 **Problem**: Model not using search tool
 
 **Solutions**:
+
 1. **Make query require current information**:
+
 ```python
 # ❌ Model might not search
 result = runner.run("What is AI?", agent=agent)
@@ -1801,6 +1851,7 @@ result = runner.run("What are the latest AI developments in 2025?", agent=agent)
 ```
 
 2. **Explicitly instruct to search**:
+
 ```python
 agent = Agent(
     model='gemini-2.0-flash',
@@ -1820,6 +1871,7 @@ ALWAYS use web search for questions about:
 **Problem**: Trying to access metadata after execution
 
 **Solution**:
+
 ```python
 # Grounding metadata is temporary
 # Stored in: temp:_adk_grounding_metadata
@@ -1847,18 +1899,18 @@ from google.adk.tools import google_search
 @pytest.mark.asyncio
 async def test_search_agent_current_info():
     """Test agent can access current information."""
-    
+
     agent = Agent(
         model='gemini-2.0-flash',
         tools=[google_search]
     )
-    
+
     runner = Runner()
     result = await runner.run_async(
         "What year is it now?",
         agent=agent
     )
-    
+
     # Should return current year (2025)
     assert '2025' in result.content.parts[0].text
 
@@ -1866,19 +1918,19 @@ async def test_search_agent_current_info():
 @pytest.mark.asyncio
 async def test_search_agent_with_citations():
     """Test agent provides sources."""
-    
+
     agent = Agent(
         model='gemini-2.0-flash',
         instruction='Always cite sources for information.',
         tools=[google_search]
     )
-    
+
     runner = Runner()
     result = await runner.run_async(
         "What are the latest developments in AI?",
         agent=agent
     )
-    
+
     text = result.content.parts[0].text.lower()
     # Should mention sources or citations
     assert any(word in text for word in ['source', 'according to', 'based on'])
@@ -1887,12 +1939,12 @@ async def test_search_agent_with_citations():
 @pytest.mark.asyncio
 async def test_mixed_tools_with_wrapper():
     """Test GoogleSearchAgentTool with custom tools."""
-    
+
     from google.adk.tools import GoogleSearchAgentTool, FunctionTool
-    
+
     def custom_tool(x: int) -> int:
         return x * 2
-    
+
     agent = Agent(
         model='gemini-2.0-flash',
         tools=[
@@ -1900,13 +1952,13 @@ async def test_mixed_tools_with_wrapper():
             FunctionTool(custom_tool)
         ]
     )
-    
+
     runner = Runner()
     result = await runner.run_async(
         "What's 21 doubled? Also, what's the current date?",
         agent=agent
     )
-    
+
     text = result.content.parts[0].text
     # Should use both tools
     assert '42' in text  # Custom tool result
@@ -1923,20 +1975,20 @@ async def test_mixed_tools_with_wrapper():
 )
 async def test_maps_grounding():
     """Test location-based queries."""
-    
+
     from google.adk.tools import google_maps_grounding
-    
+
     agent = Agent(
         model='gemini-2.0-flash',
         tools=[google_maps_grounding]
     )
-    
+
     runner = Runner()
     result = await runner.run_async(
         "What's near the Eiffel Tower?",
         agent=agent
     )
-    
+
     text = result.content.parts[0].text.lower()
     # Should mention Paris or French landmarks
     assert any(word in text for word in ['paris', 'france', 'seine'])
@@ -1949,11 +2001,13 @@ async def test_maps_grounding():
 ### Latency
 
 **Built-in tools add latency**:
+
 - Web search: +2-5 seconds per query
 - Maps grounding: +1-3 seconds per query
 - Model decides when to use tools (adds thinking time)
 
 **Optimization strategies**:
+
 ```python
 # 1. Use specific queries
 agent = Agent(
@@ -1989,11 +2043,13 @@ async for event in runner.run_async(
 ### Cost Implications
 
 **Token usage increases** with built-in tools:
+
 - Input: Query + tool definitions + search results
 - Output: Response incorporating search results
 - Typically 2-5x more tokens than non-grounded responses
 
 **Cost optimization**:
+
 ```python
 # 1. Use search only when needed
 agent = Agent(
@@ -2033,36 +2089,43 @@ You've mastered ADK's complete builtin tools ecosystem:
 **Key Takeaways**:
 
 **Grounding Tools (Gemini 2.0+)**:
+
 - ✅ `google_search` - Web grounding for current information
 - ✅ `google_maps_grounding` - Location queries (VertexAI only)
 - ✅ `enterprise_web_search` - Compliance-focused web access
 - ✅ `GoogleSearchAgentTool` - Wrapper for mixing with custom tools
 
 **Memory Tools**:
+
 - ✅ `load_memory` - Load persistent memory state
 - ✅ `preload_memory` - Initialize memory before execution
 - ✅ `load_artifacts` - Access saved documents/data
 
 **Workflow Tools**:
+
 - ✅ `exit_loop` - Agent-controlled termination
 - ✅ `get_user_choice` - Request user input
 - ✅ `transfer_to_agent` - Agent handoff/delegation
 
 **Context & Enterprise**:
+
 - ✅ `url_context` - Load content from URLs
 - ✅ `VertexAiSearchTool` - Enterprise search integration
 
 **Integration Wrappers**:
+
 - ✅ `LangchainTool` - Wrap 100+ LangChain tools
 - ✅ `CrewaiTool` - Wrap 20+ CrewAI tools
 
 **Toolsets**:
+
 - ✅ `MCPToolset` - Model Context Protocol (Tutorial 16)
 - ✅ `OpenAPIToolset` - REST API integration (Tutorial 03)
 
 **Total: 30+ builtin tools and classes available**
 
 **Production Checklist**:
+
 - [ ] Using Gemini 2.5-flash (default) or 2.0+ for grounding
 - [ ] Clear instructions for when to use which tools
 - [ ] Error handling for tool failures
@@ -2078,11 +2141,13 @@ You've mastered ADK's complete builtin tools ecosystem:
 - [ ] Enterprise tool permissions configured
 
 **Next Steps**:
+
 - **Tutorial 12**: Learn about Built-in Planners and Thinking configuration for advanced reasoning
 - **Tutorial 13**: Explore Code Execution for data analysis and calculations
 - **Tutorial 14**: Implement Streaming for better user experience
 
 **Resources**:
+
 - [ADK Built-in Tools Docs](https://google.github.io/adk-docs/tools/built-in-tools/)
 - [Web Grounding for Enterprise](https://cloud.google.com/vertex-ai/generative-ai/docs/grounding/web-grounding-enterprise)
 - [Gemini 2.0 Features](https://cloud.google.com/vertex-ai/generative-ai/docs/model-reference/gemini)

@@ -5,11 +5,23 @@ description: "Enable your agents to write and execute Python code for calculatio
 sidebar_label: "13. Code Execution"
 sidebar_position: 13
 tags: ["advanced", "code-execution", "python", "calculations", "data-analysis"]
-keywords: ["code execution", "python code", "calculations", "data analysis", "BuiltInCodeExecutor"]
+keywords:
+  [
+    "code execution",
+    "python code",
+    "calculations",
+    "data analysis",
+    "BuiltInCodeExecutor",
+  ]
 status: "draft"
 difficulty: "advanced"
 estimated_time: "1.5 hours"
-prerequisites: ["Tutorial 01: Hello World Agent", "Tutorial 02: Function Tools", "Gemini 2.0+ model access"]
+prerequisites:
+  [
+    "Tutorial 01: Hello World Agent",
+    "Tutorial 02: Function Tools",
+    "Gemini 2.0+ model access",
+  ]
 learning_objectives:
   - "Use BuiltInCodeExecutor for code generation and execution"
   - "Understand model-side code execution patterns"
@@ -23,11 +35,13 @@ implementation_link: "https://github.com/raphaelmansuy/adk_training/tree/main/tu
 **Goal**: Enable your agents to write and execute Python code for calculations, data analysis, and complex computations using Gemini 2.0+'s built-in code execution capability.
 
 **Prerequisites**:
+
 - Tutorial 01 (Hello World Agent)
 - Tutorial 02 (Function Tools)
 - Gemini 2.0+ model access
 
 **What You'll Learn**:
+
 - Using `BuiltInCodeExecutor` for code generation and execution
 - Understanding model-side code execution (no local execution)
 - Building data analysis agents
@@ -50,6 +64,7 @@ AI models are excellent at reasoning but historically struggled with precise cal
 - ⚡ **Execute Algorithms**: Sort, search, optimize
 
 **Without Code Execution**:
+
 ```
 User: "What's the factorial of 50?"
 Agent: "The factorial of 50 is approximately 3.04 × 10^64"
@@ -57,6 +72,7 @@ Agent: "The factorial of 50 is approximately 3.04 × 10^64"
 ```
 
 **With Code Execution**:
+
 ```
 User: "What's the factorial of 50?"
 Agent: [Generates and executes: math.factorial(50)]
@@ -98,6 +114,7 @@ print(result.content.parts[0].text)
 ```
 
 **Output**:
+
 ```
 Let me calculate that using Python:
 
@@ -191,6 +208,7 @@ print(result.content.parts[0].text)
 ```
 
 **Expected Output**:
+
 ```
 Let me calculate this using Python's complex number support:
 
@@ -212,7 +230,7 @@ The result is essentially **0** (the tiny number is due to floating-point precis
 
 This is **Euler's Identity**: e^(πi) + 1 = 0
 
-It's considered one of the most beautiful equations in mathematics because it 
+It's considered one of the most beautiful equations in mathematics because it
 connects five fundamental constants: e, π, i, 1, and 0.
 ```
 
@@ -242,6 +260,7 @@ Jun   | 25000
 ```
 
 **Expected Output**:
+
 ```
 Let me analyze this sales data:
 
@@ -258,7 +277,7 @@ stdev = statistics.stdev(sales)
 total = sum(sales)
 
 # Calculate growth
-growth = [(sales[i] - sales[i-1]) / sales[i-1] * 100 
+growth = [(sales[i] - sales[i-1]) / sales[i-1] * 100
           for i in range(1, len(sales))]
 
 # Find best month
@@ -303,21 +322,22 @@ result = runner.run(
 ```
 
 **Expected Output**:
+
 ```
 [Code:]
 def binary_search(arr, target):
     left, right = 0, len(arr) - 1
-    
+
     while left <= right:
         mid = (left + right) // 2
-        
+
         if arr[mid] == target:
             return mid
         elif arr[mid] < target:
             left = mid + 1
         else:
             right = mid - 1
-    
+
     return -1
 
 arr = [1, 5, 12, 23, 42, 67, 89, 99]
@@ -330,7 +350,7 @@ print(f"Found {target} at index {position}")
 
 Binary search found **42 at index 4** (the 5th element, zero-indexed).
 
-The algorithm made only 3 comparisons instead of checking all 8 elements 
+The algorithm made only 3 comparisons instead of checking all 8 elements
 linearly, demonstrating O(log n) efficiency.
 ```
 
@@ -395,14 +415,14 @@ Always execute code for accuracy. Never approximate.
 
 async def calculate_financial(query: str):
     """Run financial calculation."""
-    
+
     print(f"\n{'='*70}")
     print(f"QUERY: {query}")
     print(f"{'='*70}\n")
-    
+
     runner = Runner()
     result = await runner.run_async(query, agent=financial_calculator)
-    
+
     print("💰 CALCULATION:\n")
     print(result.content.parts[0].text)
     print(f"\n{'='*70}\n")
@@ -410,31 +430,31 @@ async def calculate_financial(query: str):
 
 async def main():
     """Run financial calculation examples."""
-    
+
     # Example 1: Compound Interest
     await calculate_financial("""
-If I invest $10,000 at 7% annual interest compounded monthly, 
+If I invest $10,000 at 7% annual interest compounded monthly,
 how much will I have after 30 years?
     """)
-    
+
     await asyncio.sleep(2)
-    
+
     # Example 2: Loan Payment
     await calculate_financial("""
-Calculate the monthly payment on a $300,000 mortgage at 6.5% 
+Calculate the monthly payment on a $300,000 mortgage at 6.5%
 annual interest for 30 years.
     """)
-    
+
     await asyncio.sleep(2)
-    
+
     # Example 3: Retirement Planning
     await calculate_financial("""
-I'm 30 years old and want to retire at 65 with $2 million. 
+I'm 30 years old and want to retire at 65 with $2 million.
 If I can earn 8% annually, how much do I need to save monthly?
     """)
-    
+
     await asyncio.sleep(2)
-    
+
     # Example 4: Investment Comparison
     await calculate_financial("""
 Compare two investments:
@@ -443,13 +463,13 @@ B) $30,000 initial + $200/month, 8% annual return for 20 years
 
 Which is better?
     """)
-    
+
     await asyncio.sleep(2)
-    
+
     # Example 5: Break-even Analysis
     await calculate_financial("""
-A business has fixed costs of $50,000/month and variable costs 
-of $25 per unit. If they sell units for $75 each, what's the 
+A business has fixed costs of $50,000/month and variable costs
+of $25 per unit. If they sell units for $75 each, what's the
 break-even point?
     """)
 
@@ -462,7 +482,7 @@ if __name__ == '__main__':
 
 ```
 ======================================================================
-QUERY: If I invest $10,000 at 7% annual interest compounded monthly, 
+QUERY: If I invest $10,000 at 7% annual interest compounded monthly,
 how much will I have after 30 years?
 ======================================================================
 
@@ -505,13 +525,13 @@ Multiple: 8.14x
 - You'll earn **$71,402.45** in interest
 - Your money will multiply **8.14 times** over 30 years
 
-**Key Insight:** The power of compound interest! By compounding monthly 
+**Key Insight:** The power of compound interest! By compounding monthly
 instead of annually, you gain an extra ~$3,000 compared to annual compounding.
 
 ======================================================================
 
 ======================================================================
-QUERY: Calculate the monthly payment on a $300,000 mortgage at 6.5% 
+QUERY: Calculate the monthly payment on a $300,000 mortgage at 6.5%
 annual interest for 30 years.
 ======================================================================
 
@@ -558,7 +578,7 @@ Interest as % of Principal: 127.5%
 - Total amount paid over 30 years: **$682,632**
 - Total interest paid: **$382,632**
 
-**Important Note:** You'll pay 127.5% of the original loan amount in interest 
+**Important Note:** You'll pay 127.5% of the original loan amount in interest
 alone! Consider making extra principal payments to reduce this significantly.
 
 ======================================================================
@@ -588,6 +608,7 @@ result = runner.run(
 ```
 
 **Output** (code that user can run locally):
+
 ```python
 import matplotlib.pyplot as plt
 
@@ -827,6 +848,7 @@ After executing code:
 **Problem**: Using code executor with wrong model
 
 **Solution**:
+
 ```python
 # ❌ Wrong model version
 agent = Agent(
@@ -848,6 +870,7 @@ agent = Agent(
 **Solutions**:
 
 1. **Make query require computation**:
+
 ```python
 # ❌ Model might not execute code
 result = runner.run("What's 2+2?", agent=agent)
@@ -857,6 +880,7 @@ result = runner.run("Calculate the standard deviation of [1,2,3,4,5,6,7,8,9,10]"
 ```
 
 2. **Explicit instruction**:
+
 ```python
 agent = Agent(
     model='gemini-2.0-flash',
@@ -872,6 +896,7 @@ agent = Agent(
 **Solutions**:
 
 1. **Lower temperature**:
+
 ```python
 agent = Agent(
     model='gemini-2.0-flash',
@@ -883,6 +908,7 @@ agent = Agent(
 ```
 
 2. **Add error handling instruction**:
+
 ```python
 agent = Agent(
     model='gemini-2.0-flash',
@@ -904,6 +930,7 @@ When writing code:
 **Solutions**:
 
 1. **Use streaming**:
+
 ```python
 from google.adk.agents import RunConfig, StreamingMode
 
@@ -914,6 +941,7 @@ async for event in runner.run_async(query, agent=agent, run_config=run_config):
 ```
 
 2. **Optimize code complexity**:
+
 ```python
 agent = Agent(
     model='gemini-2.0-flash',
@@ -936,18 +964,18 @@ from google.adk.code_executors import BuiltInCodeExecutor
 @pytest.mark.asyncio
 async def test_code_execution_accuracy():
     """Test that code execution provides accurate results."""
-    
+
     agent = Agent(
         model='gemini-2.0-flash',
         code_executor=BuiltInCodeExecutor()
     )
-    
+
     runner = Runner()
     result = await runner.run_async(
         "Calculate factorial of 10",
         agent=agent
     )
-    
+
     # Factorial of 10 = 3,628,800
     assert '3628800' in result.content.parts[0].text
 
@@ -955,20 +983,20 @@ async def test_code_execution_accuracy():
 @pytest.mark.asyncio
 async def test_statistical_calculation():
     """Test statistical calculations."""
-    
+
     agent = Agent(
         model='gemini-2.0-flash',
         instruction='Calculate exact statistics using Python.',
         code_executor=BuiltInCodeExecutor(),
         generate_content_config=types.GenerateContentConfig(temperature=0.1)
     )
-    
+
     runner = Runner()
     result = await runner.run_async(
         "Calculate the mean of [10, 20, 30, 40, 50]",
         agent=agent
     )
-    
+
     # Mean should be 30
     text = result.content.parts[0].text
     assert '30' in text or 'thirty' in text.lower()
@@ -977,18 +1005,18 @@ async def test_statistical_calculation():
 @pytest.mark.asyncio
 async def test_complex_calculation():
     """Test complex mathematical calculation."""
-    
+
     agent = Agent(
         model='gemini-2.0-flash',
         code_executor=BuiltInCodeExecutor()
     )
-    
+
     runner = Runner()
     result = await runner.run_async(
         "Calculate compound interest: $1000 principal, 5% annual rate, 10 years, monthly compounding",
         agent=agent
     )
-    
+
     text = result.content.parts[0].text
     # Should be around $1647
     assert '1647' in text or '1,647' in text
@@ -997,19 +1025,19 @@ async def test_complex_calculation():
 @pytest.mark.asyncio
 async def test_algorithm_implementation():
     """Test that agent can implement algorithms."""
-    
+
     agent = Agent(
         model='gemini-2.0-flash',
         instruction='Implement algorithms using Python code.',
         code_executor=BuiltInCodeExecutor()
     )
-    
+
     runner = Runner()
     result = await runner.run_async(
         "Implement a function to check if a number is prime, then test it with 17",
         agent=agent
     )
-    
+
     text = result.content.parts[0].text.lower()
     # 17 is prime
     assert 'true' in text or 'prime' in text
@@ -1030,6 +1058,7 @@ async def test_algorithm_implementation():
 ✅ **Automatic Cleanup**: No persistent state between executions
 
 **What Code CAN Do**:
+
 - Mathematical calculations
 - Data processing (lists, dicts, arrays)
 - Algorithm implementation
@@ -1037,6 +1066,7 @@ async def test_algorithm_implementation():
 - Statistical analysis
 
 **What Code CANNOT Do**:
+
 - Access local files
 - Make network requests
 - Install packages
@@ -1072,6 +1102,7 @@ You CANNOT:
 You've mastered code execution for AI agents:
 
 **Key Takeaways**:
+
 - ✅ `BuiltInCodeExecutor` enables Python code generation and execution
 - ✅ Code runs **inside model environment** (Google's infrastructure)
 - ✅ Requires **Gemini 2.0+** models
@@ -1082,6 +1113,7 @@ You've mastered code execution for AI agents:
 - ✅ Best with low temperature (0.0-0.1) for accuracy
 
 **Production Checklist**:
+
 - [ ] Using Gemini 2.0+ model
 - [ ] Low temperature set (0.0-0.2)
 - [ ] Clear instructions for when to use code
@@ -1092,11 +1124,13 @@ You've mastered code execution for AI agents:
 - [ ] Edge case handling specified
 
 **Next Steps**:
+
 - **Tutorial 14**: Implement Streaming (SSE) for real-time responses
 - **Tutorial 15**: Explore Live API for voice and bidirectional streaming
 - **Tutorial 16**: Learn MCP Integration for extended tool ecosystem
 
 **Resources**:
+
 - [ADK Code Execution Docs](https://google.github.io/adk-docs/tools/code-execution/)
 - [Gemini 2.0 Code Execution](https://cloud.google.com/vertex-ai/generative-ai/docs/model-reference/gemini)
 - [Python Standard Library](https://docs.python.org/3/library/)

@@ -3,11 +3,13 @@
 ## Confirmation & Next Steps
 
 The above outline aligns well with the official Google ADK documentation and best practices. Each tutorial will:
+
 - Progress from first principles to advanced topics
 - Be concise and code-first, with real-world use cases
 - Reference official ADK docs and examples for accuracy
 
 **Next:**
+
 1. Write the first tutorial on ADK installation and Hello World agent.
 2. Continue with the outlined sequence, ensuring each file is self-contained and practical.
 3. Take detailed notes in scratchpad.md as new concepts or patterns emerge from the docs or examples.
@@ -19,6 +21,7 @@ The above outline aligns well with the official Google ADK documentation and bes
 ### Critical Corrections Needed for Tutorial 01
 
 The existing tutorial 01 has several outdated patterns:
+
 1. ❌ Uses `LlmAgent` instead of modern `Agent` class
 2. ❌ Uses explicit `Runner` class (now internal, use CLI instead)
 3. ❌ Missing canonical project structure requirements
@@ -29,7 +32,8 @@ The existing tutorial 01 has several outdated patterns:
 ### Modern Tutorial 01 Structure
 
 Should follow this pattern:
-- Create proper directory structure (agent_dir/__init__.py, agent.py, .env)
+
+- Create proper directory structure (agent_dir/**init**.py, agent.py, .env)
 - Use `Agent` class with current model names
 - Assign to `root_agent` variable
 - Show authentication setup
@@ -48,29 +52,26 @@ Based on official docs, the series should be:
 5. **Parallel Processing** - Use ParallelAgent for concurrency
 6. **Multi-Agent Systems** - Compose agents hierarchically with sub_agents
 
-Additional tutorials to add:
-7. **Loop Agents & Iteration** - Iterative refinement patterns
-8. **State & Memory** - Session state, memory, context management
-9. **Artifacts** - File and binary data handling
-10. **Callbacks & Guardrails** - Advanced control patterns
-11. **Evaluation & Testing** - Quality assurance framework
-12. **Deployment** - Production deployment patterns
+Additional tutorials to add: 7. **Loop Agents & Iteration** - Iterative refinement patterns 8. **State & Memory** - Session state, memory, context management 9. **Artifacts** - File and binary data handling 10. **Callbacks & Guardrails** - Advanced control patterns 11. **Evaluation & Testing** - Quality assurance framework 12. **Deployment** - Production deployment patterns
 
 ### Key Teaching Points
 
 **Foundation (Tutorials 1-3):**
+
 - Agent definition is just configuration
 - Tools are Python functions with docstrings
 - LLM decides when to call tools based on user input
 - Dev UI Events tab shows exactly what's happening
 
 **Orchestration (Tutorials 4-6):**
+
 - Workflow agents = deterministic orchestration
 - LlmAgent = dynamic LLM-driven routing
 - Choose based on control needs
 - Shared state for communication
 
 **Advanced (Tutorials 7-12):**
+
 - State vs Artifacts (simple data vs files)
 - Callbacks for guardrails and monitoring
 - Evaluation is critical for production
@@ -86,7 +87,7 @@ Additional tutorials to add:
 
 ### Common Pitfalls to Address:
 
-1. Forgetting __init__.py with correct import
+1. Forgetting **init**.py with correct import
 2. Not naming variable `root_agent`
 3. Not setting up authentication correctly
 4. Trying to use Runner class directly (outdated)
@@ -100,52 +101,66 @@ Additional tutorials to add:
 # Tutorial XX: [Clear Title]
 
 ## Overview
+
 One paragraph: What we'll build and why it matters
 
 ## Prerequisites
+
 - Python 3.9+
 - google-adk installed
 - API key (link to setup)
 - Concepts from previous tutorials (if any)
 
 ## Core Concept
+
 Brief explanation of the ADK concept being introduced
 
 ## Use Case
+
 Real-world scenario this pattern solves
 
 ## Implementation
 
 ### Project Structure
+
 Show the directory layout
 
 ### Code
+
 Complete, runnable code with inline comments
 
 ### Configuration
+
 .env file setup if needed
 
 ## Running the Agent
 
 ### Option 1: Dev UI (Recommended)
+
 Steps to use `adk web`
 
 ### Option 2: CLI
+
 Steps to use `adk run`
 
 ## Understanding the Behavior
+
 How to use Events tab to see what's happening
 
 ## Key Takeaways
+
 Bullet points of important lessons
 
 ## Common Issues
+
 Troubleshooting tips
 
 ## Next Steps
+
 What to explore next, link to next tutorial
 
 ## Further Reading
+
 Links to relevant official docs
 ```
 
@@ -161,6 +176,7 @@ Links to relevant official docs
 ### Research Findings Integration:
 
 From adk-python source exploration:
+
 - Modern `Agent` class is in `google.adk.agents`
 - CLI tools are in `google.adk.cli`
 - Authentication uses environment variables
@@ -168,12 +184,14 @@ From adk-python source exploration:
 - FastAPI server is for production deployment
 
 From official docs:
+
 - Gemini 2.0 Flash is current recommended model
 - Events tab is critical debugging tool
 - Evaluation framework uses JSON test sets
 - Three deployment targets: Cloud Run, Vertex AI, GKE
 
 From agent-starter-pack:
+
 - Real examples use canonical structure
 - Tools return structured dicts with status
 - .env file is standard for configuration
@@ -186,37 +204,34 @@ From agent-starter-pack:
 ### Tutorial Series Architecture (Revised)
 
 **Foundation Tier** (1-3): Basics
+
 1. ✅ Hello World - Basic agent
-2. ✅ Function Tools - Custom Python tools  
+2. ✅ Function Tools - Custom Python tools
 3. ⏳ OpenAPI Tools - REST API integration
 
-**Orchestration Tier** (4-6): Workflow Patterns
-4. ⏳ Sequential Workflows - Ordered pipelines
-5. ⏳ Parallel Processing - Concurrent execution
-6. ⏳ Multi-Agent Systems - Agent coordination
+**Orchestration Tier** (4-6): Workflow Patterns 4. ⏳ Sequential Workflows - Ordered pipelines 5. ⏳ Parallel Processing - Concurrent execution 6. ⏳ Multi-Agent Systems - Agent coordination
 
-**Advanced Tier** (7-10): Production Features
-7. ⏳ Loop Agents - Iterative refinement
-8. ⏳ State & Memory - Persistence patterns
-9. ⏳ Callbacks & Guardrails - Control flow
-10. ⏳ Evaluation & Testing - Quality assurance
+**Advanced Tier** (7-10): Production Features 7. ⏳ Loop Agents - Iterative refinement 8. ⏳ State & Memory - Persistence patterns 9. ⏳ Callbacks & Guardrails - Control flow 10. ⏳ Evaluation & Testing - Quality assurance
 
 ### Tutorial 04: Sequential Workflows - PLANNING
 
 **Concept**: Chain agents in strict order for pipelines
 **Real-World Example**: Blog Post Creation Pipeline
+
 - Agent 1: Research topic and gather facts
-- Agent 2: Write draft blog post  
+- Agent 2: Write draft blog post
 - Agent 3: Review for accuracy and tone
 - Agent 4: Format as markdown with sections
 
 **Key Learning Points**:
+
 - `SequentialAgent` usage
 - `output_key` for state passing
 - State injection with `{key_name}` in instructions
 - When to use sequential vs other patterns
 
 **Code Structure**:
+
 ```
 blog_pipeline/
   __init__.py
@@ -224,7 +239,8 @@ blog_pipeline/
   .env
 ```
 
-**Practical Value**: 
+**Practical Value**:
+
 - Shows how to break complex tasks into steps
 - Demonstrates data flow between agents
 - Real-world content creation use case
@@ -233,18 +249,21 @@ blog_pipeline/
 
 **Concept**: Execute independent tasks concurrently
 **Real-World Example**: Travel Planner
+
 - Agent 1: Find flights (parallel)
 - Agent 2: Find hotels (parallel)
 - Agent 3: Find activities (parallel)
 - Agent 4: Combine into itinerary (sequential after)
 
 **Key Learning Points**:
+
 - `ParallelAgent` usage
 - Fan-out/gather pattern
 - Combining Parallel + Sequential
 - When tasks are truly independent
 
 **Code Structure**:
+
 ```
 travel_planner/
   __init__.py
@@ -253,6 +272,7 @@ travel_planner/
 ```
 
 **Practical Value**:
+
 - Demonstrates speed optimization
 - Shows fan-out/gather pattern
 - Real-world travel planning use case
@@ -260,6 +280,7 @@ travel_planner/
 ### Tutorial 06: Multi-Agent Systems - PLANNING (Modernize Existing)
 
 **Current Issues with Existing Tutorial**:
+
 - Uses outdated `LlmAgent` instead of `Agent`
 - Uses `Runner` class explicitly (outdated)
 - `agent_tool` import path might be wrong
@@ -267,17 +288,20 @@ travel_planner/
 - Should use `adk web` approach
 
 **Revised Concept**: Code Review System
+
 - Coordinator agent (LLM-driven delegation)
 - Specialist agents (correctness, style, security)
 - Mix of AgentTool and SequentialAgent patterns
 
 **Key Learning Points**:
+
 - `AgentTool` for agent-as-tool
 - Coordinator pattern
 - LLM-driven delegation vs workflow agents
 - When to use each pattern
 
 **Modernization Needed**:
+
 - Update to `Agent` class
 - Fix import paths
 - Use `root_agent` naming
@@ -288,6 +312,7 @@ travel_planner/
 
 **Concept**: Iterative refinement until condition met
 **Real-World Example**: Essay Editor
+
 - Write → Check quality → Revise (loop until score > 8/10)
 - Agent 1: Draft essay
 - Agent 2: Score quality (1-10)
@@ -295,12 +320,14 @@ travel_planner/
 - Loop until score ≥ 8 or max 3 iterations
 
 **Key Learning Points**:
+
 - `LoopAgent` usage
 - Stopping conditions
 - Max iterations
 - Iterative improvement patterns
 
 **Code Structure**:
+
 ```
 essay_editor/
   __init__.py
@@ -312,18 +339,21 @@ essay_editor/
 
 **Concept**: Persist data across sessions
 **Real-World Example**: Personal Tutor
+
 - Remembers user's progress
 - Tracks topics covered
 - Adapts difficulty based on history
 - Session state vs long-term memory
 
 **Key Learning Points**:
+
 - Session state basics
 - Memory service usage
 - `temp:` namespace
 - State keys and access patterns
 
 **Research Needed**:
+
 - Memory API from https://google.github.io/adk-docs/sessions/memory/
 - Session service patterns
 - State management best practices
@@ -332,18 +362,21 @@ essay_editor/
 
 **Concept**: Control flow and monitoring
 **Real-World Example**: Content Moderation Agent
+
 - Before callbacks: Check for inappropriate requests
 - After callbacks: Log all tool calls
 - Guardrails: Block certain actions
 - Monitoring: Track usage patterns
 
 **Key Learning Points**:
+
 - Callback types (before/after)
 - Guardrail patterns
 - Request validation
 - Response filtering
 
 **Research Needed**:
+
 - Callback API from https://google.github.io/adk-docs/callbacks/
 - Callback patterns doc
 - Security best practices
@@ -352,18 +385,21 @@ essay_editor/
 
 **Concept**: Systematically test agent quality
 **Real-World Example**: Customer Service Agent Testing
+
 - Create test cases (evalset.json)
 - Run automated evaluations
 - Measure quality metrics
 - Iterate and improve
 
 **Key Learning Points**:
+
 - Evaluation framework
 - Test set creation
 - Metrics (tool trajectory, response quality)
 - CI/CD integration
 
 **Research Needed**:
+
 - Eval framework from https://google.github.io/adk-docs/evaluate/
 - Metric definitions
 - Best practices for test coverage
@@ -371,6 +407,7 @@ essay_editor/
 ## Tutorial Quality Standards
 
 Each tutorial MUST have:
+
 1. **Clear real-world use case** - No toy examples
 2. **Complete runnable code** - Copy-paste ready
 3. **Modern ADK patterns** - Agent class, adk web, etc.
@@ -385,18 +422,20 @@ Each tutorial MUST have:
 ## Implementation Priority
 
 **Next Actions**:
+
 1. Complete Tutorial 03 (OpenAPI) - IN PROGRESS
 2. Create Tutorials 04 (Sequential) - Use blog pipeline example
 3. Create Tutorials 05 (Parallel) - Use travel planner example
 4. Modernize Tutorial 06 (Multi-Agent) - Fix outdated patterns
 5. Create Tutorial 07 (Loop) - Research Loop Agent API first
-6. Create Tutorial 08 (State/Memory) - Research Memory API first  
+6. Create Tutorial 08 (State/Memory) - Research Memory API first
 7. Create Tutorial 09 (Callbacks) - Research Callback API first
 8. Create Tutorial 10 (Evaluation) - Research Eval framework first
 
 ## Research Tasks for Advanced Tutorials
 
 Research completed:
+
 - [x] Loop Agent documentation and examples ✅
 - [x] Memory service API and patterns ✅
 - [x] Callback system documentation ✅
@@ -409,6 +448,7 @@ Research completed:
 ## Value Proposition
 
 These tutorials will be THE BEST ADK tutorials available because:
+
 - ✅ Most up-to-date (Oct 2025 patterns)
 - ✅ Real-world practical examples
 - ✅ Complete working code
@@ -417,6 +457,7 @@ These tutorials will be THE BEST ADK tutorials available because:
 - ✅ Tested and verified patterns
 - ✅ Clear learning objectives
 - ✅ Production-ready practices
+
 # Thoughts
 
 Brainstorming ideas for tutorials.
@@ -592,6 +633,7 @@ By the end of the series, readers should be able to:
 ### ✅ COMPLETED TUTORIALS (6/10)
 
 **Tutorial 01: Hello World** - COMPLETE & MODERNIZED ✅
+
 - Modern Agent class (not LlmAgent)
 - adk web approach (not Runner)
 - gemini-2.0-flash model
@@ -599,6 +641,7 @@ By the end of the series, readers should be able to:
 - Events tab debugging
 
 **Tutorial 02: Function Tools** - COMPLETE & MODERNIZED ✅
+
 - Finance calculator example
 - Three practical tools: compound_interest, loan_payment, monthly_savings
 - Tool auto-registration pattern
@@ -606,6 +649,7 @@ By the end of the series, readers should be able to:
 - Comprehensive troubleshooting
 
 **Tutorial 04: Sequential Workflows** - COMPLETE ✅
+
 - Blog post generator pipeline
 - 4-agent sequence: research → write → edit → format
 - output_key and {key} injection pattern
@@ -613,6 +657,7 @@ By the end of the series, readers should be able to:
 - Real-world content creation use case
 
 **Tutorial 05: Parallel Processing** - COMPLETE ✅
+
 - Travel planner with fan-out/gather
 - 3 parallel search agents (flights, hotels, activities)
 - ParallelAgent + SequentialAgent combination
@@ -620,6 +665,7 @@ By the end of the series, readers should be able to:
 - Concurrent execution demonstration
 
 **Tutorial 06: Multi-Agent Systems** - COMPLETE & MODERNIZED ✅
+
 - Content publishing system
 - Nested orchestration: 3 parallel pipelines inside sequential
 - Each pipeline has 2 sequential agents (fetch → process)
@@ -627,6 +673,7 @@ By the end of the series, readers should be able to:
 - Sophisticated real-world architecture
 
 **Tutorial 07: Loop Agents** - COMPLETE ✅
+
 - Essay refinement system
 - Critic → Refiner iterative loop
 - exit_loop tool for early termination
@@ -635,6 +682,7 @@ By the end of the series, readers should be able to:
 - Quality improvement through iteration
 
 **Tutorial 08: State & Memory** - COMPLETE ✅
+
 - Personal learning tutor system
 - State prefixes: none, user:, app:, temp:
 - 6 tools demonstrating all prefix types
@@ -643,6 +691,7 @@ By the end of the series, readers should be able to:
 - 650+ lines of comprehensive content
 
 **Tutorial 09: Callbacks & Guardrails** - COMPLETE ✅
+
 - Content moderation assistant
 - All 6 callback types implemented
 - Guardrails (blocked words, safety instructions)
@@ -652,6 +701,7 @@ By the end of the series, readers should be able to:
 - 1100+ lines of comprehensive content
 
 **Tutorial 10: Evaluation & Testing** - COMPLETE ✅
+
 - Customer support agent testing system
 - Test files (.test.json) and evalsets (.evalset.json)
 - Pytest integration for CI/CD
@@ -662,6 +712,7 @@ By the end of the series, readers should be able to:
 - 700+ lines of comprehensive content
 
 **Tutorial 03: OpenAPI Tools** - COMPLETE ✅
+
 - Chuck Norris API with OpenAPIToolset
 - Complete OpenAPI specification example
 - Auto-generated tools demonstration
@@ -674,6 +725,7 @@ By the end of the series, readers should be able to:
 ## 🎉 MISSION COMPLETE: 100% OF TUTORIAL SERIES FINISHED!
 
 **ALL 10 TUTORIALS COMPLETED:**
+
 1. ✅ Hello World Agent (438 lines)
 2. ✅ Function Tools (437 lines)
 3. ✅ OpenAPI Tools (730 lines)
@@ -708,6 +760,7 @@ By the end of the series, readers should be able to:
 ### 🎓 Value Delivered
 
 These tutorials represent **THE most comprehensive, modern, and practical ADK tutorial series available**:
+
 - ✅ Based on official Google ADK docs
 - ✅ October 2025 patterns (most current)
 - ✅ Real-world use cases (not toy examples)
@@ -731,6 +784,7 @@ These tutorials represent **THE most comprehensive, modern, and practical ADK tu
 > "You are missing Events, Artifacts, Observability, Grounding, Built-in planners, Thinking configuration, Streaming, Bidi-streaming (Live API), Built-in tools (Google Search, Code Execution, Google Maps, etc.), Running Agents, MCP, A2A, Agent Config (YAML-based), Flash 2.5, Image generation/multimodal, all the advanced features."
 
 **User emphasized:**
+
 - "This is an exception high stake mission"
 - "You must take it very seriously and work non stop"
 - "Research/adk-python source code is the source of truth and must seek the truth"
@@ -739,11 +793,13 @@ These tutorials represent **THE most comprehensive, modern, and practical ADK tu
 ### Deep Source Code Research - COMPLETED ✅
 
 **Semantic searches executed (3 comprehensive queries):**
+
 1. Events, artifacts, observability, grounding, planners, thinking, streaming
 2. Grounding tools, code execution, image generation, multimodal, MCP, A2A
 3. YAML config, deployment, models, Flash 2.5, production patterns
 
 **Research Results: 90+ code excerpts retrieved from:**
+
 - `google/adk/planners/` (BuiltInPlanner, PlanReActPlanner, BasePlanner)
 - `google/adk/tools/` (google_search, google_maps, enterprise_web_search, MCP)
 - `google/adk/code_executors/` (BuiltInCodeExecutor)
@@ -756,6 +812,7 @@ These tutorials represent **THE most comprehensive, modern, and practical ADK tu
 ### Missing Features Identified (15+ Critical Gaps)
 
 **1. Built-in Tools & Grounding**
+
 - google_search (GoogleSearchTool) - Gemini 2.0+ web grounding
 - GoogleSearchAgentTool - Workaround wrapper for limitations
 - google_maps_grounding (GoogleMapsGroundingTool)
@@ -764,24 +821,28 @@ These tutorials represent **THE most comprehensive, modern, and practical ADK tu
 - **Impact**: HIGH - Core production capability for current information
 
 **2. Built-in Planners**
+
 - BuiltInPlanner with ThinkingConfig
 - PlanReActPlanner (structured plan → reason → act)
 - BasePlanner for custom planners
 - **Impact**: HIGH - Advanced reasoning and planning
 
 **3. Thinking Configuration**
+
 - types.ThinkingConfig with include_thoughts flag
 - Extended reasoning for complex problems
 - Gemini 2.0+ only
 - **Impact**: MEDIUM - Quality improvement for hard tasks
 
 **4. Code Execution**
+
 - BuiltInCodeExecutor for Gemini 2.0+
 - Model executes Python internally
 - types.Tool(code_execution=...)
 - **Impact**: HIGH - Critical for data analysis, calculations
 
 **5. Streaming (SSE)**
+
 - StreamingMode.SSE for server-sent events
 - Progressive response generation
 - RunConfig configuration
@@ -789,6 +850,7 @@ These tutorials represent **THE most comprehensive, modern, and practical ADK tu
 - **Impact**: HIGH - Essential for user experience
 
 **6. Live API (Bidirectional Streaming)**
+
 - StreamingMode.BIDI for bidirectional
 - LiveRequestQueue for stream management
 - Audio input/output with transcription
@@ -799,6 +861,7 @@ These tutorials represent **THE most comprehensive, modern, and practical ADK tu
 - **Impact**: VERY HIGH - Voice assistants, real-time interactions
 
 **7. MCP (Model Context Protocol)**
+
 - MCPToolset for MCP server integration
 - StdioConnectionParams for stdio servers
 - Session pooling and management
@@ -806,6 +869,7 @@ These tutorials represent **THE most comprehensive, modern, and practical ADK tu
 - **Impact**: HIGH - Ecosystem integration, standardized tools
 
 **8. A2A (Agent-to-Agent)**
+
 - RemoteA2aAgent for calling remote agents
 - AGENT_CARD_WELL_KNOWN_PATH discovery
 - Authentication between agents
@@ -813,6 +877,7 @@ These tutorials represent **THE most comprehensive, modern, and practical ADK tu
 - **Impact**: HIGH - Microservices, distributed agents
 
 **9. Events System**
+
 - Event class extending LlmResponse
 - EventActions: state_delta, artifact_delta, transfer_to_agent, escalate
 - Event tracking for conversation history
@@ -820,12 +885,14 @@ These tutorials represent **THE most comprehensive, modern, and practical ADK tu
 - **Impact**: MEDIUM - Observability and debugging
 
 **10. Artifacts (File Handling)**
+
 - save_artifact, load_artifact, list_artifacts
 - Version tracking with artifact_delta
 - Binary data handling
 - **Impact**: HIGH - File operations, document processing
 
 **11. Agent Configuration (YAML)**
+
 - YAML-based agent configuration
 - root_agent.yaml structure
 - AgentConfig, LlmAgentConfig classes
@@ -833,6 +900,7 @@ These tutorials represent **THE most comprehensive, modern, and practical ADK tu
 - **Impact**: MEDIUM - Alternative to code-first, easier for non-devs
 
 **12. Image Generation & Multimodal**
+
 - Image generation via Vertex AI (Imagen)
 - types.Part with inline_data, file_data
 - Blob handling with mime types
@@ -842,6 +910,7 @@ These tutorials represent **THE most comprehensive, modern, and practical ADK tu
 - **Impact**: HIGH - Visual content, multimodal AI
 
 **13. Advanced RunConfig**
+
 - speech_config for audio
 - response_modalities for output types
 - support_cfc (Compositional Function Calling)
@@ -852,6 +921,7 @@ These tutorials represent **THE most comprehensive, modern, and practical ADK tu
 - **Impact**: HIGH - Advanced configuration for production
 
 **14. Production Deployment**
+
 - adk api_server for FastAPI
 - adk deploy cloud_run
 - adk deploy agent_engine (Vertex AI)
@@ -861,6 +931,7 @@ These tutorials represent **THE most comprehensive, modern, and practical ADK tu
 - **Impact**: VERY HIGH - Deployment is essential for production
 
 **15. Advanced Observability**
+
 - Plugin system for monitoring
 - Event tracking throughout execution
 - Trace view (Event/Request/Response/Graph tabs)
@@ -868,6 +939,7 @@ These tutorials represent **THE most comprehensive, modern, and practical ADK tu
 - **Impact**: HIGH - Production monitoring and debugging
 
 **16. Model Selection Guide**
+
 - gemini-2.5-flash vs 2.0-flash
 - Model capabilities matrix
 - Feature compatibility
@@ -879,6 +951,7 @@ These tutorials represent **THE most comprehensive, modern, and practical ADK tu
 **STRATEGY: Option B - Create New Specialized Tutorials (11-25)**
 
 **Rationale:**
+
 1. ✅ Better organization - each tutorial focused on major feature
 2. ✅ Easier maintenance - update individual features independently
 3. ✅ Clearer learning path - users can skip what they don't need
@@ -887,12 +960,14 @@ These tutorials represent **THE most comprehensive, modern, and practical ADK tu
 6. ✅ Scalable - can add more tutorials for future features
 
 **NOT CHOSEN:**
+
 - ❌ Option A (Update existing) - Would bloat tutorials, mix concerns
 - ❌ Option C (Hybrid) - More complex, less consistent
 
 ### New Tutorial Series Plan (Phase 2)
 
 **Tutorial 11: Built-in Tools & Grounding** - 🔴 NOT STARTED
+
 - google_search usage and setup
 - GoogleSearchAgentTool workaround
 - google_maps_grounding for locations
@@ -902,6 +977,7 @@ These tutorials represent **THE most comprehensive, modern, and practical ADK tu
 - **Estimated**: 800 lines
 
 **Tutorial 12: Planners & Thinking** - 🔴 NOT STARTED
+
 - BuiltInPlanner with ThinkingConfig
 - PlanReActPlanner structured reasoning
 - Plan → Reasoning → Action flow
@@ -910,6 +986,7 @@ These tutorials represent **THE most comprehensive, modern, and practical ADK tu
 - **Estimated**: 700 lines
 
 **Tutorial 13: Code Execution** - 🔴 NOT STARTED
+
 - BuiltInCodeExecutor setup
 - Python code generation and execution
 - Code execution patterns and limitations
@@ -917,6 +994,7 @@ These tutorials represent **THE most comprehensive, modern, and practical ADK tu
 - **Estimated**: 600 lines
 
 **Tutorial 14: Streaming (SSE)** - 🔴 NOT STARTED
+
 - StreamingMode.SSE configuration
 - Progressive response generation
 - Event streaming patterns
@@ -925,6 +1003,7 @@ These tutorials represent **THE most comprehensive, modern, and practical ADK tu
 - **Estimated**: 800 lines
 
 **Tutorial 15: Live API & Audio** - 🔴 NOT STARTED
+
 - StreamingMode.BIDI bidirectional streaming
 - LiveRequestQueue management
 - Audio input/output with transcription
@@ -935,6 +1014,7 @@ These tutorials represent **THE most comprehensive, modern, and practical ADK tu
 - **Estimated**: 900 lines
 
 **Tutorial 16: MCP Integration** - 🔴 NOT STARTED
+
 - MCPToolset setup with StdioConnectionParams
 - Filesystem server example
 - Session pooling and management
@@ -943,6 +1023,7 @@ These tutorials represent **THE most comprehensive, modern, and practical ADK tu
 - **Estimated**: 750 lines
 
 **Tutorial 17: Agent-to-Agent (A2A)** - 🔴 NOT STARTED
+
 - RemoteA2aAgent configuration
 - Agent discovery (AGENT_CARD_WELL_KNOWN_PATH)
 - Authentication between agents
@@ -951,6 +1032,7 @@ These tutorials represent **THE most comprehensive, modern, and practical ADK tu
 - **Estimated**: 700 lines
 
 **Tutorial 18: Events & Observability** - 🔴 NOT STARTED
+
 - Event class and EventActions
 - state_delta, artifact_delta usage
 - transfer_to_agent, escalate patterns
@@ -960,6 +1042,7 @@ These tutorials represent **THE most comprehensive, modern, and practical ADK tu
 - **Estimated**: 800 lines
 
 **Tutorial 19: Artifacts & File Handling** - 🔴 NOT STARTED
+
 - save_artifact, load_artifact, list_artifacts
 - Artifact versioning
 - Binary data handling
@@ -968,6 +1051,7 @@ These tutorials represent **THE most comprehensive, modern, and practical ADK tu
 - **Estimated**: 700 lines
 
 **Tutorial 20: Agent Configuration (YAML)** - 🔴 NOT STARTED
+
 - YAML-based agent config structure
 - Alternative to Python code
 - Config file best practices
@@ -976,6 +1060,7 @@ These tutorials represent **THE most comprehensive, modern, and practical ADK tu
 - **Estimated**: 600 lines
 
 **Tutorial 21: Multimodal & Image Generation** - 🔴 NOT STARTED
+
 - Image generation via Vertex AI (Imagen)
 - types.Part with inline_data, file_data
 - Blob handling with mime types
@@ -985,6 +1070,7 @@ These tutorials represent **THE most comprehensive, modern, and practical ADK tu
 - **Estimated**: 800 lines
 
 **Tutorial 22: Model Selection Guide** - 🔴 NOT STARTED
+
 - gemini-2.5-flash vs 2.0-flash
 - Model capabilities matrix
 - Feature compatibility
@@ -994,6 +1080,7 @@ These tutorials represent **THE most comprehensive, modern, and practical ADK tu
 - **Estimated**: 600 lines
 
 **Tutorial 23: Production Deployment** - 🔴 NOT STARTED
+
 - adk api_server for FastAPI
 - adk deploy cloud_run
 - adk deploy agent_engine (Vertex AI)
@@ -1005,6 +1092,7 @@ These tutorials represent **THE most comprehensive, modern, and practical ADK tu
 - **Estimated**: 900 lines
 
 **Tutorial 24: Advanced Observability** - 🔴 NOT STARTED
+
 - Plugin system for monitoring
 - Custom plugins
 - Metrics collection
@@ -1015,6 +1103,7 @@ These tutorials represent **THE most comprehensive, modern, and practical ADK tu
 - **Estimated**: 750 lines
 
 **Tutorial 25: Best Practices & Patterns** - 🔴 NOT STARTED
+
 - Architecture patterns summary
 - When to use which features
 - Performance optimization
@@ -1032,6 +1121,7 @@ These tutorials represent **THE most comprehensive, modern, and practical ADK tu
 **Combined Content**: 17,635+ lines (6,435 existing + 11,200 new)
 
 **Priority Order** (work non-stop):
+
 1. **Tutorial 11** (Built-in Tools) - Most critical production feature
 2. **Tutorial 12** (Planners) - Core reasoning capability
 3. **Tutorial 13** (Code Execution) - Essential for data work
@@ -1061,6 +1151,7 @@ These tutorials represent **THE most comprehensive, modern, and practical ADK tu
 ## Research Findings Integration:
 
 From adk-python source exploration:
+
 - Modern `Agent` class is in `google.adk.agents`
 - CLI tools are in `google.adk.cli`
 - Authentication uses environment variables
@@ -1068,12 +1159,14 @@ From adk-python source exploration:
 - FastAPI server is for production deployment
 
 From official docs:
+
 - Gemini 2.0 Flash is current recommended model
 - Events tab is critical debugging tool
 - Evaluation framework uses JSON test sets
 - Three deployment targets: Cloud Run, Vertex AI, GKE
 
 From agent-starter-pack:
+
 - Real examples use canonical structure
 - Tools return structured dicts with status
 - .env file is standard for configuration
@@ -1084,9 +1177,11 @@ From agent-starter-pack:
 ## 🔍 CRITICAL ADK DISCOVERY: Agent Discovery Convention (2025-10-08)
 
 ### Research Context
+
 During debugging of Tutorial 02, encountered persistent "Failed to load agents" error despite proper agent structure. Initial hypothesis was missing `__init__.py` or incorrect `root_agent` naming.
 
 ### Deep Investigation Process
+
 1. **Source Code Analysis**: Examined `research/adk-python/src/google/adk/cli/` for agent loading logic
 2. **Pattern Recognition**: Compared working Tutorial 01 vs failing Tutorial 02
 3. **Directory Structure Analysis**: Tested `adk web` from different locations
@@ -1097,18 +1192,20 @@ During debugging of Tutorial 02, encountered persistent "Failed to load agents" 
 **ADK Agent Discovery Rule**: `adk web` must be run from the **parent directory** containing agent subdirectories, not from within agent directories.
 
 **Correct Pattern**:
+
 ```
 tutorial02/           # ← Run `adk web` HERE
 ├── finance_assistant/  # Agent directory 1
 │   ├── __init__.py
 │   └── agent.py        # Contains root_agent
-├── parallel_demo/      # Agent directory 2  
+├── parallel_demo/      # Agent directory 2
 │   ├── __init__.py
 │   └── agent.py        # Contains root_agent
 └── Makefile
 ```
 
 **Incorrect Pattern** (causes "No agents found"):
+
 ```
 tutorial02/finance_assistant/  # ← Running `adk web` HERE fails
 ├── __init__.py
@@ -1116,45 +1213,58 @@ tutorial02/finance_assistant/  # ← Running `adk web` HERE fails
 ```
 
 ### Technical Root Cause
+
 ADK scans the current working directory for subdirectories containing `agent.py` files with `root_agent` variables. When run from within an agent directory, no subdirectories are found.
 
 ### Required Agent Structure (Per Directory)
+
 Each agent directory must have:
+
 1. **`__init__.py`** - Makes directory a Python package
 2. **`agent.py`** - Contains `root_agent = Agent(...)` variable
 3. **Proper imports** - Package-relative imports work
 
 ### Verification Results
+
 - ✅ `cd tutorial02 && adk web` → Finds both agents
 - ❌ `cd tutorial02/finance_assistant && adk web` → "No agents found"
 - ✅ Both agents load in ADK web UI dropdown
 - ✅ All agent functionality works correctly
 
 ### Impact on Tutorial Series
+
 **Critical Fix Applied**: Updated Tutorial 02 Makefile from:
+
 ```makefile
 dev: adk web  # ❌ Wrong - runs from agent directory
 ```
+
 To:
-```makefile  
+
+```makefile
 dev: cd finance_assistant && adk web  # ❌ Still wrong
 parallel-demo: cd parallel_demo && adk web  # ❌ Still wrong
 ```
+
 To:
+
 ```makefile
 dev: adk web  # ✅ Correct - runs from parent directory
 parallel-demo: adk web  # ✅ Correct - runs from parent directory
 ```
 
 ### Broader Implications
+
 This discovery affects **ALL ADK tutorials** - they must document running `adk web` from the correct directory. The convention is counter-intuitive but fundamental to ADK's agent discovery mechanism.
 
 ### Source Verification
+
 - **Confirmed in**: `research/adk-python/src/google/adk/cli/fast_api.py`
 - **Agent loading logic**: Scans subdirectories for `root_agent` variables
 - **Directory requirement**: Must be run from parent of agent folders
 
 ### Lesson Learned
+
 Never assume intuitive behavior with ADK. Always verify against source code. This "obvious" mistake blocked Tutorial 02 completion for hours until systematic investigation revealed the parent directory requirement.
 
 ---
@@ -1162,9 +1272,11 @@ Never assume intuitive behavior with ADK. Always verify against source code. Thi
 ## UI Integration Research Mission (2025-10-08)
 
 ### Mission Initiation
+
 **Directive**: "Create a new series tutorial about how to integrate Google ADK Agent in User interface"
 
 **High-Stakes Requirements**:
+
 - Extensive web research (Reddit, GitHub, Medium, dev blogs)
 - Version compatibility assessment (current ADK vs outdated examples)
 - Source code verification (`research/adk-python` as ground truth)
@@ -1173,8 +1285,9 @@ Never assume intuitive behavior with ADK. Always verify against source code. Thi
 - Document all findings in `./research/adk_ui_integration/`
 
 ### Target Integrations (User Specified)
+
 1. Google Cloud Pub/Sub messaging
-2. Next.js 15 applications  
+2. Next.js 15 applications
 3. React + Vite applications
 4. Streamlit applications
 5. AG-UI for sophisticated Agent UI interfaces
@@ -1183,6 +1296,7 @@ Never assume intuitive behavior with ADK. Always verify against source code. Thi
 ### Research Phase Strategy
 
 **Phase 1A: Source Code Investigation** 🔄 STARTING NOW
+
 - Explore `research/adk-python/src/google/adk/cli/` for server patterns
 - Examine FastAPI integration in `adk_web_server.py`
 - Study `api_server.py` for REST API patterns
@@ -1190,6 +1304,7 @@ Never assume intuitive behavior with ADK. Always verify against source code. Thi
 - Document all HTTP/WebSocket endpoints
 
 **Phase 1B: Official Documentation** ⏳ QUEUED
+
 - Fetch https://google.github.io/adk-docs/ main sections
 - Fetch deployment documentation
 - Fetch streaming documentation
@@ -1197,6 +1312,7 @@ Never assume intuitive behavior with ADK. Always verify against source code. Thi
 - Document current ADK version and features
 
 **Phase 1C: Web Research** ⏳ QUEUED
+
 - Search: "Google ADK Next.js integration 2024 2025"
 - Search: "Google ADK Pub/Sub example"
 - Search: "Google ADK Streamlit"
@@ -1206,12 +1322,14 @@ Never assume intuitive behavior with ADK. Always verify against source code. Thi
 - Document version mismatches
 
 **Phase 1D: Partner Verification** ⏳ QUEUED
+
 - Identify official Google partners
 - Fetch partner documentation
 - Verify AG-UI status (official partner?)
 - Document supported integrations
 
 ### Known ADK Integration Points
+
 - **FastAPI Server**: `adk api_server` provides REST API
 - **WebSocket Support**: Live API (StreamingMode.BIDI)
 - **HTTP Endpoints**: Standard request/response pattern
@@ -1220,10 +1338,12 @@ Never assume intuitive behavior with ADK. Always verify against source code. Thi
 - **Deployment**: Cloud Run, Vertex AI, GKE
 
 ### Preliminary Assessment
+
 **Likely Viable**: Pub/Sub, Next.js 15, React+Vite, Streamlit, Slack
 **Needs Verification**: AG-UI (is this a real framework?)
 
 ### Mission Commitment
+
 **Status**: ✅ INITIATED - Source code investigation starting
 **Timeline**: Continuous work until completion
 **Quality**: Only publish verified, working tutorials
@@ -1233,4 +1353,3 @@ Never assume intuitive behavior with ADK. Always verify against source code. Thi
 **Next Action**: Begin Phase 1A with ADK source code exploration
 
 ---
-

@@ -203,6 +203,7 @@ pytest tests/test_agent.py::TestVertexAIConditionalLogic::test_get_agent_capabil
 ### Manual Testing of Conditional Behavior
 
 **Test without VertexAI (default):**
+
 ```bash
 cd tutorial_implementation/tutorial11
 python -c "
@@ -214,6 +215,7 @@ print('Available tools:', len(get_available_grounding_tools()))
 ```
 
 **Test with VertexAI enabled:**
+
 ```bash
 cd tutorial_implementation/tutorial11
 GOOGLE_GENAI_USE_VERTEXAI=1 python -c "
@@ -245,15 +247,18 @@ tutorial11/
 ## 🎯 Key Features Demonstrated
 
 ### Web Grounding
+
 - Real-time web search integration
 - Current information access
 - Source citation and verification
 
 ### Tool Composition
+
 - Mixing built-in and custom tools
 - Multi-step research workflows
 
 ### Production Patterns
+
 - Error handling and validation
 - Structured tool responses
 - Research documentation and saving
@@ -414,15 +419,18 @@ sequenceDiagram
 ## 🚨 Important Notes
 
 ### Model Requirements
+
 - **Gemini 2.0+ required** for `google_search` tool
 - Older models (1.5, 1.0) will raise errors
 - Use `gemini-2.0-flash` for best performance/cost balance
 
 ### Tool Limitations
+
 - Built-in tools cannot be mixed directly with custom tools
 - Use separate agents for different tool combinations
 
 ### Security
+
 - Never commit `.env` files with real API keys
 - Use `.env.example` as template
 - Rotate keys regularly in production
@@ -430,12 +438,14 @@ sequenceDiagram
 ## 🐛 Troubleshooting
 
 ### "google_search requires Gemini 2.0+"
+
 ```bash
 # Fix: Use correct model
 agent = Agent(model='gemini-2.0-flash', tools=[google_search])
 ```
 
 ### Authentication Errors
+
 ```bash
 # Check your .env file or environment variables
 # Ensure GOOGLE_API_KEY or GOOGLE_APPLICATION_CREDENTIALS is set
@@ -456,20 +466,25 @@ This is part of the ADK Training repository. See the main [README](../../README.
 The diagrams above illustrate the sophisticated conditional architecture of this grounding agent:
 
 ### 🎯 Agent Selection Flow
+
 Shows how the system automatically chooses between basic and advanced agents based on VertexAI availability, ensuring optimal tool combinations for each environment.
 
-### 🏗️ Agent Hierarchy & Tool Composition  
+### 🏗️ Agent Hierarchy & Tool Composition
+
 Visualizes the relationship between agent types and their tool capabilities, making it clear how built-in tools (automatic) combine with custom tools (manual implementation).
 
 ### 🔄 Environment Detection Logic
+
 Demonstrates the decision-making process that determines which tools and capabilities are available, helping users understand the conditional logic behind the scenes.
 
 ### 🔄 Research Workflow
+
 Illustrates the complete research pipeline from user query through multiple tool interactions to final response, showing both the sequence and the different types of tools involved.
 
 ### 🎨 Design Philosophy
+
 - **Pastel Colors**: Professional yet pleasant color scheme with excellent contrast
-- **Clear Hierarchy**: Visual distinction between different components and states  
+- **Clear Hierarchy**: Visual distinction between different components and states
 - **Logical Flow**: Easy-to-follow progression through complex decision trees
 - **Accessibility**: High contrast ratios ensure readability for all users
 

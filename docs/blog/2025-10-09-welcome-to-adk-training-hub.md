@@ -4,20 +4,17 @@ title: Welcome to ADK Training Hub
 tags: [introduction, adk, training, ai, agents]
 ---
 
-Welcome to ADK Training Hub
-===========================
+# Welcome to ADK Training Hub
 
 Published: October 9, 2025
 
 Welcome to the ADK Training Hub - your comprehensive guide to mastering Google Agent Development Kit (ADK) and building production-ready AI agents from first principles.
 
-What is ADK Training Hub?
--------------------------
+## What is ADK Training Hub?
 
 This site serves as the definitive resource for developers, researchers, and organizations looking to master Google's Agent Development Kit. Whether you're just starting your journey into AI agent development or looking to scale production systems, this hub provides everything you need.
 
-Our Mission
------------
+## Our Mission
 
 To democratize access to advanced AI agent development by providing:
 
@@ -26,8 +23,7 @@ To democratize access to advanced AI agent development by providing:
 - **Working Code Examples**: Production-ready implementations with automated testing
 - **Research & Integration**: Real-world examples across multiple UI frameworks and deployment scenarios
 
-What You'll Learn
------------------
+## What You'll Learn
 
 ### Foundation Layer (Tutorials 01-03)
 
@@ -49,8 +45,7 @@ Explore cutting-edge capabilities like multimodal processing, streaming, and thi
 
 Connect your agents to modern web frameworks including Next.js, React, Streamlit, and enterprise messaging platforms.
 
-Key Features
-------------
+## Key Features
 
 - **34 Comprehensive Tutorials** with working implementations
 - **12 Completed Tutorials** featuring automated testing and production patterns
@@ -59,8 +54,7 @@ Key Features
 - **Production Deployment** guides for cloud platforms
 - **Research Repository** with ADK source code analysis
 
-Current Status
---------------
+## Current Status
 
 Completion: 12/34 tutorials implemented (35%)
 
@@ -72,23 +66,20 @@ All completed tutorials include:
 - ✅ Environment configuration
 - ✅ Documentation and examples
 
-Getting Started
----------------
+## Getting Started
 
 1. **Start with the Basics**: Begin with [Tutorial 01: Hello World Agent](/docs/tutorial/01_hello_world_agent)
 2. **Understand the Patterns**: Read the [Mental Models Overview](/docs/overview)
 3. **Follow the Learning Path**: Progress through tutorials in recommended order
 4. **Build Real Projects**: Use the working implementations as starting points
 
-Community & Resources
---------------------
+## Community & Resources
 
 - **GitHub Repository**: [raphaelmansuy/adk_training](https://github.com/raphaelmansuy/adk_training)
 - **Official ADK Documentation**: [google.github.io/adk-docs](https://google.github.io/adk-docs)
 - **Google AI Studio**: [makersuite.google.com](https://makersuite.google.com/app/apikey)
 
-Why ADK?
---------
+## Why ADK?
 
 Google Agent Development Kit represents a paradigm shift in AI development:
 
@@ -98,15 +89,13 @@ Google Agent Development Kit represents a paradigm shift in AI development:
 - **Rich Tool Ecosystem**: Extensive built-in tools and custom tool support
 - **State-of-the-Art Models**: Access to Google's latest AI models
 
-Join the Journey
-----------------
+## Join the Journey
 
 Whether you're building the next generation of AI applications or researching cutting-edge agent architectures, ADK Training Hub provides the knowledge and tools you need to succeed.
 
 **Ready to start building?** Head to the [tutorials section](/docs/tutorial/01_hello_world_agent) and begin your ADK journey today.
 
-About the Creator
------------------
+## About the Creator
 
 This project was created by **Raphaël MANSUY**, a Chief Technology Officer, Author, AI Strategist, and Data Engineering Expert based in Hong Kong SAR, China.
 
@@ -116,7 +105,6 @@ Raphaël serves as a consultant for prominent organizations including Quantmetry
 
 A thought leader in the AI community, Raphaël conducts daily reviews of AI research and shares insights with his 31,000 LinkedIn followers. He holds a Master's degree in Database and Artificial Intelligence from Université de Bourgogne and various certifications in machine learning and data science.
 
-
 ---
 
-*This site is maintained by the ADK Training Project community. Contributions, feedback, and collaboration are always welcome.*
+_This site is maintained by the ADK Training Project community. Contributions, feedback, and collaboration are always welcome._

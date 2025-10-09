@@ -159,17 +159,17 @@ Compare these three investment options:
 
 ## Development Commands
 
-| Command | Description |
-|---------|-------------|
-| `make setup` | Install dependencies and setup environment |
-| `make dev` | Start ADK development server (main agent) |
-| `make parallel-demo` | Start ADK dev server (parallel execution demo) |
-| `make test` | Run all tests |
-| `make test-unit` | Run unit tests only |
-| `make test-tools` | Test financial calculation functions |
-| `make test-integration` | Run integration tests |
-| `make clean` | Remove generated files |
-| `make help` | Show all available commands |
+| Command                 | Description                                    |
+| ----------------------- | ---------------------------------------------- |
+| `make setup`            | Install dependencies and setup environment     |
+| `make dev`              | Start ADK development server (main agent)      |
+| `make parallel-demo`    | Start ADK dev server (parallel execution demo) |
+| `make test`             | Run all tests                                  |
+| `make test-unit`        | Run unit tests only                            |
+| `make test-tools`       | Test financial calculation functions           |
+| `make test-integration` | Run integration tests                          |
+| `make clean`            | Remove generated files                         |
+| `make help`             | Show all available commands                    |
 
 ## Testing
 

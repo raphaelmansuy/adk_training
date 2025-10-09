@@ -5,11 +5,24 @@ description: "Build data science applications with Streamlit and ADK agents for 
 sidebar_label: "32. Streamlit ADK"
 sidebar_position: 32
 tags: ["ui", "streamlit", "python", "data-science", "dashboard"]
-keywords: ["streamlit", "python", "data science", "dashboard", "interactive", "data analysis"]
+keywords:
+  [
+    "streamlit",
+    "python",
+    "data science",
+    "dashboard",
+    "interactive",
+    "data analysis",
+  ]
 status: "draft"
 difficulty: "intermediate"
 estimated_time: "1.5 hours"
-prerequisites: ["Tutorial 01: Hello World Agent", "Python/Streamlit experience", "Data science basics"]
+prerequisites:
+  [
+    "Tutorial 01: Hello World Agent",
+    "Python/Streamlit experience",
+    "Data science basics",
+  ]
 learning_objectives:
   - "Create Streamlit applications with embedded ADK agents"
   - "Build interactive data analysis dashboards"
@@ -67,14 +80,14 @@ In this tutorial, you'll build a **smart data analysis assistant** using:
 
 ### Why Streamlit + ADK?
 
-| Feature | Benefit |
-|---------|---------|
-| **Pure Python** | No JavaScript, HTML, or CSS needed |
-| **Direct Integration** | No FastAPI/HTTP overhead - agent runs in-process |
-| **Rapid Prototyping** | Build data apps in minutes |
-| **Built-in Components** | Chat UI, file upload, charts out-of-the-box |
-| **Easy Deployment** | One command to Streamlit Cloud |
-| **Data Science Focus** | Perfect for pandas, plotly, ML workflows |
+| Feature                 | Benefit                                          |
+| ----------------------- | ------------------------------------------------ |
+| **Pure Python**         | No JavaScript, HTML, or CSS needed               |
+| **Direct Integration**  | No FastAPI/HTTP overhead - agent runs in-process |
+| **Rapid Prototyping**   | Build data apps in minutes                       |
+| **Built-in Components** | Chat UI, file upload, charts out-of-the-box      |
+| **Easy Deployment**     | One command to Streamlit Cloud                   |
+| **Data Science Focus**  | Perfect for pandas, plotly, ML workflows         |
 
 **When to use Streamlit + ADK:**
 
@@ -82,10 +95,10 @@ In this tutorial, you'll build a **smart data analysis assistant** using:
 ✅ Internal tools for data scientists  
 ✅ Quick prototypes and demos  
 ✅ Python-only teams  
-✅ ML model interfaces  
+✅ ML model interfaces
 
 ❌ Complex multi-page web apps → Use Next.js (Tutorial 30)  
-❌ High customization needs → Use React Vite (Tutorial 31)  
+❌ High customization needs → Use React Vite (Tutorial 31)
 
 ---
 
@@ -189,22 +202,22 @@ with st.sidebar:
         type=["csv"],
         help="Upload a CSV file to analyze"
     )
-    
+
     if uploaded_file is not None:
         try:
             df = pd.read_csv(uploaded_file)
             st.session_state.dataframe = df
             st.success(f"✅ Loaded {len(df)} rows, {len(df.columns)} columns")
-            
+
             # Show preview
             st.subheader("Data Preview")
             st.dataframe(df.head(10), use_container_width=True)
-            
+
             # Show info
             st.subheader("Dataset Info")
             st.write(f"**Shape:** {df.shape[0]} rows × {df.shape[1]} columns")
             st.write(f"**Columns:** {', '.join(df.columns.tolist())}")
-            
+
         except Exception as e:
             st.error(f"Error loading file: {e}")
 
@@ -217,10 +230,10 @@ for message in st.session_state.messages:
 if prompt := st.chat_input("Ask me about your data..."):
     # Add user message
     st.session_state.messages.append({"role": "user", "content": prompt})
-    
+
     with st.chat_message("user"):
         st.markdown(prompt)
-    
+
     # Prepare context about dataset
     context = ""
     if st.session_state.dataframe is not None:
@@ -237,7 +250,7 @@ Dataset available:
 """
     else:
         context = "No dataset uploaded yet. Ask the user to upload a CSV file."
-    
+
     # Build conversation history for agent
     history = []
     for msg in st.session_state.messages[:-1]:  # Exclude current message
@@ -245,12 +258,12 @@ Dataset available:
             role="user" if msg["role"] == "user" else "model",
             parts=[Part(text=msg["content"])]
         ))
-    
+
     # Generate response
     with st.chat_message("assistant"):
         message_placeholder = st.empty()
         full_response = ""
-        
+
         try:
             # System instruction
             system_instruction = f"""You are a helpful data analysis assistant.
@@ -271,7 +284,7 @@ Guidelines:
 - Suggest next analysis steps
 - Be friendly and encouraging
 """
-            
+
             # Generate response with streaming
             response = client.models.generate_content_stream(
                 model="gemini-2.0-flash-exp",
@@ -284,21 +297,21 @@ Guidelines:
                     temperature=0.7,
                 )
             )
-            
+
             # Stream response
             for chunk in response:
                 if chunk.text:
                     full_response += chunk.text
                     message_placeholder.markdown(full_response + "▌")
-            
+
             # Final message
             message_placeholder.markdown(full_response)
-            
+
         except Exception as e:
             st.error(f"Error generating response: {e}")
             full_response = "I encountered an error. Please try again."
             message_placeholder.markdown(full_response)
-        
+
         # Add assistant message to history
         st.session_state.messages.append({
             "role": "assistant",
@@ -333,6 +346,7 @@ streamlit run app.py
 **Open http://localhost:8501** - Your data analysis assistant is live! 📊
 
 **Try it:**
+
 1. Upload a CSV file (sales data, customer data, etc.)
 2. Ask: "What are the key insights from this data?"
 3. Ask: "Show me the top 5 values"
@@ -387,14 +401,14 @@ streamlit run app.py
 
 **Key Differences from Next.js/Vite:**
 
-| Aspect | Streamlit | Next.js/Vite |
-|--------|-----------|--------------|
-| **Architecture** | Single Python process | Frontend + Backend |
-| **Communication** | In-process function calls | HTTP/WebSocket |
-| **Latency** | ~0ms (in-process) | ~50-100ms (network) |
-| **Deployment** | Single service | Two services |
-| **Complexity** | Simple (1 file) | Medium (multiple files) |
-| **Use Case** | Data tools, internal apps | Production web apps |
+| Aspect            | Streamlit                 | Next.js/Vite            |
+| ----------------- | ------------------------- | ----------------------- |
+| **Architecture**  | Single Python process     | Frontend + Backend      |
+| **Communication** | In-process function calls | HTTP/WebSocket          |
+| **Latency**       | ~0ms (in-process)         | ~50-100ms (network)     |
+| **Deployment**    | Single service            | Two services            |
+| **Complexity**    | Simple (1 file)           | Medium (multiple files) |
+| **Use Case**      | Data tools, internal apps | Production web apps     |
 
 ---
 
@@ -416,6 +430,7 @@ st.session_state.dataframe = df
 **2. User sends message**: "What are the top 5 customers by revenue?"
 
 **3. Streamlit app**:
+
 ```python
 # Build context with dataset info
 context = f"""
@@ -435,6 +450,7 @@ response = client.models.generate_content_stream(
 ```
 
 **4. Gemini API**:
+
 ```text
 System: You are a data analyst. Dataset has columns: customer, revenue...
 User: What are the top 5 customers by revenue?
@@ -445,6 +461,7 @@ Model: Based on your data, the top 5 customers are:
 ```
 
 **5. Response streams back**:
+
 ```python
 # Stream chunks as they arrive
 for chunk in response:
@@ -502,24 +519,24 @@ client = get_client()
 def analyze_column(column_name: str, analysis_type: str) -> dict:
     """
     Analyze a specific column in the dataset.
-    
+
     Args:
         column_name: Name of the column to analyze
         analysis_type: Type of analysis (summary, distribution, top_values)
-        
+
     Returns:
         Dict with analysis results
     """
     if st.session_state.dataframe is None:
         return {"error": "No dataset loaded"}
-    
+
     df = st.session_state.dataframe
-    
+
     if column_name not in df.columns:
         return {"error": f"Column '{column_name}' not found"}
-    
+
     column = df[column_name]
-    
+
     if analysis_type == "summary":
         if pd.api.types.is_numeric_dtype(column):
             return {
@@ -540,7 +557,7 @@ def analyze_column(column_name: str, analysis_type: str) -> dict:
                 "unique": int(column.nunique()),
                 "most_common": str(column.mode()[0]) if len(column.mode()) > 0 else None
             }
-    
+
     elif analysis_type == "distribution":
         if pd.api.types.is_numeric_dtype(column):
             return {
@@ -559,7 +576,7 @@ def analyze_column(column_name: str, analysis_type: str) -> dict:
                 "column": column_name,
                 "distribution": {str(k): int(v) for k, v in value_counts.items()}
             }
-    
+
     elif analysis_type == "top_values":
         value_counts = column.value_counts().head(10)
         return {
@@ -569,36 +586,36 @@ def analyze_column(column_name: str, analysis_type: str) -> dict:
                 for k, v in value_counts.items()
             ]
         }
-    
+
     return {"error": "Unknown analysis type"}
 
 def calculate_correlation(column1: str, column2: str) -> dict:
     """
     Calculate correlation between two numeric columns.
-    
+
     Args:
         column1: First column name
         column2: Second column name
-        
+
     Returns:
         Dict with correlation coefficient
     """
     if st.session_state.dataframe is None:
         return {"error": "No dataset loaded"}
-    
+
     df = st.session_state.dataframe
-    
+
     if column1 not in df.columns or column2 not in df.columns:
         return {"error": "Column not found"}
-    
+
     col1 = df[column1]
     col2 = df[column2]
-    
+
     if not (pd.api.types.is_numeric_dtype(col1) and pd.api.types.is_numeric_dtype(col2)):
         return {"error": "Both columns must be numeric"}
-    
+
     correlation = col1.corr(col2)
-    
+
     return {
         "column1": column1,
         "column2": column2,
@@ -616,25 +633,25 @@ def calculate_correlation(column1: str, column2: str) -> dict:
 def filter_data(column_name: str, operator: str, value: str) -> dict:
     """
     Filter dataset by condition.
-    
+
     Args:
         column_name: Column to filter on
         operator: Comparison operator (equals, greater_than, less_than, contains)
         value: Value to compare against
-        
+
     Returns:
         Dict with filtered data summary
     """
     if st.session_state.dataframe is None:
         return {"error": "No dataset loaded"}
-    
+
     df = st.session_state.dataframe
-    
+
     if column_name not in df.columns:
         return {"error": f"Column '{column_name}' not found"}
-    
+
     column = df[column_name]
-    
+
     try:
         if operator == "equals":
             if pd.api.types.is_numeric_dtype(column):
@@ -649,19 +666,19 @@ def filter_data(column_name: str, operator: str, value: str) -> dict:
             mask = column.astype(str).str.contains(value, case=False, na=False)
         else:
             return {"error": "Unknown operator"}
-        
+
         filtered_df = df[mask]
-        
+
         # Store filtered data for visualization
         st.session_state.filtered_dataframe = filtered_df
-        
+
         return {
             "original_rows": len(df),
             "filtered_rows": len(filtered_df),
             "filter": f"{column_name} {operator} {value}",
             "sample": filtered_df.head(5).to_dict(orient="records")
         }
-    
+
     except Exception as e:
         return {"error": f"Filter error: {str(e)}"}
 
@@ -671,7 +688,7 @@ from google.adk.agents import Agent
 @st.cache_resource
 def get_agent():
     """Initialize ADK agent with data analysis tools (in-process execution)."""
-    
+
     agent = Agent(
         model="gemini-2.0-flash-exp",
         name="data_analysis_agent",
@@ -769,7 +786,7 @@ When the user asks about their data:
             }
         }
     )
-    
+
     return agent
 
 agent = get_agent()
@@ -803,33 +820,33 @@ with st.sidebar:
         type=["csv"],
         help="Upload a CSV file to analyze"
     )
-    
+
     if uploaded_file is not None:
         try:
             df = pd.read_csv(uploaded_file)
             st.session_state.dataframe = df
             st.success(f"✅ Loaded {len(df)} rows, {len(df.columns)} columns")
-            
+
             # Preview
             st.subheader("Data Preview")
             st.dataframe(df.head(5), use_container_width=True)
-            
+
             # Info
             st.subheader("Dataset Info")
             st.write(f"**Shape:** {df.shape[0]} rows × {df.shape[1]} columns")
-            
+
             # Column types
             numeric_cols = df.select_dtypes(include=['number']).columns.tolist()
             categorical_cols = df.select_dtypes(exclude=['number']).columns.tolist()
-            
+
             if numeric_cols:
                 st.write(f"**Numeric:** {', '.join(numeric_cols)}")
             if categorical_cols:
                 st.write(f"**Categorical:** {', '.join(categorical_cols)}")
-            
+
         except Exception as e:
             st.error(f"Error loading file: {e}")
-    
+
     # Example queries
     st.markdown("---")
     st.subheader("💡 Example Questions")
@@ -845,7 +862,7 @@ with st.sidebar:
 for message in st.session_state.messages:
     with st.chat_message(message["role"]):
         st.markdown(message["content"])
-        
+
         # Show visualizations if present
         if "chart" in message:
             st.plotly_chart(message["chart"], use_container_width=True)
@@ -854,10 +871,10 @@ for message in st.session_state.messages:
 if prompt := st.chat_input("Ask me about your data..."):
     # Add user message
     st.session_state.messages.append({"role": "user", "content": prompt})
-    
+
     with st.chat_message("user"):
         st.markdown(prompt)
-    
+
     # Check if dataset is loaded
     if st.session_state.dataframe is None:
         with st.chat_message("assistant"):
@@ -877,17 +894,17 @@ Dataset information:
 - Numeric columns: {', '.join(df.select_dtypes(include=['number']).columns.tolist())}
 - Categorical columns: {', '.join(df.select_dtypes(exclude=['number']).columns.tolist())}
 """
-        
+
         # Generate response with agent
         with st.chat_message("assistant"):
             message_placeholder = st.empty()
             full_response = ""
-            
+
             try:
                 # Proper ADK execution pattern
                 import asyncio
                 from google.genai import types
-                
+
                 events = asyncio.run(runner.run_async(
                     user_id='user1',
                     session_id='session1',
@@ -896,21 +913,21 @@ Dataset information:
                         role='user'
                     )
                 ))
-                
+
                 # Extract response text
                 full_response = ''.join([
-                    e.content.parts[0].text for e in events 
+                    e.content.parts[0].text for e in events
                     if hasattr(e, 'content') and hasattr(e.content, 'parts')
                 ])
-                
+
                 # Display response
                 message_placeholder.markdown(full_response)
-                
+
             except Exception as e:
                 st.error(f"Error: {e}")
                 full_response = "I encountered an error. Please try again."
                 message_placeholder.markdown(full_response)
-            
+
             # Add to history
             st.session_state.messages.append({
                 "role": "assistant",
@@ -921,6 +938,7 @@ Dataset information:
 **Test it:**
 
 Upload a sample CSV (e.g., sales data) and try:
+
 - "Analyze the revenue column"
 - "What's the correlation between price and quantity?"
 - "Show me orders with revenue greater than 1000"
@@ -937,40 +955,40 @@ Add chart generation:
 def create_chart(chart_type: str, column_x: str, column_y: str = None, title: str = None) -> dict:
     """
     Create a visualization chart.
-    
+
     Args:
         chart_type: Type of chart (bar, line, scatter, histogram, box)
         column_x: Column for x-axis
         column_y: Column for y-axis (optional for histogram)
         title: Chart title
-        
+
     Returns:
         Dict with chart data or error
     """
     if st.session_state.dataframe is None:
         return {"error": "No dataset loaded"}
-    
+
     df = st.session_state.dataframe
-    
+
     # Use filtered data if available
     if st.session_state.filtered_dataframe is not None:
         df = st.session_state.filtered_dataframe
-    
+
     try:
         if chart_type == "histogram":
             if column_x not in df.columns:
                 return {"error": f"Column '{column_x}' not found"}
-            
+
             fig = px.histogram(
                 df,
                 x=column_x,
                 title=title or f"Distribution of {column_x}"
             )
-            
+
         elif chart_type == "bar":
             if column_x not in df.columns:
                 return {"error": f"Column '{column_x}' not found"}
-            
+
             # Aggregate data for bar chart
             if column_y:
                 chart_data = df.groupby(column_x)[column_y].sum().reset_index()
@@ -988,14 +1006,14 @@ def create_chart(chart_type: str, column_x: str, column_y: str = None, title: st
                     title=title or f"Top 10 {column_x}",
                     labels={"x": column_x, "y": "Count"}
                 )
-        
+
         elif chart_type == "scatter":
             if not column_y:
                 return {"error": "Scatter plot requires both x and y columns"}
-            
+
             if column_x not in df.columns or column_y not in df.columns:
                 return {"error": "Column not found"}
-            
+
             fig = px.scatter(
                 df,
                 x=column_x,
@@ -1003,43 +1021,43 @@ def create_chart(chart_type: str, column_x: str, column_y: str = None, title: st
                 title=title or f"{column_y} vs {column_x}",
                 trendline="ols"
             )
-        
+
         elif chart_type == "box":
             if column_x not in df.columns:
                 return {"error": f"Column '{column_x}' not found"}
-            
+
             fig = px.box(
                 df,
                 y=column_x,
                 title=title or f"Distribution of {column_x}"
             )
-        
+
         elif chart_type == "line":
             if not column_y:
                 return {"error": "Line plot requires both x and y columns"}
-            
+
             if column_x not in df.columns or column_y not in df.columns:
                 return {"error": "Column not found"}
-            
+
             fig = px.line(
                 df,
                 x=column_x,
                 y=column_y,
                 title=title or f"{column_y} over {column_x}"
             )
-        
+
         else:
             return {"error": "Unknown chart type"}
-        
+
         # Store chart in session state for display
         st.session_state.last_chart = fig
-        
+
         return {
             "success": True,
             "chart_type": chart_type,
             "description": f"Created {chart_type} chart with {len(df)} data points"
         }
-    
+
     except Exception as e:
         return {"error": f"Chart error: {str(e)}"}
 
@@ -1084,7 +1102,7 @@ TOOLS = {
 for message in st.session_state.messages:
     with st.chat_message(message["role"]):
         st.markdown(message["content"])
-        
+
         # Check if chart should be displayed after this message
         if message["role"] == "assistant" and "last_chart" in st.session_state:
             st.plotly_chart(st.session_state.last_chart, use_container_width=True)
@@ -1093,6 +1111,7 @@ for message in st.session_state.messages:
 ```
 
 **Try it:**
+
 - "Create a histogram of the price column"
 - "Show me a scatter plot of price vs sales"
 - "Make a bar chart of revenue by category"
@@ -1118,20 +1137,20 @@ if "active_dataset" not in st.session_state:
 # Sidebar
 with st.sidebar:
     st.header("📁 Datasets")
-    
+
     # File uploader
     uploaded_file = st.file_uploader(
         "Upload CSV",
         type=["csv"],
         key="uploader"
     )
-    
+
     if uploaded_file is not None:
         dataset_name = st.text_input(
             "Dataset name",
             value=uploaded_file.name.replace(".csv", "")
         )
-        
+
         if st.button("Load Dataset"):
             try:
                 df = pd.read_csv(uploaded_file)
@@ -1141,7 +1160,7 @@ with st.sidebar:
                 st.rerun()
             except Exception as e:
                 st.error(f"Error: {e}")
-    
+
     # Dataset selector
     if st.session_state.datasets:
         st.subheader("Active Dataset")
@@ -1153,12 +1172,12 @@ with st.sidebar:
             ) if st.session_state.active_dataset else 0
         )
         st.session_state.active_dataset = active
-        
+
         # Show info about active dataset
         df = st.session_state.datasets[active]
         st.write(f"**Rows:** {len(df)}")
         st.write(f"**Columns:** {len(df.columns)}")
-        
+
         # Preview
         with st.expander("Preview"):
             st.dataframe(df.head(), use_container_width=True)
@@ -1187,7 +1206,7 @@ from datetime import datetime
 if st.session_state.messages:
     st.sidebar.markdown("---")
     st.sidebar.subheader("💾 Export")
-    
+
     if st.sidebar.button("Export Conversation"):
         # Create export data
         export_data = {
@@ -1195,10 +1214,10 @@ if st.session_state.messages:
             "dataset": st.session_state.active_dataset,
             "conversation": st.session_state.messages
         }
-        
+
         # Convert to JSON
         json_str = json.dumps(export_data, indent=2)
-        
+
         # Download button
         st.sidebar.download_button(
             label="Download JSON",
@@ -1206,12 +1225,12 @@ if st.session_state.messages:
             file_name=f"analysis_{datetime.now().strftime('%Y%m%d_%H%M%S')}.json",
             mime="application/json"
         )
-    
+
     # Export filtered data
     if st.session_state.filtered_dataframe is not None:
         if st.sidebar.button("Export Filtered Data"):
             csv = st.session_state.filtered_dataframe.to_csv(index=False)
-            
+
             st.sidebar.download_button(
                 label="Download CSV",
                 data=csv,
@@ -1251,11 +1270,11 @@ def create_cached_chart(chart_type, column_x, column_y, data_hash):
 # Use in tools
 def analyze_column(column_name, analysis_type):
     df = st.session_state.dataframe
-    
+
     # Use cached computation
     df_hash = hash(df.to_json())  # Simple hash for caching
     stats = compute_statistics(df_hash, column_name)
-    
+
     return stats
 ```
 
@@ -1406,7 +1425,7 @@ class RateLimiter:
         self.max_requests = max_requests
         self.window = window
         self.requests = defaultdict(list)
-    
+
     def is_allowed(self, user_id):
         now = time.time()
         # Clean old requests
@@ -1414,7 +1433,7 @@ class RateLimiter:
             req_time for req_time in self.requests[user_id]
             if now - req_time < self.window
         ]
-        
+
         if len(self.requests[user_id]) < self.max_requests:
             self.requests[user_id].append(now)
             return True
@@ -1426,11 +1445,11 @@ rate_limiter = RateLimiter(max_requests=20, window=60)
 if prompt := st.chat_input("Ask me..."):
     # Simple user ID (use actual auth in production)
     user_id = st.session_state.get("session_id", "default")
-    
+
     if not rate_limiter.is_allowed(user_id):
         st.error("Too many requests. Please wait a minute.")
         st.stop()
-    
+
     # ... process request
 ```
 
@@ -1451,7 +1470,7 @@ try:
     # Proper ADK execution pattern
     import asyncio
     from google.genai import types
-    
+
     events = asyncio.run(runner.run_async(
         user_id='user1',
         session_id='session1',
@@ -1462,7 +1481,7 @@ try:
 except Exception as e:
     logger.error(f"Agent error: {e}", exc_info=True)
     st.error("I encountered an error. Our team has been notified.")
-    
+
     # Don't expose internal errors to users
     if os.getenv("ENVIRONMENT") == "development":
         st.exception(e)
@@ -1478,13 +1497,13 @@ def log_metric(metric_name, value):
     """Log metric to Cloud Monitoring."""
     if os.getenv("ENVIRONMENT") != "production":
         return
-    
+
     client = monitoring_v3.MetricServiceClient()
     project_name = f"projects/{os.getenv('GCP_PROJECT')}"
-    
+
     series = monitoring_v3.TimeSeries()
     series.metric.type = f"custom.googleapis.com/{metric_name}"
-    
+
     now = time.time()
     seconds = int(now)
     nanos = int((now - seconds) * 10 ** 9)
@@ -1495,7 +1514,7 @@ def log_metric(metric_name, value):
         {"interval": interval, "value": {"double_value": value}}
     )
     series.points = [point]
-    
+
     client.create_time_series(name=project_name, time_series=[series])
 
 # Use in app
@@ -1545,7 +1564,7 @@ def load_session(session_id):
     """Load session from Firestore."""
     doc_ref = db.collection("sessions").document(session_id)
     doc = doc_ref.get()
-    
+
     if doc.exists:
         data = doc.to_dict()
         st.session_state.messages = data.get("messages", [])
@@ -1580,6 +1599,7 @@ echo 'GOOGLE_API_KEY = "your_key"' > .streamlit/secrets.toml
 **Issue 2: File Upload Not Working**
 
 **Symptoms**:
+
 - Upload button doesn't respond
 - File shows but data doesn't load
 
@@ -1606,6 +1626,7 @@ if uploaded_file is not None:
 **Issue 3: Agent Not Using Tools**
 
 **Symptoms**:
+
 - Agent responds generically
 - No function calls executed
 
@@ -1637,6 +1658,7 @@ TOOLS = {
 **Issue 4: Slow Chart Generation**
 
 **Symptoms**:
+
 - Charts take 5+ seconds to load
 - App feels laggy
 
@@ -1648,12 +1670,12 @@ TOOLS = {
 def create_cached_chart(chart_type, x_col, y_col, data_hash):
     """Cache expensive chart operations."""
     df = st.session_state.dataframe
-    
+
     if chart_type == "scatter":
         # Sample large datasets
         if len(df) > 10000:
             df = df.sample(n=10000)
-    
+
     fig = px.scatter(df, x=x_col, y=y_col)
     return fig
 
@@ -1668,6 +1690,7 @@ st.plotly_chart(fig)
 **Issue 5: Session State Lost on Refresh**
 
 **Symptoms**:
+
 - Conversation disappears on page refresh
 - Uploaded data is lost
 
@@ -1720,19 +1743,19 @@ You now know how to:
 ✅ Create interactive chat interfaces with Streamlit  
 ✅ Add data analysis tools and visualizations  
 ✅ Deploy to Streamlit Cloud and Cloud Run  
-✅ Optimize with caching and error handling  
+✅ Optimize with caching and error handling
 
 ### Compare Integration Approaches
 
-| Feature | Streamlit | Next.js | React Vite |
-|---------|-----------|---------|------------|
-| **Language** | Python only | TypeScript + Python | TypeScript + Python |
-| **Setup Time** | &lt;5 min | ~15 min | ~10 min |
-| **Architecture** | In-process | HTTP | HTTP |
-| **Latency** | ~0ms | ~50ms | ~50ms |
-| **Customization** | Medium | High | High |
-| **Data Tools** | Excellent | Good | Good |
-| **Best For** | Data apps | Web apps | Lightweight apps |
+| Feature           | Streamlit   | Next.js             | React Vite          |
+| ----------------- | ----------- | ------------------- | ------------------- |
+| **Language**      | Python only | TypeScript + Python | TypeScript + Python |
+| **Setup Time**    | &lt;5 min   | ~15 min             | ~10 min             |
+| **Architecture**  | In-process  | HTTP                | HTTP                |
+| **Latency**       | ~0ms        | ~50ms               | ~50ms               |
+| **Customization** | Medium      | High                | High                |
+| **Data Tools**    | Excellent   | Good                | Good                |
+| **Best For**      | Data apps   | Web apps            | Lightweight apps    |
 
 ### Continue Learning
 

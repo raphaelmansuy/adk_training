@@ -5,11 +5,24 @@ description: "Build comprehensive testing frameworks for agents including unit t
 sidebar_label: "10. Evaluation & Testing"
 sidebar_position: 10
 tags: ["intermediate", "testing", "evaluation", "qa", "metrics"]
-keywords: ["agent testing", "evaluation", "unit tests", "integration tests", "quality assurance", "metrics"]
+keywords:
+  [
+    "agent testing",
+    "evaluation",
+    "unit tests",
+    "integration tests",
+    "quality assurance",
+    "metrics",
+  ]
 status: "completed"
 difficulty: "intermediate"
 estimated_time: "1.5 hours"
-prerequisites: ["Tutorial 01: Hello World Agent", "Tutorial 02: Function Tools", "Basic pytest knowledge"]
+prerequisites:
+  [
+    "Tutorial 01: Hello World Agent",
+    "Tutorial 02: Function Tools",
+    "Basic pytest knowledge",
+  ]
 learning_objectives:
   - "Create comprehensive test suites for agents"
   - "Implement automated evaluation metrics"
@@ -87,7 +100,7 @@ graph TD
     C --> D[Response A]
     C --> E[Response B]
     C --> F[Response C]
-    
+
     style A fill:#e1f5fe,stroke:#01579b,stroke-width:2px
     style B fill:#f3e5f5,stroke:#4a148c,stroke-width:2px
     style C fill:#fff3e0,stroke:#e65100,stroke-width:2px
@@ -106,15 +119,15 @@ Agent evaluation assesses two critical dimensions:
 graph LR
     A[Agent Quality] --> B[Trajectory]
     A[Agent Quality] --> C[Response]
-    
+
     B --> D[Did agent call right tools?]
     B --> E[In correct sequence?]
     B --> F[With valid arguments?]
-    
+
     C --> G[Is answer accurate?]
     C --> H[Well-formatted?]
     C --> I[Matches expectations?]
-    
+
     style A fill:#e3f2fd,stroke:#0d47a1,stroke-width:3px
     style B fill:#f3e5f5,stroke:#4a148c,stroke-width:2px
     style C fill:#e8f5e8,stroke:#2e7d32,stroke-width:2px
@@ -131,16 +144,16 @@ graph LR
     B --> C[Capture Behavior]
     C --> D[Compare Results]
     D --> E{Pass/Fail}
-    
+
     A --> F[Expected Trajectory]
     A --> G[Expected Response]
-    
+
     C --> H[Actual Trajectory]
     C --> I[Actual Response]
-    
+
     H --> D
     I --> D
-    
+
     style A fill:#e1f5fe,stroke:#01579b,stroke-width:2px
     style B fill:#f3e5f5,stroke:#4a148c,stroke-width:2px
     style C fill:#fff3e0,stroke:#e65100,stroke-width:2px
@@ -1585,18 +1598,15 @@ adk web support_agent
    ```
 
 2. **Save as Eval Case**:
-
    - Name it: "test_password_reset"
    - Expected response: "To reset your password..."
 
 3. **Edit Eval Case**:
-
    - Add tool expectations
    - Set evaluation criteria
    - Save changes
 
 4. **Run Evaluation**:
-
    - Click "Start Evaluation"
    - View Pass/Fail results
 
@@ -1973,7 +1983,6 @@ Evaluates tool usage against custom criteria:
 └─────────────────────────────────────────────────────────────────────────────┘
 ```
 
-
 - **Comprehensive**: Tests both tool usage (trajectory) and response quality
 - **Realistic**: Uses actual Gemini API calls, not mocks
 - **Flexible**: Configurable thresholds for LLM variability
@@ -1984,23 +1993,19 @@ Evaluates tool usage against custom criteria:
 ## Key Takeaways
 
 1. **Two Dimensions of Quality**:
-
    - **Trajectory**: Did the agent call the right tools? (removed from our tests due to LLM variability)
    - **Response**: Is the answer good? (primary metric in our implementation)
 
 2. **Two Testing Approaches**:
-
    - **Unit Tests**: Mock data, deterministic, fast (19 tests)
    - **Evaluation Tests**: Real API calls, qualitative assessment (3 tests)
 
 3. **Three Execution Methods**:
-
    - **Pytest**: Automated, CI/CD ready
    - **CLI**: Quick manual testing
    - **Web UI**: Interactive debugging
 
 4. **Flexible Thresholds**:
-
    - Lower thresholds for LLM variability (0.3 vs 0.7)
    - Remove strict metrics that cause false failures
    - Focus on response quality over perfect trajectories

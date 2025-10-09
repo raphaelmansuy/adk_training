@@ -64,7 +64,7 @@ flowchart LR
     E --> B
     F --> B
     B --> G[Response]
-    
+
     style A fill:#FFE5E5,stroke:#FF6B6B,stroke-width:2px,color:#000
     style B fill:#E5F5FF,stroke:#4ECDC4,stroke-width:2px,color:#000
     style C fill:#FFF5E5,stroke:#FFB347,stroke-width:2px,color:#000

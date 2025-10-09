@@ -5,11 +5,24 @@ description: "Build modern chat interfaces using Next.js and CopilotKit to creat
 sidebar_label: "30. Next.js ADK Integration"
 sidebar_position: 30
 tags: ["ui", "nextjs", "react", "copilotkit", "chat-interface"]
-keywords: ["nextjs", "react", "copilotkit", "chat interface", "ui integration", "web interface"]
+keywords:
+  [
+    "nextjs",
+    "react",
+    "copilotkit",
+    "chat interface",
+    "ui integration",
+    "web interface",
+  ]
 status: "draft"
 difficulty: "intermediate"
 estimated_time: "2 hours"
-prerequisites: ["Tutorial 01: Hello World Agent", "React/Next.js experience", "Node.js setup"]
+prerequisites:
+  [
+    "Tutorial 01: Hello World Agent",
+    "React/Next.js experience",
+    "Node.js setup",
+  ]
 learning_objectives:
   - "Build Next.js chat interfaces with CopilotKit"
   - "Integrate ADK agents with React components"
@@ -67,13 +80,13 @@ In this tutorial, you'll build a **production-ready customer support chatbot** u
 
 ### Why Next.js 15 + ADK?
 
-| Feature | Benefit |
-|---------|---------|
+| Feature                   | Benefit                                         |
+| ------------------------- | ----------------------------------------------- |
 | **Next.js 15 App Router** | Server Components, streaming, optimized routing |
-| **CopilotKit/AG-UI** | Pre-built chat UI, type-safe integration |
-| **Google ADK** | Powerful agent framework with tool calling |
-| **Gemini 2.0 Flash** | Fast, cost-effective, state-of-the-art LLM |
-| **Vercel + Cloud Run** | Scalable, global deployment |
+| **CopilotKit/AG-UI**      | Pre-built chat UI, type-safe integration        |
+| **Google ADK**            | Powerful agent framework with tool calling      |
+| **Gemini 2.0 Flash**      | Fast, cost-effective, state-of-the-art LLM      |
+| **Vercel + Cloud Run**    | Scalable, global deployment                     |
 
 ---
 
@@ -222,10 +235,10 @@ load_dotenv()
 def search_knowledge_base(query: str) -> str:
     """
     Search the knowledge base for relevant information.
-    
+
     Args:
         query: Search query to find relevant articles
-        
+
     Returns:
         Formatted string with article title and content
     """
@@ -252,13 +265,13 @@ def search_knowledge_base(query: str) -> str:
                       "info at /account/billing. Cancel subscription anytime."
         }
     }
-    
+
     # Simple keyword matching - use vector search in production
     query_lower = query.lower()
     for key, article in knowledge_base.items():
         if key in query_lower:
             return f"**{article['title']}**\n\n{article['content']}"
-    
+
     # Default response
     return ("**General Support**\n\n"
             "Please contact our support team at support@company.com "
@@ -268,10 +281,10 @@ def search_knowledge_base(query: str) -> str:
 def lookup_order_status(order_id: str) -> str:
     """
     Look up the status of a customer order.
-    
+
     Args:
         order_id: The order ID to look up
-        
+
     Returns:
         Order status information
     """
@@ -281,7 +294,7 @@ def lookup_order_status(order_id: str) -> str:
         "ORD-67890": "Processing - Ships in 2-3 days",
         "ORD-11111": "Delivered on Jan 15, 2024"
     }
-    
+
     if order_id.upper() in orders:
         return f"Order {order_id}: {orders[order_id.upper()]}"
     return f"Order {order_id} not found. Please check the order ID and try again."
@@ -290,17 +303,17 @@ def lookup_order_status(order_id: str) -> str:
 def create_support_ticket(issue_description: str, priority: str = "normal") -> str:
     """
     Create a support ticket for complex issues.
-    
+
     Args:
         issue_description: Description of the customer's issue
         priority: Priority level (low, normal, high, urgent)
-        
+
     Returns:
         Ticket confirmation with ticket ID
     """
     import uuid
     ticket_id = f"TICKET-{uuid.uuid4().hex[:8].upper()}"
-    
+
     return (f"Support ticket created successfully!\n\n"
             f"**Ticket ID:** {ticket_id}\n"
             f"**Priority:** {priority}\n"
@@ -533,6 +546,7 @@ npm run dev
 **1. User sends message**: "What's your refund policy?"
 
 **2. Frontend** (`<CopilotChat>`):
+
 ```typescript
 // Message sent via WebSocket
 {
@@ -543,6 +557,7 @@ npm run dev
 ```
 
 **3. AG-UI Middleware** (ag_ui_adk):
+
 ```python
 # ADKAgent wraps your LlmAgent
 # Translates AG-UI Protocol → ADK format
@@ -552,6 +567,7 @@ npm run dev
 ```
 
 **4. ADK Agent**:
+
 ```python
 # Agent processes message
 # Decides to call search_knowledge_base tool
@@ -560,6 +576,7 @@ npm run dev
 ```
 
 **5. Gemini 2.0 Flash**:
+
 ```text
 System: You are a customer support agent...
 User: What's your refund policy?
@@ -569,6 +586,7 @@ Agent: "Our refund policy is...
 ```
 
 **6. Response streams back**:
+
 ```typescript
 // Frontend receives chunks
 {
@@ -599,10 +617,10 @@ Update `agent/agent.py`:
 def lookup_order_status(order_id: str) -> Dict[str, str]:
     """
     Look up the status of an order.
-    
+
     Args:
         order_id: The order ID to look up (format: ORD-XXXXX)
-        
+
     Returns:
         Dict with order status details
     """
@@ -621,9 +639,9 @@ def lookup_order_status(order_id: str) -> Dict[str, str]:
             "items": "1x Premium Kit"
         }
     }
-    
+
     order_id_upper = order_id.upper()
-    
+
     if order_id_upper in orders:
         return orders[order_id_upper]
     else:
@@ -682,6 +700,7 @@ app = create_copilotkit_runtime(
 User: "What's the status of my order ORD-12345?"
 
 Agent: "Your order ORD-12345 has been shipped! Here are the details:
+
 - Status: Shipped
 - Tracking: 1Z999AA10123456784
 - Estimated Delivery: October 12, 2025
@@ -706,17 +725,17 @@ def create_support_ticket(
 ) -> Dict[str, str]:
     """
     Create a support ticket for issues that need human attention.
-    
+
     Args:
         issue_type: Type of issue (billing, technical, account, other)
         description: Detailed description of the issue
         priority: Priority level (low, normal, high, urgent)
-        
+
     Returns:
         Dict with ticket ID and estimated response time
     """
     ticket_id = f"TKT-{uuid.uuid4().hex[:8].upper()}"
-    
+
     # Mock ticket creation - replace with real ticketing system API
     response_times = {
         "urgent": "1-2 hours",
@@ -724,7 +743,7 @@ def create_support_ticket(
         "normal": "12-24 hours",
         "low": "24-48 hours"
     }
-    
+
     return {
         "ticket_id": ticket_id,
         "status": "Created",
@@ -778,11 +797,12 @@ User: "My product stopped working after 2 months and warranty doesn't seem to co
 
 Agent: "I understand how frustrating that must be. Let me create a support ticket for our specialist team to review your warranty coverage.
 
-*Creates ticket TKT-A1B2C3D4*
+_Creates ticket TKT-A1B2C3D4_
 
 I've created ticket TKT-A1B2C3D4 for you with high priority. Our specialized support team will reach out within 4-6 hours to review your case and warranty details.
 
 In the meantime, have you tried:
+
 - Checking if firmware updates are available
 - Performing a factory reset (if applicable)
 
@@ -858,9 +878,9 @@ def create_product_card(product_id: str) -> Dict:
             "inStock": True
         }
     }
-    
+
     product = products.get(product_id, {})
-    
+
     # Return structured data for generative UI
     return {
         "component": "ProductCard",
@@ -987,11 +1007,11 @@ useCopilotAction({
     const confirmed = window.confirm(
       `Approve refund of $${amount} for order ${order_id}?\n\nReason: ${reason}`
     );
-    
+
     if (!confirmed) {
       return { status: "cancelled", message: "Refund cancelled by user" };
     }
-    
+
     // Process refund
     const result = await processRefund(order_id, amount, reason);
     return result;
@@ -1222,6 +1242,7 @@ async def global_exception_handler(request, exc):
 **Issue 1: WebSocket Connection Failed**
 
 **Symptoms**:
+
 - Chat doesn't load
 - Console error: "WebSocket connection failed"
 
@@ -1238,6 +1259,7 @@ async def global_exception_handler(request, exc):
 **Issue 2: Agent Not Responding**
 
 **Symptoms**:
+
 - Messages send but no response
 - Loading spinner forever
 
@@ -1259,6 +1281,7 @@ echo $GOOGLE_API_KEY  # Should show your key
 **Issue 3: CORS Errors in Production**
 
 **Symptoms**:
+
 - Works locally, fails in production
 - Browser console: "CORS policy blocked"
 
@@ -1283,6 +1306,7 @@ app.add_middleware(
 **Issue 4: Tools Not Working**
 
 **Symptoms**:
+
 - Agent doesn't call functions
 - Responses are generic
 
@@ -1308,6 +1332,7 @@ def search_knowledge_base(query):  # ❌ Missing type hint
 **Issue 5: Slow Responses**
 
 **Symptoms**:
+
 - Agent takes 10+ seconds to respond
 - Users complain about lag
 
@@ -1349,7 +1374,7 @@ You now know how to:
 ✅ Create custom tools and agents  
 ✅ Add generative UI and HITL  
 ✅ Deploy to Vercel + Cloud Run  
-✅ Monitor and troubleshoot  
+✅ Monitor and troubleshoot
 
 ### Continue Learning
 

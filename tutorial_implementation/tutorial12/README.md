@@ -118,24 +118,28 @@ tutorial12/
 ## Business Analysis Tools
 
 ### Market Analysis Tool
+
 ```python
 result = analyze_market("healthcare", "North America", tool_context)
 # Returns: growth_rate, competition, trends, opportunities, threats
 ```
 
 ### ROI Calculator Tool
+
 ```python
 result = calculate_roi(100000, 8.5, 5, tool_context)
 # Returns: final_value, total_profit, roi_percentage, annual_breakdown
 ```
 
 ### Risk Assessment Tool
+
 ```python
 result = assess_risk(["competition", "regulatory_changes"], tool_context)
 # Returns: risk_level, mitigation_suggestions, factor_scores
 ```
 
 ### Strategy Report Tool
+
 ```python
 result = await save_strategy_report(problem, strategy, tool_context)
 # Saves formatted markdown report with timestamp
@@ -144,6 +148,7 @@ result = await save_strategy_report(problem, strategy, tool_context)
 ## Example Usage
 
 ### Basic Strategic Analysis
+
 ```
 User: "Should we expand into the Asian healthcare market?"
 
@@ -160,6 +165,7 @@ Recommendation: Proceed with phased approach...
 ```
 
 ### Structured Planning Example
+
 ```
 User: "How should we mitigate cybersecurity risks?"
 
@@ -191,11 +197,13 @@ Implement comprehensive cybersecurity framework:
 ## Testing
 
 ### Run All Tests
+
 ```bash
 make test
 ```
 
 ### Test Coverage
+
 - **Import Tests**: Module loading and structure validation
 - **Tool Tests**: Individual tool functionality (25+ test cases)
 - **Agent Tests**: Planner configuration and agent setup
@@ -204,11 +212,13 @@ make test
 ### Test Categories
 
 #### Unit Tests
+
 - Tool input validation and error handling
 - Calculation accuracy (ROI, risk scores)
 - Data structure correctness
 
 #### Integration Tests
+
 - Multi-tool workflow execution
 - Error propagation handling
 - Planner comparison and validation
@@ -216,6 +226,7 @@ make test
 ## Configuration
 
 ### Environment Variables
+
 ```bash
 # Required
 GOOGLE_API_KEY=your_google_ai_api_key
@@ -227,6 +238,7 @@ GOOGLE_CLOUD_LOCATION=us-central1
 ```
 
 ### Model Configuration
+
 - **Model**: `gemini-2.0-flash` (supports thinking capabilities)
 - **Temperature**: 0.3-0.4 (balanced for strategic analysis)
 - **Max Tokens**: 3000 (sufficient for detailed analysis)
@@ -256,27 +268,33 @@ make clean         # Remove cache files and artifacts
 ### Common Issues
 
 #### "Planner not showing thinking"
+
 - Ensure using Gemini 2.0+ model
 - Check `ThinkingConfig(include_thoughts=True)` for BuiltInPlanner
 - Verify API key has access to thinking-enabled models
 
 #### "PlanReAct tags not appearing"
+
 - Check that PlanReActPlanner is properly instantiated
 - Ensure agent instruction doesn't override planning format
 - Try increasing temperature slightly for more structured output
 
 #### "Tool execution fails"
+
 - Verify tool functions are properly imported
 - Check tool context is passed correctly
 - Ensure async tools are awaited properly
 
 #### "Import errors"
+
 - Run `make setup` to install dependencies
 - Check Python path includes strategic_solver directory
 - Verify all required packages are installed
 
 ### Debug Mode
+
 Enable detailed logging by setting environment variable:
+
 ```bash
 export ADK_DEBUG=1
 ```
@@ -284,11 +302,13 @@ export ADK_DEBUG=1
 ## API Reference
 
 ### Planner Classes
+
 - `BuiltInPlanner(thinking_config)` - Native model thinking
 - `PlanReActPlanner()` - Structured planning workflow
 - `StrategicPlanner()` - Custom business strategy planner
 
 ### Tool Functions
+
 - `analyze_market(industry, region, context)` - Market research
 - `calculate_roi(investment, return_rate, years, context)` - Financial analysis
 - `assess_risk(factors, context)` - Risk evaluation
@@ -297,11 +317,13 @@ export ADK_DEBUG=1
 ## Performance Considerations
 
 ### Planner Overhead
+
 - **BuiltInPlanner**: 4-6s (thinking transparency)
 - **PlanReActPlanner**: 5-8s (structured workflow)
 - **StrategicPlanner**: 5-7s (domain-specific analysis)
 
 ### Optimization Tips
+
 - Use BuiltInPlanner for transparency needs
 - Choose PlanReActPlanner for complex structured problems
 - Reserve StrategicPlanner for business consulting scenarios
@@ -310,12 +332,14 @@ export ADK_DEBUG=1
 ## Contributing
 
 ### Adding New Tools
+
 1. Create tool function in `agent.py`
 2. Add comprehensive tests in `test_tools.py`
 3. Update agent tool lists
 4. Add documentation and examples
 
 ### Adding New Planners
+
 1. Extend `BasePlanner` class
 2. Implement `build_planning_instruction` and `process_planning_response`
 3. Add agent configuration

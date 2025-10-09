@@ -5,11 +5,23 @@ description: "Create voice-enabled agents using Gemini's Live API for real-time 
 sidebar_label: "15. Live API & Audio"
 sidebar_position: 15
 tags: ["advanced", "live-api", "audio", "voice", "real-time"]
-keywords: ["live api", "audio streaming", "voice interaction", "real-time conversation", "voice agents"]
+keywords:
+  [
+    "live api",
+    "audio streaming",
+    "voice interaction",
+    "real-time conversation",
+    "voice agents",
+  ]
 status: "draft"
 difficulty: "advanced"
 estimated_time: "2 hours"
-prerequisites: ["Tutorial 01: Hello World Agent", "Tutorial 14: Streaming & SSE", "Gemini 2.0+ Live API access"]
+prerequisites:
+  [
+    "Tutorial 01: Hello World Agent",
+    "Tutorial 14: Streaming & SSE",
+    "Gemini 2.0+ Live API access",
+  ]
 learning_objectives:
   - "Configure Gemini Live API for audio streaming"
   - "Build voice-enabled conversation agents"
@@ -23,12 +35,14 @@ implementation_link: "https://github.com/raphaelmansuy/adk_training/tree/main/tu
 **Goal**: Master the Live API for bidirectional streaming, enabling real-time voice conversations, audio input/output, and interactive multimodal experiences with your AI agents.
 
 **Prerequisites**:
+
 - Tutorial 01 (Hello World Agent)
 - Tutorial 14 (Streaming with SSE)
 - Basic understanding of async/await
 - Microphone access for audio examples
 
 **What You'll Learn**:
+
 - Implementing bidirectional streaming with `StreamingMode.BIDI`
 - Using `LiveRequestQueue` for real-time communication
 - Configuring audio input/output with speech recognition
@@ -46,6 +60,7 @@ implementation_link: "https://github.com/raphaelmansuy/adk_training/tree/main/tu
 Traditional agents are **turn-based** - send message, wait for complete response. The **Live API** enables **real-time, bidirectional** communication:
 
 **Turn-Based (Traditional)**:
+
 ```
 User speaks → [Complete audio uploaded]
               ↓
@@ -57,6 +72,7 @@ User speaks again...
 ```
 
 **Live API (Bidirectional)**:
+
 ```
 User speaks ⟷ Agent hears in real-time
               ⟷ Agent can interrupt
@@ -65,6 +81,7 @@ User speaks ⟷ Agent hears in real-time
 ```
 
 **Benefits**:
+
 - 🎙️ **Real-Time Audio**: Stream audio as you speak
 - 🗣️ **Natural Conversations**: Interruptions, turn-taking
 - 🎭 **Affective Dialog**: Emotion detection in voice
@@ -114,12 +131,12 @@ run_config = RunConfig(
 
 async def live_session():
     """Run live bidirectional session."""
-    
+
     # Create request queue for live communication
     queue = LiveRequestQueue()
-    
+
     runner = Runner()
-    
+
     # Start live session
     async for event in runner.run_live(queue, agent=agent, run_config=run_config):
         if event.content and event.content.parts:
@@ -134,18 +151,21 @@ asyncio.run(live_session())
 ### Live API Models
 
 **VertexAI API**:
+
 ```python
 # ✅ Vertex Live API model
 agent = Agent(model='gemini-2.0-flash-live-preview-04-09')
 ```
 
 **AI Studio API**:
+
 ```python
 # ✅ AI Studio Live API model
 agent = Agent(model='gemini-live-2.5-flash-preview')
 ```
 
 **Important**: Regular Gemini models don't support Live API:
+
 ```python
 # ❌ These DON'T support Live API
 agent = Agent(model='gemini-2.0-flash')  # Regular model
@@ -236,7 +256,7 @@ from google.genai import types
 
 run_config = RunConfig(
     streaming_mode=StreamingMode.BIDI,
-    
+
     # Audio input configuration
     speech_config=types.SpeechConfig(
         # Voice output configuration
@@ -245,7 +265,7 @@ run_config = RunConfig(
                 voice_name='Puck'  # Agent's voice
             )
         ),
-        
+
         # Optional: Audio transcription
         audio_transcription_config=types.AudioTranscriptionConfig(
             model='chirp',
@@ -253,7 +273,7 @@ run_config = RunConfig(
             language_codes=['en-US']
         )
     ),
-    
+
     # Response format
     response_modalities=['TEXT', 'AUDIO']  # Return both text and audio
 )
@@ -329,19 +349,19 @@ os.environ['GOOGLE_CLOUD_LOCATION'] = 'us-central1'
 
 class VoiceAssistant:
     """Real-time voice assistant using Live API."""
-    
+
     def __init__(self):
         """Initialize voice assistant."""
-        
+
         # Audio configuration
         self.chunk_size = 1024
         self.sample_rate = 16000
         self.channels = 1
         self.format = pyaudio.paInt16
-        
+
         # PyAudio instance
         self.audio = pyaudio.PyAudio()
-        
+
         # Create voice agent
         self.agent = Agent(
             model='gemini-2.0-flash-live-preview-04-09',
@@ -361,11 +381,11 @@ You are a helpful voice assistant. Guidelines:
                 max_output_tokens=150  # Concise for voice
             )
         )
-        
+
         # Configure live streaming with audio
         self.run_config = RunConfig(
             streaming_mode=StreamingMode.BIDI,
-            
+
             speech_config=types.SpeechConfig(
                 voice_config=types.VoiceConfig(
                     prebuilt_voice_config=types.PrebuiltVoiceConfig(
@@ -377,25 +397,25 @@ You are a helpful voice assistant. Guidelines:
                     language_codes=['en-US']
                 )
             ),
-            
+
             response_modalities=['TEXT', 'AUDIO']
         )
-        
+
         self.runner = Runner()
-    
+
     async def record_audio(self, duration_seconds: int = 5) -> bytes:
         """
         Record audio from microphone.
-        
+
         Args:
             duration_seconds: Recording duration
-            
+
         Returns:
             Audio data as bytes
         """
-        
+
         print(f"🎤 Recording for {duration_seconds} seconds...")
-        
+
         stream = self.audio.open(
             format=self.format,
             channels=self.channels,
@@ -403,50 +423,50 @@ You are a helpful voice assistant. Guidelines:
             input=True,
             frames_per_buffer=self.chunk_size
         )
-        
+
         frames = []
-        
+
         for _ in range(0, int(self.sample_rate / self.chunk_size * duration_seconds)):
             data = stream.read(self.chunk_size)
             frames.append(data)
-        
+
         stream.stop_stream()
         stream.close()
-        
+
         print("✅ Recording complete")
-        
+
         return b''.join(frames)
-    
+
     def play_audio(self, audio_data: bytes):
         """
         Play audio through speakers.
-        
+
         Args:
             audio_data: Audio bytes to play
         """
-        
+
         stream = self.audio.open(
             format=self.format,
             channels=self.channels,
             rate=self.sample_rate,
             output=True
         )
-        
+
         stream.write(audio_data)
         stream.stop_stream()
         stream.close()
-    
+
     async def conversation_turn(self, user_audio: bytes):
         """
         Execute one conversation turn.
-        
+
         Args:
             user_audio: User's audio input
         """
-        
+
         # Create queue
         queue = LiveRequestQueue()
-        
+
         # Send user audio
         queue.send_realtime(
             blob=types.Blob(
@@ -454,16 +474,16 @@ You are a helpful voice assistant. Guidelines:
                 mime_type='audio/pcm'
             )
         )
-        
+
         # Signal end of user input
         queue.send_end()
-        
+
         print("\n🤖 Agent responding...")
-        
+
         # Collect response
         text_response = []
         audio_response = []
-        
+
         async for event in self.runner.run_live(
             queue,
             agent=self.agent,
@@ -475,73 +495,73 @@ You are a helpful voice assistant. Guidelines:
                     if part.text:
                         text_response.append(part.text)
                         print(part.text, end='', flush=True)
-                    
+
                     # Audio response
                     if part.inline_data:
                         audio_response.append(part.inline_data.data)
-        
+
         print("\n")
-        
+
         # Play agent's audio response
         if audio_response:
             print("🔊 Playing response...")
             combined_audio = b''.join(audio_response)
             self.play_audio(combined_audio)
-    
+
     async def run_interactive(self):
         """Run interactive voice conversation."""
-        
+
         print("="*70)
         print("VOICE ASSISTANT - LIVE API")
         print("="*70)
         print("Press Enter to start recording, or 'quit' to exit")
         print("="*70)
-        
+
         try:
             while True:
                 command = input("\nPress Enter to speak (or 'quit'): ").strip()
-                
+
                 if command.lower() == 'quit':
                     print("Goodbye!")
                     break
-                
+
                 # Record user audio
                 user_audio = await self.record_audio(duration_seconds=5)
-                
+
                 # Process conversation turn
                 await self.conversation_turn(user_audio)
-        
+
         finally:
             self.audio.terminate()
-    
+
     async def run_demo(self):
         """Run demo with simulated audio."""
-        
+
         print("="*70)
         print("VOICE ASSISTANT DEMO")
         print("="*70)
-        
+
         # Demo messages (in production, these would be actual audio)
         demo_messages = [
             "Hello, what's the weather like today?",
             "Can you tell me a fun fact about space?",
             "Thank you, that's interesting!"
         ]
-        
+
         queue = LiveRequestQueue()
-        
+
         for message in demo_messages:
             print(f"\n🎤 User: {message}")
-            
+
             # Send as text (in production, send audio)
             queue.send_realtime(text=message)
-            
+
             await asyncio.sleep(0.5)
-        
+
         queue.send_end()
-        
+
         print("\n🤖 Agent:")
-        
+
         async for event in self.runner.run_live(
             queue,
             agent=self.agent,
@@ -551,18 +571,18 @@ You are a helpful voice assistant. Guidelines:
                 for part in event.content.parts:
                     if part.text:
                         print(part.text, end='', flush=True)
-        
+
         print("\n")
 
 
 async def main():
     """Main entry point."""
-    
+
     assistant = VoiceAssistant()
-    
+
     # Run demo (no microphone needed)
     await assistant.run_demo()
-    
+
     # Uncomment for interactive mode (requires microphone):
     # await assistant.run_interactive()
 
@@ -580,20 +600,20 @@ VOICE ASSISTANT DEMO
 
 🎤 User: Hello, what's the weather like today?
 
-🤖 Agent: Hello! I don't have access to real-time weather data, but I can help 
-you find that information. You could check weather.com or use a weather app on 
+🤖 Agent: Hello! I don't have access to real-time weather data, but I can help
+you find that information. You could check weather.com or use a weather app on
 your phone. What city are you interested in?
 
 🎤 User: Can you tell me a fun fact about space?
 
-🤖 Agent: Sure! Here's a cool one: One day on Venus is longer than one year on 
-Venus! Venus takes about 243 Earth days to rotate once on its axis, but only 
-about 225 Earth days to orbit the Sun. So a Venusian day is actually longer 
+🤖 Agent: Sure! Here's a cool one: One day on Venus is longer than one year on
+Venus! Venus takes about 243 Earth days to rotate once on its axis, but only
+about 225 Earth days to orbit the Sun. So a Venusian day is actually longer
 than a Venusian year. Pretty wild, right?
 
 🎤 User: Thank you, that's interesting!
 
-🤖 Agent: You're welcome! I'm glad you found it interesting. Feel free to ask 
+🤖 Agent: You're welcome! I'm glad you found it interesting. Feel free to ask
 if you'd like to know more fun facts about space or anything else!
 ```
 
@@ -610,12 +630,12 @@ from google.genai import types
 
 run_config = RunConfig(
     streaming_mode=StreamingMode.BIDI,
-    
+
     # Enable proactive responses
     proactivity=types.ProactivityConfig(
         threshold=0.7  # 0.0 to 1.0, higher = more proactive
     ),
-    
+
     speech_config=types.SpeechConfig(
         voice_config=types.VoiceConfig(
             prebuilt_voice_config=types.PrebuiltVoiceConfig(
@@ -636,10 +656,10 @@ Detect user emotions from voice:
 ```python
 run_config = RunConfig(
     streaming_mode=StreamingMode.BIDI,
-    
+
     # Enable emotion detection
     enable_affective_dialog=True,
-    
+
     speech_config=types.SpeechConfig(
         voice_config=types.VoiceConfig(
             prebuilt_voice_config=types.PrebuiltVoiceConfig(
@@ -668,14 +688,14 @@ queue = LiveRequestQueue()
 
 while True:
     ret, frame = cap.read()
-    
+
     if not ret:
         break
-    
+
     # Convert frame to bytes
     _, buffer = cv2.imencode('.jpg', frame)
     frame_bytes = buffer.tobytes()
-    
+
     # Send frame to agent
     queue.send_realtime(
         blob=types.Blob(
@@ -683,7 +703,7 @@ while True:
             mime_type='image/jpeg'
         )
     )
-    
+
     await asyncio.sleep(0.1)  # ~10 FPS
 
 queue.send_end()
@@ -746,14 +766,14 @@ run_config = RunConfig(
 
 async def multi_agent_voice():
     """Run multi-agent voice session."""
-    
+
     queue = LiveRequestQueue()
     runner = Runner()
-    
+
     # User speaks
     queue.send_realtime(text="Hello, I have a question about quantum computing")
     queue.send_end()
-    
+
     # Orchestrator coordinates agents
     async for event in runner.run_live(queue, agent=orchestrator, run_config=run_config):
         if event.content and event.content.parts:
@@ -869,6 +889,7 @@ run_config = RunConfig(
 **Problem**: Using non-Live API model
 
 **Solution**:
+
 ```python
 # ❌ Wrong model
 agent = Agent(model='gemini-2.0-flash')
@@ -886,6 +907,7 @@ agent = Agent(model='gemini-live-2.5-flash-preview')  # AI Studio
 **Solutions**:
 
 1. **Set response modalities**:
+
 ```python
 run_config = RunConfig(
     streaming_mode=StreamingMode.BIDI,
@@ -895,6 +917,7 @@ run_config = RunConfig(
 ```
 
 2. **Configure voice**:
+
 ```python
 speech_config=types.SpeechConfig(
     voice_config=types.VoiceConfig(
@@ -910,6 +933,7 @@ speech_config=types.SpeechConfig(
 **Problem**: Queue not properly closed
 
 **Solution**:
+
 ```python
 # ✅ Always send_end()
 queue = LiveRequestQueue()
@@ -924,6 +948,7 @@ queue.send_end()  # Important!
 You've mastered the Live API for real-time voice interactions:
 
 **Key Takeaways**:
+
 - ✅ `StreamingMode.BIDI` enables bidirectional streaming
 - ✅ `LiveRequestQueue` manages real-time communication
 - ✅ Audio input/output with `speech_config`
@@ -934,6 +959,7 @@ You've mastered the Live API for real-time voice interactions:
 - ✅ Live API models: `gemini-2.0-flash-live-preview-04-09` (Vertex), `gemini-live-2.5-flash-preview` (AI Studio)
 
 **Production Checklist**:
+
 - [ ] Using Live API compatible model
 - [ ] `StreamingMode.BIDI` configured
 - [ ] Speech config with voice selection
@@ -944,11 +970,13 @@ You've mastered the Live API for real-time voice interactions:
 - [ ] Testing with actual audio devices
 
 **Next Steps**:
+
 - **Tutorial 16**: Learn MCP Integration for extended tool ecosystem
 - **Tutorial 17**: Implement Agent-to-Agent (A2A) communication
 - **Tutorial 18**: Master Events & Observability
 
 **Resources**:
+
 - [Live API Documentation](https://cloud.google.com/vertex-ai/generative-ai/docs/model-reference/gemini-live)
 - [Audio Configuration Guide](https://cloud.google.com/vertex-ai/generative-ai/docs/speech)
 - [Sample: live_bidi_streaming_single_agent](research/adk-python/contributing/samples/live_bidi_streaming_single_agent/)

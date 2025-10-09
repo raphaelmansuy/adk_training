@@ -206,6 +206,7 @@ limitations under the License.
 The Apache 2.0 License is a permissive free software license that allows you to:
 
 ### ✅ **You CAN:**
+
 - Use the code for any purpose, including commercial use
 - Modify the code and create derivative works
 - Distribute the original or modified code
@@ -213,12 +214,14 @@ The Apache 2.0 License is a permissive free software license that allows you to:
 - Use the code in proprietary software
 
 ### 📋 **You MUST:**
+
 - Include the original copyright notice
 - Include the full license text in your distributions
 - State any changes you made to the original code
 - Include the original NOTICE file (if applicable)
 
 ### ❌ **You CANNOT:**
+
 - Use the project name or contributors' names to endorse your work
 - Hold the contributors liable for damages
 - Use any trademarks belonging to the contributors
@@ -238,6 +241,7 @@ Please review the individual licenses of any dependencies you use in your own pr
 ## Questions
 
 If you have questions about licensing or usage rights, please:
+
 1. Review the full license text above
 2. Consult with legal counsel if needed
 3. Open an issue on [GitHub](https://github.com/raphaelmansuy/adk_training) for clarification

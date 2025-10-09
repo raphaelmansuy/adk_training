@@ -5,11 +5,20 @@ description: "Create fast, modern React applications with Vite and CopilotKit fo
 sidebar_label: "31. React Vite ADK"
 sidebar_position: 31
 tags: ["ui", "react", "vite", "copilotkit", "fast-development"]
-keywords: ["react", "vite", "copilotkit", "fast development", "modern ui", "agent interface"]
+keywords:
+  [
+    "react",
+    "vite",
+    "copilotkit",
+    "fast development",
+    "modern ui",
+    "agent interface",
+  ]
 status: "draft"
 difficulty: "intermediate"
 estimated_time: "1.5 hours"
-prerequisites: ["Tutorial 30: Next.js ADK Integration", "React experience", "Node.js setup"]
+prerequisites:
+  ["Tutorial 30: Next.js ADK Integration", "React experience", "Node.js setup"]
 learning_objectives:
   - "Set up Vite-based React applications with ADK"
   - "Optimize build performance with Vite"
@@ -73,7 +82,7 @@ In this tutorial, you'll build a **real-time data analysis dashboard** using:
 ✅ Implement generative UI for charts  
 ✅ Handle file uploads and processing  
 ✅ Deploy to production (Netlify or Vercel)  
-✅ Compare Vite vs Next.js approaches  
+✅ Compare Vite vs Next.js approaches
 
 ---
 
@@ -81,17 +90,18 @@ In this tutorial, you'll build a **real-time data analysis dashboard** using:
 
 ### Vite Advantages
 
-| Feature | Benefit |
-|---------|---------|
-| **⚡ Instant Server Start** | Sub-second cold starts vs Next.js `3-5s` |
-| **🔥 Lightning HMR** | Updates in &lt;50ms, no page refresh |
-| **📦 Optimized Build** | Smaller bundle sizes (50-70% of Next.js) |
-| **🎯 Simple Config** | Single vite.config.js vs Next.js complexity |
-| **🚀 Fast CI/CD** | 2x-5x faster build times |
+| Feature                     | Benefit                                     |
+| --------------------------- | ------------------------------------------- |
+| **⚡ Instant Server Start** | Sub-second cold starts vs Next.js `3-5s`    |
+| **🔥 Lightning HMR**        | Updates in &lt;50ms, no page refresh        |
+| **📦 Optimized Build**      | Smaller bundle sizes (50-70% of Next.js)    |
+| **🎯 Simple Config**        | Single vite.config.js vs Next.js complexity |
+| **🚀 Fast CI/CD**           | 2x-5x faster build times                    |
 
 ### When to Choose Vite
 
 **Choose Vite** when you need:
+
 - 🏃 Fast prototyping and development
 - 📱 Single-page applications (SPAs)
 - 🎨 Interactive dashboards and tools
@@ -99,6 +109,7 @@ In this tutorial, you'll build a **real-time data analysis dashboard** using:
 - ⚙️ Simple deployment (static hosting)
 
 **Choose Next.js** when you need:
+
 - 🔍 SEO optimization (server-side rendering)
 - 📄 Multi-page routing with App Router
 - 🌐 Edge functions and middleware
@@ -133,6 +144,7 @@ In this tutorial, you'll build a **real-time data analysis dashboard** using:
 ```
 
 **Key Difference from Next.js**:
+
 - Vite uses **proxy configuration** instead of API routes
 - Backend runs separately (same as Next.js pattern)
 - Frontend is pure SPA (no server-side rendering)
@@ -164,8 +176,8 @@ npm install
 Update `vite.config.ts`:
 
 ```typescript
-import { defineConfig } from 'vite'
-import react from '@vitejs/plugin-react'
+import { defineConfig } from "vite";
+import react from "@vitejs/plugin-react";
 
 // https://vitejs.dev/config/
 export default defineConfig({
@@ -174,17 +186,18 @@ export default defineConfig({
     port: 5173,
     proxy: {
       // Proxy API requests to backend
-      '/api': {
-        target: 'http://localhost:8000',
+      "/api": {
+        target: "http://localhost:8000",
         changeOrigin: true,
-        rewrite: (path) => path.replace(/^\/api/, '')
-      }
-    }
-  }
-})
+        rewrite: (path) => path.replace(/^\/api/, ""),
+      },
+    },
+  },
+});
 ```
 
 **What this does**:
+
 - Requests to `http://localhost:5173/api/copilotkit` → `http://localhost:8000/copilotkit`
 - Avoids CORS issues during development
 - Clean separation of concerns
@@ -209,7 +222,7 @@ import uvicorn
 # AG-UI ADK integration imports
 from ag_ui_adk import ADKAgent, add_adk_fastapi_endpoint
 
-# Google ADK imports  
+# Google ADK imports
 from google.adk.agents import Agent
 
 load_dotenv()
@@ -220,21 +233,21 @@ uploaded_data = {}
 def load_csv_data(file_name: str, csv_content: str) -> Dict[str, Any]:
     """
     Load CSV data into memory for analysis.
-    
+
     Args:
         file_name: Name of the CSV file
         csv_content: CSV file content as string
-        
+
     Returns:
         Dict with dataset info and preview
     """
     try:
         # Parse CSV
         df = pd.read_csv(io.StringIO(csv_content))
-        
+
         # Store in memory
         uploaded_data[file_name] = df
-        
+
         # Return summary
         return {
             "status": "success",
@@ -257,41 +270,41 @@ def analyze_data(
 ) -> Dict[str, Any]:
     """
     Perform analysis on loaded dataset.
-    
+
     Args:
         file_name: Name of dataset to analyze
         analysis_type: Type of analysis (summary, correlation, trend)
         columns: Optional list of columns to analyze
-        
+
     Returns:
         Dict with analysis results
     """
     if file_name not in uploaded_data:
         return {"status": "error", "error": f"Dataset {file_name} not found"}
-    
+
     df = uploaded_data[file_name]
-    
+
     if columns:
         df = df[columns]
-    
+
     results = {
         "status": "success",
         "file_name": file_name,
         "analysis_type": analysis_type
     }
-    
+
     if analysis_type == "summary":
         results["data"] = {
             "describe": df.describe().to_dict(),
             "missing": df.isnull().sum().to_dict(),
             "unique": df.nunique().to_dict()
         }
-    
+
     elif analysis_type == "correlation":
         # Only numeric columns
         numeric_df = df.select_dtypes(include=['number'])
         results["data"] = numeric_df.corr().to_dict()
-    
+
     elif analysis_type == "trend":
         # Time series analysis
         if len(df) > 0:
@@ -300,7 +313,7 @@ def analyze_data(
                 "mean": numeric_df.mean().to_dict(),
                 "trend": "upward" if numeric_df.iloc[-1].sum() > numeric_df.iloc[0].sum() else "downward"
             }
-    
+
     return results
 
 def create_chart(
@@ -311,24 +324,24 @@ def create_chart(
 ) -> Dict[str, Any]:
     """
     Generate chart data for visualization.
-    
+
     Args:
         file_name: Name of dataset
         chart_type: Type of chart (line, bar, scatter)
         x_column: Column for x-axis
         y_column: Column for y-axis
-        
+
     Returns:
         Dict with chart configuration
     """
     if file_name not in uploaded_data:
         return {"status": "error", "error": f"Dataset {file_name} not found"}
-    
+
     df = uploaded_data[file_name]
-    
+
     if x_column not in df.columns or y_column not in df.columns:
         return {"status": "error", "error": "Invalid columns"}
-    
+
     # Prepare chart data
     chart_data = {
         "status": "success",
@@ -343,7 +356,7 @@ def create_chart(
             "title": f"{y_column} vs {x_column}"
         }
     }
-    
+
     return chart_data
 
 # Create ADK agent using the new API
@@ -459,7 +472,7 @@ function App() {
     reader.onload = async (e) => {
       const content = e.target?.result as string
       setUploadedFile(file.name)
-      
+
       // File content will be passed to agent via chat
       console.log(`Loaded ${file.name}: ${content.length} bytes`)
     }
@@ -601,6 +614,7 @@ npm run dev
 **Open http://localhost:5173** - Your data analysis dashboard is live! 🎉
 
 **Try it**:
+
 1. Upload a CSV file (sales data, etc.)
 2. Ask: "What are the key statistics?"
 3. Ask: "Show me a chart of sales over time"
@@ -862,20 +876,20 @@ const exportAnalysis = () => {
 Share dashboard state across users:
 
 ```typescript
-import { useCopilotReadable } from "@copilotkit/react-core"
+import { useCopilotReadable } from "@copilotkit/react-core";
 
 function App() {
   const [sharedState, setSharedState] = useState({
     uploadedFiles: [],
     currentAnalysis: null,
-    collaborators: []
-  })
+    collaborators: [],
+  });
 
   // Make state readable by agent
   useCopilotReadable({
     description: "Current dashboard state",
-    value: sharedState
-  })
+    value: sharedState,
+  });
 
   // Agent can now see what files are loaded, what analysis is active, etc.
 }
@@ -886,7 +900,7 @@ function App() {
 Persist analysis history:
 
 ```typescript
-const [analysisHistory, setAnalysisHistory] = useState<Analysis[]>([])
+const [analysisHistory, setAnalysisHistory] = useState<Analysis[]>([]);
 
 useCopilotAction({
   name: "save_analysis",
@@ -895,15 +909,18 @@ useCopilotAction({
     {
       name: "analysis",
       type: "object",
-      description: "Analysis results to save"
-    }
+      description: "Analysis results to save",
+    },
   ],
   handler: async ({ analysis }) => {
-    setAnalysisHistory(prev => [...prev, analysis])
-    localStorage.setItem('analysis_history', JSON.stringify([...analysisHistory, analysis]))
-    return { status: "saved" }
-  }
-})
+    setAnalysisHistory((prev) => [...prev, analysis]);
+    localStorage.setItem(
+      "analysis_history",
+      JSON.stringify([...analysisHistory, analysis]),
+    );
+    return { status: "saved" };
+  },
+});
 ```
 
 ### Feature 3: Multi-File Analysis
@@ -918,13 +935,13 @@ def compare_datasets(
 ) -> Dict[str, Any]:
     """Compare metric across multiple datasets."""
     comparison = {}
-    
+
     for name in file_names:
         if name in uploaded_data:
             df = uploaded_data[name]
             if metric in df.columns:
                 comparison[name] = df[metric].mean()
-    
+
     return {
         "status": "success",
         "comparison": comparison,
@@ -967,8 +984,8 @@ Create `src/config.ts`:
 
 ```typescript
 export const API_URL = import.meta.env.PROD
-  ? 'https://data-analysis-agent-xyz.run.app'
-  : '/api'
+  ? "https://data-analysis-agent-xyz.run.app"
+  : "/api";
 ```
 
 Update `src/App.tsx`:
@@ -1024,30 +1041,31 @@ vercel --prod
 
 ### Development Experience
 
-| Aspect | Vite | Next.js 15 |
-|--------|------|------------|
-| **Cold Start** | &lt;1s | 3-5s |
-| **HMR Speed** | &lt;50ms | 200-500ms |
-| **Build Time** | 10-30s | 30-120s |
-| **Bundle Size** | 100-200KB | 200-400KB |
-| **Config** | Simple | Complex |
+| Aspect          | Vite      | Next.js 15 |
+| --------------- | --------- | ---------- |
+| **Cold Start**  | &lt;1s    | 3-5s       |
+| **HMR Speed**   | &lt;50ms  | 200-500ms  |
+| **Build Time**  | 10-30s    | 30-120s    |
+| **Bundle Size** | 100-200KB | 200-400KB  |
+| **Config**      | Simple    | Complex    |
 
 ### Feature Comparison
 
-| Feature | Vite | Next.js 15 |
-|---------|------|------------|
-| **SPA Support** | ✅ Native | ✅ Via export |
-| **SSR** | ⚠️ Manual (Vite SSR) | ✅ Built-in |
-| **API Routes** | ❌ Proxy only | ✅ Full support |
-| **File Routing** | ❌ Manual | ✅ Built-in |
-| **Image Optimization** | ❌ Manual | ✅ Built-in |
-| **Middleware** | ❌ None | ✅ Edge runtime |
-| **Static Export** | ✅ Native | ✅ Built-in |
-| **Hot Reload** | ✅ Lightning fast | ✅ Good |
+| Feature                | Vite                 | Next.js 15      |
+| ---------------------- | -------------------- | --------------- |
+| **SPA Support**        | ✅ Native            | ✅ Via export   |
+| **SSR**                | ⚠️ Manual (Vite SSR) | ✅ Built-in     |
+| **API Routes**         | ❌ Proxy only        | ✅ Full support |
+| **File Routing**       | ❌ Manual            | ✅ Built-in     |
+| **Image Optimization** | ❌ Manual            | ✅ Built-in     |
+| **Middleware**         | ❌ None              | ✅ Edge runtime |
+| **Static Export**      | ✅ Native            | ✅ Built-in     |
+| **Hot Reload**         | ✅ Lightning fast    | ✅ Good         |
 
 ### When to Use Each
 
 **Use Vite** for:
+
 - ⚡ Prototypes and MVPs
 - 🎨 Dashboards and admin panels
 - 📊 Data visualization tools
@@ -1056,6 +1074,7 @@ vercel --prod
 - 🚀 Fast iteration needed
 
 **Use Next.js** for:
+
 - 🔍 SEO-critical sites
 - 📄 Multi-page websites
 - 🌐 Public-facing apps
@@ -1066,6 +1085,7 @@ vercel --prod
 ### Code Comparison
 
 **Vite** (Simple):
+
 ```typescript
 // Single file, straightforward
 import { CopilotKit } from "@copilotkit/react-core"
@@ -1076,6 +1096,7 @@ import { CopilotKit } from "@copilotkit/react-core"
 ```
 
 **Next.js** (Structured):
+
 ```typescript
 // app/layout.tsx - Layout wrapper
 // app/page.tsx - Main page
@@ -1091,6 +1112,7 @@ import { CopilotKit } from "@copilotkit/react-core"
 ### Issue 1: Proxy Not Working
 
 **Symptoms**:
+
 - 404 errors on `/api/copilotkit`
 - Agent not receiving requests
 
@@ -1101,20 +1123,20 @@ import { CopilotKit } from "@copilotkit/react-core"
 export default defineConfig({
   server: {
     proxy: {
-      '/api': {
-        target: 'http://localhost:8000',
+      "/api": {
+        target: "http://localhost:8000",
         changeOrigin: true,
-        rewrite: (path) => path.replace(/^\/api/, ''),
+        rewrite: (path) => path.replace(/^\/api/, ""),
         configure: (proxy, options) => {
           // Log proxy requests for debugging
-          proxy.on('proxyReq', (proxyReq, req, res) => {
-            console.log('Proxying:', req.method, req.url, '→', proxyReq.path)
-          })
-        }
-      }
-    }
-  }
-})
+          proxy.on("proxyReq", (proxyReq, req, res) => {
+            console.log("Proxying:", req.method, req.url, "→", proxyReq.path);
+          });
+        },
+      },
+    },
+  },
+});
 ```
 
 ---
@@ -1122,6 +1144,7 @@ export default defineConfig({
 ### Issue 2: CORS in Production
 
 **Symptoms**:
+
 - Works locally, fails in production
 - CORS errors in browser console
 
@@ -1149,6 +1172,7 @@ app.add_middleware(
 ### Issue 3: Large File Upload Issues
 
 **Symptoms**:
+
 - Upload fails for files >1MB
 - Timeout errors
 
@@ -1183,6 +1207,7 @@ uvicorn.run(
 ### Issue 4: Chart Not Rendering
 
 **Symptoms**:
+
 - Chart data received but nothing displays
 - Console errors about Chart.js
 
@@ -1200,7 +1225,7 @@ import {
   Title,
   Tooltip,
   Legend,
-} from 'chart.js'
+} from "chart.js";
 
 // MUST register before using
 ChartJS.register(
@@ -1211,8 +1236,8 @@ ChartJS.register(
   BarElement,
   Title,
   Tooltip,
-  Legend
-)
+  Legend,
+);
 ```
 
 ---
@@ -1228,7 +1253,7 @@ You now know how to:
 ✅ Implement generative UI with Chart.js  
 ✅ Handle file uploads and processing  
 ✅ Deploy to Netlify or Vercel  
-✅ Compare Vite vs Next.js approaches  
+✅ Compare Vite vs Next.js approaches
 
 ### Continue Learning
 

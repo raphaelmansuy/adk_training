@@ -5,7 +5,14 @@ description: "Manage agent state and memory across conversations using session, 
 sidebar_label: "08. State & Memory"
 sidebar_position: 8
 tags: ["intermediate", "state", "memory", "persistence", "context"]
-keywords: ["agent state", "memory management", "session state", "user state", "persistent context"]
+keywords:
+  [
+    "agent state",
+    "memory management",
+    "session state",
+    "user state",
+    "persistent context",
+  ]
 status: "completed"
 difficulty: "intermediate"
 estimated_time: "1 hour"
@@ -27,6 +34,7 @@ implementation_link: "https://github.com/raphaelmansuy/adk_training/tree/main/tu
 Learn how to build agents that remember information across interactions using **session state** and **long-term memory**. This tutorial demonstrates a personal tutor system that tracks user progress, preferences, and learning history.
 
 **What You'll Build**: A personalized learning assistant that:
+
 - Remembers user preferences (language, difficulty level)
 - Tracks progress across sessions (topics covered, quiz scores)
 - Uses temporary state for calculations
@@ -55,14 +63,15 @@ The agent's **scratchpad** - a key-value dictionary for conversation-level data.
 
 **State Scoping with Prefixes**:
 
-| Prefix | Scope | Persistence | Example Use Case |
-|--------|-------|-------------|------------------|
-| None | Current session | SessionService dependent | `state['current_topic'] = 'python'` - Task progress |
-| `user:` | All sessions for user | Persistent | `state['user:preferred_language'] = 'en'` - User preferences |
-| `app:` | All users/sessions | Persistent | `state['app:course_catalog'] = [...]` - Global settings |
-| `temp:` | Current invocation only | **Never persisted** | `state['temp:quiz_score'] = 85` - Temporary calculations |
+| Prefix  | Scope                   | Persistence              | Example Use Case                                             |
+| ------- | ----------------------- | ------------------------ | ------------------------------------------------------------ |
+| None    | Current session         | SessionService dependent | `state['current_topic'] = 'python'` - Task progress          |
+| `user:` | All sessions for user   | Persistent               | `state['user:preferred_language'] = 'en'` - User preferences |
+| `app:`  | All users/sessions      | Persistent               | `state['app:course_catalog'] = [...]` - Global settings      |
+| `temp:` | Current invocation only | **Never persisted**      | `state['temp:quiz_score'] = 85` - Temporary calculations     |
 
 **Key Points**:
+
 - `temp:` state is **discarded** after invocation completes
 - `temp:` state is **shared** across all sub-agents in same invocation
 - `user:` and `app:` require persistent SessionService (Database/VertexAI)
@@ -73,10 +82,12 @@ The agent's **scratchpad** - a key-value dictionary for conversation-level data.
 Long-term knowledge beyond current session - like a **searchable archive**.
 
 **Two Implementations**:
+
 1. **InMemoryMemoryService**: Keyword search, no persistence (dev/test)
 2. **VertexAiMemoryBankService**: Semantic search, LLM-powered, persistent (production)
 
 **Workflow**:
+
 1. User interacts with agent (session)
 2. Call `add_session_to_memory(session)` to save
 3. Later, agent searches: `search_memory(query)`
@@ -88,6 +99,7 @@ Long-term knowledge beyond current session - like a **searchable archive**.
 ## Use Case: Personal Learning Tutor
 
 **Scenario**: Build a tutor that:
+
 - Stores user preferences (language, difficulty)
 - Tracks what topics you've studied
 - Remembers your quiz performance
@@ -95,6 +107,7 @@ Long-term knowledge beyond current session - like a **searchable archive**.
 - Adapts explanations based on your level
 
 **State Strategy**:
+
 - `user:language` → Preference (persistent across sessions)
 - `user:difficulty_level` → Preference (beginner/intermediate/advanced)
 - `user:topics_covered` → List of completed topics
@@ -108,7 +121,6 @@ Long-term knowledge beyond current session - like a **searchable archive**.
 
 ### Project Structure
 
-
 ```
 personal_tutor/
 ├── __init__.py          # Imports agent
@@ -118,7 +130,8 @@ personal_tutor/
 
 ### Complete Code
 
-**personal_tutor/__init__.py**:
+**personal_tutor/**init**.py**:
+
 ```python
 from .agent import root_agent
 
@@ -126,6 +139,7 @@ __all__ = ['root_agent']
 ```
 
 **personal_tutor/agent.py**:
+
 ```python
 """
 Personal Learning Tutor - Demonstrates State & Memory Management
@@ -152,7 +166,7 @@ def set_user_preferences(
 ) -> Dict[str, Any]:
     """
     Set user learning preferences (stored persistently).
-    
+
     Args:
         language: Preferred language (en, es, fr, etc.)
         difficulty_level: beginner, intermediate, or advanced
@@ -160,7 +174,7 @@ def set_user_preferences(
     # Use user: prefix for persistent cross-session storage
     tool_context.state['user:language'] = language
     tool_context.state['user:difficulty_level'] = difficulty_level
-    
+
     return {
         'status': 'success',
         'message': f'Preferences saved: {language}, {difficulty_level} level'
@@ -174,7 +188,7 @@ def record_topic_completion(
 ) -> Dict[str, Any]:
     """
     Record that user completed a topic (stored persistently).
-    
+
     Args:
         topic: Topic name (e.g., "Python Basics", "Data Structures")
         quiz_score: Score out of 100
@@ -182,15 +196,15 @@ def record_topic_completion(
     # Get existing lists or create new ones
     topics = tool_context.state.get('user:topics_covered', [])
     scores = tool_context.state.get('user:quiz_scores', {})
-    
+
     # Update persistent user state
     if topic not in topics:
         topics.append(topic)
     scores[topic] = quiz_score
-    
+
     tool_context.state['user:topics_covered'] = topics
     tool_context.state['user:quiz_scores'] = scores
-    
+
     return {
         'status': 'success',
         'topics_count': len(topics),
@@ -201,7 +215,7 @@ def record_topic_completion(
 def get_user_progress(tool_context: ToolContext) -> Dict[str, Any]:
     """
     Get user's learning progress summary.
-    
+
     Returns persistent user data across all sessions.
     """
     # Read persistent user state
@@ -209,10 +223,10 @@ def get_user_progress(tool_context: ToolContext) -> Dict[str, Any]:
     difficulty = tool_context.state.get('user:difficulty_level', 'beginner')
     topics = tool_context.state.get('user:topics_covered', [])
     scores = tool_context.state.get('user:quiz_scores', {})
-    
+
     # Calculate average score
     avg_score = sum(scores.values()) / len(scores) if scores else 0
-    
+
     return {
         'status': 'success',
         'language': language,
@@ -230,16 +244,16 @@ def start_learning_session(
 ) -> Dict[str, Any]:
     """
     Start a new learning session for a topic.
-    
+
     Uses session state (no prefix) to track current topic.
     """
     # Session-level state (persists within this session only)
     tool_context.state['current_topic'] = topic
     tool_context.state['session_start_time'] = 'now'  # Simplified
-    
+
     # Get user's difficulty level for personalization
     difficulty = tool_context.state.get('user:difficulty_level', 'beginner')
-    
+
     return {
         'status': 'success',
         'topic': topic,
@@ -255,14 +269,14 @@ def calculate_quiz_grade(
 ) -> Dict[str, Any]:
     """
     Calculate quiz grade using temporary state.
-    
+
     Demonstrates temp: prefix for invocation-scoped data.
     """
     # Store intermediate calculation in temp state (discarded after invocation)
     percentage = (correct_answers / total_questions) * 100
     tool_context.state['temp:raw_score'] = correct_answers
     tool_context.state['temp:quiz_percentage'] = percentage
-    
+
     # Determine grade letter
     if percentage >= 90:
         grade = 'A'
@@ -274,7 +288,7 @@ def calculate_quiz_grade(
         grade = 'D'
     else:
         grade = 'F'
-    
+
     return {
         'status': 'success',
         'score': f'{correct_answers}/{total_questions}',
@@ -290,7 +304,7 @@ def search_past_lessons(
 ) -> Dict[str, Any]:
     """
     Search memory for relevant past learning sessions.
-    
+
     This demonstrates memory service integration.
     In production, this would use MemoryService.search_memory().
     """
@@ -302,11 +316,11 @@ def search_past_lessons(
     #     user_id=tool_context.user_id,
     #     query=query
     # )
-    
+
     # Simulated memory search results
     topics = tool_context.state.get('user:topics_covered', [])
     relevant = [t for t in topics if query.lower() in t.lower()]
-    
+
     if relevant:
         return {
             'status': 'success',
@@ -329,15 +343,15 @@ def search_past_lessons(
 root_agent = Agent(
     name="personal_tutor",
     model="gemini-2.0-flash",
-    
+
     description="""
     Personal learning tutor that tracks your progress, preferences, and learning history.
     Uses state management and memory to provide personalized education.
     """,
-    
+
     instruction="""
     You are a personalized learning tutor with memory of the user's progress.
-    
+
     CAPABILITIES:
     - Set and remember user preferences (language, difficulty level)
     - Track completed topics and quiz scores across sessions
@@ -345,18 +359,18 @@ root_agent = Agent(
     - Calculate quiz grades and store results
     - Search past learning sessions for context
     - Adapt teaching based on user's level and history
-    
+
     STATE MANAGEMENT:
     - User preferences stored with user: prefix (persistent)
     - Current session tracked with session state
     - Temporary calculations use temp: prefix (discarded after)
-    
+
     TEACHING APPROACH:
     1. Check user's difficulty level and adapt explanations
     2. Reference past topics when relevant
     3. Track progress and celebrate achievements
     4. Provide personalized recommendations based on history
-    
+
     WORKFLOW:
     1. If new user, ask about preferences (language, difficulty)
     2. For learning requests:
@@ -365,10 +379,10 @@ root_agent = Agent(
        - End with a quiz
     3. Record completion with quiz score
     4. Search past lessons when user asks about previous topics
-    
+
     Always be encouraging and adapt to the user's learning pace!
     """,
-    
+
     tools=[
         set_user_preferences,
         record_topic_completion,
@@ -377,13 +391,14 @@ root_agent = Agent(
         calculate_quiz_grade,
         search_past_lessons
     ],
-    
+
     # Save final response to session state
     output_key="last_tutor_response"
 )
 ```
 
 **personal_tutor/.env**:
+
 ```
 GOOGLE_GENAI_USE_VERTEXAI=FALSE
 GOOGLE_API_KEY=your_api_key_here
@@ -403,47 +418,53 @@ adk web .
 **Workflow to Test**:
 
 1. **Set Preferences** (creates `user:` state):
+
    ```
    User: "Set my language to English and difficulty to intermediate"
-   
+
    Agent: [calls set_user_preferences]
    "Great! I've saved your preferences: English, intermediate level."
    ```
 
 2. **Start Learning** (creates session state):
+
    ```
    User: "Teach me about Python functions"
-   
+
    Agent: [calls start_learning_session('Python functions')]
    [Explains Python functions at intermediate level]
    ```
 
 3. **Take Quiz** (uses `temp:` state):
+
    ```
    User: "I got 8 out of 10 questions correct"
-   
+
    Agent: [calls calculate_quiz_grade(8, 10)]
    "Excellent! You scored 80% (B grade) on the quiz."
    ```
 
 4. **Record Completion** (updates `user:` state):
+
    ```
    Agent: [calls record_topic_completion('Python functions', 80)]
    "I've recorded your completion of Python functions with 80/100."
    ```
 
 5. **Check Progress** (reads `user:` state):
+
    ```
    User: "What have I learned so far?"
-   
+
    Agent: [calls get_user_progress]
    "You've completed 1 topic (Python functions) with an average score of 80."
    ```
 
 6. **Search Past Lessons** (memory integration):
+
    ```
    User: "What did we cover about functions?"
-   
+
    Agent: [calls search_past_lessons('functions')]
    "I found 1 past session: Python functions where you scored 80%."
    ```
@@ -585,6 +606,7 @@ def my_tool(tool_context: ToolContext):
 ### Setup for Vertex AI Memory Bank
 
 **Prerequisites**:
+
 1. Google Cloud Project with Vertex AI API enabled
 2. Agent Engine created in Vertex AI
 3. Authentication: `gcloud auth application-default login`
@@ -687,6 +709,7 @@ root_agent = Agent(
 ### State Management
 
 **DO**:
+
 - ✅ Use `user:` for preferences that should persist
 - ✅ Use `temp:` for calculations that shouldn't persist
 - ✅ Use `tool_context.state` for updates
@@ -694,6 +717,7 @@ root_agent = Agent(
 - ✅ Initialize state with defaults: `state.get('key', default)`
 
 **DON'T**:
+
 - ❌ Modify `session.state` from `get_session()` directly
 - ❌ Store complex objects (functions, connections) in state
 - ❌ Use `temp:` for data needed across invocations
@@ -702,12 +726,14 @@ root_agent = Agent(
 ### Memory Service
 
 **DO**:
+
 - ✅ Call `add_session_to_memory()` after meaningful interactions
 - ✅ Use semantic queries: "What did we learn about X?"
 - ✅ Combine memory search with current state
 - ✅ Use VertexAI Memory Bank for production
 
 **DON'T**:
+
 - ❌ Save every trivial interaction to memory
 - ❌ Rely on InMemoryMemoryService for production
 - ❌ Forget to configure memory service URI
@@ -722,6 +748,7 @@ root_agent = Agent(
 **Problem**: Set `user:language = "en"` but it's gone in next session
 
 **Solutions**:
+
 1. Check SessionService type:
    ```python
    # InMemorySessionService = NO persistence
@@ -743,11 +770,13 @@ root_agent = Agent(
 **Problems & Solutions**:
 
 **Using InMemoryMemoryService**:
+
 - Must call `add_session_to_memory()` first
 - Only does keyword matching (not semantic)
 - Use exact words from session
 
 **Using VertexAI Memory Bank**:
+
 - Ensure Agent Engine is created and ID is correct
 - Check authentication: `gcloud auth application-default login`
 - Verify environment variables are set
@@ -758,6 +787,7 @@ root_agent = Agent(
 **Problem**: `tool_context.state['key'] = value` doesn't persist
 
 **Solutions**:
+
 1. Tool must return (even empty dict)
 2. Check if using correct context type (`ToolContext` not just dict)
 3. Verify SessionService is configured in Runner
@@ -805,6 +835,7 @@ root_agent = Agent(
 4. **Advanced Memory**: Combine multiple memory services for different knowledge types
 
 **Exercises**:
+
 1. Add a `reset_progress` tool that clears `user:` state
 2. Implement `get_recommendations` that suggests topics based on history
 3. Add `user:learning_goals` to track long-term objectives

@@ -5,7 +5,15 @@ description: "Build agents that process images, documents, and multimodal conten
 sidebar_label: "21. Multimodal & Images"
 sidebar_position: 21
 tags: ["advanced", "multimodal", "images", "vision", "visual-ai"]
-keywords: ["multimodal", "image processing", "vision", "visual ai", "document analysis", "gemini vision"]
+keywords:
+  [
+    "multimodal",
+    "image processing",
+    "vision",
+    "visual ai",
+    "document analysis",
+    "gemini vision",
+  ]
 status: "draft"
 difficulty: "advanced"
 estimated_time: "2 hours"
@@ -117,10 +125,10 @@ from google.genai import types
 # Load from file
 def load_image_from_file(path: str) -> types.Part:
     """Load image from local file."""
-    
+
     with open(path, 'rb') as f:
         image_bytes = f.read()
-    
+
     # Determine MIME type from extension
     if path.endswith('.png'):
         mime_type = 'image/png'
@@ -130,7 +138,7 @@ def load_image_from_file(path: str) -> types.Part:
         mime_type = 'image/webp'
     else:
         raise ValueError(f"Unsupported image format: {path}")
-    
+
     return types.Part(
         inline_data=types.Blob(
             data=image_bytes,
@@ -144,15 +152,15 @@ import requests
 
 def load_image_from_url(url: str) -> types.Part:
     """Load image from URL."""
-    
+
     response = requests.get(url)
     response.raise_for_status()
-    
+
     image_bytes = response.content
-    
+
     # Determine MIME type from Content-Type header
     mime_type = response.headers.get('Content-Type', 'image/jpeg')
-    
+
     return types.Part(
         inline_data=types.Blob(
             data=image_bytes,
@@ -164,10 +172,10 @@ def load_image_from_url(url: str) -> types.Part:
 # Load from Cloud Storage
 def load_image_from_gcs(uri: str) -> types.Part:
     """Load image from Google Cloud Storage."""
-    
+
     # For GCS, use file_data instead of inline_data
     mime_type = 'image/jpeg'  # Determine from file extension
-    
+
     return types.Part(
         file_data=types.FileData(
             file_uri=uri,
@@ -200,7 +208,7 @@ os.environ['GOOGLE_CLOUD_LOCATION'] = 'us-central1'
 
 async def analyze_image():
     """Analyze an image with Gemini vision."""
-    
+
     # Create vision agent
     agent = Agent(
         model='gemini-2.0-flash',  # Supports vision
@@ -217,23 +225,23 @@ You are a vision analysis expert. When given images, you:
 Be specific and thorough in your analysis.
         """.strip()
     )
-    
+
     # Load image
     image_part = load_image_from_file('product.jpg')
-    
+
     # Create multimodal query
     query_parts = [
         types.Part.from_text("Analyze this product image in detail. What is it, and what are its key features?"),
         image_part
     ]
-    
+
     # Run analysis
     runner = Runner()
     result = await runner.run_async(
         query_parts,
         agent=agent
     )
-    
+
     print("VISION ANALYSIS:")
     print(result.content.parts[0].text)
 
@@ -247,7 +255,7 @@ if __name__ == '__main__':
 ```python
 async def compare_images():
     """Compare multiple images."""
-    
+
     agent = Agent(
         model='gemini-2.0-flash',
         name='image_comparator',
@@ -262,11 +270,11 @@ Compare the provided images and identify:
 Provide a structured comparison.
         """.strip()
     )
-    
+
     # Load multiple images
     image1 = load_image_from_file('product_v1.jpg')
     image2 = load_image_from_file('product_v2.jpg')
-    
+
     # Create query with multiple images
     query_parts = [
         types.Part.from_text("Compare these two product versions:"),
@@ -276,10 +284,10 @@ Provide a structured comparison.
         image2,
         types.Part.from_text("What are the key differences?")
     ]
-    
+
     runner = Runner()
     result = await runner.run_async(query_parts, agent=agent)
-    
+
     print("COMPARISON RESULT:")
     print(result.content.parts[0].text)
 ```
@@ -314,12 +322,12 @@ os.environ['GOOGLE_CLOUD_LOCATION'] = 'us-central1'
 
 class ProductCatalogAnalyzer:
     """Analyze product images and create catalog entries."""
-    
+
     def __init__(self):
         """Initialize product catalog analyzer."""
-        
+
         self.catalog: List[Dict] = []
-        
+
         # Vision analysis agent
         self.vision_agent = Agent(
             model='gemini-2.0-flash',
@@ -340,7 +348,7 @@ Provide structured, detailed analysis.
                 max_output_tokens=1024
             )
         )
-        
+
         # Description generator agent
         async def generate_catalog_entry(
             product_name: str,
@@ -348,7 +356,7 @@ Provide structured, detailed analysis.
             tool_context: ToolContext
         ) -> str:
             """Generate marketing-ready catalog entry."""
-            
+
             entry = f"""
 # {product_name}
 
@@ -370,16 +378,16 @@ Provide structured, detailed analysis.
 
 *Analysis generated from product image*
             """.strip()
-            
+
             # Save as artifact
             part = types.Part.from_text(entry)
             version = await tool_context.save_artifact(
                 filename=f"{product_name}_catalog_entry.md",
                 part=part
             )
-            
+
             return f"Catalog entry created (version {version})"
-        
+
         self.catalog_agent = Agent(
             model='gemini-2.0-flash',
             name='catalog_generator',
@@ -401,45 +409,45 @@ Use the generate_catalog_entry tool to save entries.
                 max_output_tokens=1536
             )
         )
-        
+
         self.runner = Runner()
-    
+
     async def analyze_product(self, product_id: str, image_path: str):
         """
         Analyze product image and create catalog entry.
-        
+
         Args:
             product_id: Unique product identifier
             image_path: Path to product image
         """
-        
+
         print(f"\n{'='*70}")
         print(f"ANALYZING PRODUCT: {product_id}")
         print(f"IMAGE: {image_path}")
         print(f"{'='*70}\n")
-        
+
         # Step 1: Visual analysis
         print("📸 Step 1: Visual Analysis...")
-        
+
         image_part = load_image_from_file(image_path)
-        
+
         analysis_query = [
             types.Part.from_text(f"Analyze this product image for {product_id}:"),
             image_part
         ]
-        
+
         analysis_result = await self.runner.run_async(
             analysis_query,
             agent=self.vision_agent
         )
-        
+
         analysis_text = analysis_result.content.parts[0].text
-        
+
         print(f"\n🔍 VISUAL ANALYSIS:\n{analysis_text}\n")
-        
+
         # Step 2: Generate catalog entry
         print("📝 Step 2: Generating Catalog Entry...")
-        
+
         catalog_query = f"""
 Based on this visual analysis, create a professional catalog entry for {product_id}:
 
@@ -447,14 +455,14 @@ Based on this visual analysis, create a professional catalog entry for {product_
 
 Use the generate_catalog_entry tool to save the entry.
         """.strip()
-        
+
         catalog_result = await self.runner.run_async(
             catalog_query,
             agent=self.catalog_agent
         )
-        
+
         print(f"\n✅ RESULT:\n{catalog_result.content.parts[0].text}\n")
-        
+
         # Store in catalog
         self.catalog.append({
             'product_id': product_id,
@@ -462,43 +470,43 @@ Use the generate_catalog_entry tool to save the entry.
             'analysis': analysis_text,
             'timestamp': 'timestamp_here'
         })
-        
+
         print(f"{'='*70}\n")
-    
+
     async def batch_analyze(self, products: List[tuple[str, str]]):
         """
         Analyze multiple products.
-        
+
         Args:
             products: List of (product_id, image_path) tuples
         """
-        
+
         for product_id, image_path in products:
             await self.analyze_product(product_id, image_path)
             await asyncio.sleep(2)
-    
+
     def get_catalog_summary(self) -> str:
         """Get summary of analyzed products."""
-        
+
         summary = f"\nPRODUCT CATALOG SUMMARY\n{'='*70}\n"
         summary += f"Total Products Analyzed: {len(self.catalog)}\n\n"
-        
+
         for i, product in enumerate(self.catalog, 1):
             summary += f"{i}. {product['product_id']}\n"
             summary += f"   Image: {product['image_path']}\n"
             summary += f"   Analysis: {product['analysis'][:100]}...\n\n"
-        
+
         summary += f"{'='*70}\n"
-        
+
         return summary
 
 
 def load_image_from_file(path: str) -> types.Part:
     """Load image from file."""
-    
+
     with open(path, 'rb') as f:
         image_bytes = f.read()
-    
+
     if path.endswith('.png'):
         mime_type = 'image/png'
     elif path.endswith('.jpg') or path.endswith('.jpeg'):
@@ -507,7 +515,7 @@ def load_image_from_file(path: str) -> types.Part:
         mime_type = 'image/webp'
     else:
         mime_type = 'image/jpeg'
-    
+
     return types.Part(
         inline_data=types.Blob(
             data=image_bytes,
@@ -518,9 +526,9 @@ def load_image_from_file(path: str) -> types.Part:
 
 async def main():
     """Main entry point."""
-    
+
     analyzer = ProductCatalogAnalyzer()
-    
+
     # Analyze multiple products
     # Note: Replace with actual image paths
     products = [
@@ -528,21 +536,21 @@ async def main():
         ('PROD-002', 'images/headphones.jpg'),
         ('PROD-003', 'images/smartwatch.jpg')
     ]
-    
+
     # For demo, create placeholder images
     import io
     from PIL import Image
-    
+
     os.makedirs('images', exist_ok=True)
-    
+
     for product_id, image_path in products:
         # Create placeholder image
         img = Image.new('RGB', (400, 400), color=(73, 109, 137))
         img.save(image_path)
-    
+
     # Batch analyze
     await analyzer.batch_analyze(products)
-    
+
     # Show summary
     print(analyzer.get_catalog_summary())
 
@@ -591,8 +599,8 @@ This is a laptop computer with a modern, sleek design. Key observations:
 ✅ RESULT:
 Catalog entry created (version 1)
 
-I've created a comprehensive catalog entry for PROD-001 that highlights its 
-premium build quality, modern design, and professional features. The entry 
+I've created a comprehensive catalog entry for PROD-001 that highlights its
+premium build quality, modern design, and professional features. The entry
 emphasizes its portability and versatility for various user needs.
 
 ======================================================================
@@ -734,21 +742,21 @@ from vertexai.preview.vision_models import ImageGenerationModel
 def generate_image(prompt: str, output_path: str):
     """
     Generate image from text prompt.
-    
+
     Args:
         prompt: Text description of desired image
         output_path: Where to save generated image
     """
-    
+
     # Initialize Vertex AI
     aiplatform.init(
         project='your-project-id',
         location='us-central1'
     )
-    
+
     # Load Imagen model
     model = ImageGenerationModel.from_pretrained('imagen-3.0-generate-001')
-    
+
     # Generate images
     response = model.generate_images(
         prompt=prompt,
@@ -757,11 +765,11 @@ def generate_image(prompt: str, output_path: str):
         safety_filter_level='block_some',  # Options: block_most, block_some, block_few
         person_generation='allow_all'  # Options: allow_all, allow_adult, block_all
     )
-    
+
     # Save first generated image
     image = response.images[0]
     image.save(output_path)
-    
+
     print(f"Image saved to: {output_path}")
 ```
 
@@ -770,20 +778,20 @@ def generate_image(prompt: str, output_path: str):
 ```python
 async def create_image_generation_agent():
     """Agent that generates images based on requests."""
-    
+
     def generate_product_image(description: str, style: str = 'photorealistic') -> str:
         """Generate product image from description."""
-        
+
         # Construct prompt
         prompt = f"{description}, {style} style, professional product photography, "
         prompt += "high quality, detailed, studio lighting, white background"
-        
+
         # Generate image
         output_path = f"generated_{hash(description) % 10000}.png"
         generate_image(prompt, output_path)
-        
+
         return f"Image generated: {output_path}"
-    
+
     agent = Agent(
         model='gemini-2.0-flash',
         name='image_generator',
@@ -799,7 +807,7 @@ Always provide helpful descriptions for best results.
         """.strip(),
         tools=[FunctionTool(generate_product_image)]
     )
-    
+
     return agent
 ```
 
@@ -815,18 +823,18 @@ import io
 
 def optimize_image(image_bytes: bytes, max_size_kb: int = 500) -> bytes:
     """Optimize image size for API calls."""
-    
+
     image = Image.open(io.BytesIO(image_bytes))
-    
+
     # Resize if too large
     max_dimension = 1024
     if max(image.size) > max_dimension:
         image.thumbnail((max_dimension, max_dimension), Image.LANCZOS)
-    
+
     # Save with compression
     output = io.BytesIO()
     image.save(output, format='JPEG', quality=85, optimize=True)
-    
+
     return output.getvalue()
 
 
@@ -847,9 +855,9 @@ image_part = types.Part(
 ```python
 def get_mime_type(file_path: str) -> str:
     """Determine MIME type from file extension."""
-    
+
     extension = file_path.lower().split('.')[-1]
-    
+
     mime_types = {
         'png': 'image/png',
         'jpg': 'image/jpeg',
@@ -858,7 +866,7 @@ def get_mime_type(file_path: str) -> str:
         'heic': 'image/heic',
         'heif': 'image/heif'
     }
-    
+
     return mime_types.get(extension, 'image/jpeg')
 ```
 

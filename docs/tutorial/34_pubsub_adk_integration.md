@@ -52,14 +52,14 @@ In this tutorial, you'll build a **scalable document processing system** using:
 
 ### Why Pub/Sub + ADK?
 
-| Feature | Benefit |
-|---------|---------|
-| **Asynchronous** | Non-blocking, fast user experience |
-| **Scalable** | Auto-scales from 0 to millions of messages |
-| **Decoupled** | Publishers and subscribers independent |
-| **Reliable** | At-least-once delivery, retries, DLQ |
-| **Fan-out** | One message → Multiple agents |
-| **Ordering** | Optional message ordering per key |
+| Feature          | Benefit                                    |
+| ---------------- | ------------------------------------------ |
+| **Asynchronous** | Non-blocking, fast user experience         |
+| **Scalable**     | Auto-scales from 0 to millions of messages |
+| **Decoupled**    | Publishers and subscribers independent     |
+| **Reliable**     | At-least-once delivery, retries, DLQ       |
+| **Fan-out**      | One message → Multiple agents              |
+| **Ordering**     | Optional message ordering per key          |
 
 **When to use Pub/Sub + ADK:**
 
@@ -67,10 +67,10 @@ In this tutorial, you'll build a **scalable document processing system** using:
 ✅ Batch data analysis jobs  
 ✅ Microservices architectures  
 ✅ Event-driven workflows  
-✅ High-throughput systems (1000+ requests/sec)  
+✅ High-throughput systems (1000+ requests/sec)
 
 ❌ Synchronous chat UIs → Use Next.js (Tutorial 30)  
-❌ Simple scripts → Use direct API calls  
+❌ Simple scripts → Use direct API calls
 
 ---
 
@@ -193,12 +193,12 @@ topic_path = publisher.topic_path(project_id, topic_id)
 def publish_document(document_id: str, content: str, document_type: str = "text"):
     """
     Publish a document processing event.
-    
+
     Args:
         document_id: Unique document identifier
         content: Document content (text or base64 for binary)
         document_type: Type of document (text, pdf, docx)
-    
+
     Returns:
         Message ID
     """
@@ -210,10 +210,10 @@ def publish_document(document_id: str, content: str, document_type: str = "text"
         "uploaded_at": datetime.now().isoformat(),
         "status": "pending"
     }
-    
+
     # Encode as JSON
     data = json.dumps(message_data).encode("utf-8")
-    
+
     # Publish to topic
     future = publisher.publish(
         topic_path,
@@ -222,9 +222,9 @@ def publish_document(document_id: str, content: str, document_type: str = "text"
         document_type=document_type,
         document_id=document_id
     )
-    
+
     message_id = future.result()
-    
+
     print(f"Published document {document_id} (message ID: {message_id})")
     return message_id
 
@@ -233,28 +233,28 @@ if __name__ == "__main__":
     # Publish sample document
     sample_doc = """
     This is a sample sales report for Q4 2024.
-    
+
     Revenue: $1.2M
     Expenses: $800K
     Net Profit: $400K
-    
+
     Key achievements:
     - Launched 3 new products
     - Expanded to 2 new markets
     - Grew customer base by 35%
-    
+
     Challenges:
     - Supply chain delays
     - Increased competition
     - Rising costs
     """
-    
+
     message_id = publish_document(
         document_id="DOC-001",
         content=sample_doc,
         document_type="text"
     )
-    
+
     print(f"✅ Published! Message ID: {message_id}")
 ```
 
@@ -318,19 +318,19 @@ Guidelines:
 def process_document(message_data: dict) -> dict:
     """
     Process a document using ADK agent.
-    
+
     Args:
         message_data: Document data from Pub/Sub message
-        
+
     Returns:
         Processing results
     """
     document_id = message_data.get("document_id")
     content = message_data.get("content")
     document_type = message_data.get("document_type")
-    
+
     print(f"Processing document {document_id}...")
-    
+
     # Create prompt
     prompt = f"""Analyze this {document_type} document:
 
@@ -344,32 +344,32 @@ Provide:
 5. Action items or recommendations
 
 Format as JSON."""
-    
+
     try:
         # Proper ADK execution pattern
         import asyncio
         from google.genai import types
-        
+
         events = asyncio.run(runner.run_async(
             user_id='system',
             session_id=document_id,
             new_message=types.Content(parts=[types.Part(text=prompt)], role='user')
         ))
         full_response = ''.join([
-            e.content.parts[0].text for e in events 
+            e.content.parts[0].text for e in events
             if hasattr(e, 'content') and hasattr(e.content, 'parts')
         ])
-        
+
         result = {
             "document_id": document_id,
             "status": "completed",
             "analysis": full_response,
             "processed_by": "gemini-2.0-flash-exp"
         }
-        
+
         print(f"✅ Completed processing {document_id}")
         return result
-        
+
     except Exception as e:
         print(f"❌ Error processing {document_id}: {e}")
         return {
@@ -381,26 +381,26 @@ Format as JSON."""
 def callback(message: pubsub_v1.subscriber.message.Message) -> None:
     """
     Callback for processing Pub/Sub messages.
-    
+
     Args:
         message: Pub/Sub message
     """
     try:
         # Parse message data
         message_data = json.loads(message.data.decode("utf-8"))
-        
+
         print(f"Received message: {message.message_id}")
         print(f"Document ID: {message_data.get('document_id')}")
-        
+
         # Process document
         result = process_document(message_data)
-        
+
         # Log result
         print(f"Result: {result['status']}")
-        
+
         # Acknowledge message (removes from queue)
         message.ack()
-        
+
     except Exception as e:
         print(f"Error in callback: {e}")
         # Nack message (will be redelivered)
@@ -537,6 +537,7 @@ Result: completed
 ```
 
 **3. Pub/Sub distributes to subscribers**:
+
 - Message stored in topic
 - Multiple subscriptions receive copy
 - Each subscriber processes independently
@@ -547,10 +548,10 @@ Result: completed
 def callback(message):
     # Parse message
     data = json.loads(message.data)
-    
+
     # Process with ADK agent
     result = process_document(data)
-    
+
     # Acknowledge (removes from queue)
     message.ack()
 ```
@@ -577,14 +578,14 @@ Agent: {
 
 ### Pub/Sub Guarantees
 
-| Guarantee | Description |
-|-----------|-------------|
+| Guarantee                  | Description                               |
+| -------------------------- | ----------------------------------------- |
 | **At-least-once delivery** | Message delivered ≥1 time (may duplicate) |
-| **Ordering** | Optional per message key |
-| **Retention** | 7 days default (configurable) |
-| **Throughput** | 100,000s messages/sec |
-| **Latency** | &lt;100ms p99 |
-| **Durability** | Replicated across zones |
+| **Ordering**               | Optional per message key                  |
+| **Retention**              | 7 days default (configurable)             |
+| **Throughput**             | 100,000s messages/sec                     |
+| **Latency**                | &lt;100ms p99                             |
+| **Durability**             | Replicated across zones                   |
 
 ---
 
@@ -638,7 +639,7 @@ def summarize_document(content: str, doc_id: str = 'default') -> str:
     # Proper ADK execution pattern
     import asyncio
     from google.genai import types
-    
+
     events = asyncio.run(runner.run_async(
         user_id='system',
         session_id=doc_id,
@@ -648,7 +649,7 @@ def summarize_document(content: str, doc_id: str = 'default') -> str:
         )
     ))
     summary = ''.join([
-        e.content.parts[0].text for e in events 
+        e.content.parts[0].text for e in events
         if hasattr(e, 'content') and hasattr(e.content, 'parts')
     ])
     return summary
@@ -658,24 +659,24 @@ def callback(message):
         data = json.loads(message.data.decode("utf-8"))
         document_id = data["document_id"]
         content = data["content"]
-        
+
         print(f"📝 Summarizing {document_id}...")
-        
+
         summary = summarize_document(content)
-        
+
         result = {
             "document_id": document_id,
             "type": "summary",
             "result": summary
         }
-        
+
         print(f"✅ Summary: {summary[:100]}...")
-        
+
         # Store result (to Firestore, etc.)
         # store_result(result)
-        
+
         message.ack()
-        
+
     except Exception as e:
         print(f"❌ Error: {e}")
         message.nack()
@@ -721,11 +722,11 @@ def extract_dates(text: str) -> list:
         r'\d{1,2}/\d{1,2}/\d{4}',  # 10/08/2024
         r'(?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)[a-z]* \d{1,2},? \d{4}'  # October 8, 2024
     ]
-    
+
     dates = []
     for pattern in patterns:
         dates.extend(re.findall(pattern, text, re.IGNORECASE))
-    
+
     return list(set(dates))
 
 def extract_numbers(text: str) -> list:
@@ -735,11 +736,11 @@ def extract_numbers(text: str) -> list:
         'percentage': r'\d+(?:\.\d+)?%',  # 35%
         'quantity': r'\d+(?:,\d{3})*'  # 1,000
     }
-    
+
     results = {}
     for name, pattern in patterns.items():
         results[name] = re.findall(pattern, text)
-    
+
     return results
 
 # Entity extraction agent using ADK
@@ -823,7 +824,7 @@ def extract_entities(content: str, doc_id: str = 'default') -> dict:
     # Proper ADK execution pattern
     import asyncio
     from google.genai import types
-    
+
     events = asyncio.run(runner.run_async(
         user_id='system',
         session_id=doc_id,
@@ -833,10 +834,10 @@ def extract_entities(content: str, doc_id: str = 'default') -> dict:
         )
     ))
     result = ''.join([
-        e.content.parts[0].text for e in events 
+        e.content.parts[0].text for e in events
         if hasattr(e, 'content') and hasattr(e.content, 'parts')
     ])
-    
+
     return result
 
 def callback(message):
@@ -844,21 +845,21 @@ def callback(message):
         data = json.loads(message.data.decode("utf-8"))
         document_id = data["document_id"]
         content = data["content"]
-        
+
         print(f"🔍 Extracting entities from {document_id}...")
-        
+
         entities = extract_entities(content)
-        
+
         result = {
             "document_id": document_id,
             "type": "entities",
             "result": entities
         }
-        
+
         print(f"✅ Extracted entities")
-        
+
         message.ack()
-        
+
     except Exception as e:
         print(f"❌ Error: {e}")
         message.nack()
@@ -940,7 +941,7 @@ async def handle_client(websocket, path):
     # Register client
     connected_clients.add(websocket)
     print(f"✅ Client connected. Total: {len(connected_clients)}")
-    
+
     try:
         # Keep connection alive
         async for message in websocket:
@@ -966,14 +967,14 @@ def pubsub_callback(message):
     """Callback for Pub/Sub messages."""
     try:
         data = json.loads(message.data.decode("utf-8"))
-        
+
         print(f"📡 Broadcasting update: {data['document_id']}")
-        
+
         # Broadcast to WebSocket clients
         asyncio.run(broadcast_update(data))
-        
+
         message.ack()
-        
+
     except Exception as e:
         print(f"Error: {e}")
         message.nack()
@@ -984,9 +985,9 @@ def start_pubsub_listener():
         subscription_path,
         callback=pubsub_callback
     )
-    
+
     print("🚀 Pub/Sub listener started")
-    
+
     try:
         streaming_pull_future.result()
     except Exception as e:
@@ -998,7 +999,7 @@ async def main():
     # Start Pub/Sub listener in background
     pubsub_thread = Thread(target=start_pubsub_listener, daemon=True)
     pubsub_thread.start()
-    
+
     # Start WebSocket server
     async with websockets.serve(handle_client, "0.0.0.0", 8765):
         print("🌐 WebSocket server running on ws://localhost:8765")
@@ -1013,91 +1014,115 @@ if __name__ == "__main__":
 ```html
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Document Processing Status</title>
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            max-width: 800px;
-            margin: 50px auto;
-            padding: 20px;
-            background: #f5f5f5;
-        }
-        .status-card {
-            background: white;
-            padding: 20px;
-            margin: 10px 0;
-            border-radius: 8px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-        }
-        .status-pending { border-left: 4px solid #ff9800; }
-        .status-processing { border-left: 4px solid #2196f3; }
-        .status-completed { border-left: 4px solid #4caf50; }
-        .status-error { border-left: 4px solid #f44336; }
-        .timestamp { color: #666; font-size: 0.9em; }
-        #connection-status {
-            padding: 10px;
-            text-align: center;
-            border-radius: 4px;
-            margin-bottom: 20px;
-        }
-        .connected { background: #4caf50; color: white; }
-        .disconnected { background: #f44336; color: white; }
+      body {
+        font-family: Arial, sans-serif;
+        max-width: 800px;
+        margin: 50px auto;
+        padding: 20px;
+        background: #f5f5f5;
+      }
+      .status-card {
+        background: white;
+        padding: 20px;
+        margin: 10px 0;
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      }
+      .status-pending {
+        border-left: 4px solid #ff9800;
+      }
+      .status-processing {
+        border-left: 4px solid #2196f3;
+      }
+      .status-completed {
+        border-left: 4px solid #4caf50;
+      }
+      .status-error {
+        border-left: 4px solid #f44336;
+      }
+      .timestamp {
+        color: #666;
+        font-size: 0.9em;
+      }
+      #connection-status {
+        padding: 10px;
+        text-align: center;
+        border-radius: 4px;
+        margin-bottom: 20px;
+      }
+      .connected {
+        background: #4caf50;
+        color: white;
+      }
+      .disconnected {
+        background: #f44336;
+        color: white;
+      }
     </style>
-</head>
-<body>
+  </head>
+  <body>
     <h1>📄 Document Processing Status</h1>
-    
+
     <div id="connection-status" class="disconnected">
-        Connecting to server...
+      Connecting to server...
     </div>
-    
+
     <div id="documents"></div>
 
     <script>
-        const ws = new WebSocket('ws://localhost:8765');
-        const statusDiv = document.getElementById('connection-status');
-        const documentsDiv = document.getElementById('documents');
-        
-        const documents = new Map();
-        
-        ws.onopen = () => {
-            statusDiv.textContent = '✅ Connected';
-            statusDiv.className = 'connected';
-        };
-        
-        ws.onclose = () => {
-            statusDiv.textContent = '❌ Disconnected';
-            statusDiv.className = 'disconnected';
-        };
-        
-        ws.onmessage = (event) => {
-            const data = JSON.parse(event.data);
-            updateDocument(data);
-        };
-        
-        function updateDocument(data) {
-            documents.set(data.document_id, data);
-            renderDocuments();
-        }
-        
-        function renderDocuments() {
-            documentsDiv.innerHTML = Array.from(documents.values())
-                .sort((a, b) => new Date(b.updated_at || b.uploaded_at) - new Date(a.updated_at || a.uploaded_at))
-                .map(doc => `
+      const ws = new WebSocket("ws://localhost:8765");
+      const statusDiv = document.getElementById("connection-status");
+      const documentsDiv = document.getElementById("documents");
+
+      const documents = new Map();
+
+      ws.onopen = () => {
+        statusDiv.textContent = "✅ Connected";
+        statusDiv.className = "connected";
+      };
+
+      ws.onclose = () => {
+        statusDiv.textContent = "❌ Disconnected";
+        statusDiv.className = "disconnected";
+      };
+
+      ws.onmessage = (event) => {
+        const data = JSON.parse(event.data);
+        updateDocument(data);
+      };
+
+      function updateDocument(data) {
+        documents.set(data.document_id, data);
+        renderDocuments();
+      }
+
+      function renderDocuments() {
+        documentsDiv.innerHTML = Array.from(documents.values())
+          .sort(
+            (a, b) =>
+              new Date(b.updated_at || b.uploaded_at) -
+              new Date(a.updated_at || a.uploaded_at),
+          )
+          .map(
+            (doc) => `
                     <div class="status-card status-${doc.status}">
                         <h3>${doc.document_id}</h3>
                         <p><strong>Status:</strong> ${doc.status}</p>
-                        <p><strong>Type:</strong> ${doc.type || 'Unknown'}</p>
-                        ${doc.result ? `<p><strong>Result:</strong> ${doc.result.substring(0, 100)}...</p>` : ''}
+                        <p><strong>Type:</strong> ${doc.type || "Unknown"}</p>
+                        ${doc.result ? `<p><strong>Result:</strong> ${doc.result.substring(0, 100)}...</p>` : ""}
                         <p class="timestamp">${doc.updated_at || doc.uploaded_at}</p>
                     </div>
-                `).join('');
-        }
+                `,
+          )
+          .join("");
+      }
     </script>
-</body>
+  </body>
 </html>
 ```
 
@@ -1168,17 +1193,17 @@ def monitor_dlq():
     """Check dead letter queue for failed messages."""
     dlq_subscription = "document-dlq-subscription"
     dlq_path = subscriber.subscription_path(project_id, dlq_subscription)
-    
+
     def callback(message):
         print(f"⚠️ Failed message: {message.message_id}")
         data = json.loads(message.data)
         print(f"Document: {data['document_id']}")
-        
+
         # Alert team, retry manually, or discard
         send_alert(f"Document {data['document_id']} failed after 5 attempts")
-        
+
         message.ack()
-    
+
     subscriber.subscribe(dlq_path, callback=callback)
 ```
 
@@ -1245,10 +1270,10 @@ def publish_with_priority(document_id, content, priority="normal"):
         "normal": "normal-documents",
         "low": "low-priority-documents"
     }
-    
+
     topic = topics.get(priority, "normal-documents")
     topic_path = publisher.topic_path(project_id, topic)
-    
+
     # Publish
     future = publisher.publish(topic_path, data)
     return future.result()
@@ -1321,18 +1346,18 @@ def health():
 async def upload_document(file: UploadFile = File(...)):
     """
     Upload document for processing.
-    
+
     Returns:
         Document ID and message ID
     """
     try:
         # Generate document ID
         document_id = f"DOC-{uuid.uuid4().hex[:8].upper()}"
-        
+
         # Read file content
         content = await file.read()
         content_str = content.decode("utf-8")
-        
+
         # Create message
         message_data = {
             "document_id": document_id,
@@ -1342,18 +1367,18 @@ async def upload_document(file: UploadFile = File(...)):
             "uploaded_at": datetime.now().isoformat(),
             "status": "pending"
         }
-        
+
         # Publish
         data = json.dumps(message_data).encode("utf-8")
         future = publisher.publish(topic_path, data)
         message_id = future.result()
-        
+
         return {
             "document_id": document_id,
             "message_id": message_id,
             "status": "queued"
         }
-        
+
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
@@ -1462,20 +1487,20 @@ def log_processing_metrics(document_id, latency, success):
     """Log processing metrics."""
     client = monitoring_v3.MetricServiceClient()
     project_name = f"projects/{os.environ['GCP_PROJECT']}"
-    
+
     # Log latency
     series = monitoring_v3.TimeSeries()
     series.metric.type = "custom.googleapis.com/document_processing/latency"
     series.resource.type = "global"
-    
+
     point = monitoring_v3.Point({
         "interval": {"end_time": {"seconds": int(time.time())}},
         "value": {"double_value": latency}
     })
     series.points = [point]
-    
+
     client.create_time_series(name=project_name, time_series=[series])
-    
+
     # Log success/failure
     # ... similar for success rate
 ```
@@ -1501,6 +1526,7 @@ gcloud alpha monitoring policies create \
 **Issue 1: Messages Not Delivered**
 
 **Symptoms**:
+
 - Publisher succeeds but subscriber doesn't receive
 - No messages in subscription
 
@@ -1525,6 +1551,7 @@ ps aux | grep subscriber.py
 **Issue 2: Messages Re-delivered Multiple Times**
 
 **Symptoms**:
+
 - Same message processed multiple times
 - Duplicate results
 
@@ -1536,22 +1563,22 @@ processed_messages = set()
 
 def callback(message):
     message_id = message.message_id
-    
+
     # Check if already processed
     if message_id in processed_messages:
         print(f"⏭️  Skipping duplicate: {message_id}")
         message.ack()
         return
-    
+
     # Process message
     result = process_document(data)
-    
+
     # Mark as processed
     processed_messages.add(message_id)
-    
+
     # Store in persistent storage (Redis, Firestore)
     # store_processed_id(message_id)
-    
+
     message.ack()
 ```
 
@@ -1560,6 +1587,7 @@ def callback(message):
 **Issue 3: High Latency**
 
 **Symptoms**:
+
 - Messages take minutes to process
 - Slow end-to-end pipeline
 
@@ -1593,6 +1621,7 @@ gcloud run services update summarizer \
 **Issue 4: Messages Stuck in DLQ**
 
 **Symptoms**:
+
 - Messages in dead letter queue
 - Repeated failures
 
@@ -1604,21 +1633,21 @@ def investigate_dlq():
     """Pull and analyze DLQ messages."""
     dlq_subscription = "document-dlq-subscription"
     dlq_path = subscriber.subscription_path(project_id, dlq_subscription)
-    
+
     # Pull messages
     response = subscriber.pull(
         request={"subscription": dlq_path, "max_messages": 10}
     )
-    
+
     for msg in response.received_messages:
         data = json.loads(msg.message.data)
         print(f"Failed document: {data['document_id']}")
         print(f"Error: {msg.message.attributes.get('error')}")
-        
+
         # Analyze why it failed
         # Fix issue
         # Re-publish if needed
-        
+
         # Acknowledge to remove from DLQ
         subscriber.acknowledge(
             request={
@@ -1635,6 +1664,7 @@ investigate_dlq()
 **Issue 5: Cost Optimization**
 
 **Symptoms**:
+
 - High Pub/Sub costs
 - Many small messages
 
@@ -1674,17 +1704,17 @@ You now know how to:
 ✅ Implement real-time UI updates with WebSocket  
 ✅ Deploy scalable systems to Cloud Run  
 ✅ Handle failures with DLQ and retries  
-✅ Monitor and optimize production pipelines  
+✅ Monitor and optimize production pipelines
 
 ### Architectural Patterns Learned
 
-| Pattern | Use Case |
-|---------|----------|
-| **Fan-out** | One message → Multiple processors |
-| **Dead Letter Queue** | Handle failed messages |
-| **Message Ordering** | Sequential processing per key |
-| **Batch Processing** | High-throughput optimization |
-| **Priority Queues** | Different SLAs for different messages |
+| Pattern               | Use Case                              |
+| --------------------- | ------------------------------------- |
+| **Fan-out**           | One message → Multiple processors     |
+| **Dead Letter Queue** | Handle failed messages                |
+| **Message Ordering**  | Sequential processing per key         |
+| **Batch Processing**  | High-throughput optimization          |
+| **Priority Queues**   | Different SLAs for different messages |
 
 ### Continue Learning
 

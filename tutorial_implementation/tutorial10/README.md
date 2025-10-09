@@ -134,7 +134,7 @@ make clean      # Clean cache files
 
 **Expected Test Output:**
 
-```
+````
 **Expected Test Output:**
 
 ```text
@@ -147,8 +147,9 @@ tests/test_agent.py::test_ticket_creation PASSED
 tests/test_agent.py::test_multi_turn_conversation PASSED
 
 =============== 28 passed in 8.43s ===============
-```
-```
+````
+
+````
 
 ## Evaluation Metrics
 
@@ -181,7 +182,7 @@ Run tests with verbose output:
 
 ```bash
 pytest tests/ -v -s
-```
+````
 
 ## Links
 
@@ -200,5 +201,4 @@ This implementation follows the patterns established in the ADK Training reposit
 
 ---
 
-*This implementation demonstrates production-ready testing patterns for ADK agents, with 28 comprehensive tests covering unit testing, integration testing, and evaluation frameworks.*
-
+_This implementation demonstrates production-ready testing patterns for ADK agents, with 28 comprehensive tests covering unit testing, integration testing, and evaluation frameworks._

@@ -197,42 +197,42 @@ User interface integration with modern frameworks.
 
 ## 🎓 Tutorials Overview
 
-| Tutorial | Topic | Status | Complexity | Time |
-|----------|-------|--------|------------|------|
-| 01 | Hello World Agent | ✅ Completed | Beginner | 30min |
-| 02 | Function Tools | ✅ Completed | Beginner | 45min |
-| 03 | OpenAPI Tools | ✅ Completed | Beginner | 1hr |
-| 04 | Sequential Workflows | ✅ Completed | Intermediate | 1hr |
-| 05 | Parallel Processing | ✅ Completed | Intermediate | 1hr |
-| 06 | Multi-Agent Systems | ✅ Completed | Intermediate | 1.5hr |
-| 07 | Loop Agents | ✅ Completed | Advanced | 1hr |
-| 08 | State & Memory | ✅ Completed | Advanced | 1.5hr |
-| 09 | Callbacks & Guardrails | ✅ Completed | Advanced | 2hr |
-| 10 | Evaluation & Testing | ✅ Completed | Advanced | 1.5hr |
-| 11 | Built-in Tools & Grounding | ✅ Completed | Intermediate | 1hr |
-| 12 | Planners & Thinking | ✅ Completed | Advanced | 1.5hr |
-| 13 | Code Execution | 📝 Draft | Advanced | 1.5hr |
-| 14 | Streaming & SSE | 📝 Draft | Intermediate | 1hr |
-| 15 | Live API Audio | 📝 Draft | Advanced | 1hr |
-| 16 | MCP Integration | 📝 Draft | Advanced | 1.5hr |
-| 17 | Agent-to-Agent Communication | 📝 Draft | Advanced | 1hr |
-| 18 | Events & Observability | 📝 Draft | Advanced | 1.5hr |
-| 19 | Artifacts & Files | 📝 Draft | Intermediate | 1hr |
-| 20 | YAML Configuration | 📝 Draft | Intermediate | 1hr |
-| 21 | Multimodal Image | 📝 Draft | Advanced | 1hr |
-| 22 | Model Selection | 📝 Draft | Advanced | 1.5hr |
-| 23 | Production Deployment | 📝 Draft | Advanced | 1.5hr |
-| 24 | Advanced Observability | 📝 Draft | Advanced | 1hr |
-| 25 | Best Practices | 📝 Draft | Advanced | 1.5hr |
-| 26 | Google AgentSpace | 📝 Draft | Advanced | 2hr |
-| 27 | Third-Party Framework Tools | 📝 Draft | Advanced | 1.5hr |
-| 28 | Using Other LLMs | 📝 Draft | Advanced | 2hr |
-| 29 | UI Integration Intro | 📝 Draft | Intermediate | 1.5hr |
-| 30 | Next.js ADK Integration | 📝 Draft | Advanced | 2hr |
-| 31 | React Vite ADK Integration | 📝 Draft | Advanced | 1.5hr |
-| 32 | Streamlit ADK Integration | 📝 Draft | Advanced | 2hr |
-| 33 | Slack ADK Integration | 📝 Draft | Advanced | 2hr |
-| 34 | PubSub ADK Integration | 📝 Draft | Advanced | 2hr |
+| Tutorial | Topic                        | Status       | Complexity   | Time  |
+| -------- | ---------------------------- | ------------ | ------------ | ----- |
+| 01       | Hello World Agent            | ✅ Completed | Beginner     | 30min |
+| 02       | Function Tools               | ✅ Completed | Beginner     | 45min |
+| 03       | OpenAPI Tools                | ✅ Completed | Beginner     | 1hr   |
+| 04       | Sequential Workflows         | ✅ Completed | Intermediate | 1hr   |
+| 05       | Parallel Processing          | ✅ Completed | Intermediate | 1hr   |
+| 06       | Multi-Agent Systems          | ✅ Completed | Intermediate | 1.5hr |
+| 07       | Loop Agents                  | ✅ Completed | Advanced     | 1hr   |
+| 08       | State & Memory               | ✅ Completed | Advanced     | 1.5hr |
+| 09       | Callbacks & Guardrails       | ✅ Completed | Advanced     | 2hr   |
+| 10       | Evaluation & Testing         | ✅ Completed | Advanced     | 1.5hr |
+| 11       | Built-in Tools & Grounding   | ✅ Completed | Intermediate | 1hr   |
+| 12       | Planners & Thinking          | ✅ Completed | Advanced     | 1.5hr |
+| 13       | Code Execution               | 📝 Draft     | Advanced     | 1.5hr |
+| 14       | Streaming & SSE              | 📝 Draft     | Intermediate | 1hr   |
+| 15       | Live API Audio               | 📝 Draft     | Advanced     | 1hr   |
+| 16       | MCP Integration              | 📝 Draft     | Advanced     | 1.5hr |
+| 17       | Agent-to-Agent Communication | 📝 Draft     | Advanced     | 1hr   |
+| 18       | Events & Observability       | 📝 Draft     | Advanced     | 1.5hr |
+| 19       | Artifacts & Files            | 📝 Draft     | Intermediate | 1hr   |
+| 20       | YAML Configuration           | 📝 Draft     | Intermediate | 1hr   |
+| 21       | Multimodal Image             | 📝 Draft     | Advanced     | 1hr   |
+| 22       | Model Selection              | 📝 Draft     | Advanced     | 1.5hr |
+| 23       | Production Deployment        | 📝 Draft     | Advanced     | 1.5hr |
+| 24       | Advanced Observability       | 📝 Draft     | Advanced     | 1hr   |
+| 25       | Best Practices               | 📝 Draft     | Advanced     | 1.5hr |
+| 26       | Google AgentSpace            | 📝 Draft     | Advanced     | 2hr   |
+| 27       | Third-Party Framework Tools  | 📝 Draft     | Advanced     | 1.5hr |
+| 28       | Using Other LLMs             | 📝 Draft     | Advanced     | 2hr   |
+| 29       | UI Integration Intro         | 📝 Draft     | Intermediate | 1.5hr |
+| 30       | Next.js ADK Integration      | 📝 Draft     | Advanced     | 2hr   |
+| 31       | React Vite ADK Integration   | 📝 Draft     | Advanced     | 1.5hr |
+| 32       | Streamlit ADK Integration    | 📝 Draft     | Advanced     | 2hr   |
+| 33       | Slack ADK Integration        | 📝 Draft     | Advanced     | 2hr   |
+| 34       | PubSub ADK Integration       | 📝 Draft     | Advanced     | 2hr   |
 
 ## 📊 Project Completion Status
 

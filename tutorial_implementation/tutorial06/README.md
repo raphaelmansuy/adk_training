@@ -38,17 +38,20 @@ Final Output: Publication-ready article!
 ## Quick Start
 
 1. **Install dependencies:**
+
    ```bash
    make setup
    ```
 
 2. **Configure API key:**
+
    ```bash
    cp content_publisher/.env.example content_publisher/.env
    # Edit content_publisher/.env and add your Google AI API key
    ```
 
 3. **Start development server:**
+
    ```bash
    make dev
    ```
@@ -67,18 +70,23 @@ Try these prompts to see multi-agent orchestration in action:
 ## How It Works
 
 ### Phase 1: Parallel Research
+
 The system runs three research pipelines simultaneously:
+
 - **News Pipeline**: Fetches current articles → Summarizes key points
 - **Social Pipeline**: Monitors trends → Analyzes sentiment
 - **Expert Pipeline**: Finds opinions → Extracts quotes
 
 ### Phase 2: Sequential Content Creation
+
 After all research completes, content is created through sequential refinement:
+
 - **Writer**: Synthesizes all research into a draft article
 - **Editor**: Improves clarity, flow, and impact
 - **Formatter**: Adds publication formatting and structure
 
 ### Performance Benefits
+
 - **Without orchestration**: ~90 seconds (9 agents sequentially)
 - **With multi-agent orchestration**: ~35 seconds (6 research agents parallel + 3 creation sequential)
 - **Speedup**: ~2.6x faster with sophisticated parallel processing
@@ -143,6 +151,7 @@ make test
 ```
 
 Tests cover:
+
 - ✅ Individual agent configurations (9 agents)
 - ✅ Sequential pipeline structures (3 pipelines)
 - ✅ Parallel research orchestration
@@ -203,14 +212,17 @@ This multi-agent pattern is perfect for:
 ### Common Issues
 
 **"Agents in parallel phase seem sequential"**
+
 - Check Events tab for actual start times
 - May be rate-limited by API
 
 **"Writer missing research data"**
+
 - Verify pipeline agents have `output_key` set
 - Check `{key}` syntax in writer instruction
 
 **"Complex to debug nested agents"**
+
 - Test each pipeline individually first
 - Use Events tab to trace execution flow
 - Add descriptive agent names
@@ -246,4 +258,4 @@ This implementation follows the established tutorial pattern:
 
 ---
 
-*Built with ❤️ for the ADK community*
+_Built with ❤️ for the ADK community_

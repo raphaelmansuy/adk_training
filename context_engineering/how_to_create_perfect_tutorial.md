@@ -104,6 +104,7 @@ tutorialXX/
 - Type hints and modern Python
 
 **Critical Security Rule:**
+
 ```bash
 # ❌ NEVER DO THIS - commits secrets to version control
 touch .env
@@ -175,7 +176,7 @@ Based on implementation findings:
 
 **Add Quick Start Section:**
 
-```markdown
+````markdown
 ## Quick Start
 
 The easiest way to get started is with our working implementation:
@@ -185,8 +186,10 @@ cd tutorial_implementation/tutorialXX
 make setup
 make dev
 ```
+````
 
 Then open `http://localhost:8000` in your browser!
+
 ```
 
 **Improve Clarity:**
@@ -394,3 +397,4 @@ Ensure we include a link to the working implementation in the original tutorial,
 ---
 
 *This guide was created through the implementation and refinement of Tutorial 01: Hello World Agent. See: [Tutorial 01 Implementation](tutorial_implementation/tutorial01/)*
+```

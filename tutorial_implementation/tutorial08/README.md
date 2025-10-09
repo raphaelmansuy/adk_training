@@ -96,14 +96,14 @@ Agent: Found 1 past sessions related to "python": Python Classes
 
 ## 🛠️ State Management Tools
 
-| Tool | Purpose | State Type |
-|------|---------|------------|
-| `set_user_preferences` | Store language/difficulty | Persistent (`user:`) |
-| `record_topic_completion` | Track completed topics | Persistent (`user:`) |
-| `get_user_progress` | Show learning statistics | Read persistent state |
-| `start_learning_session` | Begin new topic | Session state |
-| `calculate_quiz_grade` | Grade quizzes | Temporary (`temp:`) |
-| `search_past_lessons` | Find past sessions | Memory simulation |
+| Tool                      | Purpose                   | State Type            |
+| ------------------------- | ------------------------- | --------------------- |
+| `set_user_preferences`    | Store language/difficulty | Persistent (`user:`)  |
+| `record_topic_completion` | Track completed topics    | Persistent (`user:`)  |
+| `get_user_progress`       | Show learning statistics  | Read persistent state |
+| `start_learning_session`  | Begin new topic           | Session state         |
+| `calculate_quiz_grade`    | Grade quizzes             | Temporary (`temp:`)   |
+| `search_past_lessons`     | Find past sessions        | Memory simulation     |
 
 ## 📊 State Prefixes Explained
 

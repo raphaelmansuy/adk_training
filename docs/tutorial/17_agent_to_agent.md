@@ -4,12 +4,27 @@ title: "Tutorial 17: Agent-to-Agent Communication - Distributed Systems"
 description: "Build distributed agent systems with agent-to-agent communication, delegation, and coordination for complex multi-agent orchestration."
 sidebar_label: "17. Agent-to-Agent"
 sidebar_position: 17
-tags: ["advanced", "agent-communication", "distributed", "delegation", "coordination"]
-keywords: ["agent-to-agent", "distributed systems", "agent communication", "delegation", "multi-agent coordination"]
+tags:
+  [
+    "advanced",
+    "agent-communication",
+    "distributed",
+    "delegation",
+    "coordination",
+  ]
+keywords:
+  [
+    "agent-to-agent",
+    "distributed systems",
+    "agent communication",
+    "delegation",
+    "multi-agent coordination",
+  ]
 status: "draft"
 difficulty: "advanced"
 estimated_time: "2 hours"
-prerequisites: ["Tutorial 04: Sequential Workflows", "Tutorial 06: Multi-Agent Systems"]
+prerequisites:
+  ["Tutorial 04: Sequential Workflows", "Tutorial 06: Multi-Agent Systems"]
 learning_objectives:
   - "Implement agent-to-agent communication patterns"
   - "Build distributed agent networks"
@@ -23,12 +38,14 @@ implementation_link: "https://github.com/raphaelmansuy/adk_training/tree/main/tu
 **Goal**: Enable agents to communicate and collaborate with other remote agents using the Agent-to-Agent (A2A) protocol, creating distributed multi-agent systems.
 
 **Prerequisites**:
+
 - Tutorial 01 (Hello World Agent)
 - Tutorial 06 (Multi-Agent Systems)
 - Understanding of HTTP APIs and authentication
 - Basic knowledge of REST principles
 
 **What You'll Learn**:
+
 - Understanding Agent-to-Agent (A2A) protocol
 - Using `RemoteA2aAgent` to call remote agents
 - Agent discovery with agent cards (`.well-known/agent.json`)
@@ -48,6 +65,7 @@ implementation_link: "https://github.com/raphaelmansuy/adk_training/tree/main/tu
 **Solution**: **Agent-to-Agent (A2A)** protocol enables agents to discover and communicate with remote agents over HTTP, creating distributed AI systems.
 
 **Benefits**:
+
 - 🌐 **Distributed Intelligence**: Leverage agents across organizations
 - 🔍 **Discovery**: Find agents by capability via agent cards
 - 🔐 **Secure**: Built-in authentication and authorization
@@ -56,6 +74,7 @@ implementation_link: "https://github.com/raphaelmansuy/adk_training/tree/main/tu
 - ⚡ **Scalability**: Scale agents independently
 
 **Use Cases**:
+
 - Enterprise: Customer service agent calls internal knowledge agent
 - Multi-org: Legal agent consults external compliance agent
 - Microservices: Specialized agents as independent services
@@ -75,6 +94,7 @@ implementation_link: "https://github.com/raphaelmansuy/adk_training/tree/main/tu
 4. **Receive** responses from remote agents
 
 **Architecture**:
+
 ```
 Local Agent (Orchestrator)
     ↓
@@ -110,6 +130,7 @@ Remote agents expose an **agent card** at `.well-known/agent.json`:
 ```
 
 **Well-Known Path**:
+
 ```python
 from google.adk.agents import AGENT_CARD_WELL_KNOWN_PATH
 
@@ -178,29 +199,29 @@ class RemoteA2aAgent:
     def __init__(self, name: str, base_url: str):
         self.name = name
         self.base_url = base_url
-        
+
         # Fetch agent card for discovery
         self.agent_card = self._fetch_agent_card()
-    
+
     def _fetch_agent_card(self):
         """Fetch agent card from .well-known path."""
         url = f"{self.base_url}/.well-known/agent.json"
         response = requests.get(url)
         return response.json()
-    
+
     async def _run_async_impl(self, query: str, tool_context):
         """Invoke remote agent."""
-        
+
         # Authenticate
         auth_token = await self._authenticate()
-        
+
         # Call remote agent
         response = requests.post(
             f"{self.base_url}/execute",
             json={'query': query},
             headers={'Authorization': f'Bearer {auth_token}'}
         )
-        
+
         return response.json()['result']
 ```
 
@@ -232,37 +253,37 @@ os.environ['GOOGLE_CLOUD_LOCATION'] = 'us-central1'
 
 class MultiServiceOrchestrator:
     """Orchestrates multiple remote specialized agents."""
-    
+
     def __init__(self):
         """Initialize orchestrator with remote agents."""
-        
+
         # Remote research agent (hypothetical external service)
         self.research_agent = RemoteA2aAgent(
             name='research_specialist',
             base_url='https://research-agent.example.com',
             description='Conducts web research and fact-checking'
         )
-        
+
         # Remote analysis agent (hypothetical external service)
         self.analysis_agent = RemoteA2aAgent(
             name='data_analyst',
             base_url='https://analysis-agent.example.com',
             description='Analyzes data and generates insights'
         )
-        
+
         # Remote content agent (hypothetical external service)
         self.content_agent = RemoteA2aAgent(
             name='content_writer',
             base_url='https://content-agent.example.com',
             description='Creates written content and summaries'
         )
-        
+
         # Local coordination tool
         def log_action(action: str, agent_name: str) -> str:
             """Log coordination actions."""
             print(f"📝 [{agent_name}] {action}")
             return f"Logged: {action}"
-        
+
         # Main orchestrator agent
         self.orchestrator = Agent(
             model='gemini-2.0-flash',
@@ -305,40 +326,40 @@ Always explain which agent you're using and why.
                 max_output_tokens=2048
             )
         )
-        
+
         self.runner = Runner()
         self.session = Session()
-    
+
     async def execute_task(self, task: str):
         """
         Execute complex task with agent orchestration.
-        
+
         Args:
             task: Task description
         """
-        
+
         print(f"\n{'='*70}")
         print(f"TASK: {task}")
         print(f"{'='*70}\n")
-        
+
         result = await self.runner.run_async(
             task,
             agent=self.orchestrator,
             session=self.session
         )
-        
+
         print(f"\n📊 FINAL RESULT:\n")
         print(result.content.parts[0].text)
         print(f"\n{'='*70}\n")
-        
+
         return result
 
 
 async def main():
     """Main entry point."""
-    
+
     orchestrator = MultiServiceOrchestrator()
-    
+
     # Example 1: Market research
     await orchestrator.execute_task("""
 Create a comprehensive market analysis report on electric vehicles:
@@ -346,9 +367,9 @@ Create a comprehensive market analysis report on electric vehicles:
 2. Analyze sales data by region
 3. Write executive summary with key insights
     """)
-    
+
     await asyncio.sleep(2)
-    
+
     # Example 2: Competitive analysis
     await orchestrator.execute_task("""
 Compare top 3 AI companies (OpenAI, Anthropic, Google DeepMind):
@@ -356,9 +377,9 @@ Compare top 3 AI companies (OpenAI, Anthropic, Google DeepMind):
 2. Analyze their product offerings and market position
 3. Create comparison summary
     """)
-    
+
     await asyncio.sleep(2)
-    
+
     # Example 3: Technical deep-dive
     await orchestrator.execute_task("""
 Produce technical analysis of quantum computing progress in 2025:
@@ -409,8 +430,8 @@ TASK: Create a comprehensive market analysis report on electric vehicles:
 
 ## Key Findings
 
-The global electric vehicle market experienced remarkable growth in 2025, with 
-sales increasing 35% year-over-year. This analysis examines current trends, 
+The global electric vehicle market experienced remarkable growth in 2025, with
+sales increasing 35% year-over-year. This analysis examines current trends,
 regional performance, and strategic implications.
 
 ## Market Overview
@@ -471,10 +492,10 @@ from google.adk.agents import RemoteA2aAgent
 remote_agent = RemoteA2aAgent(
     name='secure_agent',
     base_url='https://secure-agent.example.com',
-    
+
     # Authentication configured via agent card
     # Card specifies: {"authentication": {"type": "bearer", "required": true}}
-    
+
     # Token can be provided via:
     # 1. Environment variable: REMOTE_AGENT_TOKEN
     # 2. Credential storage
@@ -612,10 +633,10 @@ from typing import List, Dict
 
 class AgentRegistry:
     """Discover and manage remote agents."""
-    
+
     def __init__(self, registry_url: str):
         self.registry_url = registry_url
-    
+
     def discover_agents(self, capability: str) -> List[Dict]:
         """Find agents by capability."""
         response = requests.get(
@@ -623,7 +644,7 @@ class AgentRegistry:
             params={'capability': capability}
         )
         return response.json()['agents']
-    
+
     def create_remote_agent(self, agent_info: Dict) -> RemoteA2aAgent:
         """Create RemoteA2aAgent from registry info."""
         return RemoteA2aAgent(
@@ -695,19 +716,19 @@ async def get_agent_card():
 @app.post("/execute")
 async def execute_agent(request: dict, authorization: str = None):
     """Execute agent with A2A protocol."""
-    
+
     # Validate authentication
     if not authorization or not authorization.startswith('Bearer '):
         return {"error": "Unauthorized"}, 401
-    
+
     # Extract query
     query = request.get('query')
-    
+
     # Execute agent
     from google.adk.agents import Runner
     runner = Runner()
     result = await runner.run_async(query, agent=my_agent)
-    
+
     return {
         "result": result.content.parts[0].text,
         "agent": "youtube_helper"
@@ -852,6 +873,7 @@ remote = RemoteA2aAgent(
 **Problem**: Remote agent doesn't expose agent card
 
 **Solution**:
+
 ```bash
 # Test agent card manually
 curl https://remote-agent.example.com/.well-known/agent.json
@@ -867,18 +889,21 @@ curl https://remote-agent.example.com/.well-known/agent.json
 **Solutions**:
 
 1. **Check environment variable**:
+
 ```python
 import os
 print(os.environ.get('REMOTE_AGENT_TOKEN'))
 ```
 
 2. **Verify token with agent**:
+
 ```bash
 curl -H "Authorization: Bearer YOUR_TOKEN" \
      https://remote-agent.example.com/execute
 ```
 
 3. **Check agent card auth requirements**:
+
 ```bash
 curl https://remote-agent.example.com/.well-known/agent.json | \
      jq '.authentication'
@@ -891,6 +916,7 @@ curl https://remote-agent.example.com/.well-known/agent.json | \
 **Solutions**:
 
 1. **Set appropriate timeout**:
+
 ```python
 remote = RemoteA2aAgent(
     name='agent',
@@ -900,6 +926,7 @@ remote = RemoteA2aAgent(
 ```
 
 2. **Use caching**:
+
 ```python
 from functools import lru_cache
 
@@ -916,6 +943,7 @@ def call_remote_cached(query: str):
 You've mastered Agent-to-Agent communication:
 
 **Key Takeaways**:
+
 - ✅ `RemoteA2aAgent` enables distributed agent systems
 - ✅ Agent cards at `.well-known/agent.json` enable discovery
 - ✅ Built-in authentication support (bearer tokens)
@@ -926,6 +954,7 @@ You've mastered Agent-to-Agent communication:
 - ✅ Use agent registries for dynamic discovery
 
 **Production Checklist**:
+
 - [ ] Agent cards properly configured
 - [ ] Authentication implemented and tested
 - [ ] Timeouts set for all remote calls
@@ -936,11 +965,13 @@ You've mastered Agent-to-Agent communication:
 - [ ] Security reviewed (TLS, auth, secrets)
 
 **Next Steps**:
+
 - **Tutorial 18**: Learn Events & Observability
 - **Tutorial 19**: Implement Artifacts & File Management
 - **Tutorial 20**: Master YAML Configuration
 
 **Resources**:
+
 - [A2A Protocol Specification](https://google.github.io/adk-docs/a2a/)
 - [Sample: a2a_auth](research/adk-python/contributing/samples/a2a_auth/)
 - [Agent Card Schema](https://google.github.io/adk-docs/a2a/agent-card/)

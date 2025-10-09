@@ -30,12 +30,12 @@ graph TD
 
 ### When to Use Each Agent Type
 
-| Agent Type | When to Use | Example Use Cases |
-|------------|-------------|-------------------|
-| **LLM Agent** | Single-step tasks, pure reasoning | Q&A, analysis, simple classification |
-| **SequentialAgent** | Ordered dependencies, pipeline workflows | Data processing → analysis → reporting |
-| **ParallelAgent** | Independent tasks, speed optimization | Multi-source data collection, parallel analysis |
-| **LoopAgent** | Iterative refinement, quality improvement | Code review, content editing, optimization |
+| Agent Type          | When to Use                               | Example Use Cases                               |
+| ------------------- | ----------------------------------------- | ----------------------------------------------- |
+| **LLM Agent**       | Single-step tasks, pure reasoning         | Q&A, analysis, simple classification            |
+| **SequentialAgent** | Ordered dependencies, pipeline workflows  | Data processing → analysis → reporting          |
+| **ParallelAgent**   | Independent tasks, speed optimization     | Multi-source data collection, parallel analysis |
+| **LoopAgent**       | Iterative refinement, quality improvement | Code review, content editing, optimization      |
 
 ---
 
@@ -57,13 +57,13 @@ graph TD
 
 ### Tool Decision Criteria
 
-| Criteria | Function Tools | OpenAPI Tools | MCP Tools |
-|----------|----------------|----------------|-----------|
-| **Development Speed** | Fastest | Medium | Slowest |
-| **Maintenance** | Highest | Medium | Lowest |
-| **Flexibility** | Maximum | Limited | Medium |
-| **Interoperability** | None | Limited | Maximum |
-| **Security** | Custom | API Keys | Built-in |
+| Criteria              | Function Tools | OpenAPI Tools | MCP Tools |
+| --------------------- | -------------- | ------------- | --------- |
+| **Development Speed** | Fastest        | Medium        | Slowest   |
+| **Maintenance**       | Highest        | Medium        | Lowest    |
+| **Flexibility**       | Maximum        | Limited       | Medium    |
+| **Interoperability**  | None           | Limited       | Maximum   |
+| **Security**          | Custom         | API Keys      | Built-in  |
 
 ---
 
@@ -85,13 +85,13 @@ graph TD
 
 ### Model Selection Guide
 
-| Use Case | Recommended Model | Reasoning |
-|----------|-------------------|-----------|
-| **Fast Responses** | `gemini-2.0-flash` | Speed optimized, cost effective |
-| **Complex Reasoning** | `gemini-2.0-flash-thinking` | Built-in chain-of-thought |
-| **Code Generation** | `gemini-2.0-flash` | Strong coding capabilities |
-| **Multimodal** | `gemini-2.0-flash` | Vision, audio, video support |
-| **Live Interaction** | `gemini-2.0-flash-live` | Real-time streaming |
+| Use Case              | Recommended Model           | Reasoning                       |
+| --------------------- | --------------------------- | ------------------------------- |
+| **Fast Responses**    | `gemini-2.0-flash`          | Speed optimized, cost effective |
+| **Complex Reasoning** | `gemini-2.0-flash-thinking` | Built-in chain-of-thought       |
+| **Code Generation**   | `gemini-2.0-flash`          | Strong coding capabilities      |
+| **Multimodal**        | `gemini-2.0-flash`          | Vision, audio, video support    |
+| **Live Interaction**  | `gemini-2.0-flash-live`     | Real-time streaming             |
 
 ---
 
@@ -112,13 +112,13 @@ graph TD
 
 ### Deployment Decision Factors
 
-| Factor | Local | Cloud Run | Agent Engine | GKE |
-|--------|-------|-----------|--------------|-----|
-| **Setup Time** | Fastest | Fast | Medium | Slowest |
-| **Scaling** | Manual | Automatic | Automatic | Automatic |
-| **Cost** | Free | Pay-per-use | Pay-per-use | Infrastructure |
-| **Customization** | Maximum | Limited | Limited | Maximum |
-| **Monitoring** | Basic | Basic | Advanced | Advanced |
+| Factor            | Local   | Cloud Run   | Agent Engine | GKE            |
+| ----------------- | ------- | ----------- | ------------ | -------------- |
+| **Setup Time**    | Fastest | Fast        | Medium       | Slowest        |
+| **Scaling**       | Manual  | Automatic   | Automatic    | Automatic      |
+| **Cost**          | Free    | Pay-per-use | Pay-per-use  | Infrastructure |
+| **Customization** | Maximum | Limited     | Limited      | Maximum        |
+| **Monitoring**    | Basic   | Basic       | Advanced     | Advanced       |
 
 ---
 
@@ -139,13 +139,13 @@ graph TD
 
 ### State Scope Guidelines
 
-| Data Type | Recommended Scope | Retention | Encryption |
-|-----------|-------------------|-----------|------------|
-| **User Preferences** | `user:` | Permanent | Always |
-| **Session Context** | `session:` | Session | Optional |
-| **Temporary Data** | `temp:` | Request | Optional |
-| **Application Config** | `app:` | Permanent | Always |
-| **Sensitive PII** | `user:` | Permanent | Required |
+| Data Type              | Recommended Scope | Retention | Encryption |
+| ---------------------- | ----------------- | --------- | ---------- |
+| **User Preferences**   | `user:`           | Permanent | Always     |
+| **Session Context**    | `session:`        | Session   | Optional   |
+| **Temporary Data**     | `temp:`           | Request   | Optional   |
+| **Application Config** | `app:`            | Permanent | Always     |
+| **Sensitive PII**      | `user:`           | Permanent | Required   |
 
 ---
 

@@ -467,7 +467,6 @@ Final Output: Publication-ready article!
    - Each has 2-step pipeline (gather → process)
    - All 3 pipelines run simultaneously = FAST
 2. **Phase 2 (Sequential Creation)**:
-
    - Writer NEEDS all 3 research outputs
    - Editor NEEDS writer's draft
    - Formatter NEEDS editor's version

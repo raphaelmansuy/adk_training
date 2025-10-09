@@ -5,11 +5,24 @@ description: "Learn essential best practices for building production-ready agent
 sidebar_label: "25. Best Practices"
 sidebar_position: 25
 tags: ["advanced", "best-practices", "production", "security", "performance"]
-keywords: ["best practices", "production ready", "security", "performance", "testing", "maintenance"]
+keywords:
+  [
+    "best practices",
+    "production ready",
+    "security",
+    "performance",
+    "testing",
+    "maintenance",
+  ]
 status: "draft"
 difficulty: "advanced"
 estimated_time: "2 hours"
-prerequisites: ["Tutorial 09: Callbacks & Guardrails", "Tutorial 23: Production Deployment", "Production development experience"]
+prerequisites:
+  [
+    "Tutorial 09: Callbacks & Guardrails",
+    "Tutorial 23: Production Deployment",
+    "Production development experience",
+  ]
 learning_objectives:
   - "Implement security best practices for agents"
   - "Optimize agent performance and reliability"
@@ -90,30 +103,30 @@ Task Complexity?
 
 **Decision Matrix**:
 
-| Requirement | Recommended Model | Rationale |
-|-------------|------------------|-----------|
-| Real-time voice | gemini-2.0-flash-live | Bidirectional streaming |
-| Complex reasoning | gemini-2.0-flash-thinking | Extended thinking |
-| High volume, simple | gemini-1.5-flash-8b | Cost-effective, fast |
-| Critical business | gemini-1.5-pro | Highest quality |
-| General production | gemini-2.0-flash | Balanced |
+| Requirement         | Recommended Model         | Rationale               |
+| ------------------- | ------------------------- | ----------------------- |
+| Real-time voice     | gemini-2.0-flash-live     | Bidirectional streaming |
+| Complex reasoning   | gemini-2.0-flash-thinking | Extended thinking       |
+| High volume, simple | gemini-1.5-flash-8b       | Cost-effective, fast    |
+| Critical business   | gemini-1.5-pro            | Highest quality         |
+| General production  | gemini-2.0-flash          | Balanced                |
 
 ```python
 def select_model(use_case: dict) -> str:
     """Model selection based on use case."""
-    
+
     if use_case.get('real_time'):
         return 'gemini-2.0-flash-live'
-    
+
     if use_case.get('complex_reasoning'):
         return 'gemini-2.0-flash-thinking'
-    
+
     if use_case.get('high_volume') and use_case.get('simple'):
         return 'gemini-1.5-flash-8b'
-    
+
     if use_case.get('critical'):
         return 'gemini-1.5-pro'
-    
+
     return 'gemini-2.0-flash'  # Default
 ```
 
@@ -190,7 +203,7 @@ for i, query in enumerate(queries):
     if i % 10 == 0:
         # Clear session every 10 queries
         session = Session()
-    
+
     result = runner.run(query, agent=agent, session=session)
 
 
@@ -219,7 +232,7 @@ class CachedDataStore:
     def __init__(self, ttl_seconds: int = 300):
         self.cache = {}
         self.ttl = ttl_seconds
-    
+
     def get(self, key: str):
         if key in self.cache:
             value, timestamp = self.cache[key]
@@ -227,7 +240,7 @@ class CachedDataStore:
                 return value
             del self.cache[key]
         return None
-    
+
     def set(self, key: str, value):
         self.cache[key] = (value, time.time())
 ```
@@ -240,14 +253,14 @@ import asyncio
 # ✅ GOOD: Process independent queries in parallel
 async def batch_process(queries: list[str], agent: Agent):
     """Process multiple queries in parallel."""
-    
+
     runner = Runner()
-    
+
     tasks = [
         runner.run_async(query, agent=agent)
         for query in queries
     ]
-    
+
     results = await asyncio.gather(*tasks)
     return results
 
@@ -255,14 +268,14 @@ async def batch_process(queries: list[str], agent: Agent):
 # ❌ BAD: Sequential processing
 async def sequential_process(queries: list[str], agent: Agent):
     """Process queries sequentially (slower)."""
-    
+
     runner = Runner()
     results = []
-    
+
     for query in queries:
         result = await runner.run_async(query, agent=agent)
         results.append(result)
-    
+
     return results
 ```
 
@@ -277,31 +290,31 @@ from pydantic import BaseModel, validator, Field
 
 class QueryRequest(BaseModel):
     """Validated query request."""
-    
+
     query: str = Field(..., min_length=1, max_length=10000)
     user_id: str = Field(..., regex=r'^[A-Za-z0-9_-]+$')
-    
+
     @validator('query')
     def validate_query(cls, v):
         """Validate query content."""
-        
+
         # Block SQL injection attempts
         dangerous_patterns = ['DROP TABLE', 'DELETE FROM', '; --']
         v_upper = v.upper()
-        
+
         for pattern in dangerous_patterns:
             if pattern in v_upper:
                 raise ValueError(f"Potentially dangerous pattern detected")
-        
+
         return v
-    
+
     @validator('user_id')
     def validate_user_id(cls, v):
         """Validate user ID format."""
-        
+
         if len(v) > 100:
             raise ValueError("User ID too long")
-        
+
         return v
 
 
@@ -329,15 +342,15 @@ async def verify_token(
     credentials: HTTPAuthorizationCredentials = Security(security)
 ) -> str:
     """Verify authentication token."""
-    
+
     token = credentials.credentials
-    
+
     # Verify token (e.g., JWT verification)
     user_id = verify_jwt_token(token)
-    
+
     if not user_id:
         raise HTTPException(status_code=401, detail="Invalid token")
-    
+
     return user_id
 
 
@@ -347,14 +360,14 @@ async def invoke_agent(
     user_id: str = Depends(verify_token)
 ):
     """Invoke agent with authentication."""
-    
+
     # Check authorization
     if not user_has_permission(user_id, 'invoke_agent'):
         raise HTTPException(status_code=403, detail="Forbidden")
-    
+
     # Process request
     result = await runner.run_async(request.query, agent=agent)
-    
+
     return {"response": result.content.parts[0].text}
 ```
 
@@ -366,14 +379,14 @@ import os
 
 class SecretsManager:
     """Centralized secrets management."""
-    
+
     def __init__(self):
         self.client = secretmanager.SecretManagerServiceClient()
         self.project_id = os.environ['GOOGLE_CLOUD_PROJECT']
-    
+
     def get_secret(self, secret_id: str) -> str:
         """Retrieve secret value."""
-        
+
         name = f"projects/{self.project_id}/secrets/{secret_id}/versions/latest"
         response = self.client.access_secret_version(request={"name": name})
         return response.payload.data.decode('UTF-8')
@@ -396,18 +409,18 @@ from collections import defaultdict
 
 class RateLimiter:
     """Token bucket rate limiter."""
-    
+
     def __init__(self, requests_per_minute: int = 60):
         self.rate = requests_per_minute / 60.0  # requests per second
         self.buckets = defaultdict(lambda: {'tokens': requests_per_minute, 'last_update': time.time()})
         self.capacity = requests_per_minute
-    
+
     def is_allowed(self, client_id: str) -> bool:
         """Check if request is allowed."""
-        
+
         bucket = self.buckets[client_id]
         now = time.time()
-        
+
         # Add tokens based on time elapsed
         elapsed = now - bucket['last_update']
         bucket['tokens'] = min(
@@ -415,12 +428,12 @@ class RateLimiter:
             bucket['tokens'] + elapsed * self.rate
         )
         bucket['last_update'] = now
-        
+
         # Check if we have tokens
         if bucket['tokens'] >= 1:
             bucket['tokens'] -= 1
             return True
-        
+
         return False
 
 
@@ -430,12 +443,12 @@ rate_limiter = RateLimiter(requests_per_minute=100)
 @app.middleware("http")
 async def rate_limit_middleware(request: Request, call_next):
     """Rate limiting middleware."""
-    
+
     client_id = request.client.host
-    
+
     if not rate_limiter.is_allowed(client_id):
         raise HTTPException(status_code=429, detail="Rate limit exceeded")
-    
+
     response = await call_next(request)
     return response
 ```
@@ -459,30 +472,30 @@ async def robust_agent_invocation(
     max_retries: int = 3
 ) -> Optional[str]:
     """Invoke agent with error handling and retries."""
-    
+
     runner = Runner()
-    
+
     for attempt in range(max_retries):
         try:
             result = await runner.run_async(query, agent=agent)
             return result.content.parts[0].text
-        
+
         except TimeoutError:
             logger.warning(f"Timeout on attempt {attempt + 1}")
             if attempt == max_retries - 1:
                 raise
             await asyncio.sleep(2 ** attempt)  # Exponential backoff
-        
+
         except ValueError as e:
             logger.error(f"Invalid input: {e}")
             raise  # Don't retry on validation errors
-        
+
         except Exception as e:
             logger.error(f"Unexpected error on attempt {attempt + 1}: {e}")
             if attempt == max_retries - 1:
                 raise
             await asyncio.sleep(2 ** attempt)
-    
+
     return None
 ```
 
@@ -500,7 +513,7 @@ class CircuitState(Enum):
 
 class CircuitBreaker:
     """Circuit breaker for external dependencies."""
-    
+
     def __init__(
         self,
         failure_threshold: int = 5,
@@ -511,32 +524,32 @@ class CircuitBreaker:
         self.failures = 0
         self.last_failure_time = None
         self.state = CircuitState.CLOSED
-    
+
     def call(self, func, *args, **kwargs):
         """Execute function with circuit breaker."""
-        
+
         if self.state == CircuitState.OPEN:
             if time.time() - self.last_failure_time > self.timeout:
                 self.state = CircuitState.HALF_OPEN
             else:
                 raise Exception("Circuit breaker is OPEN")
-        
+
         try:
             result = func(*args, **kwargs)
-            
+
             if self.state == CircuitState.HALF_OPEN:
                 self.state = CircuitState.CLOSED
                 self.failures = 0
-            
+
             return result
-        
+
         except Exception as e:
             self.failures += 1
             self.last_failure_time = time.time()
-            
+
             if self.failures >= self.failure_threshold:
                 self.state = CircuitState.OPEN
-            
+
             raise
 
 
@@ -557,27 +570,27 @@ async def get_product_recommendation(
     fallback_to_popular: bool = True
 ) -> list[str]:
     """Get personalized recommendations with fallback."""
-    
+
     try:
         # Try personalized recommendations
         query = f"Recommend products for user {user_id}"
         result = await runner.run_async(query, agent=agent, timeout=5.0)
-        
+
         recommendations = parse_recommendations(result)
-        
+
         if recommendations:
             return recommendations
-    
+
     except TimeoutError:
         logger.warning("Recommendation timeout, using fallback")
-    
+
     except Exception as e:
         logger.error(f"Recommendation error: {e}")
-    
+
     # Fallback to popular products
     if fallback_to_popular:
         return get_popular_products()
-    
+
     return []
 ```
 
@@ -604,9 +617,9 @@ complex_analyzer = Agent(
 # ✅ Dynamic model selection
 def get_agent_for_query(query: str) -> Agent:
     """Select appropriate agent based on query complexity."""
-    
+
     complexity = estimate_complexity(query)
-    
+
     if complexity == 'simple':
         return Agent(model='gemini-1.5-flash-8b')
     elif complexity == 'moderate':
@@ -623,9 +636,9 @@ instruction = "Summarize user feedback in 2-3 sentences."
 
 # ❌ BAD: Verbose instructions
 instruction = """
-Please carefully read the user feedback provided below and 
+Please carefully read the user feedback provided below and
 create a comprehensive summary that captures all the key points
-and important details while being concise but thorough and 
+and important details while being concise but thorough and
 making sure not to miss any critical information...
 """
 
@@ -649,31 +662,31 @@ _agent_cache = {}
 
 def get_agent(model: str, instruction: str) -> Agent:
     """Get cached agent instance."""
-    
+
     cache_key = f"{model}:{hash(instruction)}"
-    
+
     if cache_key not in _agent_cache:
         _agent_cache[cache_key] = Agent(
             model=model,
             instruction=instruction
         )
-    
+
     return _agent_cache[cache_key]
 
 
 # ✅ Batch similar queries
 async def batch_classify(texts: list[str]) -> list[str]:
     """Batch classification for cost efficiency."""
-    
+
     # Process in single query instead of multiple
     combined_query = "\n".join([
         f"{i+1}. {text}" for i, text in enumerate(texts)
     ])
-    
+
     prompt = f"Classify sentiment for each item:\n\n{combined_query}"
-    
+
     result = await runner.run_async(prompt, agent=classifier)
-    
+
     return parse_batch_results(result)
 ```
 
@@ -690,15 +703,15 @@ from unittest.mock import Mock, AsyncMock
 @pytest.mark.asyncio
 async def test_agent_basic_query():
     """Test basic agent query."""
-    
+
     agent = Agent(
         model='gemini-2.0-flash',
         instruction="Answer concisely"
     )
-    
+
     runner = Runner()
     result = await runner.run_async("What is 2+2?", agent=agent)
-    
+
     response = result.content.parts[0].text
     assert '4' in response
 
@@ -706,18 +719,18 @@ async def test_agent_basic_query():
 @pytest.mark.asyncio
 async def test_tool_invocation():
     """Test tool is called correctly."""
-    
+
     mock_tool = Mock()
     mock_tool.return_value = "Order status: shipped"
-    
+
     agent = Agent(
         model='gemini-2.0-flash',
         tools=[FunctionTool(mock_tool)]
     )
-    
+
     runner = Runner()
     await runner.run_async("Check order ORD-123", agent=agent)
-    
+
     # Verify tool was called
     assert mock_tool.called
 ```
@@ -728,24 +741,24 @@ async def test_tool_invocation():
 @pytest.mark.asyncio
 async def test_multi_agent_workflow():
     """Test complete multi-agent workflow."""
-    
+
     order_agent = Agent(model='gemini-2.0-flash', name='order')
     billing_agent = Agent(model='gemini-2.0-flash', name='billing')
-    
+
     coordinator = Agent(
         model='gemini-2.0-flash',
         name='coordinator',
         agents=[order_agent, billing_agent]
     )
-    
+
     runner = Runner()
     result = await runner.run_async(
         "Check my order and billing status",
         agent=coordinator
     )
-    
+
     response = result.content.parts[0].text
-    
+
     # Verify both agents contributed
     assert 'order' in response.lower()
     assert 'billing' in response.lower()
@@ -771,26 +784,26 @@ test_cases = [
 
 async def run_evaluation():
     """Run comprehensive evaluation."""
-    
+
     results = []
-    
+
     for test in test_cases:
         result = await runner.run_async(test['query'], agent=agent)
         response = result.content.parts[0].text.lower()
-        
+
         score = sum(1 for kw in test['expected_keywords'] if kw in response)
         max_score = len(test['expected_keywords'])
-        
+
         results.append({
             'query': test['query'],
             'score': score / max_score,
             'response': response
         })
-    
+
     avg_score = sum(r['score'] for r in results) / len(results)
-    
+
     print(f"Average Score: {avg_score * 100:.1f}%")
-    
+
     return results
 ```
 
@@ -836,6 +849,7 @@ async def run_evaluation():
 **Problem**: Long, rambling instructions confuse the model.
 
 **Solution**:
+
 ```python
 # ❌ BAD
 instruction = "You need to help users with their questions and be nice and..."
@@ -853,6 +867,7 @@ Tone: Professional, helpful
 **Problem**: Crashes on first error.
 
 **Solution**:
+
 ```python
 # ✅ Comprehensive error handling
 try:
@@ -871,6 +886,7 @@ except Exception as e:
 **Problem**: Exceeding context window causes failures.
 
 **Solution**:
+
 ```python
 # ✅ Manage context size
 def trim_history(history: list, max_length: int = 10) -> list:
@@ -885,6 +901,7 @@ def trim_history(history: list, max_length: int = 10) -> list:
 **Problem**: No visibility into production behavior.
 
 **Solution**:
+
 ```python
 # ✅ Comprehensive monitoring
 run_config = RunConfig(
@@ -902,16 +919,19 @@ You've completed the comprehensive ADK training series!
 **Key Takeaways Across All 25 Tutorials**:
 
 **Foundations (01-05)**:
+
 - ✅ Agent basics and model integration
 - ✅ Function tools and OpenAPI integration
 - ✅ Sequential, parallel, and loop workflows
 
 **Advanced Features (06-10)**:
+
 - ✅ Multi-agent systems and orchestration
 - ✅ Multi-turn conversations and state management
 - ✅ Callbacks, guardrails, evaluation frameworks
 
 **Production Capabilities (11-18)**:
+
 - ✅ Built-in tools (search, grounding, code execution)
 - ✅ Planners and thinking modes
 - ✅ Streaming (SSE and bidirectional)
@@ -919,6 +939,7 @@ You've completed the comprehensive ADK training series!
 - ✅ Events and comprehensive observability
 
 **Configuration & Deployment (19-25)**:
+
 - ✅ Artifacts and file management
 - ✅ YAML configuration
 - ✅ Multimodal and image generation
@@ -956,6 +977,7 @@ You've completed the comprehensive ADK training series!
 **You've mastered the Google GenAI Agent Development Kit from first principles through advanced production deployment!**
 
 **Total Coverage:**
+
 - 25 comprehensive tutorials
 - 19,500+ lines of content
 - Beginner → Expert progression

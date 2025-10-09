@@ -5,7 +5,8 @@ description: "Build your first AI agent with Google Agent Development Kit (ADK).
 sidebar_label: "01. Hello World Agent"
 sidebar_position: 1
 tags: ["beginner", "agent", "fundamentals", "adk-basics"]
-keywords: ["google adk", "ai agent", "hello world", "beginner tutorial", "first agent"]
+keywords:
+  ["google adk", "ai agent", "hello world", "beginner tutorial", "first agent"]
 status: "completed"
 difficulty: "beginner"
 estimated_time: "30 minutes"
@@ -33,17 +34,21 @@ Build your first AI agent with Google Agent Development Kit (ADK). This tutorial
 ## Core Concepts
 
 ### What is an Agent?
+
 An **agent** in ADK is an AI assistant powered by a Large Language Model (LLM). Think of it as a blueprint that defines:
+
 - What the agent's purpose is (its instructions)
 - Which LLM model powers it (e.g., Gemini)
 - What capabilities it has (tools - we'll add these in the next tutorial)
 
 ### The Agent Class
+
 ADK provides the `Agent` class as the modern way to define agents. It's a simple configuration object - you just tell it what you want!
 
 ## Use Case
 
 We're building a **friendly AI assistant** that:
+
 - Greets users warmly
 - Answers general questions conversationally
 - Has no special tools yet (just pure conversation)
@@ -121,7 +126,7 @@ Replace `your-api-key-here` with your actual API key from [Google AI Studio](htt
 
 Open `__init__.py` and add this single line:
 
-#### hello_agent/__init__.py
+#### hello_agent/**init**.py
 
 ```python
 from . import agent

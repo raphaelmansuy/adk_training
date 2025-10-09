@@ -5,11 +5,24 @@ description: "Configure agents to work with different LLM providers including Op
 sidebar_label: "28. Other LLMs"
 sidebar_position: 28
 tags: ["advanced", "llms", "multi-model", "providers", "configuration"]
-keywords: ["other llms", "openai", "anthropic", "multi-model", "llm providers", "model configuration"]
+keywords:
+  [
+    "other llms",
+    "openai",
+    "anthropic",
+    "multi-model",
+    "llm providers",
+    "model configuration",
+  ]
 status: "draft"
 difficulty: "advanced"
 estimated_time: "1.5 hours"
-prerequisites: ["Tutorial 01: Hello World Agent", "Tutorial 22: Model Selection", "Multiple LLM API access"]
+prerequisites:
+  [
+    "Tutorial 01: Hello World Agent",
+    "Tutorial 22: Model Selection",
+    "Multiple LLM API access",
+  ]
 learning_objectives:
   - "Configure agents with different LLM providers"
   - "Compare capabilities across model providers"
@@ -23,11 +36,13 @@ implementation_link: "https://github.com/raphaelmansuy/adk_training/tree/main/tu
 **Goal**: Use OpenAI, Claude, Ollama, and other LLMs in your ADK agents via LiteLLM
 
 **Prerequisites**:
+
 - Tutorial 01 (Hello World Agent)
 - Tutorial 22 (Model Selection & Configuration)
 - Basic understanding of API keys and environment variables
 
 **What You'll Learn**:
+
 - Using OpenAI models (GPT-4o, GPT-4o-mini) with ADK
 - Using Anthropic Claude models (3.7 Sonnet, Opus, Haiku) with ADK
 - Running local models with Ollama (Llama3.3, Mistral, Phi4)
@@ -46,6 +61,7 @@ implementation_link: "https://github.com/raphaelmansuy/adk_training/tree/main/tu
 **LiteLLM** enables ADK agents to use **100+ LLM providers** with a unified interface.
 
 **When to Use LiteLLM**:
+
 - ✅ Need OpenAI models (GPT-4o, GPT-4o-mini)
 - ✅ Want Anthropic Claude (3.7 Sonnet, Opus, Haiku)
 - ✅ Running local models with Ollama (privacy, cost, offline)
@@ -54,6 +70,7 @@ implementation_link: "https://github.com/raphaelmansuy/adk_training/tree/main/tu
 - ✅ Comparing model performance across providers
 
 **When NOT to Use LiteLLM**:
+
 - ❌ **Using Gemini models** → Use native `GoogleGenAI` (better performance, features)
 - ❌ Simple prototype with just Gemini
 - ❌ When you need Gemini-specific features (thinking_config, grounding)
@@ -67,6 +84,7 @@ implementation_link: "https://github.com/raphaelmansuy/adk_training/tree/main/tu
 ### Setup
 
 **1. Install dependencies**:
+
 ```bash
 pip install google-adk[litellm]
 # Or manually:
@@ -76,6 +94,7 @@ pip install litellm openai
 **2. Get API key** from https://platform.openai.com/api-keys
 
 **3. Set environment variable**:
+
 ```bash
 export OPENAI_API_KEY='sk-...'
 ```
@@ -104,10 +123,10 @@ def calculate_square(number: int) -> int:
 
 async def main():
     """Agent using OpenAI GPT-4o."""
-    
+
     # Create LiteLLM model - format: "openai/model-name"
     gpt4o_model = LiteLlm(model='openai/gpt-4o')
-    
+
     # Create agent with OpenAI model
     agent = Agent(
         model=gpt4o_model,  # Use LiteLlm instance, not string
@@ -116,15 +135,15 @@ async def main():
         instruction='You are a helpful assistant.',
         tools=[FunctionTool(calculate_square)]
     )
-    
+
     # Run queries
     runner = Runner()
-    
+
     result = await runner.run_async(
         "What is the square of 12?",
         agent=agent
     )
-    
+
     print(result.content.parts[0].text)
 
 
@@ -133,6 +152,7 @@ if __name__ == '__main__':
 ```
 
 **Output**:
+
 ```
 The square of 12 is 144.
 ```
@@ -165,12 +185,12 @@ complex_agent = Agent(
 
 ### Available OpenAI Models
 
-| Model | Input Cost | Output Cost | Best For |
-|-------|-----------|-------------|----------|
-| `openai/gpt-4o` | $2.50/1M tokens | $10/1M tokens | Complex reasoning, coding |
+| Model                | Input Cost      | Output Cost     | Best For                  |
+| -------------------- | --------------- | --------------- | ------------------------- |
+| `openai/gpt-4o`      | $2.50/1M tokens | $10/1M tokens   | Complex reasoning, coding |
 | `openai/gpt-4o-mini` | $0.15/1M tokens | $0.60/1M tokens | Simple tasks, high volume |
-| `openai/o1` | $15/1M tokens | $60/1M tokens | Advanced reasoning chains |
-| `openai/o1-mini` | $3/1M tokens | $12/1M tokens | STEM reasoning |
+| `openai/o1`          | $15/1M tokens   | $60/1M tokens   | Advanced reasoning chains |
+| `openai/o1-mini`     | $3/1M tokens    | $12/1M tokens   | STEM reasoning            |
 
 **Model string format**: `openai/[model-name]`
 
@@ -183,6 +203,7 @@ complex_agent = Agent(
 ### Setup
 
 **1. Install dependencies**:
+
 ```bash
 pip install google-adk[litellm] anthropic
 ```
@@ -190,6 +211,7 @@ pip install google-adk[litellm] anthropic
 **2. Get API key** from https://console.anthropic.com/
 
 **3. Set environment variable**:
+
 ```bash
 export ANTHROPIC_API_KEY='sk-ant-...'
 ```
@@ -222,10 +244,10 @@ def analyze_sentiment(text: str) -> dict:
 
 async def main():
     """Agent using Claude 3.7 Sonnet."""
-    
+
     # Create LiteLLM model - format: "anthropic/model-name"
     claude_model = LiteLlm(model='anthropic/claude-3-7-sonnet-20250219')
-    
+
     # Create agent with Claude model
     agent = Agent(
         model=claude_model,
@@ -241,19 +263,19 @@ You excel at:
         """.strip(),
         tools=[FunctionTool(analyze_sentiment)]
     )
-    
+
     # Run query
     runner = Runner()
-    
+
     query = """
 Analyze the sentiment of this product review and explain your reasoning:
-"This new AI assistant is absolutely brilliant! It understands context 
-incredibly well and provides helpful, accurate responses. The interface 
+"This new AI assistant is absolutely brilliant! It understands context
+incredibly well and provides helpful, accurate responses. The interface
 is intuitive and the speed is impressive. Highly recommended!"
     """.strip()
-    
+
     result = await runner.run_async(query, agent=agent)
-    
+
     print(result.content.parts[0].text)
 
 
@@ -262,6 +284,7 @@ if __name__ == '__main__':
 ```
 
 **Output**:
+
 ```
 I'll analyze this product review's sentiment:
 
@@ -270,9 +293,9 @@ I'll analyze this product review's sentiment:
 **Analysis**:
 The review exhibits overwhelmingly positive sentiment through several indicators:
 
-1. **Superlative Language**: "absolutely brilliant", "incredibly well", 
+1. **Superlative Language**: "absolutely brilliant", "incredibly well",
    "Highly recommended" - these are emphatic positive descriptors
-   
+
 2. **Specific Praise**: The reviewer highlights multiple strengths:
    - Contextual understanding
    - Helpful and accurate responses
@@ -281,7 +304,7 @@ The review exhibits overwhelmingly positive sentiment through several indicators
 
 3. **Exclamation Points**: Two instances (!!) signal enthusiasm
 
-4. **Recommendation**: Explicit endorsement ("Highly recommended") shows 
+4. **Recommendation**: Explicit endorsement ("Highly recommended") shows
    strong satisfaction
 
 5. **No Criticisms**: Complete absence of negative comments or caveats
@@ -294,11 +317,11 @@ throughout.
 
 ### Available Claude Models
 
-| Model | Input Cost | Output Cost | Context | Best For |
-|-------|-----------|-------------|---------|----------|
-| `anthropic/claude-3-7-sonnet-20250219` | $3/1M tokens | $15/1M tokens | 200K | Balanced (most popular) |
-| `anthropic/claude-3-5-opus-20240229` | $15/1M tokens | $75/1M tokens | 200K | Complex reasoning |
-| `anthropic/claude-3-5-haiku-20241022` | $0.80/1M tokens | $4/1M tokens | 200K | Fast, simple tasks |
+| Model                                  | Input Cost      | Output Cost   | Context | Best For                |
+| -------------------------------------- | --------------- | ------------- | ------- | ----------------------- |
+| `anthropic/claude-3-7-sonnet-20250219` | $3/1M tokens    | $15/1M tokens | 200K    | Balanced (most popular) |
+| `anthropic/claude-3-5-opus-20240229`   | $15/1M tokens   | $75/1M tokens | 200K    | Complex reasoning       |
+| `anthropic/claude-3-5-haiku-20241022`  | $0.80/1M tokens | $4/1M tokens  | 200K    | Fast, simple tasks      |
 
 **Model string format**: `anthropic/[model-name-with-date]`
 
@@ -313,6 +336,7 @@ throughout.
 ### Why Use Ollama?
 
 **Benefits**:
+
 - ✅ **Privacy**: Data never leaves your machine
 - ✅ **Cost**: No API costs after initial download
 - ✅ **Offline**: Works without internet
@@ -320,6 +344,7 @@ throughout.
 - ✅ **Experimentation**: Try many models freely
 
 **Trade-offs**:
+
 - ❌ Requires GPU for good performance
 - ❌ Quality lower than GPT-4o/Claude/Gemini for complex tasks
 - ❌ Slower inference on CPU
@@ -328,6 +353,7 @@ throughout.
 ### Setup
 
 **1. Install Ollama**:
+
 ```bash
 # macOS
 brew install ollama
@@ -340,12 +366,14 @@ curl -fsSL https://ollama.com/install.sh | sh
 ```
 
 **2. Start Ollama server**:
+
 ```bash
 ollama serve
 # Runs on http://localhost:11434 by default
 ```
 
 **3. Pull a model**:
+
 ```bash
 # Llama 3.3 (70B parameters, high quality)
 ollama pull llama3.3
@@ -361,6 +389,7 @@ ollama pull codellama
 ```
 
 **4. Install Python dependencies**:
+
 ```bash
 pip install google-adk[litellm]
 ```
@@ -368,18 +397,21 @@ pip install google-adk[litellm]
 ### ⚠️ CRITICAL: Use `ollama_chat`, NOT `ollama`
 
 **WRONG** ❌:
+
 ```python
 # This WON'T work correctly!
 model = LiteLlm(model='ollama/llama3.3')  # ❌ WRONG
 ```
 
 **CORRECT** ✅:
+
 ```python
 # Always use ollama_chat prefix!
 model = LiteLlm(model='ollama_chat/llama3.3')  # ✅ CORRECT
 ```
 
 **Why?** LiteLLM has two Ollama interfaces:
+
 - `ollama/` - Uses completion API (legacy, limited)
 - `ollama_chat/` - Uses chat API (recommended, full features)
 
@@ -415,11 +447,11 @@ def get_weather(city: str) -> dict:
 
 async def main():
     """Agent using local Llama 3.3 model."""
-    
+
     # Create LiteLLM model - format: "ollama_chat/model-name"
     # ⚠️ IMPORTANT: Use ollama_chat, NOT ollama!
     llama_model = LiteLlm(model='ollama_chat/llama3.3')
-    
+
     # Create agent with local model
     agent = Agent(
         model=llama_model,
@@ -428,19 +460,19 @@ async def main():
         instruction='You are a helpful local assistant. You run entirely on-device.',
         tools=[FunctionTool(get_weather)]
     )
-    
+
     # Run queries
     runner = Runner()
-    
+
     print("\n" + "="*60)
     print("LOCAL OLLAMA AGENT (Privacy-First)")
     print("="*60 + "\n")
-    
+
     result = await runner.run_async(
         "What's the weather like in San Francisco?",
         agent=agent
     )
-    
+
     print(result.content.parts[0].text)
     print("\n" + "="*60 + "\n")
 
@@ -450,12 +482,13 @@ if __name__ == '__main__':
 ```
 
 **Output**:
+
 ```
 ============================================================
 LOCAL OLLAMA AGENT (Privacy-First)
 ============================================================
 
-The weather in San Francisco is currently sunny with a temperature 
+The weather in San Francisco is currently sunny with a temperature
 of 72°F and 45% humidity. It's a beautiful day!
 
 [All processing done locally - no data sent to cloud]
@@ -465,15 +498,15 @@ of 72°F and 45% humidity. It's a beautiful day!
 
 ### Popular Ollama Models
 
-| Model | Size | Best For | GPU RAM |
-|-------|------|----------|---------|
-| `ollama_chat/llama3.3` | 70B | General tasks, strong reasoning | 40GB+ |
-| `ollama_chat/llama3.2` | 3B | Fast, low resource | 4GB |
-| `ollama_chat/mistral` | 7B | Balanced speed/quality | 8GB |
-| `ollama_chat/phi4` | 14B | Coding, STEM | 16GB |
-| `ollama_chat/codellama` | 7B-34B | Code generation | 8-32GB |
-| `ollama_chat/gemma2` | 9B | Google, instruction following | 12GB |
-| `ollama_chat/qwen2.5` | 7B-72B | Multilingual | 8-40GB |
+| Model                   | Size   | Best For                        | GPU RAM |
+| ----------------------- | ------ | ------------------------------- | ------- |
+| `ollama_chat/llama3.3`  | 70B    | General tasks, strong reasoning | 40GB+   |
+| `ollama_chat/llama3.2`  | 3B     | Fast, low resource              | 4GB     |
+| `ollama_chat/mistral`   | 7B     | Balanced speed/quality          | 8GB     |
+| `ollama_chat/phi4`      | 14B    | Coding, STEM                    | 16GB    |
+| `ollama_chat/codellama` | 7B-34B | Code generation                 | 8-32GB  |
+| `ollama_chat/gemma2`    | 9B     | Google, instruction following   | 12GB    |
+| `ollama_chat/qwen2.5`   | 7B-72B | Multilingual                    | 8-40GB  |
 
 **Model string format**: `ollama_chat/[model-name]` ⚠️ NOT `ollama/`!
 
@@ -511,11 +544,13 @@ model = LiteLlm(
 **2. Deploy a model** (e.g., gpt-4o)
 
 **3. Get credentials**:
+
 - API key from Azure Portal
 - Endpoint URL (e.g., `https://your-resource.openai.azure.com/`)
 - Deployment name (e.g., `gpt-4o-deployment`)
 
 **4. Set environment variables**:
+
 ```bash
 export AZURE_API_KEY='your-azure-key'
 export AZURE_API_BASE='https://your-resource.openai.azure.com/'
@@ -541,10 +576,10 @@ os.environ['AZURE_API_VERSION'] = '2024-02-15-preview'
 
 async def main():
     """Agent using Azure OpenAI."""
-    
+
     # Create LiteLLM model - format: "azure/deployment-name"
     azure_model = LiteLlm(model='azure/gpt-4o-deployment')
-    
+
     # Create agent
     agent = Agent(
         model=azure_model,
@@ -552,14 +587,14 @@ async def main():
         description='Agent using Azure OpenAI',
         instruction='You are an enterprise assistant running on Azure.'
     )
-    
+
     # Run query
     runner = Runner()
     result = await runner.run_async(
         "Explain the benefits of Azure OpenAI for enterprises",
         agent=agent
     )
-    
+
     print(result.content.parts[0].text)
 
 
@@ -568,6 +603,7 @@ if __name__ == '__main__':
 ```
 
 **Why Azure OpenAI?**
+
 - ✅ Enterprise SLAs (99.9% uptime)
 - ✅ Data residency (EU, US, Asia)
 - ✅ Private networks (VNet integration)
@@ -585,6 +621,7 @@ if __name__ == '__main__':
 **1. Enable Vertex AI API** in Google Cloud Console
 
 **2. Set up authentication**:
+
 ```bash
 export GOOGLE_CLOUD_PROJECT='your-project'
 export GOOGLE_CLOUD_LOCATION='us-central1'  # or your preferred region
@@ -611,10 +648,10 @@ os.environ['GOOGLE_CLOUD_LOCATION'] = 'us-central1'
 
 async def main():
     """Agent using Claude via Vertex AI."""
-    
+
     # Create LiteLLM model - format: "vertex_ai/model-name"
     claude_vertex = LiteLlm(model='vertex_ai/claude-3-7-sonnet@20250219')
-    
+
     # Create agent
     agent = Agent(
         model=claude_vertex,
@@ -622,14 +659,14 @@ async def main():
         description='Agent using Claude on Vertex AI',
         instruction='You leverage Claude via Google Cloud infrastructure.'
     )
-    
+
     # Run query
     runner = Runner()
     result = await runner.run_async(
         "Compare Claude direct vs. Claude on Vertex AI",
         agent=agent
     )
-    
+
     print(result.content.parts[0].text)
 
 
@@ -639,16 +676,17 @@ if __name__ == '__main__':
 
 **Claude Direct vs. Vertex AI**:
 
-| Factor | Direct (Anthropic) | Via Vertex AI |
-|--------|-------------------|---------------|
-| **Pricing** | Per-token pricing | Same or slightly higher |
-| **Data residency** | US-based | Choose GCP region |
-| **SLA** | Standard | Google Cloud SLA |
-| **Integration** | Anthropic API | Unified with GCP |
-| **Billing** | Separate | Unified GCP billing |
-| **Setup** | Simpler | More complex |
+| Factor             | Direct (Anthropic) | Via Vertex AI           |
+| ------------------ | ------------------ | ----------------------- |
+| **Pricing**        | Per-token pricing  | Same or slightly higher |
+| **Data residency** | US-based           | Choose GCP region       |
+| **SLA**            | Standard           | Google Cloud SLA        |
+| **Integration**    | Anthropic API      | Unified with GCP        |
+| **Billing**        | Separate           | Unified GCP billing     |
+| **Setup**          | Simpler            | More complex            |
 
 **Use Vertex AI Claude when**:
+
 - ✅ Already using Google Cloud extensively
 - ✅ Need data residency in specific GCP regions
 - ✅ Want unified GCP billing
@@ -681,7 +719,7 @@ os.environ['OLLAMA_API_BASE'] = 'http://localhost:11434'
 
 async def compare_models():
     """Compare response quality across 4 providers."""
-    
+
     # Define models
     models = {
         'Gemini 2.5 Flash': GoogleGenAI(model='gemini-2.5-flash'),
@@ -689,41 +727,41 @@ async def compare_models():
         'Claude 3.7 Sonnet': LiteLlm(model='anthropic/claude-3-7-sonnet-20250219'),
         'Llama 3.3 (Local)': LiteLlm(model='ollama_chat/llama3.3')
     }
-    
+
     # Test query
     query = """
 Explain quantum entanglement to a 12-year-old.
 Use an analogy they can relate to.
     """.strip()
-    
+
     runner = Runner()
-    
+
     print("\n" + "="*70)
     print("MULTI-PROVIDER MODEL COMPARISON")
     print("="*70 + "\n")
     print(f"Query: {query}\n")
     print("="*70 + "\n")
-    
+
     # Test each model
     for model_name, model in models.items():
         print(f"### {model_name}")
         print("-" * 70)
-        
+
         agent = Agent(
             model=model,
             instruction='You explain complex topics clearly and simply.'
         )
-        
+
         try:
             result = await runner.run_async(query, agent=agent)
             response = result.content.parts[0].text
-            
+
             print(response)
             print(f"\n[Length: {len(response)} chars]")
-            
+
         except Exception as e:
             print(f"Error: {e}")
-        
+
         print("\n" + "="*70 + "\n")
 
 
@@ -732,6 +770,7 @@ if __name__ == '__main__':
 ```
 
 **Example Output**:
+
 ```
 ======================================================================
 MULTI-PROVIDER MODEL COMPARISON
@@ -744,11 +783,11 @@ Use an analogy they can relate to.
 
 ### Gemini 2.5 Flash
 ----------------------------------------------------------------------
-Imagine you have two magic coins. When you flip one and it lands on 
-heads, the other coin INSTANTLY lands on tails - no matter how far 
+Imagine you have two magic coins. When you flip one and it lands on
+heads, the other coin INSTANTLY lands on tails - no matter how far
 apart they are. Even if one coin is on Earth and the other is on Mars!
 
-That's quantum entanglement. Two particles become "entangled" so that 
+That's quantum entanglement. Two particles become "entangled" so that
 measuring one INSTANTLY affects the other, even across huge distances.
 
 [Length: 387 chars]
@@ -757,10 +796,10 @@ measuring one INSTANTLY affects the other, even across huge distances.
 
 ### GPT-4o
 ----------------------------------------------------------------------
-Think of quantum entanglement like having two magical dice that are 
-connected. When you roll one die and it shows a 6, the other die 
-automatically shows a 1 - instantly, even if it's on the other side 
-of the world! Scientists don't fully understand HOW this happens, but 
+Think of quantum entanglement like having two magical dice that are
+connected. When you roll one die and it shows a 6, the other die
+automatically shows a 1 - instantly, even if it's on the other side
+of the world! Scientists don't fully understand HOW this happens, but
 they know it does. It's one of the strangest things in physics!
 
 [Length: 415 chars]
@@ -769,14 +808,14 @@ they know it does. It's one of the strangest things in physics!
 
 ### Claude 3.7 Sonnet
 ----------------------------------------------------------------------
-Imagine you and your best friend each have a magic marble. No matter 
-how far apart you go - even if you go to different countries - when 
-you squeeze your marble and it turns red, your friend's marble turns 
+Imagine you and your best friend each have a magic marble. No matter
+how far apart you go - even if you go to different countries - when
+you squeeze your marble and it turns red, your friend's marble turns
 blue at the EXACT same instant.
 
-That's quantum entanglement! Two particles become linked so that what 
-happens to one immediately affects the other, no matter the distance. 
-Einstein called it "spooky action at a distance" because even he 
+That's quantum entanglement! Two particles become linked so that what
+happens to one immediately affects the other, no matter the distance.
+Einstein called it "spooky action at a distance" because even he
 found it weird!
 
 [Length: 512 chars]
@@ -785,9 +824,9 @@ found it weird!
 
 ### Llama 3.3 (Local)
 ----------------------------------------------------------------------
-Think of quantum entanglement like having two special coins that are 
-twins. If you flip one coin and it lands on heads, the other coin will 
-always land on tails - instantly! They're connected in a mysterious way 
+Think of quantum entanglement like having two special coins that are
+twins. If you flip one coin and it lands on heads, the other coin will
+always land on tails - instantly! They're connected in a mysterious way
 that scientists are still trying to fully understand.
 
 [Length: 287 chars]
@@ -796,6 +835,7 @@ that scientists are still trying to fully understand.
 ```
 
 **Observations**:
+
 - **Gemini 2.5 Flash**: Fast, concise, accurate
 - **GPT-4o**: Clear analogy, acknowledges mystery
 - **Claude 3.7 Sonnet**: Most detailed, includes Einstein quote
@@ -807,34 +847,34 @@ that scientists are still trying to fully understand.
 
 ### Cost Comparison (per 1M tokens)
 
-| Provider | Model | Input Cost | Output Cost | Total (1M in + 1M out) |
-|----------|-------|-----------|-------------|------------------------|
-| **Google** | gemini-2.5-flash | $0.075 | $0.30 | **$0.375** ⭐ Cheapest |
-| **Google** | gemini-2.5-pro | $1.25 | $5.00 | $6.25 |
-| **OpenAI** | gpt-4o-mini | $0.15 | $0.60 | $0.75 |
-| **OpenAI** | gpt-4o | $2.50 | $10.00 | $12.50 |
-| **Anthropic** | claude-3-5-haiku | $0.80 | $4.00 | $4.80 |
-| **Anthropic** | claude-3-7-sonnet | $3.00 | $15.00 | $18.00 |
-| **Ollama** | llama3.3 (local) | $0 | $0 | **$0** 🎉 Free |
+| Provider      | Model             | Input Cost | Output Cost | Total (1M in + 1M out) |
+| ------------- | ----------------- | ---------- | ----------- | ---------------------- |
+| **Google**    | gemini-2.5-flash  | $0.075     | $0.30       | **$0.375** ⭐ Cheapest |
+| **Google**    | gemini-2.5-pro    | $1.25      | $5.00       | $6.25                  |
+| **OpenAI**    | gpt-4o-mini       | $0.15      | $0.60       | $0.75                  |
+| **OpenAI**    | gpt-4o            | $2.50      | $10.00      | $12.50                 |
+| **Anthropic** | claude-3-5-haiku  | $0.80      | $4.00       | $4.80                  |
+| **Anthropic** | claude-3-7-sonnet | $3.00      | $15.00      | $18.00                 |
+| **Ollama**    | llama3.3 (local)  | $0         | $0          | **$0** 🎉 Free         |
 
 ### Strategy 1: Tiered Model Selection
 
 ```python
 def get_model_for_task(complexity: str):
     """Select model based on task complexity."""
-    
+
     if complexity == 'simple':
         # Use cheapest model for simple tasks
         return LiteLlm(model='openai/gpt-4o-mini')  # Or gemini-2.5-flash
-    
+
     elif complexity == 'medium':
         # Balanced cost/quality
         return GoogleGenAI(model='gemini-2.5-flash')
-    
+
     elif complexity == 'complex':
         # Best reasoning, worth the cost
         return LiteLlm(model='anthropic/claude-3-7-sonnet-20250219')
-    
+
     elif complexity == 'local_ok':
         # Privacy/cost priority
         return LiteLlm(model='ollama_chat/llama3.3')
@@ -849,26 +889,26 @@ complex_agent = Agent(model=get_model_for_task('complex'))
 ```python
 async def run_with_fallback(query: str):
     """Try models in order of cost (cheapest first)."""
-    
+
     models = [
         ('gemini-2.5-flash', GoogleGenAI(model='gemini-2.5-flash')),
         ('gpt-4o-mini', LiteLlm(model='openai/gpt-4o-mini')),
         ('gpt-4o', LiteLlm(model='openai/gpt-4o'))
     ]
-    
+
     for model_name, model in models:
         try:
             agent = Agent(model=model)
             runner = Runner()
             result = await runner.run_async(query, agent=agent)
-            
+
             print(f"✅ Success with {model_name}")
             return result
-        
+
         except Exception as e:
             print(f"❌ {model_name} failed: {e}")
             continue
-    
+
     raise Exception("All models failed")
 ```
 
@@ -882,18 +922,18 @@ Use cloud models only when needed.
 
 async def process_batch(queries: list[str]):
     """Process many queries cost-effectively."""
-    
+
     # Local model for bulk processing
     local_model = LiteLlm(model='ollama_chat/llama3.3')
     local_agent = Agent(model=local_model)
-    
+
     # Cloud model for complex queries
     cloud_model = GoogleGenAI(model='gemini-2.5-flash')
     cloud_agent = Agent(model=cloud_model)
-    
+
     runner = Runner()
     results = []
-    
+
     for query in queries:
         # Route by complexity
         if is_simple(query):
@@ -902,9 +942,9 @@ async def process_batch(queries: list[str]):
         else:
             # Use cloud for complex
             result = await runner.run_async(query, agent=cloud_agent)
-        
+
         results.append(result)
-    
+
     return results
 
 
@@ -921,6 +961,7 @@ def is_simple(query: str) -> bool:
 ### ✅ DO
 
 **1. Use Native Gemini When Possible**:
+
 ```python
 # ✅ BEST - Native Gemini
 agent = Agent(model='gemini-2.5-flash')
@@ -930,6 +971,7 @@ agent = Agent(model=LiteLlm(model='gemini/gemini-2.5-flash'))
 ```
 
 **2. Set Environment Variables Securely**:
+
 ```python
 import os
 
@@ -941,6 +983,7 @@ api_key = 'sk-...'  # Never commit this!
 ```
 
 **3. Handle Provider-Specific Errors**:
+
 ```python
 try:
     result = await runner.run_async(query, agent=agent)
@@ -956,6 +999,7 @@ except Exception as e:
 ```
 
 **4. Use Ollama Correctly**:
+
 ```python
 # ✅ CORRECT - ollama_chat prefix
 model = LiteLlm(model='ollama_chat/llama3.3')
@@ -965,6 +1009,7 @@ model = LiteLlm(model='ollama/llama3.3')
 ```
 
 **5. Monitor Costs**:
+
 ```python
 import time
 
@@ -975,7 +1020,7 @@ class CostTracker:
             'openai/gpt-4o': 2.50 / 1_000_000,  # per input token
             'anthropic/claude-3-7-sonnet-20250219': 3.00 / 1_000_000
         }
-    
+
     def track(self, model: str, tokens: int):
         cost = tokens * self.model_costs.get(model, 0)
         self.total_tokens += tokens
@@ -987,6 +1032,7 @@ tracker = CostTracker()
 ### ❌ DON'T
 
 **1. Don't Use LiteLLM for Gemini**:
+
 ```python
 # ❌ BAD - Loses Gemini-specific features
 model = LiteLlm(model='gemini/gemini-2.5-flash')
@@ -996,6 +1042,7 @@ model = 'gemini-2.5-flash'  # Or GoogleGenAI('gemini-2.5-flash')
 ```
 
 **2. Don't Forget `ollama_chat` Prefix**:
+
 ```python
 # ❌ WRONG
 LiteLlm(model='ollama/llama3.3')
@@ -1005,11 +1052,13 @@ LiteLlm(model='ollama_chat/llama3.3')
 ```
 
 **3. Don't Ignore Provider Limits**:
+
 - OpenAI: 200K tokens/min (tier dependent)
 - Anthropic: 200K tokens/min (varies)
 - Ollama: Limited by your GPU
 
 **4. Don't Mix Credentials**:
+
 ```bash
 # ❌ BAD - Conflicts
 export OPENAI_API_KEY='key1'
@@ -1039,26 +1088,26 @@ You've learned how to use OpenAI, Claude, Ollama, and other LLMs in ADK agents v
 
 **Model String Formats**:
 
-| Provider | Format | Example |
-|----------|--------|---------|
-| OpenAI | `openai/[model]` | `openai/gpt-4o` |
-| Anthropic | `anthropic/[model]` | `anthropic/claude-3-7-sonnet-20250219` |
-| Ollama | `ollama_chat/[model]` | `ollama_chat/llama3.3` ⚠️ NOT `ollama/` |
-| Azure | `azure/[deployment]` | `azure/gpt-4o-deployment` |
-| Vertex AI | `vertex_ai/[model]` | `vertex_ai/claude-3-7-sonnet@20250219` |
+| Provider  | Format                | Example                                 |
+| --------- | --------------------- | --------------------------------------- |
+| OpenAI    | `openai/[model]`      | `openai/gpt-4o`                         |
+| Anthropic | `anthropic/[model]`   | `anthropic/claude-3-7-sonnet-20250219`  |
+| Ollama    | `ollama_chat/[model]` | `ollama_chat/llama3.3` ⚠️ NOT `ollama/` |
+| Azure     | `azure/[deployment]`  | `azure/gpt-4o-deployment`               |
+| Vertex AI | `vertex_ai/[model]`   | `vertex_ai/claude-3-7-sonnet@20250219`  |
 
 **When to Use What**:
 
-| Use Case | Recommended Model |
-|----------|-------------------|
-| Simple tasks, high volume | gemini-2.5-flash or gpt-4o-mini |
-| Complex reasoning | claude-3-7-sonnet or gpt-4o |
-| Privacy/compliance | ollama_chat/llama3.3 (local) |
-| Enterprise Azure | azure/gpt-4o-deployment |
-| Cost optimization | gemini-2.5-flash (cheapest cloud) |
-| Offline/air-gapped | ollama_chat models |
-| Coding tasks | ollama_chat/phi4 or gpt-4o |
-| Long-form content | claude-3-7-sonnet |
+| Use Case                  | Recommended Model                 |
+| ------------------------- | --------------------------------- |
+| Simple tasks, high volume | gemini-2.5-flash or gpt-4o-mini   |
+| Complex reasoning         | claude-3-7-sonnet or gpt-4o       |
+| Privacy/compliance        | ollama_chat/llama3.3 (local)      |
+| Enterprise Azure          | azure/gpt-4o-deployment           |
+| Cost optimization         | gemini-2.5-flash (cheapest cloud) |
+| Offline/air-gapped        | ollama_chat models                |
+| Coding tasks              | ollama_chat/phi4 or gpt-4o        |
+| Long-form content         | claude-3-7-sonnet                 |
 
 **Environment Variables Required**:
 

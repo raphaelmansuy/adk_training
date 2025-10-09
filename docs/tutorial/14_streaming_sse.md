@@ -5,11 +5,23 @@ description: "Build streaming agents that deliver real-time responses to users, 
 sidebar_label: "14. Streaming & SSE"
 sidebar_position: 14
 tags: ["advanced", "streaming", "sse", "real-time", "chat"]
-keywords: ["streaming", "server-sent events", "real-time", "chat interface", "live updates"]
+keywords:
+  [
+    "streaming",
+    "server-sent events",
+    "real-time",
+    "chat interface",
+    "live updates",
+  ]
 status: "draft"
 difficulty: "advanced"
 estimated_time: "1.5 hours"
-prerequisites: ["Tutorial 01: Hello World Agent", "Tutorial 14: Code Execution", "Basic async/await knowledge"]
+prerequisites:
+  [
+    "Tutorial 01: Hello World Agent",
+    "Tutorial 14: Code Execution",
+    "Basic async/await knowledge",
+  ]
 learning_objectives:
   - "Implement streaming agent responses"
   - "Configure Server-Sent Events (SSE) endpoints"
@@ -23,11 +35,13 @@ implementation_link: "https://github.com/raphaelmansuy/adk_training/tree/main/tu
 **Goal**: Implement streaming responses using Server-Sent Events (SSE) to provide real-time, progressive output for better user experience in your AI agents.
 
 **Prerequisites**:
+
 - Tutorial 01 (Hello World Agent)
 - Tutorial 02 (Function Tools)
 - Basic understanding of async/await in Python
 
 **What You'll Learn**:
+
 - Understanding streaming vs. non-streaming responses
 - Implementing SSE streaming with `StreamingMode.SSE`
 - Using `RunConfig` for streaming configuration
@@ -44,6 +58,7 @@ implementation_link: "https://github.com/raphaelmansuy/adk_training/tree/main/tu
 Traditional AI responses are **blocking** - users wait for the complete answer before seeing anything. Streaming provides **progressive output** as the model generates text.
 
 **Without Streaming (Blocking)**:
+
 ```
 User: "Explain quantum computing"
 Agent: [5 seconds of waiting...]
@@ -51,6 +66,7 @@ Agent: [5 seconds of waiting...]
 ```
 
 **With Streaming (Progressive)**:
+
 ```
 User: "Explain quantum computing"
 Agent: "Quantum computing is a revolutionary..."
@@ -59,6 +75,7 @@ Agent: "Quantum computing is a revolutionary..."
 ```
 
 **Benefits**:
+
 - ✅ **Better UX**: Users see progress immediately
 - ✅ **Perceived Speed**: Feels faster even if total time is similar
 - ✅ **Early Feedback**: Users can interrupt if needed
@@ -97,10 +114,10 @@ run_config = RunConfig(
 async def stream_response(query: str):
     """Stream agent response."""
     runner = Runner()
-    
+
     print(f"User: {query}\n")
     print("Agent: ", end='', flush=True)
-    
+
     # Run with streaming
     async for event in runner.run_async(
         query,
@@ -111,7 +128,7 @@ async def stream_response(query: str):
         if event.content and event.content.parts:
             text = event.content.parts[0].text
             print(text, end='', flush=True)
-    
+
     print("\n")
 
 # Usage
@@ -119,6 +136,7 @@ asyncio.run(stream_response("Explain how neural networks work"))
 ```
 
 **Output** (progressive):
+
 ```
 User: Explain how neural networks work
 
@@ -237,10 +255,10 @@ os.environ['GOOGLE_CLOUD_LOCATION'] = 'us-central1'
 
 class StreamingChatApp:
     """Interactive streaming chat application."""
-    
+
     def __init__(self):
         """Initialize chat application."""
-        
+
         # Create chat agent
         self.agent = Agent(
             model='gemini-2.0-flash',
@@ -261,28 +279,28 @@ Guidelines:
                 max_output_tokens=2048
             )
         )
-        
+
         # Create session for conversation context
         self.session = Session()
-        
+
         # Configure streaming
         self.run_config = RunConfig(
             streaming_mode=StreamingMode.SSE
         )
-        
+
         self.runner = Runner()
-    
+
     async def stream_response(self, user_message: str) -> AsyncIterator[str]:
         """
         Stream agent response to user message.
-        
+
         Args:
             user_message: User's input message
-            
+
         Yields:
             Text chunks as they're generated
         """
-        
+
         # Run agent with streaming
         async for event in self.runner.run_async(
             user_message,
@@ -295,74 +313,74 @@ Guidelines:
                 for part in event.content.parts:
                     if part.text:
                         yield part.text
-    
+
     async def chat_turn(self, user_message: str):
         """
         Execute one chat turn with streaming display.
-        
+
         Args:
             user_message: User's input message
         """
-        
+
         # Display user message
         timestamp = datetime.now().strftime('%H:%M:%S')
         print(f"\n[{timestamp}] User: {user_message}")
-        
+
         # Display agent response with streaming
         timestamp = datetime.now().strftime('%H:%M:%S')
         print(f"[{timestamp}] Agent: ", end='', flush=True)
-        
+
         # Stream response chunks
         async for chunk in self.stream_response(user_message):
             print(chunk, end='', flush=True)
-        
+
         print()  # New line after complete response
-    
+
     async def run_interactive(self):
         """Run interactive chat loop."""
-        
+
         print("="*70)
         print("STREAMING CHAT APPLICATION")
         print("="*70)
         print("Type 'exit' or 'quit' to end conversation")
         print("="*70)
-        
+
         while True:
             try:
                 # Get user input
                 user_input = input("\nYou: ").strip()
-                
+
                 if not user_input:
                     continue
-                
+
                 # Check for exit
                 if user_input.lower() in ['exit', 'quit']:
                     print("\nGoodbye!")
                     break
-                
+
                 # Process chat turn
                 await self.chat_turn(user_input)
-                
+
             except KeyboardInterrupt:
                 print("\n\nInterrupted. Goodbye!")
                 break
             except Exception as e:
                 print(f"\nError: {e}")
-    
+
     async def run_demo(self):
         """Run demo conversation."""
-        
+
         print("="*70)
         print("STREAMING CHAT DEMO")
         print("="*70)
-        
+
         demo_messages = [
             "Hello! What can you help me with?",
             "Explain quantum computing in simple terms",
             "What are the practical applications?",
             "How does it compare to classical computing?"
         ]
-        
+
         for message in demo_messages:
             await self.chat_turn(message)
             await asyncio.sleep(1)  # Pause between turns
@@ -370,12 +388,12 @@ Guidelines:
 
 async def main():
     """Main entry point."""
-    
+
     chat = StreamingChatApp()
-    
+
     # Run demo
     await chat.run_demo()
-    
+
     # Uncomment for interactive mode:
     # await chat.run_interactive()
 
@@ -394,17 +412,17 @@ STREAMING CHAT DEMO
 [14:23:15] User: Hello! What can you help me with?
 [14:23:15] Agent: Hello! I'm here to help with a wide variety of tasks...
 [Streams progressively...]
-...I can explain concepts, answer questions, help with writing, assist 
-with problem-solving, provide information on various topics, and much more. 
+...I can explain concepts, answer questions, help with writing, assist
+with problem-solving, provide information on various topics, and much more.
 What would you like to explore today?
 
 [14:23:18] User: Explain quantum computing in simple terms
 [14:23:18] Agent: Imagine regular computers use bits, which are like...
 [Streams progressively...]
-...light switches that are either ON (1) or OFF (0). Quantum computers use 
+...light switches that are either ON (1) or OFF (0). Quantum computers use
 quantum bits, or "qubits," which can be both ON and OFF at the same time...
 [Continues streaming...]
-...This allows quantum computers to explore many possibilities simultaneously, 
+...This allows quantum computers to explore many possibilities simultaneously,
 making them potentially much faster for certain types of problems.
 
 [14:23:25] User: What are the practical applications?
@@ -448,22 +466,22 @@ from typing import List
 async def stream_and_aggregate(query: str, agent: Agent) -> tuple[str, List[str]]:
     """
     Stream response while collecting chunks.
-    
+
     Returns:
         (complete_text, chunks_list)
     """
-    
+
     runner = Runner()
     run_config = RunConfig(streaming_mode=StreamingMode.SSE)
-    
+
     chunks = []
-    
+
     async for event in runner.run_async(query, agent=agent, run_config=run_config):
         if event.content and event.content.parts:
             chunk = event.content.parts[0].text
             chunks.append(chunk)
             print(chunk, end='', flush=True)
-    
+
     complete_text = ''.join(chunks)
     return complete_text, chunks
 
@@ -487,26 +505,26 @@ import sys
 
 async def stream_with_progress(query: str, agent: Agent):
     """Stream with visual progress indicator."""
-    
+
     runner = Runner()
     run_config = RunConfig(streaming_mode=StreamingMode.SSE)
-    
+
     print("Agent: ", end='', flush=True)
-    
+
     chunk_count = 0
-    
+
     async for event in runner.run_async(query, agent=agent, run_config=run_config):
         if event.content and event.content.parts:
             chunk = event.content.parts[0].text
             print(chunk, end='', flush=True)
-            
+
             chunk_count += 1
-            
+
             # Show progress indicator every 10 chunks
             if chunk_count % 10 == 0:
                 sys.stderr.write('.')
                 sys.stderr.flush()
-    
+
     print()  # New line
 
 
@@ -528,20 +546,20 @@ async def stream_to_multiple(
 ):
     """
     Stream response to multiple output handlers.
-    
+
     Args:
         query: User query
         agent: Agent to use
         outputs: List of functions to handle each chunk
     """
-    
+
     runner = Runner()
     run_config = RunConfig(streaming_mode=StreamingMode.SSE)
-    
+
     async for event in runner.run_async(query, agent=agent, run_config=run_config):
         if event.content and event.content.parts:
             chunk = event.content.parts[0].text
-            
+
             # Send to all outputs
             for output_fn in outputs:
                 output_fn(chunk)
@@ -579,10 +597,10 @@ async def stream_with_timeout(
     timeout_seconds: float = 30.0
 ):
     """Stream response with timeout."""
-    
+
     runner = Runner()
     run_config = RunConfig(streaming_mode=StreamingMode.SSE)
-    
+
     try:
         async with asyncio.timeout(timeout_seconds):
             async for event in runner.run_async(query, agent=agent, run_config=run_config):
@@ -591,7 +609,7 @@ async def stream_with_timeout(
                     print(chunk, end='', flush=True)
     except asyncio.TimeoutError:
         print("\n\n[Timeout: Response took too long]")
-    
+
     print()
 
 
@@ -610,25 +628,25 @@ from google.adk.models.streaming_response_aggregator import StreamingResponseAgg
 
 async def stream_with_aggregator(query: str, agent: Agent):
     """Use StreamingResponseAggregator for cleaner code."""
-    
+
     runner = Runner()
     run_config = RunConfig(streaming_mode=StreamingMode.SSE)
-    
+
     aggregator = StreamingResponseAggregator()
-    
+
     async for event in runner.run_async(query, agent=agent, run_config=run_config):
         # Aggregator handles chunk collection
         aggregator.add(event)
-        
+
         # Display chunk
         if event.content and event.content.parts:
             print(event.content.parts[0].text, end='', flush=True)
-    
+
     # Get complete response
     complete_response = aggregator.get_response()
-    
+
     print(f"\n\nComplete response has {len(complete_response.content.parts[0].text)} characters")
-    
+
     return complete_response
 
 
@@ -666,16 +684,16 @@ runner = Runner()
 
 async def generate_stream(query: str):
     """Generate SSE stream."""
-    
+
     run_config = RunConfig(streaming_mode=StreamingMode.SSE)
-    
+
     async for event in runner.run_async(query, agent=agent, run_config=run_config):
         if event.content and event.content.parts:
             # Format as SSE
             chunk = event.content.parts[0].text
             data = json.dumps({'text': chunk})
             yield f"data: {data}\n\n"
-    
+
     # Send completion signal
     yield "data: [DONE]\n\n"
 
@@ -683,7 +701,7 @@ async def generate_stream(query: str):
 @app.post("/chat/stream")
 async def chat_stream(query: str):
     """Streaming chat endpoint."""
-    
+
     return StreamingResponse(
         generate_stream(query),
         media_type="text/event-stream"
@@ -701,22 +719,24 @@ if __name__ == '__main__':
 
 ```javascript
 // Connect to SSE endpoint
-const eventSource = new EventSource('http://localhost:8000/chat/stream?query=Hello');
+const eventSource = new EventSource(
+  "http://localhost:8000/chat/stream?query=Hello",
+);
 
 eventSource.onmessage = (event) => {
-    if (event.data === '[DONE]') {
-        eventSource.close();
-        return;
-    }
-    
-    const data = JSON.parse(event.data);
-    // Display chunk in UI
-    document.getElementById('response').innerHTML += data.text;
+  if (event.data === "[DONE]") {
+    eventSource.close();
+    return;
+  }
+
+  const data = JSON.parse(event.data);
+  // Display chunk in UI
+  document.getElementById("response").innerHTML += data.text;
 };
 
 eventSource.onerror = (error) => {
-    console.error('SSE Error:', error);
-    eventSource.close();
+  console.error("SSE Error:", error);
+  eventSource.close();
 };
 ```
 
@@ -777,11 +797,11 @@ print(chunk, end='')  # No flush
 async def safe_stream(query, agent):
     try:
         run_config = RunConfig(streaming_mode=StreamingMode.SSE)
-        
+
         async for event in runner.run_async(query, agent=agent, run_config=run_config):
             if event.content and event.content.parts:
                 print(event.content.parts[0].text, end='', flush=True)
-    
+
     except Exception as e:
         print(f"\n[Error during streaming: {e}]")
 
@@ -822,6 +842,7 @@ for message in conversation:
 **Solutions**:
 
 1. **Verify RunConfig**:
+
 ```python
 # ❌ Missing or wrong config
 runner.run_async(query, agent=agent)  # No streaming
@@ -832,6 +853,7 @@ runner.run_async(query, agent=agent, run_config=run_config)
 ```
 
 2. **Use run_async, not run**:
+
 ```python
 # ❌ Blocking call
 result = runner.run(query, agent=agent, run_config=run_config)
@@ -842,6 +864,7 @@ async for event in runner.run_async(query, agent=agent, run_config=run_config):
 ```
 
 3. **Check output flushing**:
+
 ```python
 # ❌ Buffered (appears in chunks)
 print(chunk, end='')
@@ -857,6 +880,7 @@ print(chunk, end='', flush=True)
 **Solutions**:
 
 1. **Reduce output tokens**:
+
 ```python
 agent = Agent(
     model='gemini-2.0-flash',
@@ -867,6 +891,7 @@ agent = Agent(
 ```
 
 2. **Use faster model**:
+
 ```python
 # ✅ Flash for speed
 agent = Agent(model='gemini-2.0-flash')
@@ -880,15 +905,16 @@ agent = Agent(model='gemini-2.0-pro')
 **Problem**: Memory consumption increases during long streaming sessions
 
 **Solution**: Process and discard chunks:
+
 ```python
 # ✅ Process chunks without accumulating
 async for event in runner.run_async(query, agent=agent, run_config=run_config):
     chunk = event.content.parts[0].text
-    
+
     # Process immediately
     display(chunk)
     save_to_db(chunk)
-    
+
     # Don't accumulate in memory
     # No: all_chunks.append(chunk)
 ```
@@ -906,17 +932,17 @@ from google.adk.agents import Agent, Runner, RunConfig, StreamingMode
 @pytest.mark.asyncio
 async def test_streaming_response():
     """Test that streaming returns multiple chunks."""
-    
+
     agent = Agent(
         model='gemini-2.0-flash',
         instruction='Provide detailed responses.'
     )
-    
+
     runner = Runner()
     run_config = RunConfig(streaming_mode=StreamingMode.SSE)
-    
+
     chunks = []
-    
+
     async for event in runner.run_async(
         "Explain machine learning in detail",
         agent=agent,
@@ -924,10 +950,10 @@ async def test_streaming_response():
     ):
         if event.content and event.content.parts:
             chunks.append(event.content.parts[0].text)
-    
+
     # Should receive multiple chunks
     assert len(chunks) > 1
-    
+
     # Complete text should be reasonable length
     complete = ''.join(chunks)
     assert len(complete) > 100
@@ -936,13 +962,13 @@ async def test_streaming_response():
 @pytest.mark.asyncio
 async def test_streaming_aggregation():
     """Test that streaming chunks combine correctly."""
-    
+
     agent = Agent(model='gemini-2.0-flash')
     runner = Runner()
     run_config = RunConfig(streaming_mode=StreamingMode.SSE)
-    
+
     chunks = []
-    
+
     async for event in runner.run_async(
         "Count to 10",
         agent=agent,
@@ -950,9 +976,9 @@ async def test_streaming_aggregation():
     ):
         if event.content and event.content.parts:
             chunks.append(event.content.parts[0].text)
-    
+
     complete = ''.join(chunks)
-    
+
     # Should contain all numbers
     for i in range(1, 11):
         assert str(i) in complete
@@ -965,6 +991,7 @@ async def test_streaming_aggregation():
 You've mastered streaming responses with SSE:
 
 **Key Takeaways**:
+
 - ✅ `StreamingMode.SSE` enables progressive response output
 - ✅ Use `RunConfig` to configure streaming
 - ✅ `runner.run_async()` with `async for` for streaming
@@ -975,6 +1002,7 @@ You've mastered streaming responses with SSE:
 - ✅ `flush=True` for immediate terminal output
 
 **Production Checklist**:
+
 - [ ] Using `RunConfig(streaming_mode=StreamingMode.SSE)`
 - [ ] Proper async/await handling
 - [ ] Error handling for streaming failures
@@ -985,11 +1013,13 @@ You've mastered streaming responses with SSE:
 - [ ] Monitoring chunk sizes and latency
 
 **Next Steps**:
+
 - **Tutorial 15**: Learn Live API for bidirectional streaming with audio
 - **Tutorial 16**: Explore MCP Integration for extended tool ecosystem
 - **Tutorial 17**: Implement Agent-to-Agent (A2A) communication
 
 **Resources**:
+
 - [ADK Streaming Docs](https://google.github.io/adk-docs/streaming/)
 - [Server-Sent Events Standard](https://developer.mozilla.org/en-US/docs/Web/API/Server-sent_events)
 - [FastAPI SSE](https://fastapi.tiangolo.com/advanced/custom-response/#streamingresponse)

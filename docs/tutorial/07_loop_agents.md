@@ -5,11 +5,19 @@ description: "Create self-improving agents using LoopAgent for iterative refinem
 sidebar_label: "07. Loop Agents"
 sidebar_position: 7
 tags: ["advanced", "loop-agents", "iterative", "refinement", "quality-control"]
-keywords: ["loop agents", "iterative refinement", "quality control", "LoopAgent", "progressive enhancement"]
+keywords:
+  [
+    "loop agents",
+    "iterative refinement",
+    "quality control",
+    "LoopAgent",
+    "progressive enhancement",
+  ]
 status: "completed"
 difficulty: "advanced"
 estimated_time: "1.5 hours"
-prerequisites: ["Tutorial 04: Sequential Workflows", "Tutorial 06: Multi-Agent Systems"]
+prerequisites:
+  ["Tutorial 04: Sequential Workflows", "Tutorial 06: Multi-Agent Systems"]
 learning_objectives:
   - "Use LoopAgent for iterative improvement processes"
   - "Build critic-refiner agent patterns"
@@ -130,8 +138,8 @@ We're building an **Essay Refinement System** that:
 
 1. **Initial Writer** - Creates first draft (runs once)
 2. **Refinement Loop** - Repeats until essay is excellent:
-   - *Critic*: Evaluates essay quality, gives specific feedback
-   - *Refiner*: Applies improvements OR signals completion
+   - _Critic_: Evaluates essay quality, gives specific feedback
+   - _Refiner_: Applies improvements OR signals completion
 
 This demonstrates the classic critic → refiner loop pattern!
 
@@ -147,7 +155,7 @@ Copy your `.env` file from previous tutorials.
 
 ## Step 2: Set Up Package Import
 
-**essay_refiner/__init__.py**
+**essay_refiner/**init**.py**
 
 ```python
 from . import agent
@@ -341,7 +349,6 @@ Final Output: Refined essay from state['current_essay']
    - Critic outputs special phrase "APPROVED..."
    - Refiner detects phrase and calls `exit_loop()`
    - `tool_context.actions.end_of_agent = True` signals stop
-   
 3. **Safety Net**: `max_iterations=5` prevents infinite loop if approval never comes
 
 ## Step 4: Run the Essay Refiner
@@ -417,22 +424,22 @@ User: Write an essay about climate change
 [Initial Writer creates first draft]
 
 First Draft:
-Climate change is a problem. It affects the environment. We should do something 
+Climate change is a problem. It affects the environment. We should do something
 about it. Many scientists agree.
 
 [Refinement Loop - Iteration 1]
-Critic: "Thesis is too vague. Add specific examples of climate change impacts. 
+Critic: "Thesis is too vague. Add specific examples of climate change impacts.
 Strengthen the conclusion with concrete actions."
 
 Refiner: [Improves essay]
 
 Improved Draft (v2):
-Climate change represents one of the most pressing challenges facing humanity, 
-with rising global temperatures causing unprecedented weather patterns and ecosystem 
+Climate change represents one of the most pressing challenges facing humanity,
+with rising global temperatures causing unprecedented weather patterns and ecosystem
 disruption...
 
 [Refinement Loop - Iteration 2]
-Critic: "Much better! Consider adding transition sentences between paragraphs. 
+Critic: "Much better! Consider adding transition sentences between paragraphs.
 The conclusion could be stronger."
 
 Refiner: [Improves transitions and conclusion]
@@ -440,7 +447,7 @@ Refiner: [Improves transitions and conclusion]
 Improved Draft (v3):
 Climate change represents one of the most pressing challenges facing humanity...
 [Better transitions added]
-Therefore, immediate action combining policy changes, technological innovation, 
+Therefore, immediate action combining policy changes, technological innovation,
 and individual responsibility is essential...
 
 [Refinement Loop - Iteration 3]
@@ -590,12 +597,14 @@ And you understand how to build iterative refinement systems!
 **🚀 Ready to run the code?** The implementation is fully functional with 22 passing tests. Just follow the Quick Start instructions below!
 
 **Key Files:**
+
 - [`essay_refiner/agent.py`](https://github.com/raphaelmansuy/adk_training/blob/main/tutorial_implementation/tutorial07/essay_refiner/agent.py) - Complete LoopAgent orchestration with critic-refiner pattern
 - [`tests/test_agent.py`](https://github.com/raphaelmansuy/adk_training/blob/main/tutorial_implementation/tutorial07/tests/test_agent.py) - 22 comprehensive tests covering all functionality
 - [`README.md`](https://github.com/raphaelmansuy/adk_training/blob/main/tutorial_implementation/tutorial07/README.md) - Detailed implementation guide and architecture overview
 - [`Makefile`](https://github.com/raphaelmansuy/adk_training/blob/main/tutorial_implementation/tutorial07/Makefile) - Development commands for testing and deployment
 
 **Quick Start with Working Code:**
+
 ```bash
 cd tutorial_implementation/tutorial07/
 make setup  # Install dependencies

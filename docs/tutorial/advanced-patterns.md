@@ -37,7 +37,7 @@ async def live_conversation():
     async for event in runner.run_live(queue):
         if event.type == 'audio_response':
             play_audio(event.audio_data)
-        
+
         # Send user input
         queue.send_realtime(audio_blob)
 ```

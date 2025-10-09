@@ -5,7 +5,8 @@ description: "Learn how to add custom Python functions as tools to make your age
 sidebar_label: "02. Function Tools"
 sidebar_position: 2
 tags: ["beginner", "tools", "functions", "python"]
-keywords: ["adk tools", "function tools", "agent capabilities", "python functions"]
+keywords:
+  ["adk tools", "function tools", "agent capabilities", "python functions"]
 status: "completed"
 difficulty: "beginner"
 estimated_time: "45 minutes"
@@ -35,17 +36,22 @@ Transform your agent from a conversationalist into a problem-solver! In this tut
 ## Core Concepts
 
 ### Function Tools
+
 **Function tools** are regular Python functions that you give to your agent. The agent can call these functions when it needs to perform specific tasks. ADK automatically:
+
 - Reads your function signature (parameters, types, defaults)
 - Reads your docstring (what the function does)
 - Generates a schema the LLM can understand
 - Lets the LLM decide WHEN to call your function
 
 ### Tool Discovery
+
 The **LLM is smart** - it reads your function's name, docstring, and parameters, then decides if it should call that function based on the user's request. You don't manually trigger tools!
 
 ### Return Values
+
 Tools should return **dictionaries** with:
+
 - `"status"`: `"success"` or `"error"`
 - `"report"`: The actual result or error message
 
@@ -54,6 +60,7 @@ This helps the LLM understand what happened.
 ## Use Case
 
 We're building a **Personal Finance Assistant** that can:
+
 - Calculate compound interest for savings
 - Compute monthly loan payments
 - Determine how much to save monthly for a goal
@@ -75,7 +82,8 @@ Copy your `.env` file from Tutorial 01, or create it with your API key.
 
 ## Step 2: Set Up Package Import
 
-**finance_assistant/__init__.py**
+**finance_assistant/**init**.py**
+
 ```python
 from . import agent
 ```
@@ -85,6 +93,7 @@ from . import agent
 Now the fun part - create Python functions that do the actual calculations!
 
 **finance_assistant/agent.py**
+
 ```python
 from __future__ import annotations
 
@@ -92,27 +101,27 @@ from google.adk.agents import Agent
 
 # Tool 1: Calculate compound interest
 def calculate_compound_interest(
-    principal: float, 
-    annual_rate: float, 
+    principal: float,
+    annual_rate: float,
     years: int,
     compounds_per_year: int = 1
 ) -> dict:
     """
     Calculate compound interest for savings or investments.
-    
+
     This function computes how much an initial investment will grow to
     over time with compound interest. It uses the standard compound interest
     formula: A = P(1 + r/n)^(nt)
-    
+
     Args:
         principal: Initial investment amount (e.g., 10000 for $10,000)
         annual_rate: Annual interest rate as decimal (e.g., 0.06 for 6%)
         years: Number of years to compound
         compounds_per_year: How often interest compounds per year (default: 1 for annual)
-        
+
     Returns:
         Dict with calculation results and formatted report
-        
+
     Example:
         >>> calculate_compound_interest(10000, 0.06, 5)
         {
@@ -182,19 +191,19 @@ def calculate_loan_payment(
     years: int
 ) -> dict:
     """Calculate monthly loan payments using the standard amortization formula.
-    
+
     This function computes the monthly payment required to pay off a loan
     over a specified period at a given interest rate. It uses the formula:
     M = P[r(1+r)^n]/[(1+r)^n-1] where r is monthly rate and n is months.
-    
+
     Args:
         loan_amount: Total loan amount (e.g., 300000 for $300,000)
         annual_rate: Annual interest rate as decimal (e.g., 0.045 for 4.5%)
         years: Loan term in years
-        
+
     Returns:
         Dict with payment calculation results and formatted report
-        
+
     Example:
         >>> calculate_loan_payment(300000, 0.045, 30)
         {
@@ -278,19 +287,19 @@ def calculate_monthly_savings(
     annual_return: float = 0.05
 ) -> dict:
     """Calculate monthly savings needed to reach a financial goal.
-    
+
     This function determines how much you need to save each month to reach
     a savings goal, assuming compound growth at a specified annual return.
     It uses the present value of annuity formula rearranged for payment amount.
-    
+
     Args:
         target_amount: Target savings amount (e.g., 50000 for $50,000)
         years: Number of years to save
         annual_return: Expected annual return as decimal (default: 0.05 for 5%)
-        
+
     Returns:
         Dict with savings calculation results and formatted report
-        
+
     Example:
         >>> calculate_monthly_savings(50000, 3, 0.05)
         {
@@ -405,12 +414,14 @@ root_agent = Agent(
 ### Code Breakdown
 
 **Function Signature Best Practices:**
+
 1. **Type hints** - `principal: float`, `years: int` - tell the LLM what types to use
 2. **Clear parameter names** - `annual_rate` not just `rate`
 3. **Defaults for optional params** - `compounds_per_year: int = 12`
 4. **Comprehensive docstring** - explain WHAT the function does and WHEN to use it
 
 **Return Value Pattern:**
+
 ```python
 return {
     "status": "success",  # or "error"
@@ -448,23 +459,27 @@ This runs the same financial tools but demonstrates how ADK automatically execut
 ### Try These Prompts
 
 **Savings Calculation:**
+
 ```
 If I invest $10,000 at 0.06 annual interest for 5 years, how much will I have?
 ```
 
 **Loan Payment:**
+
 ```
-I want to buy a $300,000 house with a 30-year mortgage at 0.045 interest. 
+I want to buy a $300,000 house with a 30-year mortgage at 0.045 interest.
 What will my monthly payment be?
 ```
 
 **Savings Goal:**
+
 ```
-I want to save $50,000 for a down payment in 3 years. 
+I want to save $50,000 for a down payment in 3 years.
 How much should I save each month?
 ```
 
 **Mixed Question (LLM decides NOT to use tools):**
+
 ```
 What's the difference between a Roth IRA and a traditional IRA?
 ```
@@ -485,6 +500,7 @@ This is incredibly powerful for debugging - you can see EXACTLY when and how too
 ## Expected Behavior
 
 **Example 1: Savings Calculation**
+
 ```
 User: If I invest $10,000 at 0.06 annual interest for 5 years, how much will I have?
 
@@ -492,18 +508,19 @@ Agent: Let me calculate that for you!
 
 [Tool Call: calculate_compound_interest(principal=10000, annual_rate=0.06, years=5)]
 
-Based on the calculation, if you invest $10,000 at 6% annual interest compounded 
-monthly for 5 years, you'll have approximately $13,488.50. That means you'll earn 
-$3,488.50 in interest - not bad! This assumes the interest compounds monthly, which 
+Based on the calculation, if you invest $10,000 at 6% annual interest compounded
+monthly for 5 years, you'll have approximately $13,488.50. That means you'll earn
+$3,488.50 in interest - not bad! This assumes the interest compounds monthly, which
 is common for savings accounts and many investment vehicles.
 ```
 
 **Example 2: No Tool Needed**
+
 ```
 User: Should I invest in stocks or bonds?
 
-Agent: That's a great question about investment strategy! The choice between stocks 
-and bonds depends on several factors: your age, risk tolerance, financial goals, and 
+Agent: That's a great question about investment strategy! The choice between stocks
+and bonds depends on several factors: your age, risk tolerance, financial goals, and
 time horizon...
 
 [No tools called - the LLM just uses its knowledge]
@@ -560,30 +577,30 @@ import asyncio
 from google.adk.agents import Agent
 
 def calculate_compound_interest(
-    principal: float, 
-    annual_rate: float, 
+    principal: float,
+    annual_rate: float,
     years: int,
     compounds_per_year: int = 12
 ) -> dict:
     """Calculate compound interest for savings or investments.
-    
+
     Args:
         principal: The initial amount invested (in dollars)
         annual_rate: The annual interest rate as a percentage (e.g., 5.5 for 5.5%)
         years: Number of years to calculate for
         compounds_per_year: How many times per year interest compounds (default: 12)
-        
+
     Returns:
         dict: Dictionary with status and calculation results
     """
     # Add simulated delay to show parallel execution benefit
     import time
     time.sleep(0.5)  # Simulate API call or heavy computation
-    
+
     rate_decimal = annual_rate / 100
     final_amount = principal * (1 + rate_decimal / compounds_per_year) ** (compounds_per_year * years)
     interest_earned = final_amount - principal
-    
+
     return {
         "status": "success",
         "report": (
@@ -602,15 +619,15 @@ def calculate_loan_payment(
     """Calculate monthly payment for a loan."""
     import time
     time.sleep(0.5)  # Simulate processing
-    
+
     monthly_rate = (annual_rate / 100) / 12
     num_payments = years * 12
-    
+
     if monthly_rate == 0:
         monthly_payment = loan_amount / num_payments
     else:
         monthly_payment = loan_amount * (monthly_rate * (1 + monthly_rate)**num_payments) / ((1 + monthly_rate)**num_payments - 1)
-    
+
     return {
         "status": "success",
         "report": f"Monthly payment: ${monthly_payment:,.2f}"
@@ -625,15 +642,15 @@ def calculate_monthly_savings(
     """Calculate monthly savings needed to reach a goal."""
     import time
     time.sleep(0.5)  # Simulate calculation
-    
+
     months = years * 12
     monthly_rate = (annual_return / 100) / 12
-    
+
     if monthly_rate == 0:
         monthly_savings = target_amount / months
     else:
         monthly_savings = target_amount / (((1 + monthly_rate)**months - 1) / monthly_rate)
-    
+
     return {
         "status": "success",
         "report": f"Save ${monthly_savings:,.2f} per month"
@@ -663,11 +680,12 @@ parallel_finance_agent = Agent(
 ```
 Compare these three investment options for me:
 1. $10,000 at 0.05 for 10 years
-2. $15,000 at 0.04 for 10 years  
+2. $15,000 at 0.04 for 10 years
 3. $12,000 at 0.06 for 10 years
 ```
 
 **What happens**:
+
 1. Gemini recognizes it needs to call `calculate_compound_interest` THREE times
 2. ADK receives THREE `FunctionCall` objects from Gemini
 3. ADK executes all three **simultaneously** with `asyncio.gather()`
@@ -677,6 +695,7 @@ Compare these three investment options for me:
 ### Performance Comparison
 
 **Sequential Execution** (if you did it manually):
+
 ```python
 # ❌ Slow approach (not how ADK works)
 result1 = calculate_compound_interest(10000, 0.05, 10)   # 0.5s
@@ -686,6 +705,7 @@ result3 = calculate_compound_interest(12000, 0.06, 10)   # 0.5s
 ```
 
 **Parallel Execution** (ADK automatic):
+
 ```python
 # ✅ Fast - ADK does this for you!
 results = await asyncio.gather(
@@ -703,7 +723,7 @@ results = await asyncio.gather(
 ```
 User: Compare these three investment options for me:
 1. $10,000 at 0.05 for 10 years
-2. $15,000 at 0.04 for 10 years  
+2. $15,000 at 0.04 for 10 years
 3. $12,000 at 0.06 for 10 years
 
 Agent: Let me calculate all three options for you...
@@ -727,7 +747,7 @@ Great question! Here's how your three investment options compare:
 - Final amount: $21,791.23
 - Interest earned: $9,791.23
 
-Option 3 gives you the highest return ($9,791.23 in interest), even with a lower 
+Option 3 gives you the highest return ($9,791.23 in interest), even with a lower
 principal than Option 2. That extra 2% rate makes a big difference over 10 years!
 ```
 
@@ -747,6 +767,7 @@ Parallel execution occurs when:
 ### Optimizing for Parallel Execution
 
 **✅ DO: Design independent tools**
+
 ```python
 # Good - These can run in parallel
 def get_weather(city: str): ...
@@ -758,6 +779,7 @@ def get_stock_price(symbol: str): ...
 ```
 
 **❌ DON'T: Create dependencies**
+
 ```python
 # Bad - These create a dependency chain
 def search_database(query: str) -> dict:
@@ -777,7 +799,7 @@ Open the Dev UI Events tab after sending a multi-tool query. Look for:
 
 ```
 [FunctionCall] calculate_compound_interest(principal=10000, ...)
-[FunctionCall] calculate_compound_interest(principal=15000, ...)  
+[FunctionCall] calculate_compound_interest(principal=15000, ...)
 [FunctionCall] calculate_compound_interest(principal=12000, ...)
 
 [FunctionResponse] result for 10000
@@ -795,10 +817,10 @@ The parallel execution implementation is in `google/adk/flows/llm_flows/function
 # Simplified version of what ADK does internally
 async def execute_function_calls(calls: list[FunctionCall]):
     """Execute multiple function calls in parallel."""
-    
+
     tasks = [execute_single_function(call) for call in calls]
     results = await asyncio.gather(*tasks)
-    
+
     return results
 ```
 
@@ -889,6 +911,7 @@ Check out `contributing/samples/parallel_functions/agent.py` for a complete work
 ## Best Practices
 
 **DO:**
+
 - Write descriptive function names (`calculate_compound_interest` not `calc_int`)
 - Include comprehensive docstrings
 - Use type hints for all parameters
@@ -897,6 +920,7 @@ Check out `contributing/samples/parallel_functions/agent.py` for a complete work
 - Keep tools focused (one function = one task)
 
 **DON'T:**
+
 - Use generic names (`process_data`, `do_stuff`)
 - Rely on `*args` or `**kwargs` for LLM-facing parameters (they're ignored!)
 - Return complex objects (stick to dicts, strings, numbers)
@@ -906,22 +930,26 @@ Check out `contributing/samples/parallel_functions/agent.py` for a complete work
 ## Common Issues
 
 **Problem**: "Tool not being called"
+
 - **Check**: Is your docstring clear about WHEN to use the tool?
 - **Check**: Does the function name match what the user is asking for?
 - **Tip**: Look at Events tab - did Gemini even consider the tool?
 
 **Problem**: "Wrong parameters passed"
+
 - **Check**: Are your type hints correct?
 - **Check**: Is your docstring describing parameters clearly?
 - **Try**: Add examples in the docstring
 
 **Problem**: "Tool returns error"
+
 - **Check**: Add try/except blocks to catch errors
 - **Return**: Error status dict instead of raising exceptions
 
 ## What We Built
 
 You now have a finance assistant agent that:
+
 - Performs accurate compound interest calculations
 - Computes loan payments
 - Plans savings goals
@@ -934,6 +962,7 @@ And you learned HOW ADK tools work under the hood!
 🚀 **Tutorial 03: OpenAPI Tools** - Connect to real web APIs (weather, stock prices, news, etc.)
 
 📖 **Further Reading**:
+
 - [Function Tools Documentation](https://google.github.io/adk-docs/tools/function-tools/)
 - [Tool Performance (Parallel Execution)](https://google.github.io/adk-docs/tools/performance/)
 - [Built-in Tools](https://google.github.io/adk-docs/tools/built-in-tools/)
@@ -947,18 +976,21 @@ And you learned HOW ADK tools work under the hood!
 
 ## Complete Code Reference
 
-**finance_assistant/__init__.py**
+**finance_assistant/**init**.py**
+
 ```python
 from . import agent
 ```
 
 **finance_assistant/.env**
+
 ```bash
 GOOGLE_GENAI_USE_VERTEXAI=FALSE
 GOOGLE_API_KEY=your-api-key-here
 ```
 
 **finance_assistant/agent.py**
+
 ```python
 # See the complete implementation at tutorial_implementation/tutorial02/finance_assistant/agent.py
 # This file contains the full agent code with comprehensive error handling,

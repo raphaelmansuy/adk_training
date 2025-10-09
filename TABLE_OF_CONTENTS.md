@@ -11,9 +11,11 @@ Welcome to the most comprehensive Google Agent Development Kit (ADK) tutorial se
 **NEW**: Before diving into tutorials, read the comprehensive mental models document!
 
 ### **Overview: Mental Models for Mastery**
+
 **File**: `overview.md` (1,446 lines)
 
 **What You'll Learn**:
+
 - 15+ core mental models for understanding ADK
 - Agent = Brain + Tools + Memory + Instructions + Workflows + Supervision
 - Complete decision frameworks (when to use what)
@@ -22,6 +24,7 @@ Welcome to the most comprehensive Google Agent Development Kit (ADK) tutorial se
 - The 10 Commandments of ADK development
 
 **Why Read This First**:
+
 - Provides "why" and "when" (tutorials provide "how")
 - Clear analogies (RAM vs Hard Drive, Assembly Lines, USB Protocol)
 - Decision trees for every major pattern choice
@@ -51,9 +54,11 @@ Welcome to the most comprehensive Google Agent Development Kit (ADK) tutorial se
 Master the foundations of agent development.
 
 #### Tutorial 01: Hello World Agent
+
 **File**: `docs/tutorial/01_hello_world_agent.md` (438 lines)
 
 **You'll Learn**:
+
 - Agent class basics
 - Project structure
 - adk web interface
@@ -66,9 +71,11 @@ Master the foundations of agent development.
 ---
 
 #### Tutorial 02: Function Tools
+
 **File**: `docs/tutorial/02_function_tools.md` (437 lines)
 
 **You'll Learn**:
+
 - Custom Python functions as tools
 - Tool auto-registration
 - Return value patterns
@@ -81,9 +88,11 @@ Master the foundations of agent development.
 ---
 
 #### Tutorial 03: OpenAPI Tools
+
 **File**: `docs/tutorial/03_openapi_tools.md` (730 lines)
 
 **You'll Learn**:
+
 - OpenAPIToolset usage
 - Auto-generated tools
 - REST API integration
@@ -100,9 +109,11 @@ Master the foundations of agent development.
 Build sophisticated multi-agent workflows.
 
 #### Tutorial 04: Sequential Workflows
+
 **File**: `docs/tutorial/04_sequential_workflows.md` (600 lines)
 
 **You'll Learn**:
+
 - SequentialAgent orchestration
 - Output key pattern
 - State injection with {key}
@@ -115,9 +126,11 @@ Build sophisticated multi-agent workflows.
 ---
 
 #### Tutorial 05: Parallel Processing
+
 **File**: `docs/tutorial/05_parallel_processing.md` (550 lines)
 
 **You'll Learn**:
+
 - ParallelAgent execution
 - Fan-out/gather pattern
 - Performance optimization
@@ -130,9 +143,11 @@ Build sophisticated multi-agent workflows.
 ---
 
 #### Tutorial 06: Multi-Agent Systems
+
 **File**: `docs/tutorial/06_multi_agent_systems.md` (650 lines)
 
 **You'll Learn**:
+
 - Nested orchestration
 - Complex coordination patterns
 - Agent composition
@@ -149,9 +164,11 @@ Build sophisticated multi-agent workflows.
 Master production-ready features and enterprise deployment.
 
 #### Tutorial 07: Loop Agents
+
 **File**: `docs/tutorial/07_loop_agents.md` (580 lines)
 
 **You'll Learn**:
+
 - LoopAgent patterns
 - exit_loop tool
 - Iterative refinement
@@ -164,9 +181,11 @@ Master production-ready features and enterprise deployment.
 ---
 
 #### Tutorial 08: State & Memory
+
 **File**: `docs/tutorial/08_state_memory.md` (650 lines)
 
 **You'll Learn**:
+
 - Session state management
 - State prefixes (none, user:, app:, temp:)
 - Memory service integration
@@ -179,9 +198,11 @@ Master production-ready features and enterprise deployment.
 ---
 
 #### Tutorial 09: Callbacks & Guardrails
+
 **File**: `docs/tutorial/09_callbacks_guardrails.md` (1100 lines)
 
 **You'll Learn**:
+
 - All 6 callback types
 - Guardrails implementation
 - PII filtering
@@ -194,9 +215,11 @@ Master production-ready features and enterprise deployment.
 ---
 
 #### Tutorial 10: Evaluation & Testing
+
 **File**: `docs/tutorial/10_evaluation_testing.md` (2,484 lines)
 
 **You'll Learn**:
+
 - Test file creation
 - Trajectory metrics
 - Response validation
@@ -209,9 +232,11 @@ Master production-ready features and enterprise deployment.
 ---
 
 #### Tutorial 11: Built-in Tools & Grounding
+
 **File**: `docs/tutorial/11_built_in_tools_grounding.md` (1,881 lines)
 
 **You'll Learn**:
+
 - Using `google_search` for web grounding
 - Implementing location-based queries with `google_maps_grounding`
 - Enterprise compliance search with `enterprise_web_search`
@@ -226,9 +251,11 @@ Master production-ready features and enterprise deployment.
 ---
 
 #### Tutorial 12: Planners & Thinking
+
 **File**: `docs/tutorial/12_planners_thinking.md` (1,231 lines)
 
 **You'll Learn**:
+
 - Advanced planning and reasoning patterns
 - Thinking frameworks for complex tasks
 - Decision-making strategies
@@ -242,9 +269,11 @@ Master production-ready features and enterprise deployment.
 ---
 
 #### Tutorial 13: Code Execution
+
 **File**: `docs/tutorial/13_code_execution.md` (1,086 lines)
 
 **You'll Learn**:
+
 - Safe code execution environments
 - Dynamic code generation and testing
 - Sandboxed execution patterns
@@ -258,9 +287,11 @@ Master production-ready features and enterprise deployment.
 ---
 
 #### Tutorial 14: Streaming & SSE
+
 **File**: `docs/tutorial/14_streaming_sse.md` (979 lines)
 
 **You'll Learn**:
+
 - Server-Sent Events (SSE) implementation
 - Real-time streaming responses
 - Progressive output patterns
@@ -274,9 +305,11 @@ Master production-ready features and enterprise deployment.
 ---
 
 #### Tutorial 15: Live API Audio
+
 **File**: `docs/tutorial/15_live_api_audio.md` (938 lines)
 
 **You'll Learn**:
+
 - Audio input processing
 - Speech-to-text integration
 - Voice command handling
@@ -290,9 +323,11 @@ Master production-ready features and enterprise deployment.
 ---
 
 #### Tutorial 16: MCP Integration
+
 **File**: `docs/tutorial/16_mcp_integration.md` (1,390 lines)
 
 **You'll Learn**:
+
 - Model Context Protocol (MCP) fundamentals
 - MCP server integration
 - Standardized tool protocols
@@ -306,9 +341,11 @@ Master production-ready features and enterprise deployment.
 ---
 
 #### Tutorial 17: Agent-to-Agent Communication
+
 **File**: `docs/tutorial/17_agent_to_agent.md` (930 lines)
 
 **You'll Learn**:
+
 - Inter-agent communication patterns
 - Message passing protocols
 - Agent coordination strategies
@@ -322,9 +359,11 @@ Master production-ready features and enterprise deployment.
 ---
 
 #### Tutorial 18: Events & Observability
+
 **File**: `docs/tutorial/18_events_observability.md` (998 lines)
 
 **You'll Learn**:
+
 - Event-driven agent patterns
 - Observability and monitoring
 - Event logging and tracking
@@ -338,9 +377,11 @@ Master production-ready features and enterprise deployment.
 ---
 
 #### Tutorial 19: Artifacts & Files
+
 **File**: `docs/tutorial/19_artifacts_files.md` (1,004 lines)
 
 **You'll Learn**:
+
 - File handling and processing
 - Artifact generation and management
 - Document processing capabilities
@@ -354,9 +395,11 @@ Master production-ready features and enterprise deployment.
 ---
 
 #### Tutorial 20: YAML Configuration
+
 **File**: `docs/tutorial/20_yaml_configuration.md` (826 lines)
 
 **You'll Learn**:
+
 - YAML-based agent configuration
 - Declarative agent definitions
 - Configuration management
@@ -370,9 +413,11 @@ Master production-ready features and enterprise deployment.
 ---
 
 #### Tutorial 21: Multimodal Image
+
 **File**: `docs/tutorial/21_multimodal_image.md` (900 lines)
 
 **You'll Learn**:
+
 - Image processing and analysis
 - Vision capabilities integration
 - Image understanding and description
@@ -386,9 +431,11 @@ Master production-ready features and enterprise deployment.
 ---
 
 #### Tutorial 22: Model Selection
+
 **File**: `docs/tutorial/22_model_selection.md` (1,297 lines)
 
 **You'll Learn**:
+
 - Gemini model family overview and comparison
 - Model capability matrix (vision, thinking, code execution, etc.)
 - Performance vs cost tradeoffs
@@ -404,9 +451,11 @@ Master production-ready features and enterprise deployment.
 ---
 
 #### Tutorial 23: Production Deployment
+
 **File**: `docs/tutorial/23_production_deployment.md` (813 lines)
 
 **You'll Learn**:
+
 - Production deployment strategies
 - Scalability considerations
 - Infrastructure requirements
@@ -420,9 +469,11 @@ Master production-ready features and enterprise deployment.
 ---
 
 #### Tutorial 24: Advanced Observability
+
 **File**: `docs/tutorial/24_advanced_observability.md` (720 lines)
 
 **You'll Learn**:
+
 - Advanced monitoring techniques
 - Performance profiling
 - Error tracking and alerting
@@ -436,9 +487,11 @@ Master production-ready features and enterprise deployment.
 ---
 
 #### Tutorial 25: Best Practices
+
 **File**: `docs/tutorial/25_best_practices.md` (954 lines)
 
 **You'll Learn**:
+
 - ADK development best practices
 - Code organization patterns
 - Performance optimization techniques
@@ -452,9 +505,11 @@ Master production-ready features and enterprise deployment.
 ---
 
 #### Tutorial 26: Google AgentSpace
+
 **File**: `docs/tutorial/26_google_agentspace.md` (920 lines)
 
 **You'll Learn**:
+
 - AgentSpace platform overview
 - Pre-built Google agents (Idea Generation, Deep Research, NotebookLM)
 - Agent Designer (low-code agent creation)
@@ -471,9 +526,11 @@ Master production-ready features and enterprise deployment.
 ---
 
 #### Tutorial 27: Third-Party Framework Tools
+
 **File**: `docs/tutorial/27_third_party_tools.md` (820 lines)
 
 **You'll Learn**:
+
 - LangChain tools integration (100+ tools)
 - CrewAI tools integration (20+ tools)
 - AG-UI Protocol for framework-level integration
@@ -488,9 +545,11 @@ Master production-ready features and enterprise deployment.
 ---
 
 #### Tutorial 28: Using Other LLMs
+
 **File**: `docs/tutorial/28_using_other_llms.md` (950 lines)
 
 **You'll Learn**:
+
 - OpenAI integration (GPT-4o, GPT-4o-mini)
 - Anthropic Claude integration (3.7 Sonnet, Opus, Haiku)
 - Local models with Ollama (Llama3.3, Mistral, Phi4)
@@ -515,6 +574,7 @@ Master user interface integration with modern web frameworks and platforms.
 **File**: `docs/tutorial/29_ui_integration_intro.md` (1,071 lines)
 
 **You'll Learn**:
+
 - AG-UI Protocol fundamentals
 - UI integration approaches and patterns
 - Decision framework for choosing integration methods
@@ -532,6 +592,7 @@ Master user interface integration with modern web frameworks and platforms.
 **File**: `docs/tutorial/30_nextjs_adk_integration.md` (1,360 lines)
 
 **You'll Learn**:
+
 - CopilotKit integration with Next.js
 - React component patterns for ADK agents
 - Real-time streaming and chat interfaces
@@ -549,6 +610,7 @@ Master user interface integration with modern web frameworks and platforms.
 **File**: `docs/tutorial/31_react_vite_adk_integration.md` (1,239 lines)
 
 **You'll Learn**:
+
 - CopilotKit integration with Vite + React
 - Modern React patterns for AI interfaces
 - Component-based agent interactions
@@ -566,6 +628,7 @@ Master user interface integration with modern web frameworks and platforms.
 **File**: `docs/tutorial/32_streamlit_adk_integration.md` (1,743 lines)
 
 **You'll Learn**:
+
 - Direct ADK integration with Streamlit
 - Python-based UI development
 - Interactive agent interfaces
@@ -583,6 +646,7 @@ Master user interface integration with modern web frameworks and platforms.
 **File**: `docs/tutorial/33_slack_adk_integration.md` (1,669 lines)
 
 **You'll Learn**:
+
 - Slack app development with ADK
 - Event-driven agent interactions
 - Real-time messaging and responses
@@ -600,6 +664,7 @@ Master user interface integration with modern web frameworks and platforms.
 **File**: `docs/tutorial/34_pubsub_adk_integration.md` (1,711 lines)
 
 **You'll Learn**:
+
 - Google Cloud Pub/Sub integration
 - Event-driven agent architectures
 - Asynchronous message processing
@@ -615,9 +680,11 @@ Master user interface integration with modern web frameworks and platforms.
 ## Reference Documentation
 
 ### scratchpad.md
+
 **Lines**: 1,165
 
 **Contents**:
+
 - Core ADK concepts
 - Workflow agent patterns
 - State & Memory API
@@ -630,9 +697,11 @@ Master user interface integration with modern web frameworks and platforms.
 ---
 
 ### thought.md
+
 **Lines**: 720
 
 **Contents**:
+
 - Tutorial architecture
 - Research notes
 - Progress tracking
@@ -643,9 +712,11 @@ Master user interface integration with modern web frameworks and platforms.
 ---
 
 ### MISSION_COMPLETE.md
+
 **Lines**: 300+
 
 **Contents**:
+
 - Achievement summary
 - Statistics and metrics
 - Quality standards achieved
@@ -660,12 +731,14 @@ Master user interface integration with modern web frameworks and platforms.
 ### By Feature
 
 **Agents**:
+
 - Basic agents: Tutorial 01
 - Multi-agent: Tutorials 04-06, 17
 - Workflow agents: Tutorials 04-07
 - Loop agents: Tutorial 07
 
 **Tools**:
+
 - Function tools: Tutorial 02
 - OpenAPI tools: Tutorial 03
 - Built-in tools: Tutorial 11
@@ -673,17 +746,20 @@ Master user interface integration with modern web frameworks and platforms.
 - MCP tools: Tutorial 16
 
 **Workflows**:
+
 - Sequential: Tutorial 04
 - Parallel: Tutorial 05
 - Loop: Tutorial 07
 - Combined: Tutorial 06
 
 **State & Memory**:
+
 - Session state: Tutorial 08
 - Memory service: Tutorial 08
 - State management: Tutorials 08, 20
 
 **Control & Quality**:
+
 - Callbacks: Tutorial 09
 - Guardrails: Tutorial 09
 - Evaluation: Tutorial 10
@@ -691,6 +767,7 @@ Master user interface integration with modern web frameworks and platforms.
 - Observability: Tutorials 18, 24
 
 **Advanced Features**:
+
 - Streaming & SSE: Tutorial 14
 - Code execution: Tutorial 13
 - Multimodal: Tutorials 15, 21
@@ -699,6 +776,7 @@ Master user interface integration with modern web frameworks and platforms.
 - Files & artifacts: Tutorial 19
 
 **Integration**:
+
 - UI frameworks: Tutorials 29-32
 - Slack: Tutorial 33
 - PubSub: Tutorial 34
@@ -707,18 +785,23 @@ Master user interface integration with modern web frameworks and platforms.
 ### By Complexity
 
 **Simple** (1 agent):
+
 - Tutorials 01, 02, 03
 
 **Medium** (2-4 agents):
+
 - Tutorials 04, 05, 07, 11-25
 
 **Complex** (5+ agents):
+
 - Tutorial 06
 
 **Production Features**:
+
 - Tutorials 08, 09, 10, 22, 23, 24, 26
 
 **Integration Features**:
+
 - Tutorials 27, 28, 29-34
 
 ### By Use Case Domain
@@ -747,48 +830,49 @@ Master user interface integration with modern web frameworks and platforms.
 
 ## Prerequisites by Tutorial
 
-| Tutorial | Python | ADK | API Key | Prior Tutorials |
-|----------|--------|-----|---------|----------------|
-| 01 | 3.9+ | ✓ | ✓ | None |
-| 02 | 3.9+ | ✓ | ✓ | 01 |
-| 03 | 3.9+ | ✓ | ✓ | 01-02 |
-| 04 | 3.9+ | ✓ | ✓ | 01-02 |
-| 05 | 3.9+ | ✓ | ✓ | 01-02, 04 |
-| 06 | 3.9+ | ✓ | ✓ | 01-02, 04-05 |
-| 07 | 3.9+ | ✓ | ✓ | 01-02 |
-| 08 | 3.9+ | ✓ | ✓ | 01-02 |
-| 09 | 3.9+ | ✓ | ✓ | 01-02, 08 |
-| 10 | 3.9+ | ✓ | ✓ | 01-02, pytest |
-| 11 | 3.9+ | ✓ | ✓ | 01-02, Gemini 2.0+ |
-| 12 | 3.9+ | ✓ | ✓ | 01-02 |
-| 13 | 3.9+ | ✓ | ✓ | 01-02 |
-| 14 | 3.9+ | ✓ | ✓ | 01-02 |
-| 15 | 3.9+ | ✓ | ✓ | 01-02 |
-| 16 | 3.9+ | ✓ | ✓ | 01-02 |
-| 17 | 3.9+ | ✓ | ✓ | 01-02 |
-| 18 | 3.9+ | ✓ | ✓ | 01-02 |
-| 19 | 3.9+ | ✓ | ✓ | 01-02 |
-| 20 | 3.9+ | ✓ | ✓ | 01-02 |
-| 21 | 3.9+ | ✓ | ✓ | 01-02 |
-| 22 | 3.9+ | ✓ | ✓ | 01-02 |
-| 23 | 3.9+ | ✓ | ✓ | 01-02 |
-| 24 | 3.9+ | ✓ | ✓ | 01-02 |
-| 25 | 3.9+ | ✓ | ✓ | 01-02 |
-| 26 | 3.9+ | ✓ | ✓ | 01-02 |
-| 27 | 3.9+ | ✓ | ✓ | 01-02 |
-| 28 | 3.9+ | ✓ | ✓ | 01-02 |
-| 29 | 3.9+ | ✓ | ✓ | 01-02 |
-| 30 | 3.9+ | ✓ | ✓ | 01-02, Node.js |
-| 31 | 3.9+ | ✓ | ✓ | 01-02, Node.js |
-| 32 | 3.9+ | ✓ | ✓ | 01-02 |
-| 33 | 3.9+ | ✓ | ✓ | 01-02 |
-| 34 | 3.9+ | ✓ | ✓ | 01-02, GCP |
+| Tutorial | Python | ADK | API Key | Prior Tutorials    |
+| -------- | ------ | --- | ------- | ------------------ |
+| 01       | 3.9+   | ✓   | ✓       | None               |
+| 02       | 3.9+   | ✓   | ✓       | 01                 |
+| 03       | 3.9+   | ✓   | ✓       | 01-02              |
+| 04       | 3.9+   | ✓   | ✓       | 01-02              |
+| 05       | 3.9+   | ✓   | ✓       | 01-02, 04          |
+| 06       | 3.9+   | ✓   | ✓       | 01-02, 04-05       |
+| 07       | 3.9+   | ✓   | ✓       | 01-02              |
+| 08       | 3.9+   | ✓   | ✓       | 01-02              |
+| 09       | 3.9+   | ✓   | ✓       | 01-02, 08          |
+| 10       | 3.9+   | ✓   | ✓       | 01-02, pytest      |
+| 11       | 3.9+   | ✓   | ✓       | 01-02, Gemini 2.0+ |
+| 12       | 3.9+   | ✓   | ✓       | 01-02              |
+| 13       | 3.9+   | ✓   | ✓       | 01-02              |
+| 14       | 3.9+   | ✓   | ✓       | 01-02              |
+| 15       | 3.9+   | ✓   | ✓       | 01-02              |
+| 16       | 3.9+   | ✓   | ✓       | 01-02              |
+| 17       | 3.9+   | ✓   | ✓       | 01-02              |
+| 18       | 3.9+   | ✓   | ✓       | 01-02              |
+| 19       | 3.9+   | ✓   | ✓       | 01-02              |
+| 20       | 3.9+   | ✓   | ✓       | 01-02              |
+| 21       | 3.9+   | ✓   | ✓       | 01-02              |
+| 22       | 3.9+   | ✓   | ✓       | 01-02              |
+| 23       | 3.9+   | ✓   | ✓       | 01-02              |
+| 24       | 3.9+   | ✓   | ✓       | 01-02              |
+| 25       | 3.9+   | ✓   | ✓       | 01-02              |
+| 26       | 3.9+   | ✓   | ✓       | 01-02              |
+| 27       | 3.9+   | ✓   | ✓       | 01-02              |
+| 28       | 3.9+   | ✓   | ✓       | 01-02              |
+| 29       | 3.9+   | ✓   | ✓       | 01-02              |
+| 30       | 3.9+   | ✓   | ✓       | 01-02, Node.js     |
+| 31       | 3.9+   | ✓   | ✓       | 01-02, Node.js     |
+| 32       | 3.9+   | ✓   | ✓       | 01-02              |
+| 33       | 3.9+   | ✓   | ✓       | 01-02              |
+| 34       | 3.9+   | ✓   | ✓       | 01-02, GCP         |
 
 ---
 
 ## Recommended Learning Paths
 
 ### Path 1: Fastest Route to Production
+
 **Goal**: Build a production agent ASAP
 
 1. Tutorial 01 (basics)
@@ -802,6 +886,7 @@ Master user interface integration with modern web frameworks and platforms.
 ---
 
 ### Path 2: Comprehensive Learning
+
 **Goal**: Master all ADK features
 
 Follow tutorials 01-10 in order.
@@ -811,6 +896,7 @@ Follow tutorials 01-10 in order.
 ---
 
 ### Path 3: Workflow Specialist
+
 **Goal**: Focus on orchestration
 
 1. Tutorial 01 (basics)
@@ -825,6 +911,7 @@ Follow tutorials 01-10 in order.
 ---
 
 ### Path 4: Integration Expert
+
 **Goal**: Connect to external services
 
 1. Tutorial 01 (basics)
@@ -837,6 +924,7 @@ Follow tutorials 01-10 in order.
 ---
 
 ### Path 5: Enterprise Deployment
+
 **Goal**: Production deployment at scale
 
 1. Tutorial 01 (basics)
@@ -851,6 +939,7 @@ Follow tutorials 01-10 in order.
 ---
 
 ### Path 6: Multi-Provider AI
+
 **Goal**: Use multiple LLM providers
 
 1. Tutorial 01 (basics)
@@ -863,6 +952,7 @@ Follow tutorials 01-10 in order.
 ---
 
 ### Path 7: UI Integration Specialist
+
 **Goal**: Build user interfaces for ADK agents
 
 1. Tutorial 01 (basics)
@@ -875,6 +965,7 @@ Follow tutorials 01-10 in order.
 ---
 
 ### Path 8: Complete Enterprise Solution
+
 **Goal**: Full-stack AI agent development
 
 1. Tutorials 01-10 (foundation)
@@ -890,6 +981,7 @@ Follow tutorials 01-10 in order.
 ### Project Structures
 
 **Simple Agent** (Tutorial 01):
+
 ```
 hello_agent/
 ├── __init__.py
@@ -898,6 +990,7 @@ hello_agent/
 ```
 
 **With Tests** (Tutorial 10):
+
 ```
 support_agent/
 ├── __init__.py
@@ -912,6 +1005,7 @@ support_agent/
 ### Common Patterns
 
 **Basic Agent** (Tutorial 01):
+
 ```python
 from google.adk.agents import Agent
 
@@ -924,6 +1018,7 @@ root_agent = Agent(
 ```
 
 **Sequential Pipeline** (Tutorial 04):
+
 ```python
 from google.adk.agents import SequentialAgent
 
@@ -934,6 +1029,7 @@ pipeline = SequentialAgent(
 ```
 
 **Parallel Execution** (Tutorial 05):
+
 ```python
 from google.adk.agents import ParallelAgent
 
@@ -944,6 +1040,7 @@ parallel = ParallelAgent(
 ```
 
 **Loop Pattern** (Tutorial 07):
+
 ```python
 from google.adk.agents import LoopAgent
 
@@ -957,16 +1054,19 @@ loop = LoopAgent(
 ### Running Agents
 
 **Web UI** (Recommended):
+
 ```bash
 adk web agent_name
 ```
 
 **Terminal**:
+
 ```bash
 adk run agent_name
 ```
 
 **Tests**:
+
 ```bash
 pytest tests/test_agent.py
 ```
@@ -996,24 +1096,31 @@ pytest tests/test_agent.py
 ## Common Questions
 
 ### Where should I start?
+
 Tutorial 01. Follow the sequence.
 
 ### Can I skip tutorials?
+
 Not recommended, but see "Recommended Learning Paths" above.
 
 ### How long does it take?
+
 ~20 hours for complete series, ~6 hours for production path.
 
 ### Do I need to know Python?
+
 Yes, basic Python knowledge required.
 
 ### Do I need a Google API key?
+
 Yes, get one from Google AI Studio.
 
 ### Are these tutorials up-to-date?
+
 Yes! October 2025 patterns, fully modern.
 
 ### Can I use this for production?
+
 Absolutely! All patterns are production-ready.
 
 ---
@@ -1021,18 +1128,21 @@ Absolutely! All patterns are production-ready.
 ## Getting Help
 
 ### Errors in Tutorials
+
 1. Check "Common Issues & Troubleshooting" section
 2. Verify Python version (3.9+)
 3. Confirm API key is set
 4. Review Events tab in adk web
 
 ### Understanding Concepts
+
 1. Review scratchpad.md for pattern reference
 2. Check official documentation links
 3. Study code comments in examples
 4. Try modifying examples to learn
 
 ### Further Learning
+
 1. Official docs: https://google.github.io/adk-docs/
 2. GitHub repo: https://github.com/google/adk-python
 3. Example projects in research/ folder

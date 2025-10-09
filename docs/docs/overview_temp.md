@@ -46,6 +46,7 @@ Think of an AI agent like a **human office worker**:
 ```
 
 **Key Insight**: An agent is NOT just an LLM. It's a **complete system** with:
+
 - **Brain** (LLM model) for reasoning
 - **Hands** (tools) for taking actions
 - **Memory** (state + memory service) for context
@@ -63,7 +64,7 @@ flowchart LR
     E --> B
     F --> B
     B --> G[Response]
-    
+
     style A fill:#FFE5E5,stroke:#FF6B6B,stroke-width:2px,color:#000
     style B fill:#E5F5FF,stroke:#4ECDC4,stroke-width:2px,color:#000
     style C fill:#FFF5E5,stroke:#FFB347,stroke-width:2px,color:#000
@@ -113,6 +114,7 @@ flowchart LR
 ```
 
 **Rule of Thumb**:
+
 - **Use LLM Agent when**: Need reasoning, flexibility, natural language
 - **Use Workflow Agent when**: Need predictable, ordered execution
 - **Use Remote Agent when**: Need to call external services
@@ -137,6 +139,7 @@ Checker  Gatherer Team  Team  Check
 ```
 
 **Key Rules**:
+
 - **Single Parent Rule**: Each agent has ONE parent only
 - **Shared State**: Parent and children share session state
 - **Invocation Context**: Children inherit parent's context
@@ -184,12 +187,12 @@ flowchart TD
     A --> C[key - Session Scope]
     A --> D[user: - User Scope]
     A --> E[app: - Global Scope]
-    
+
     B --> F[Discarded After Call]
     C --> G[This Conversation]
     D --> H[All User Sessions]
     E --> I[Entire Application]
-    
+
     style A fill:#FFE5E5,stroke:#FF6B6B,stroke-width:2px,color:#000
     style B fill:#E5F5FF,stroke:#4ECDC4,stroke-width:2px,color:#000
     style C fill:#F0E5FF,stroke:#9B59B6,stroke-width:2px,color:#000
@@ -198,6 +201,7 @@ flowchart TD
 ```
 
 **Decision Framework**:
+
 - **Use State for**: Task progress, current intent, working data
 - **Use Memory for**: Long-term knowledge, historical patterns, learned preferences
 - **Use Artifacts for**: Files, binary data, large content
@@ -267,7 +271,7 @@ flowchart TD
     F -->|No| H{Web/Maps?}
     H -->|Yes| I[Builtin Tools]
     H -->|No| J[Framework Tools]
-    
+
     style A fill:#FFE5E5,stroke:#FF6B6B,stroke-width:2px,color:#000
     style C fill:#E5F5FF,stroke:#4ECDC4,stroke-width:2px,color:#000
     style E fill:#F0E5FF,stroke:#9B59B6,stroke-width:2px,color:#000
@@ -359,14 +363,14 @@ User: "Check weather in SF, LA, NYC"
 
 **Workflow Decision Matrix**:
 
-| Scenario | Use Sequential | Use Parallel | Use Loop |
-|----------|---------------|--------------|----------|
-| Order matters | ✅ Yes | ❌ No | ❌ No |
-| Independent tasks | ❌ No | ✅ Yes | ❌ No |
-| Need speed | ❌ No | ✅ Yes | ❌ No |
-| Iterative refinement | ❌ No | ❌ No | ✅ Yes |
-| Quality > speed | ❌ No | ❌ No | ✅ Yes |
-| Dependencies | ✅ Yes | ❌ No | 🤔 Maybe |
+| Scenario             | Use Sequential | Use Parallel | Use Loop |
+| -------------------- | -------------- | ------------ | -------- |
+| Order matters        | ✅ Yes         | ❌ No        | ❌ No    |
+| Independent tasks    | ❌ No          | ✅ Yes       | ❌ No    |
+| Need speed           | ❌ No          | ✅ Yes       | ❌ No    |
+| Iterative refinement | ❌ No          | ❌ No        | ✅ Yes   |
+| Quality > speed      | ❌ No          | ❌ No        | ✅ Yes   |
+| Dependencies         | ✅ Yes         | ❌ No        | 🤔 Maybe |
 
 **Workflow Pattern Visualizations**:
 
@@ -378,7 +382,7 @@ flowchart LR
     A[Step 1] --> B[Step 2]
     B --> C[Step 3]
     C --> D[Step 4]
-    
+
     style A fill:#E5F5FF,stroke:#4ECDC4,stroke-width:2px,color:#000
     style B fill:#F0E5FF,stroke:#9B59B6,stroke-width:2px,color:#000
     style C fill:#FFF5E5,stroke:#FFB347,stroke-width:2px,color:#000
@@ -396,7 +400,7 @@ flowchart TD
     B --> E[Merge]
     C --> E
     D --> E
-    
+
     style A fill:#FFE5E5,stroke:#FF6B6B,stroke-width:2px,color:#000
     style B fill:#E5F5FF,stroke:#4ECDC4,stroke-width:2px,color:#000
     style C fill:#F0E5FF,stroke:#9B59B6,stroke-width:2px,color:#000
@@ -414,7 +418,7 @@ flowchart LR
     C -->|No| D[Refine]
     D --> A
     C -->|Yes| E[Done]
-    
+
     style A fill:#E5F5FF,stroke:#4ECDC4,stroke-width:2px,color:#000
     style B fill:#F0E5FF,stroke:#9B59B6,stroke-width:2px,color:#000
     style C fill:#FFF5E5,stroke:#FFB347,stroke-width:2px,color:#000
@@ -651,14 +655,14 @@ Need current information?
 
 **When to Use Thinking**:
 
-| Scenario | BuiltInPlanner | PlanReActPlanner | None |
-|----------|---------------|------------------|------|
-| Complex reasoning needed | ✅ | ✅ | ❌ |
-| Want visible reasoning | ✅ | ✅ | ❌ |
-| Multi-step problems | ✅ | ✅ | 🤔 |
-| Need replanning | ❌ | ✅ | ❌ |
-| Simple queries | ❌ | ❌ | ✅ |
-| Speed critical | ❌ | ❌ | ✅ |
+| Scenario                 | BuiltInPlanner | PlanReActPlanner | None |
+| ------------------------ | -------------- | ---------------- | ---- |
+| Complex reasoning needed | ✅             | ✅               | ❌   |
+| Want visible reasoning   | ✅             | ✅               | ❌   |
+| Multi-step problems      | ✅             | ✅               | 🤔   |
+| Need replanning          | ❌             | ✅               | ❌   |
+| Simple queries           | ❌             | ❌               | ✅   |
+| Speed critical           | ❌             | ❌               | ✅   |
 
 **Source**: `research/adk-python/src/google/adk/planners/`
 
@@ -716,7 +720,7 @@ flowchart LR
     B --> C[Cloud Run]
     C --> D[Vertex AI]
     D --> E[GKE]
-    
+
     style A fill:#FFE5E5,stroke:#FF6B6B,stroke-width:2px,color:#000
     style B fill:#E5F5FF,stroke:#4ECDC4,stroke-width:2px,color:#000
     style C fill:#F0E5FF,stroke:#9B59B6,stroke-width:2px,color:#000
@@ -862,13 +866,13 @@ Production:
 
 **Streaming Decision Framework**:
 
-| Use Case | Mode | Why |
-|----------|------|-----|
-| Chat interface | SSE | Show tokens as typed |
-| Voice assistant | BIDI | Real-time conversation |
-| Batch processing | NONE | Complete response needed |
-| Long responses | SSE | User sees progress |
-| Interactive dialog | BIDI | Back-and-forth |
+| Use Case           | Mode | Why                      |
+| ------------------ | ---- | ------------------------ |
+| Chat interface     | SSE  | Show tokens as typed     |
+| Voice assistant    | BIDI | Real-time conversation   |
+| Batch processing   | NONE | Complete response needed |
+| Long responses     | SSE  | User sees progress       |
+| Interactive dialog | BIDI | Back-and-forth           |
 
 **Source**: `research/adk-python/src/google/adk/models/gemini_llm_connection.py`
 
@@ -927,13 +931,13 @@ mcp_tools = MCPToolset(
 
 **MCP vs Custom Tools**:
 
-| Aspect | Custom Tools | MCP Tools |
-|--------|-------------|-----------|
-| Setup | Write Python code | Install MCP server |
-| Reusability | Single agent | Any agent |
-| Discovery | Manual | Automatic |
-| Authentication | Custom | Built-in OAuth2 |
-| Community | N/A | 100+ servers |
+| Aspect         | Custom Tools      | MCP Tools          |
+| -------------- | ----------------- | ------------------ |
+| Setup          | Write Python code | Install MCP server |
+| Reusability    | Single agent      | Any agent          |
+| Discovery      | Manual            | Automatic          |
+| Authentication | Custom            | Built-in OAuth2    |
+| Community      | N/A               | 100+ servers       |
 
 **Source**: `research/adk-python/src/google/adk/tools/mcp_tool/`
 
@@ -978,14 +982,14 @@ mcp_tools = MCPToolset(
 
 **A2A vs Local Multi-Agent**:
 
-| Aspect | Local Multi-Agent | A2A (Remote) |
-|--------|------------------|--------------|
-| Location | Same process | HTTP service |
+| Aspect        | Local Multi-Agent     | A2A (Remote)         |
+| ------------- | --------------------- | -------------------- |
+| Location      | Same process          | HTTP service         |
 | State sharing | Direct (same session) | Via request/response |
-| Deployment | Single deploy | Independent deploys |
-| Scaling | Vertical | Horizontal |
-| Teams | Single team | Multiple teams |
-| Use case | Tightly coupled | Loosely coupled |
+| Deployment    | Single deploy         | Independent deploys  |
+| Scaling       | Vertical              | Horizontal           |
+| Teams         | Single team           | Multiple teams       |
+| Use case      | Tightly coupled       | Loosely coupled      |
 
 **A2A Implementation**:
 
@@ -1224,6 +1228,7 @@ START: What are you building?
 ### Quick Reference: When to Use What
 
 **Agents**:
+
 - `Agent` (LLM) - Reasoning, flexibility, natural language
 - `SequentialAgent` - Ordered steps, dependencies
 - `ParallelAgent` - Independent tasks, speed
@@ -1231,6 +1236,7 @@ START: What are you building?
 - `RemoteA2aAgent` - Microservices, distributed
 
 **Tools**:
+
 - `FunctionTool` - Custom Python logic
 - `OpenAPIToolset` - REST APIs
 - `MCPToolset` - Filesystem, databases (MCP protocol)
@@ -1238,6 +1244,7 @@ START: What are you building?
 - `LangchainTool` / `CrewaiTool` - Third-party ecosystems
 
 **State Management**:
+
 - `state['key']` - Session scope
 - `state['user:key']` - User scope (all sessions)
 - `state['app:key']` - App scope (global)
@@ -1245,6 +1252,7 @@ START: What are you building?
 - `memory_service` - Long-term knowledge
 
 **Models**:
+
 - `gemini-2.5-flash` - Default, fast, cheap ($0.375/1M)
 - `gemini-2.0-flash` - Built-in tools, thinking, code execution
 - `gemini-2.0-flash-live-*` - Live API (bidirectional)
@@ -1253,6 +1261,7 @@ START: What are you building?
 - `LiteLlm(model='ollama_chat/llama3.3')` - Local (FREE)
 
 **Deployment**:
+
 - `adk web` - Local development
 - `adk deploy cloud_run` - Serverless production
 - `adk deploy agent_engine` - Managed Vertex AI
@@ -1263,6 +1272,7 @@ START: What are you building?
 ## 📚 Learning Path Recommendations
 
 ### Path 1: Foundation (Start Here)
+
 1. Read this overview.md completely
 2. Tutorial 01 - Understand Agent basics
 3. Tutorial 02 - Learn FunctionTool pattern
@@ -1270,6 +1280,7 @@ START: What are you building?
 5. **Mental Model**: Agent = Brain + Tools + Memory
 
 ### Path 2: Workflows (Orchestration)
+
 1. Tutorial 04 - Sequential patterns
 2. Tutorial 05 - Parallel patterns
 3. Tutorial 07 - Loop patterns
@@ -1277,6 +1288,7 @@ START: What are you building?
 5. **Mental Model**: Workflows = Assembly line strategies
 
 ### Path 3: Production (Deploy)
+
 1. Tutorial 09 - Callbacks & guardrails
 2. Tutorial 10 - Evaluation framework
 3. Tutorial 26 - AgentSpace deployment
@@ -1284,6 +1296,7 @@ START: What are you building?
 5. **Mental Model**: Production ≠ Development
 
 ### Path 4: Integration (Extend)
+
 1. Tutorial 03 - OpenAPI tools
 2. Tutorial 16 - MCP integration
 3. Tutorial 27 - Third-party tools (LangChain/CrewAI)
@@ -1291,6 +1304,7 @@ START: What are you building?
 5. **Mental Model**: Tools = Capabilities extension
 
 ### Path 5: Advanced (Master)
+
 1. Tutorial 22 - Streaming & Live API
 2. Tutorial 28 - Multi-provider LLMs
 3. Review research/adk-python source code
@@ -1410,6 +1424,7 @@ research/adk-python/src/google/adk/
 ```
 
 **Remember**:
+
 1. **Agents are systems**, not just LLMs
 2. **Tools extend capabilities** - design them well
 3. **State is short-term**, memory is long-term
@@ -1420,6 +1435,7 @@ research/adk-python/src/google/adk/
 8. **Source code is truth** - always verify
 
 **Next Steps**:
+
 1. Read this document completely
 2. Follow a learning path (Foundation → Advanced)
 3. Build projects using mental models
@@ -1438,6 +1454,7 @@ research/adk-python/src/google/adk/
 **Maintenance**: Update as ADK evolves (weekly releases)
 
 **Total Content**:
+
 - 15 core mental models
 - 100+ decision rules
 - 50+ visual diagrams
