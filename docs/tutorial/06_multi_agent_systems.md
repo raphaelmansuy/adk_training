@@ -4,12 +4,21 @@ title: "Tutorial 06: Multi-Agent Systems - Complex Orchestration"
 description: "Build sophisticated multi-agent systems combining sequential and parallel workflows for complex business processes and decision-making systems."
 sidebar_label: "06. Multi-Agent Systems"
 sidebar_position: 6
-tags: ["advanced", "multi-agent", "orchestration", "complex-workflows", "systems"]
-keywords: ["multi-agent systems", "agent orchestration", "complex workflows", "business processes", "decision systems"]
+tags:
+  ["advanced", "multi-agent", "orchestration", "complex-workflows", "systems"]
+keywords:
+  [
+    "multi-agent systems",
+    "agent orchestration",
+    "complex workflows",
+    "business processes",
+    "decision systems",
+  ]
 status: "completed"
 difficulty: "advanced"
 estimated_time: "1.5 hours"
-prerequisites: ["Tutorial 04: Sequential Workflows", "Tutorial 05: Parallel Processing"]
+prerequisites:
+  ["Tutorial 04: Sequential Workflows", "Tutorial 05: Parallel Processing"]
 learning_objectives:
   - "Design complex multi-agent architectures"
   - "Combine sequential and parallel patterns"
@@ -77,40 +86,48 @@ Real-world problems need **multiple agents working together** in sophisticated w
 ### Common Multi-Agent Patterns
 
 **Pattern 1: Sequential Pipeline**
+
 ```
 Agent A → Agent B → Agent C
 ```
-*Use when*: Each step needs previous step's output
+
+_Use when_: Each step needs previous step's output
 
 **Pattern 2: Fan-Out/Gather**
+
 ```
      ┌─ Agent A ─┐
-In ──┼─ Agent B ─┼─→ Merger → Out
+     In ──┼─ Agent B ─┼─→ Merger → Out
      └─ Agent C ─┘
 ```
-*Use when*: Gather data from multiple sources, then synthesize
+
+_Use when_: Gather data from multiple sources, then synthesize
 
 **Pattern 3: Nested Workflows** (This Tutorial!)
+
 ```
        ┌─ Sequential: A → B ─┐
-In ────┼─ Sequential: C → D ─┼─→ Final Agent → Out
+       In ────┼─ Sequential: C → D ─┼─→ Final Agent → Out
        └─ Sequential: E → F ─┘
-       
+
      Parallel Container
 ```
-*Use when*: Multiple independent pipelines, then final synthesis
+
+_Use when_: Multiple independent pipelines, then final synthesis
 
 ### Real Research with GoogleSearch Tool
 
 **🎯 Enhanced with Real Web Search**: This tutorial now uses ADK's builtin `google_search` tool to perform actual web research instead of simulated responses. This makes the content publishing system much more powerful and realistic!
 
 The GoogleSearch tool automatically:
+
 - Searches the web for current, relevant information
 - Provides factual, up-to-date data from credible sources
 - Works seamlessly with Gemini 2.0+ models
 - No additional setup required beyond your API key
 
 **Why Real Search Matters:**
+
 - ✅ **Authentic content** - Based on actual web research
 - ✅ **Current information** - Always up-to-date with latest news
 - ✅ **Credible sources** - Draws from real websites and publications
@@ -121,10 +138,9 @@ The GoogleSearch tool automatically:
 We're building a **Content Publishing System** for a digital magazine that needs to:
 
 1. **Research Phase** (3 parallel pipelines):
-   - *News Pipeline*: Fetch current events → Summarize key points
-   - *Social Pipeline*: Gather trending topics → Analyze sentiment
-   - *Expert Pipeline*: Find expert opinions → Extract quotes
-   
+   - _News Pipeline_: Fetch current events → Summarize key points
+   - _Social Pipeline_: Gather trending topics → Analyze sentiment
+   - _Expert Pipeline_: Find expert opinions → Extract quotes
 2. **Content Creation Phase** (sequential):
    - Combine all research
    - Write article draft
@@ -145,7 +161,8 @@ Copy your `.env` file from previous tutorials.
 
 ## Step 2: Set Up Package Import
 
-**content_publisher/__init__.py**
+**content_publisher/**init**.py**
+
 ```python
 from . import agent
 ```
@@ -153,6 +170,7 @@ from . import agent
 ## Step 3: Build the Multi-Agent System
 
 **content_publisher/agent.py**
+
 ```python
 from __future__ import annotations
 
@@ -448,8 +466,8 @@ Final Output: Publication-ready article!
    - 3 independent research areas (news, social, expert)
    - Each has 2-step pipeline (gather → process)
    - All 3 pipelines run simultaneously = FAST
-   
 2. **Phase 2 (Sequential Creation)**:
+
    - Writer NEEDS all 3 research outputs
    - Editor NEEDS writer's draft
    - Formatter NEEDS editor's version
@@ -484,21 +502,25 @@ Open `http://localhost:8000` and select "content_publisher".
 ### Try These Prompts
 
 **Technology Topic:**
+
 ```
 Write an article about artificial intelligence in healthcare
 ```
 
 **Current Events:**
+
 ```
 Create an article about renewable energy adoption
 ```
 
 **Business Topic:**
+
 ```
 Write about the future of remote work
 ```
 
 **Science Topic:**
+
 ```
 Create an article explaining quantum computing breakthroughs
 ```
@@ -508,11 +530,12 @@ Create an article explaining quantum computing breakthroughs
 Open the **Events tab** to see the sophisticated orchestration:
 
 **Phase 1: Parallel Research Starts**
+
 1. Event: ParallelResearch starts
 2. Events (ALL SIMULTANEOUSLY):
    - NewsPipeline starts
      - news_fetcher runs
-     - news_summarizer runs  
+     - news_summarizer runs
    - SocialPipeline starts
      - social_monitor runs
      - sentiment_analyzer runs
@@ -521,13 +544,7 @@ Open the **Events tab** to see the sophisticated orchestration:
      - quote_extractor runs
 3. Event: ParallelResearch completes (when ALL 3 pipelines done)
 
-**Phase 2: Sequential Content Creation**
-4. Event: article_writer starts (with all 3 research outputs injected)
-5. Event: article_writer completes
-6. Event: article_editor starts (with draft)
-7. Event: article_editor completes
-8. Event: article_formatter starts (with edited version)
-9. Event: article_formatter completes → DONE!
+**Phase 2: Sequential Content Creation** 4. Event: article_writer starts (with all 3 research outputs injected) 5. Event: article_writer completes 6. Event: article_editor starts (with draft) 7. Event: article_editor completes 8. Event: article_formatter starts (with edited version) 9. Event: article_formatter completes → DONE!
 
 Watch how 6 agents in Phase 1 run concurrently, then 3 agents in Phase 2 run sequentially!
 
@@ -541,6 +558,7 @@ make test
 ```
 
 **Test Coverage:**
+
 - ✅ Individual agent configurations (9 agents)
 - ✅ Sequential pipeline structures (3 pipelines)
 - ✅ Parallel research orchestration
@@ -550,6 +568,7 @@ make test
 - ✅ Project file organization
 
 **Quick Demo:**
+
 ```bash
 # Test basic functionality without full ADK setup
 make demo
@@ -608,13 +627,11 @@ The automotive industry is undergoing its most dramatic transformation since the
 
 1. **Outer SequentialAgent** controls main phases:
    - sub_agents = [parallel_research, writer, editor, formatter]
-   
 2. **parallel_research (ParallelAgent)** runs 3 sub-agents concurrently:
    - Each sub-agent is itself a SequentialAgent!
    - NewsPipeline runs: fetcher → summarizer
    - SocialPipeline runs: monitor → analyzer
    - ExpertPipeline runs: finder → extractor
-   
 3. **State Management**:
    - Each pipeline saves to its own output_key
    - Writer reads `{news_summary}`, `{social_insights}`, `{expert_quotes}`
@@ -622,6 +639,7 @@ The automotive industry is undergoing its most dramatic transformation since the
    - Formatter reads `{edited_article}`
 
 **Performance Characteristics:**
+
 - **Without parallelism**: ~60 seconds (6 research agents + 3 creation agents)
 - **With parallelism**: ~25 seconds (6 research agents run together!)
 - **Speedup**: ~2.4x faster
@@ -645,6 +663,7 @@ The automotive industry is undergoing its most dramatic transformation since the
 ## Best Practices
 
 **DO:**
+
 - Draw your architecture before coding (visualize the flow!)
 - Keep agents focused (one clear responsibility)
 - Use descriptive names (news_fetcher, not agent1)
@@ -653,6 +672,7 @@ The automotive industry is undergoing its most dramatic transformation since the
 - Monitor Events tab to verify execution
 
 **DON'T:**
+
 - Over-nest (3+ levels deep gets confusing)
 - Create agents that do multiple things
 - Forget to set output_keys (breaks state flow!)
@@ -662,18 +682,22 @@ The automotive industry is undergoing its most dramatic transformation since the
 ## Common Issues
 
 **Problem**: "Agents in parallel block seem to run sequentially"
+
 - **Solution**: Check Events tab for actual start times
 - **Solution**: Model API might be rate-limiting concurrent requests
 
 **Problem**: "Writer agent missing research data"
+
 - **Solution**: Verify each pipeline sets its output_key
 - **Solution**: Check `{key}` names in writer instruction match exactly
 
 **Problem**: "One research pipeline fails, whole system stops"
+
 - **Solution**: ParallelAgent waits for ALL - one failure blocks
 - **Solution**: Add error handling or retry logic to individual agents
 
 **Problem**: "Hard to debug nested agents"
+
 - **Solution**: Test each pipeline individually first
 - **Solution**: Use Events tab to trace execution flow
 - **Solution**: Add descriptive agent names and descriptions
@@ -681,6 +705,7 @@ The automotive industry is undergoing its most dramatic transformation since the
 ## What We Built
 
 You now have a production-grade content publishing system that:
+
 - Researches from 3 independent sources concurrently
 - Processes each source with specialized pipelines
 - Synthesizes everything into publication-ready content
@@ -704,6 +729,7 @@ And you understand how to architect complex agent systems!
 🚀 **Tutorial 07: Loop Agents** - Learn iterative refinement for quality improvement
 
 📖 **Further Reading**:
+
 - [Workflow Agents Overview](https://google.github.io/adk-docs/agents/workflow-agents/)
 - [Agent Composition Patterns](https://google.github.io/adk-docs/agents/composition/)
 - [State Management](https://google.github.io/adk-docs/sessions/state/)
@@ -721,12 +747,14 @@ And you understand how to architect complex agent systems!
 **Working Implementation**: See [`tutorial_implementation/tutorial06/`](https://github.com/raphaelmansuy/adk_training/tree/main/tutorial_implementation/tutorial06) for a complete, tested version with comprehensive documentation.
 
 **Key Files:**
+
 - [`content_publisher/agent.py`](https://github.com/raphaelmansuy/adk_training/blob/main/tutorial_implementation/tutorial06/content_publisher/agent.py) - Complete multi-agent orchestration
 - [`tests/test_agent.py`](https://github.com/raphaelmansuy/adk_training/blob/main/tutorial_implementation/tutorial06/tests/test_agent.py) - 62 comprehensive tests
 - [`README.md`](https://github.com/raphaelmansuy/adk_training/blob/main/tutorial_implementation/tutorial06/README.md) - Detailed implementation guide
 - [`Makefile`](https://github.com/raphaelmansuy/adk_training/blob/main/tutorial_implementation/tutorial06/Makefile) - Development commands
 
 **Quick Start with Working Code:**
+
 ```bash
 cd tutorial_implementation/tutorial06/
 make setup  # Install dependencies
@@ -736,18 +764,21 @@ make dev    # Start development server
 
 **Manual Implementation:**
 
-**content_publisher/__init__.py**
+**content_publisher/**init**.py**
+
 ```python
 from . import agent
 ```
 
 **content_publisher/.env**
+
 ```bash
 GOOGLE_GENAI_USE_VERTEXAI=FALSE
 GOOGLE_API_KEY=your-api-key-here
 ```
 
 **content_publisher/agent.py**
+
 ```python
 # See Step 3 above for complete code
 ```

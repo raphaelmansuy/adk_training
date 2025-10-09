@@ -5,11 +5,19 @@ description: "Execute multiple agents simultaneously using ParallelAgent for fas
 sidebar_label: "05. Parallel Processing"
 sidebar_position: 5
 tags: ["intermediate", "parallel", "concurrent", "performance", "multi-agent"]
-keywords: ["parallel processing", "concurrent execution", "ParallelAgent", "performance", "independent tasks"]
+keywords:
+  [
+    "parallel processing",
+    "concurrent execution",
+    "ParallelAgent",
+    "performance",
+    "independent tasks",
+  ]
 status: "completed"
 difficulty: "intermediate"
 estimated_time: "1 hour"
-prerequisites: ["Tutorial 01: Hello World Agent", "Tutorial 04: Sequential Workflows"]
+prerequisites:
+  ["Tutorial 01: Hello World Agent", "Tutorial 04: Sequential Workflows"]
 learning_objectives:
   - "Use ParallelAgent for concurrent task execution"
   - "Understand when to use parallel vs sequential workflows"
@@ -29,7 +37,7 @@ Learn how to execute multiple agents concurrently to dramatically speed up your 
 ## Prerequisites
 
 - **Completed Tutorials 01-04** - Understanding of agents, tools, and sequential workflows
-- **Installed ADK** - `pip install google-adk`  
+- **Installed ADK** - `pip install google-adk`
 - **API key configured** - From Tutorial 01
 
 ## Core Concepts
@@ -37,11 +45,13 @@ Learn how to execute multiple agents concurrently to dramatically speed up your 
 ### ParallelAgent
 
 The **`ParallelAgent`** executes multiple sub-agents **concurrently** (at the same time), not sequentially. This is perfect when:
+
 - Tasks are **independent** (don't depend on each other)
 - You want **speed** (faster than running one-by-one)
 - You're gathering information from **multiple sources**
 
 **Key Characteristics:**
+
 - All sub-agents start at the same time
 - Agents run independently (no shared data during execution)
 - ParallelAgent waits for ALL to complete
@@ -50,12 +60,14 @@ The **`ParallelAgent`** executes multiple sub-agents **concurrently** (at the sa
 ### When to Use Parallel vs Sequential
 
 **Use `ParallelAgent` when:**
+
 - ✅ Tasks are independent (can run in any order)
 - ✅ Speed matters (want results faster)
 - ✅ Gathering data from multiple sources
 - ✅ Tasks don't need each other's outputs
 
 **Use `SequentialAgent` when:**
+
 - ✅ Tasks MUST happen in specific order
 - ✅ Each step needs previous step's output
 - ✅ Building a pipeline (output flows between agents)
@@ -69,9 +81,9 @@ This is THE killer pattern for real-world agents:
 
 ```
         ┌──── Agent 1 (flights) ────┐
-User ───┼──── Agent 2 (hotels) ─────┼──→ Merger Agent → Final Result
+        User ───┼──── Agent 2 (hotels) ─────┼──→ Merger Agent → Final Result
         └──── Agent 3 (activities) ─┘
-        
+
       ParallelAgent (fast!)       SequentialAgent (combine)
 ```
 
@@ -80,6 +92,7 @@ This gives you both **speed** (parallel data gathering) and **synthesis** (mergi
 ## Use Case
 
 We're building a **Smart Travel Planner** that helps users plan trips by:
+
 1. **Searching flights** (concurrent)
 2. **Searching hotels** (concurrent)
 3. **Finding activities** (concurrent)
@@ -138,6 +151,7 @@ tutorial05/
 ```
 
 **Key Components:**
+
 - **`travel_planner/agent.py`**: Complete ParallelAgent + SequentialAgent pipeline
 - **`tests/test_agent.py`**: 57 tests covering all functionality
 - **`Makefile`**: `make setup`, `make test`, `make dev`, `make demo` commands
@@ -145,7 +159,8 @@ tutorial05/
 
 ## Step 2: Set Up Package Import
 
-**travel_planner/__init__.py**
+**travel_planner/**init**.py**
+
 ```python
 from . import agent
 ```
@@ -153,6 +168,7 @@ from . import agent
 ## Step 3: Define the Travel Planning Agents
 
 **travel_planner/agent.py**
+
 ```python
 from __future__ import annotations
 
@@ -291,12 +307,13 @@ root_agent = travel_planning_system
 ### Code Breakdown
 
 **Fan-Out/Gather Flow:**
+
 ```
 User: "Plan a trip to Tokyo for 5 days"
     ↓
 ParallelAgent starts (3 agents run AT SAME TIME):
     ├─ flight_finder → searches flights → state['flight_options']
-    ├─ hotel_finder → searches hotels → state['hotel_options']  
+    ├─ hotel_finder → searches hotels → state['hotel_options']
     └─ activity_finder → finds activities → state['activity_options']
     ↓ (waits for ALL to complete)
 ParallelAgent completes
@@ -307,12 +324,14 @@ Final Output: complete travel itinerary
 ```
 
 **Why This Pattern Works:**
+
 1. **Parallel search is FAST** - 3 agents run concurrently (not one-by-one)
 2. **Independent tasks** - Flight search doesn't need hotel data
 3. **Sequential merge** - Itinerary builder needs ALL search results
 4. **Best of both worlds** - Speed (parallel) + synthesis (sequential)
 
 **Key Design Decisions:**
+
 - Each search agent has focused responsibility
 - All search agents save to state with `output_key`
 - Itinerary builder reads all state keys with `{key}` syntax
@@ -343,21 +362,25 @@ Open `http://localhost:8000` and select "travel_planner".
 ### Try These Prompts
 
 **Basic Trip:**
+
 ```
 Plan a 3-day trip to Paris
 ```
 
 **Detailed Request:**
+
 ```
 I need a 5-day Tokyo trip for 2 people. Budget-friendly options preferred.
 ```
 
 **Specific Requirements:**
+
 ```
 Weekend getaway to New York. Looking for cultural activities and good restaurants.
 ```
 
 **Beach Vacation:**
+
 ```
 Plan a relaxing week in Bali with beach activities
 ```
@@ -369,7 +392,7 @@ Open the **Events tab** and watch the magic:
 1. **Event**: ParallelAgent starts
 2. **Events (ALL AT ONCE)**:
    - Flight finder starts
-   - Hotel finder starts  
+   - Hotel finder starts
    - Activity finder starts
 3. **Events (AS THEY COMPLETE)**:
    - Flight finder completes → saves to state
@@ -391,6 +414,7 @@ make test
 ```
 
 **Test Coverage:**
+
 - ✅ Agent configurations and instructions (57 tests total)
 - ✅ ParallelAgent structure and concurrent execution
 - ✅ SequentialAgent pipeline flow and state management
@@ -399,6 +423,7 @@ make test
 - ✅ Project organization and file structure
 
 **Quick Demo:**
+
 ```bash
 # Test basic functionality without full ADK setup
 make demo
@@ -452,6 +477,7 @@ Final Itinerary:
 ## How It Works (Behind the Scenes)
 
 **Parallel Execution:**
+
 1. `ParallelAgent.sub_agents` = [flight, hotel, activity]
 2. ADK calls `.run()` on ALL agents simultaneously (async)
 3. Each agent executes independently (no shared state during run)
@@ -459,12 +485,14 @@ Final Itinerary:
 5. Each agent's output saved to its `output_key` in state
 
 **Sequential Merge:**
+
 1. After parallel completes, next agent in sequence runs
 2. Itinerary builder's instruction has `{flight_options}`, `{hotel_options}`, `{activity_options}`
 3. ADK injects values from state into instruction
 4. Builder creates final output using all gathered data
 
 **Performance:**
+
 - Sequential: ~30 seconds (3 agents × 10 seconds each)
 - Parallel: ~10 seconds (all 3 run together, limited by slowest)
 - **3x faster!**
@@ -481,7 +509,7 @@ flowchart TD
     D --> F
     E --> F
     F --> G[Final Itinerary]
-    
+
     style A fill:#FFE5E5,stroke:#FF6B6B,stroke-width:2px,color:#000
     style B fill:#E5F5FF,stroke:#4ECDC4,stroke-width:2px,color:#000
     style C fill:#F0E5FF,stroke:#9B59B6,stroke-width:2px,color:#000
@@ -489,7 +517,7 @@ flowchart TD
     style E fill:#E5FFE5,stroke:#52D17C,stroke-width:2px,color:#000
     style F fill:#FFE5F5,stroke:#FF6B9D,stroke-width:2px,color:#000
     style G fill:#E5F5FF,stroke:#4ECDC4,stroke-width:2px,color:#000
-    
+
 ```
 
 ## Key Takeaways
@@ -511,6 +539,7 @@ flowchart TD
 ## Best Practices
 
 **DO:**
+
 - Use for I/O-bound tasks (API calls, web searches, database queries)
 - Keep sub-agents independent (no dependencies between them)
 - Combine with Sequential for merge/synthesis step
@@ -518,6 +547,7 @@ flowchart TD
 - Monitor Events tab to verify parallel execution
 
 **DON'T:**
+
 - Use when agents need each other's outputs (use Sequential instead)
 - Assume specific execution order within parallel block
 - Forget the merge step (parallel gives you data, need synthesis)
@@ -527,24 +557,29 @@ flowchart TD
 ## Common Issues
 
 **Problem**: "Parallel agents seem to run sequentially"
+
 - **Solution**: Check Events tab - they should show same start times
 - **Solution**: Might be model API rate limiting
 
 **Problem**: "Itinerary builder missing some data"
+
 - **Solution**: Verify each search agent has `output_key` defined
 - **Solution**: Check `{key}` names match exactly in itinerary instruction
 
 **Problem**: "One agent fails, whole system stops"
+
 - **Solution**: ParallelAgent waits for ALL - one failure blocks
 - **Solution**: Consider error handling in individual agents
 
 **Problem**: "Not seeing speed improvements"
+
 - **Solution**: Speed gain depends on task type (I/O vs CPU)
 - **Solution**: Check if you're being rate-limited by APIs
 
 ## What We Built
 
 You now have a production-quality travel planner that:
+
 - Searches multiple sources concurrently (3x faster!)
 - Gathers comprehensive travel information
 - Synthesizes everything into a complete itinerary
@@ -555,6 +590,7 @@ And you understand when/how to use parallel execution!
 ## Real-World Applications
 
 **Parallel Execution Is Perfect For:**
+
 - **Data Gathering**: Search multiple APIs/databases simultaneously
 - **Content Creation**: Generate multiple variations concurrently
 - **Analysis**: Run different analyses on same data in parallel
@@ -567,6 +603,7 @@ And you understand when/how to use parallel execution!
 🚀 **Tutorial 06: Multi-Agent Systems** - Combine Sequential and Parallel patterns for sophisticated workflows
 
 📖 **Further Reading**:
+
 - [Parallel Agents Documentation](https://google.github.io/adk-docs/agents/workflow-agents/parallel-agents/)
 - [Workflow Agents Overview](https://google.github.io/adk-docs/agents/workflow-agents/)
 - [Performance Optimization Guide](https://google.github.io/adk-docs/performance/)
@@ -584,12 +621,14 @@ And you understand when/how to use parallel execution!
 **Working Implementation**: See [`tutorial_implementation/tutorial05/`](https://github.com/raphaelmansuy/adk_training/tree/main/tutorial_implementation/tutorial05/) for a complete, tested version with comprehensive documentation.
 
 **Key Files:**
+
 - [`travel_planner/agent.py`](https://github.com/raphaelmansuy/adk_training/tree/main/tutorial_implementation/tutorial05/travel_planner/agent.py) - Complete agent implementation
 - [`tests/test_agent.py`](https://github.com/raphaelmansuy/adk_training/tree/main/tutorial_implementation/tutorial05/tests/test_agent.py) - 57 comprehensive tests
 - [`README.md`](https://github.com/raphaelmansuy/adk_training/tree/main/tutorial_implementation/tutorial05/README.md) - Detailed implementation guide
 - [`Makefile`](https://github.com/raphaelmansuy/adk_training/tree/main/tutorial_implementation/tutorial05/Makefile) - Development commands
 
 **Quick Start with Working Code:**
+
 ```bash
 cd tutorial_implementation/tutorial05/
 make setup  # Install dependencies
@@ -599,18 +638,21 @@ make dev    # Start development server
 
 **Manual Implementation:**
 
-**travel_planner/__init__.py**
+**travel_planner/**init**.py**
+
 ```python
 from . import agent
 ```
 
 **travel_planner/.env**
+
 ```bash
 GOOGLE_GENAI_USE_VERTEXAI=FALSE
 GOOGLE_API_KEY=your-api-key-here
 ```
 
 **travel_planner/agent.py**
+
 ```python
 # See Step 3 above for complete code
 ```

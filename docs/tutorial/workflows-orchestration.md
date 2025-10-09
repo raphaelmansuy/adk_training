@@ -22,17 +22,17 @@ sidebar_label: Workflows & Orchestration
 │                    WORKFLOW PATTERNS                         │
 ├──────────────────────────────────────────────────────────────┤
 │                                                              │
-│ [INSTR] SEQUENTIAL (Assembly Line)                                │
+│ [INSTR] SEQUENTIAL (Assembly Line)                           │
 │    "One step after another, in order order"                  │
 │                                                              │
-│    Step 1  →  Step 2  →  Step 3  →  Step 4                  │
+│    Step 1  →  Step 2  →  Step 3  →  Step 4                   │
 │    Write      Review     Refactor    Test                    │
 │                                                              │
 │    Use: Pipelines, dependencies, order matters               │
 │    Pattern: Each step uses output from previous              │
 │    Source: agents/workflow_agents/sequential_agent.py        │
 │                                                              │
-│ │ [PARALLEL] PARALLEL (Fan-out/Gather)                         │                                 │
+│ [PARALLEL] PARALLEL (Fan-out/Gather)                         │
 │    "Multiple tasks at once, then combine"                    │
 │                                                              │
 │         ┌─── Task A ───┐                                     │
@@ -45,7 +45,7 @@ sidebar_label: Workflows & Orchestration
 │    Pattern: Fan-out → Execute → Gather                       │
 │    Source: agents/workflow_agents/parallel_agent.py          │
 │                                                              │
-│ [LOOP] LOOP (Iterative Refinement)                          │
+│ [LOOP] LOOP (Iterative Refinement)                           │
 │    "Repeat until good enough or max iterations"              │
 │                                                              │
 │    ┌──────────────────┐                                      │
@@ -206,10 +206,10 @@ User Query
     │
     ┌─── Fan-out ───┐
     │               │
-┌───▼──┐  ┌───▼──┐  ┌───▼──┐
-│ Web  │  │  DB  │  │Expert│
+┌───▼──┐  ┌───▼──┐  ┌───▼───┐
+│ Web  │  │  DB  │  │Expert │
 │Search│  │Search│  │Consult│
-└───┬──┘  └───┬──┘  └───┬──┘
+└───┬──┘  └───┬──┘  └───┬───┘
     │         │         │
     └─── Gather ────────┘
          │
@@ -318,9 +318,9 @@ Initial Content
        │        │
     Critique    │
        │        │
-    ┌──▼──┐     │
-    │Refine│     │
-    └─────┘     │
+    ┌──▼───┐    │
+    │Refine│    │
+    └──────┘    │
        │        │
   Improved      │
        │        │
