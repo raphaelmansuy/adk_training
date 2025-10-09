@@ -35,6 +35,8 @@ jobs:
           cache-dependency-path: docs/package-lock.json
       - name: Setup Pages
         uses: actions/configure-pages@v4
+        with:
+          enablement: true  # This will automatically enable Pages
       - name: Install dependencies
         working-directory: ./docs
         run: npm ci
