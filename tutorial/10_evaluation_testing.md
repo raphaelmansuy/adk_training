@@ -26,6 +26,123 @@ Learn how to systematically test and evaluate AI agents using pytest and AgentEv
 
 ---
 
+## Why Evaluation Matters
+
+Before diving into testing patterns, let's understand why AI agents need systematic evaluation - and how it differs from traditional software testing.
+
+### Traditional Software vs AI Agents
+
+**Traditional Software Testing**:
+
+```python
+def calculate_tax(income):
+    return income * 0.25  # Deterministic - always returns 25% of income
+
+# Test: Simple assertion
+assert calculate_tax(100) == 25  # ✅ Always passes
+```
+
+**AI Agent Evaluation**:
+
+```python
+# Agent responds to: "What's 25% of $100?"
+# Possible responses:
+# "The answer is $25"
+# "$25"
+# "25% of $100 equals $25"
+# "Let me calculate: $100 × 0.25 = $25"
+
+# Evaluation: Qualitative assessment needed
+# Does the response convey the correct information?
+```
+
+### The Evaluation Challenge
+
+AI agents introduce fundamental uncertainty that traditional testing can't address:
+
+```mermaid
+graph TD
+    A[User Input] --> B[AI Agent]
+    B --> C{Response Generation}
+    C --> D[Response A]
+    C --> E[Response B]
+    C --> F[Response C]
+    
+    style A fill:#e1f5fe,stroke:#01579b,stroke-width:2px
+    style B fill:#f3e5f5,stroke:#4a148c,stroke-width:2px
+    style C fill:#fff3e0,stroke:#e65100,stroke-width:2px
+    style D fill:#e8f5e8,stroke:#2e7d32,stroke-width:2px
+    style E fill:#e8f5e8,stroke:#2e7d32,stroke-width:2px
+    style F fill:#ffebee,stroke:#c62828,stroke-width:2px
+```
+
+**Key Insight**: The same input can produce different valid responses. We need evaluation, not just testing.
+
+### Two Dimensions of Agent Quality
+
+Agent evaluation assesses two critical dimensions:
+
+```mermaid
+graph LR
+    A[Agent Quality] --> B[Trajectory]
+    A[Agent Quality] --> C[Response]
+    
+    B --> D[Did agent call right tools?]
+    B --> E[In correct sequence?]
+    B --> F[With valid arguments?]
+    
+    C --> G[Is answer accurate?]
+    C --> H[Well-formatted?]
+    C --> I[Matches expectations?]
+    
+    style A fill:#e3f2fd,stroke:#0d47a1,stroke-width:3px
+    style B fill:#f3e5f5,stroke:#4a148c,stroke-width:2px
+    style C fill:#e8f5e8,stroke:#2e7d32,stroke-width:2px
+```
+
+**Trajectory**: The "how" - which tools the agent used and in what order
+**Response**: The "what" - the final answer quality and correctness
+
+### The Evaluation Process
+
+```mermaid
+graph LR
+    A[Test Case] --> B[Run Agent]
+    B --> C[Capture Behavior]
+    C --> D[Compare Results]
+    D --> E{Pass/Fail}
+    
+    A --> F[Expected Trajectory]
+    A --> G[Expected Response]
+    
+    C --> H[Actual Trajectory]
+    C --> I[Actual Response]
+    
+    H --> D
+    I --> D
+    
+    style A fill:#e1f5fe,stroke:#01579b,stroke-width:2px
+    style B fill:#f3e5f5,stroke:#4a148c,stroke-width:2px
+    style C fill:#fff3e0,stroke:#e65100,stroke-width:2px
+    style D fill:#e8f5e8,stroke:#2e7d32,stroke-width:2px
+    style E fill:#ffebee,stroke:#c62828,stroke-width:2px
+```
+
+**Evaluation Flow**: Define expectations → Run agent → Measure actual behavior → Score quality
+
+### Why This Matters for Production
+
+Without systematic evaluation, AI agents can:
+
+- **Fail silently**: Give wrong answers that seem correct
+- **Drift over time**: Change behavior as models are updated
+- **Miss edge cases**: Handle common scenarios but fail on unusual ones
+- **Lack consistency**: Give different answers to similar questions
+
+**Evaluation provides**: Confidence, consistency, and continuous improvement.
+
+---
+
 ## Quick Start
 
 The easiest way to get started is with our working implementation:
@@ -74,7 +191,7 @@ This tutorial has been updated with insights from implementing **22 comprehensiv
 
 ### Testing Pyramid Architecture
 
-```
+```text
                     ╔══════════════════════════════════════════════╗
                     ║              EVALUATION TESTS               ║
                     ║              (3 tests - 14%)                ║
@@ -120,7 +237,7 @@ This tutorial has been updated with insights from implementing **22 comprehensiv
 
 ### Key Lessons Learned
 
-**1. AgentEvaluator Requires Real API Calls**
+#### 1. AgentEvaluator Requires Real API Calls
 
 ```python
 # This actually calls Gemini API - not mocked!
@@ -131,7 +248,7 @@ await AgentEvaluator.evaluate(
 )
 ```
 
-**2. EvalSet Schema is Required**
+#### 2. EvalSet Schema is Required
 
 ```json
 {
@@ -159,7 +276,7 @@ await AgentEvaluator.evaluate(
 }
 ```
 
-**3. Separate Async Tests for Evaluation**
+#### 3. Separate Async Tests for Evaluation
 
 ```python
 class TestAgentEvaluation:
@@ -170,7 +287,7 @@ class TestAgentEvaluation:
         # Evaluation tests go here - they need async
 ```
 
-**4. Mock Data Makes Tests Deterministic**
+#### 4. Mock Data Makes Tests Deterministic
 
 ```python
 def setup_method(self):
@@ -179,7 +296,7 @@ def setup_method(self):
     self.tool_context.tickets = {}  # Mock ticket storage
 ```
 
-**5. Common Issues We Encountered**
+#### 5. Common Issues We Encountered
 
 - Rate limiting with too many evaluation runs (`num_runs=2` → `num_runs=1`)
 - EvalSet schema migration (old format → new EvalSet format)
@@ -1479,14 +1596,25 @@ adk web support_agent
 
 ## Understanding Evaluation Metrics
 
-### Response Match Score (ROUGE)
+ADK provides a comprehensive set of built-in evaluation metrics to assess different aspects of agent behavior. These metrics help you understand not just whether your agent works, but how well it performs across multiple dimensions.
+
+### Available Evaluation Metrics
+
+ADK includes 8 pre-built evaluation metrics, each designed to assess specific aspects of agent quality:
+
+#### 1. Response Match Score (ROUGE)
+
+**Metric**: `response_match_score`  
+**Purpose**: Measures similarity between expected and actual responses  
+**Range**: 0.0 - 1.0 (higher is better)  
+**Use Case**: Text similarity assessment
 
 **What is ROUGE?**
 Recall-Oriented Understudy for Gisting Evaluation - measures n-gram overlap between expected and actual text.
 
 **Example**:
 
-```
+```text
 Expected: "To reset your password, go to Settings > Security > Reset Password."
 Actual:   "You can reset your password in Settings under Security, then Reset Password."
 
@@ -1502,12 +1630,192 @@ ROUGE-2 (bigrams): ~0.5 (50% phrase overlap)
 - 0.4-0.5 = Somewhat similar
 - < 0.4 = Different content
 
-**Threshold Selection**:
+#### 2. Response Evaluation Score
 
-- 0.9-1.0: Very strict (rarely needed)
-- 0.7-0.8: Good default (similar content)
-- 0.5-0.6: Loose (useful for creative responses)
-- **0.3**: Very loose (used in our tests for LLM variability)
+**Metric**: `response_evaluation_score`  
+**Purpose**: Evaluates overall response coherence and quality  
+**Range**: 1.0 - 5.0 (higher is better)  
+**Use Case**: Subjective quality assessment
+
+This metric uses an LLM-as-a-judge approach to rate response quality on a 5-point scale:
+
+- 5: Excellent - Perfectly coherent, accurate, and well-structured
+- 4: Good - Minor issues but generally high quality
+- 3: Acceptable - Meets basic requirements
+- 2: Poor - Significant issues with coherence or accuracy
+- 1: Very Poor - Incoherent or completely incorrect
+
+#### 3. Tool Trajectory Average Score
+
+**Metric**: `tool_trajectory_avg_score`  
+**Purpose**: Measures accuracy of tool call sequences  
+**Range**: 0.0 - 1.0 (higher is better)  
+**Use Case**: Process correctness validation
+
+Evaluates whether the agent called the expected tools in the correct order:
+
+- 1.0 = Perfect tool sequence match
+- 0.8 = Good match with minor variations
+- 0.6 = Some tools correct, order issues
+- 0.4 = Major deviations from expected sequence
+- 0.0 = Completely wrong tool usage
+
+#### 4. Safety Evaluation (Safety v1)
+
+**Metric**: `safety_v1`  
+**Purpose**: Detects unsafe or harmful content in responses  
+**Range**: 0.0 - 1.0 (higher is safer)  
+**Use Case**: Content safety validation
+
+Evaluates responses for:
+
+- Harmful content
+- Inappropriate language
+- Privacy violations
+- Misinformation
+- Unsafe advice
+
+#### 5. Final Response Match v2
+
+**Metric**: `final_response_match_v2`  
+**Purpose**: Advanced semantic similarity assessment  
+**Range**: 0.0 - 1.0 (higher is better)  
+**Use Case**: Semantic equivalence checking
+
+Uses more sophisticated NLP techniques than basic ROUGE to understand semantic meaning rather than just word overlap.
+
+#### 6. Rubric-Based Final Response Quality
+
+**Metric**: `rubric_based_final_response_quality_v1`  
+**Purpose**: Custom rubric evaluation of response quality  
+**Range**: 0.0 - 1.0 (higher is better)  
+**Use Case**: Domain-specific quality assessment
+
+Allows you to define custom evaluation criteria (rubrics) for specific use cases:
+
+- Customer service quality
+- Technical accuracy
+- Completeness of information
+- Professional tone
+
+#### 7. Hallucinations Detection
+
+**Metric**: `hallucinations_v1`  
+**Purpose**: Detects fabricated or incorrect information  
+**Range**: 0.0 - 1.0 (lower is better)  
+**Use Case**: Factual accuracy validation
+
+Identifies when agents generate information not present in their knowledge or tools:
+
+- Made-up facts
+- Incorrect explanations
+- Fabricated data
+- Unsupported claims
+
+#### 8. Rubric-Based Tool Use Quality
+
+**Metric**: `rubric_based_tool_use_quality_v1`  
+**Purpose**: Custom evaluation of tool usage quality  
+**Range**: 0.0 - 1.0 (higher is better)  
+**Use Case**: Process quality assessment
+
+Evaluates tool usage against custom criteria:
+
+- Appropriate tool selection
+- Correct parameter usage
+- Efficient tool sequencing
+- Error handling quality
+
+### Choosing the Right Metrics
+
+**For Basic Functionality Testing**:
+
+```json
+{
+  "metrics": [
+    {
+      "metric_name": "response_match_score",
+      "threshold": 0.3
+    }
+  ]
+}
+```
+
+**For Production Quality Assurance**:
+
+```json
+{
+  "metrics": [
+    {
+      "metric_name": "response_evaluation_score",
+      "threshold": 3.0
+    },
+    {
+      "metric_name": "safety_v1",
+      "threshold": 0.8
+    },
+    {
+      "metric_name": "hallucinations_v1",
+      "threshold": 0.2
+    }
+  ]
+}
+```
+
+**For Customer Service Agents**:
+
+```json
+{
+  "metrics": [
+    {
+      "metric_name": "rubric_based_final_response_quality_v1",
+      "threshold": 0.7,
+      "criterion": {
+        "rubrics": [
+          {
+            "name": "helpfulness",
+            "description": "Response provides clear, actionable help",
+            "weight": 0.4
+          },
+          {
+            "name": "politeness",
+            "description": "Response maintains professional, courteous tone",
+            "weight": 0.3
+          },
+          {
+            "name": "accuracy",
+            "description": "Information provided is correct and complete",
+            "weight": 0.3
+          }
+        ]
+      }
+    }
+  ]
+}
+```
+
+### Metric Threshold Selection Strategy
+
+**Conservative Thresholds (Production)**:
+
+- `response_match_score`: 0.7+ (strict similarity)
+- `response_evaluation_score`: 4.0+ (high quality)
+- `safety_v1`: 0.9+ (very safe)
+- `hallucinations_v1`: < 0.1 (minimal hallucinations)
+
+**Realistic Thresholds (Development)**:
+
+- `response_match_score`: 0.3-0.5 (accept LLM variation)
+- `response_evaluation_score`: 3.0-3.5 (good quality)
+- `safety_v1`: 0.7+ (reasonably safe)
+- `hallucinations_v1`: < 0.3 (low hallucinations)
+
+**Permissive Thresholds (Early Testing)**:
+
+- `response_match_score`: 0.1-0.3 (focus on functionality)
+- `response_evaluation_score`: 2.0+ (acceptable quality)
+- `safety_v1`: 0.5+ (basic safety)
+- `hallucinations_v1`: < 0.5 (moderate hallucinations)
 
 ---
 
@@ -1515,7 +1823,7 @@ ROUGE-2 (bigrams): ~0.5 (50% phrase overlap)
 
 ### Complete Agent Evaluation Process
 
-```
+```text
 ┌─────────────────────────────────────────────────────────────────────────────┐
 │                        AGENT EVALUATION PROCESS                           │
 │                                                                             │
@@ -1620,7 +1928,7 @@ ROUGE-2 (bigrams): ~0.5 (50% phrase overlap)
 │  │  │                                                                 │   │ │
 │  │  │  Expected: "To reset your password, go to Settings > Security   │   │ │
 │  │  │            > Reset Password. You'll receive an email with       │   │ │
-│  │  │            reset instructions within 5 minutes."                 │   │ │
+│  │            reset instructions within 5 minutes."                 │   │ │
 │  │  │                                                                 │   │ │
 │  │  │  Actual:   "To reset your password, go to Settings > Security    │   │ │
 │  │  │            > Reset Password."                                    │   │ │
@@ -1863,7 +2171,7 @@ pytest tests/test_agent.py::TestAgentEvaluation -v -s
 
 ### Test Organization (From Real Experience)
 
-**Pattern 1: Test Classes by Responsibility**
+#### Pattern 1: Test Classes by Responsibility
 
 ```python
 class TestToolFunctions:
@@ -1891,7 +2199,7 @@ class TestAgentEvaluation:
 - ✅ Async tests isolated from sync tests
 - ✅ Better test discovery and reporting
 
-**Pattern 2: Setup/Teardown**
+#### Pattern 2: Setup/Teardown
 
 ```python
 class TestToolFunctions:
@@ -2023,33 +2331,33 @@ TOTAL                    165     0   100%
 🎯 3 real issues caught and fixed
 ```
 
-### Key Lessons from Implementation
+### Key Takeaways from Implementation
 
-**1. AgentEvaluator Requires Real API Calls**
+#### 1. Real API Calls Required
 
 - Not mocked - actually calls Gemini API
 - Subject to rate limits (reduce `num_runs`)
 - Requires valid `GOOGLE_API_KEY`
 
-**2. LLMs Exhibit Behavioral Variability**
+#### 2. LLM Behavioral Variability
 
 - Don't always call tools in expected order
 - Rephrase responses naturally
 - Need loose evaluation criteria
 
-**3. EvalSet Schema is Required**
+#### 3. EvalSet Schema Migration
 
 - Modern ADK uses structured JSON format
 - Must migrate from old test formats
 - Includes conversation arrays with tool expectations
 
-**4. Separate Async Tests**
+#### 4. Async Test Isolation
 
 - pytest-asyncio conflicts with mixed test classes
 - Put evaluation tests in dedicated `TestAgentEvaluation` class
 - Use `@pytest.mark.asyncio` decorator
 
-**5. Focus on Response Quality**
+#### 5. Response Quality Focus
 
 - Trajectory evaluation too strict for LLMs
 - Response matching with loose thresholds (0.3) works
