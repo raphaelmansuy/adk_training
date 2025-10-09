@@ -1,5 +1,21 @@
 ---
 id: model_selection
+title: "Tutorial 22: Model Selection - Choosing the Right AI Model"
+description: "Learn to select and configure different AI models including Gemini variants, optimization strategies, and model-specific configurations."
+sidebar_label: "22. Model Selection"
+sidebar_position: 22
+tags: ["intermediate", "models", "optimization", "configuration", "performance"]
+keywords: ["model selection", "gemini models", "optimization", "performance", "configuration", "ai models"]
+status: "draft"
+difficulty: "intermediate"
+estimated_time: "1.5 hours"
+prerequisites: ["Tutorial 01: Hello World Agent", "Understanding of AI model types"]
+learning_objectives:
+  - "Select appropriate models for different use cases"
+  - "Configure model parameters and settings"
+  - "Optimize model performance and costs"
+  - "Compare model capabilities and limitations"
+implementation_link: "https://github.com/raphaelmansuy/adk_training/tree/main/tutorial_implementation/tutorial22"
 ---
 
 # Tutorial 22: Model Selection & Optimization

@@ -1,5 +1,21 @@
 ---
 id: third_party_tools
+title: "Tutorial 27: Third-Party Tools - External Service Integration"
+description: "Integrate third-party services and tools into agents using REST APIs, SDKs, and custom toolsets for extended functionality."
+sidebar_label: "27. Third-Party Tools"
+sidebar_position: 27
+tags: ["advanced", "third-party", "integration", "apis", "external-services"]
+keywords: ["third-party tools", "external services", "api integration", "sdks", "custom toolsets"]
+status: "draft"
+difficulty: "advanced"
+estimated_time: "2 hours"
+prerequisites: ["Tutorial 02: Function Tools", "Tutorial 03: OpenAPI Tools", "API integration experience"]
+learning_objectives:
+  - "Integrate third-party services with agents"
+  - "Build custom toolsets for external APIs"
+  - "Handle authentication and rate limiting"
+  - "Create robust external service integrations"
+implementation_link: "https://github.com/raphaelmansuy/adk_training/tree/main/tutorial_implementation/tutorial27"
 ---
 
 # Tutorial 27: Third-Party Framework Tools Integration

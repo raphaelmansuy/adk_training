@@ -1,5 +1,21 @@
 ---
 id: streamlit_adk_integration
+title: "Tutorial 32: Streamlit ADK Integration - Python Data Apps"
+description: "Build data science applications with Streamlit and ADK agents for interactive dashboards, analysis tools, and data-driven interfaces."
+sidebar_label: "32. Streamlit ADK"
+sidebar_position: 32
+tags: ["ui", "streamlit", "python", "data-science", "dashboard"]
+keywords: ["streamlit", "python", "data science", "dashboard", "interactive", "data analysis"]
+status: "draft"
+difficulty: "intermediate"
+estimated_time: "1.5 hours"
+prerequisites: ["Tutorial 01: Hello World Agent", "Python/Streamlit experience", "Data science basics"]
+learning_objectives:
+  - "Create Streamlit applications with embedded ADK agents"
+  - "Build interactive data analysis dashboards"
+  - "Integrate agents with Streamlit widgets"
+  - "Deploy Python-based agent applications"
+implementation_link: "https://github.com/raphaelmansuy/adk_training/tree/main/tutorial_implementation/tutorial32"
 ---
 
 # Tutorial 32: Streamlit + ADK Integration (Native API)

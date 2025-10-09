@@ -1,5 +1,21 @@
 ---
 id: react_vite_adk_integration
+title: "Tutorial 31: React Vite ADK Integration - Fast Development Setup"
+description: "Create fast, modern React applications with Vite and CopilotKit for rapid agent interface development and deployment."
+sidebar_label: "31. React Vite ADK"
+sidebar_position: 31
+tags: ["ui", "react", "vite", "copilotkit", "fast-development"]
+keywords: ["react", "vite", "copilotkit", "fast development", "modern ui", "agent interface"]
+status: "draft"
+difficulty: "intermediate"
+estimated_time: "1.5 hours"
+prerequisites: ["Tutorial 30: Next.js ADK Integration", "React experience", "Node.js setup"]
+learning_objectives:
+  - "Set up Vite-based React applications with ADK"
+  - "Optimize build performance with Vite"
+  - "Create lightning-fast agent interfaces"
+  - "Deploy optimized React agent applications"
+implementation_link: "https://github.com/raphaelmansuy/adk_training/tree/main/tutorial_implementation/tutorial31"
 ---
 
 # Tutorial 31: React Vite + ADK Integration (AG-UI Protocol)

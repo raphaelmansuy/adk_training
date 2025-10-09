@@ -1,5 +1,21 @@
 ---
 id: streaming_sse
+title: "Tutorial 14: Streaming and Server-Sent Events (SSE) - Real-Time Responses"
+description: "Build streaming agents that deliver real-time responses to users, perfect for chat interfaces and live updates using Server-Sent Events."
+sidebar_label: "14. Streaming & SSE"
+sidebar_position: 14
+tags: ["advanced", "streaming", "sse", "real-time", "chat"]
+keywords: ["streaming", "server-sent events", "real-time", "chat interface", "live updates"]
+status: "draft"
+difficulty: "advanced"
+estimated_time: "1.5 hours"
+prerequisites: ["Tutorial 01: Hello World Agent", "Tutorial 14: Code Execution", "Basic async/await knowledge"]
+learning_objectives:
+  - "Implement streaming agent responses"
+  - "Configure Server-Sent Events (SSE) endpoints"
+  - "Build real-time chat interfaces"
+  - "Handle streaming errors and reconnection"
+implementation_link: "https://github.com/raphaelmansuy/adk_training/tree/main/tutorial_implementation/tutorial14"
 ---
 
 # Tutorial 14: Streaming with Server-Sent Events (SSE)

@@ -1,5 +1,21 @@
 ---
 id: events_observability
+title: "Tutorial 18: Events and Observability - Agent Monitoring"
+description: "Implement comprehensive observability for agents with event tracking, metrics collection, and monitoring dashboards for production systems."
+sidebar_label: "18. Events & Observability"
+sidebar_position: 18
+tags: ["advanced", "observability", "monitoring", "events", "metrics"]
+keywords: ["observability", "monitoring", "events", "metrics", "logging", "agent tracking", "production monitoring"]
+status: "draft"
+difficulty: "advanced"
+estimated_time: "2 hours"
+prerequisites: ["Tutorial 09: Callbacks & Guardrails", "Production deployment experience"]
+learning_objectives:
+  - "Implement comprehensive agent observability"
+  - "Build monitoring and alerting systems"
+  - "Track agent performance metrics"
+  - "Create observability dashboards"
+implementation_link: "https://github.com/raphaelmansuy/adk_training/tree/main/tutorial_implementation/tutorial18"
 ---
 
 # Tutorial 18: Events & Observability

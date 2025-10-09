@@ -1,5 +1,21 @@
 ---
 id: best_practices
+title: "Tutorial 25: Best Practices - Production-Ready Agent Development"
+description: "Learn essential best practices for building production-ready agents including security, performance, testing, and maintenance strategies."
+sidebar_label: "25. Best Practices"
+sidebar_position: 25
+tags: ["advanced", "best-practices", "production", "security", "performance"]
+keywords: ["best practices", "production ready", "security", "performance", "testing", "maintenance"]
+status: "draft"
+difficulty: "advanced"
+estimated_time: "2 hours"
+prerequisites: ["Tutorial 09: Callbacks & Guardrails", "Tutorial 23: Production Deployment", "Production development experience"]
+learning_objectives:
+  - "Implement security best practices for agents"
+  - "Optimize agent performance and reliability"
+  - "Build comprehensive testing strategies"
+  - "Design maintainable agent architectures"
+implementation_link: "https://github.com/raphaelmansuy/adk_training/tree/main/tutorial_implementation/tutorial25"
 ---
 
 # Tutorial 25: Best Practices & Production Patterns

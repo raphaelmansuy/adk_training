@@ -1,5 +1,20 @@
 ---
 id: hello_world_agent
+title: "Tutorial 01: Hello World Agent - Your First ADK Agent"
+description: "Build your first AI agent with Google Agent Development Kit (ADK). Start from zero and create a simple conversational agent."
+sidebar_label: "01. Hello World Agent"
+sidebar_position: 1
+tags: ["beginner", "agent", "fundamentals", "adk-basics"]
+keywords: ["google adk", "ai agent", "hello world", "beginner tutorial", "first agent"]
+status: "completed"
+difficulty: "beginner"
+estimated_time: "30 minutes"
+prerequisites: ["Python 3.9+", "Google API key"]
+learning_objectives:
+  - "Create your first ADK agent"
+  - "Understand agent fundamentals"
+  - "Learn basic agent interaction patterns"
+implementation_link: "https://github.com/raphaelmansuy/adk_training/tree/main/tutorial_implementation/tutorial01"
 ---
 
 # Tutorial 01: Hello World Agent - Your First ADK Agent

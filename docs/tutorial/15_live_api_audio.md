@@ -1,5 +1,21 @@
 ---
 id: live_api_audio
+title: "Tutorial 15: Live API and Audio - Real-Time Voice Interactions"
+description: "Create voice-enabled agents using Gemini's Live API for real-time audio streaming and voice-to-voice conversations."
+sidebar_label: "15. Live API & Audio"
+sidebar_position: 15
+tags: ["advanced", "live-api", "audio", "voice", "real-time"]
+keywords: ["live api", "audio streaming", "voice interaction", "real-time conversation", "voice agents"]
+status: "draft"
+difficulty: "advanced"
+estimated_time: "2 hours"
+prerequisites: ["Tutorial 01: Hello World Agent", "Tutorial 14: Streaming & SSE", "Gemini 2.0+ Live API access"]
+learning_objectives:
+  - "Configure Gemini Live API for audio streaming"
+  - "Build voice-enabled conversation agents"
+  - "Handle real-time audio processing"
+  - "Implement voice interruption and turn-taking"
+implementation_link: "https://github.com/raphaelmansuy/adk_training/tree/main/tutorial_implementation/tutorial15"
 ---
 
 # Tutorial 15: Live API & Bidirectional Streaming with Audio

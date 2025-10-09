@@ -1,5 +1,21 @@
 ---
 id: google_agentspace
+title: "Tutorial 26: Google AgentSpace - Enterprise Agent Platform"
+description: "Deploy and manage agents on Google AgentSpace for enterprise-grade agent orchestration, collaboration, and governance."
+sidebar_label: "26. Google AgentSpace"
+sidebar_position: 26
+tags: ["advanced", "agentspace", "enterprise", "platform", "governance"]
+keywords: ["google agentspace", "enterprise platform", "agent governance", "collaboration", "orchestration"]
+status: "draft"
+difficulty: "advanced"
+estimated_time: "2 hours"
+prerequisites: ["Tutorial 23: Production Deployment", "Google Cloud enterprise account"]
+learning_objectives:
+  - "Deploy agents to Google AgentSpace"
+  - "Configure enterprise agent governance"
+  - "Build agent collaboration systems"
+  - "Implement enterprise security and compliance"
+implementation_link: "https://github.com/raphaelmansuy/adk_training/tree/main/tutorial_implementation/tutorial26"
 ---
 
 # Tutorial 26: Google AgentSpace - Enterprise Agent Management

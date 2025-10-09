@@ -1,14 +1,21 @@
 ---
 id: multi_agent_systems
----
-
-
----
-id: multi_agent_systems
----
-
----
-id: multi_agent_systems
+title: "Tutorial 06: Multi-Agent Systems - Complex Orchestration"
+description: "Build sophisticated multi-agent systems combining sequential and parallel workflows for complex business processes and decision-making systems."
+sidebar_label: "06. Multi-Agent Systems"
+sidebar_position: 6
+tags: ["advanced", "multi-agent", "orchestration", "complex-workflows", "systems"]
+keywords: ["multi-agent systems", "agent orchestration", "complex workflows", "business processes", "decision systems"]
+status: "completed"
+difficulty: "advanced"
+estimated_time: "1.5 hours"
+prerequisites: ["Tutorial 04: Sequential Workflows", "Tutorial 05: Parallel Processing"]
+learning_objectives:
+  - "Design complex multi-agent architectures"
+  - "Combine sequential and parallel patterns"
+  - "Build sophisticated business process automation"
+  - "Handle complex state management across agents"
+implementation_link: "https://github.com/raphaelmansuy/adk_training/tree/main/tutorial_implementation/tutorial06"
 ---
 
 # Tutorial 06: Multi-Agent Systems - Agents Working Together
@@ -47,7 +54,7 @@ touch __init__.py agent.py .env
 
 Copy your `.env` file from previous tutorials.e art of combining Sequential and Parallel agents to build sophisticated multi-agent systems! This tutorial brings together everything you've learned to create production-ready agent architectures that can handle complex, real-world tasks.
 
-**🎯 Working Implementation Available**: A complete, tested content publishing system is available at [`tutorial_implementation/tutorial06/`](../tutorial_implementation/tutorial06/). The implementation includes comprehensive tests, documentation, and a user-friendly setup process.
+**🎯 Working Implementation Available**: A complete, tested content publishing system is available at [`tutorial_implementation/tutorial06/`](https://github.com/raphaelmansuy/adk_training/tree/main/tutorial_implementation/tutorial06). The implementation includes comprehensive tests, documentation, and a user-friendly setup process.
 
 ## Prerequisites
 
@@ -711,13 +718,13 @@ And you understand how to architect complex agent systems!
 
 ## Complete Code Reference
 
-**Working Implementation**: See [`tutorial_implementation/tutorial06/`](../tutorial_implementation/tutorial06/) for a complete, tested version with comprehensive documentation.
+**Working Implementation**: See [`tutorial_implementation/tutorial06/`](https://github.com/raphaelmansuy/adk_training/tree/main/tutorial_implementation/tutorial06) for a complete, tested version with comprehensive documentation.
 
 **Key Files:**
-- [`content_publisher/agent.py`](../tutorial_implementation/tutorial06/content_publisher/agent.py) - Complete multi-agent orchestration
-- [`tests/test_agent.py`](../tutorial_implementation/tutorial06/tests/test_agent.py) - 62 comprehensive tests
-- [`README.md`](../tutorial_implementation/tutorial06/README.md) - Detailed implementation guide
-- [`Makefile`](../tutorial_implementation/tutorial06/Makefile) - Development commands
+- [`content_publisher/agent.py`](https://github.com/raphaelmansuy/adk_training/blob/main/tutorial_implementation/tutorial06/content_publisher/agent.py) - Complete multi-agent orchestration
+- [`tests/test_agent.py`](https://github.com/raphaelmansuy/adk_training/blob/main/tutorial_implementation/tutorial06/tests/test_agent.py) - 62 comprehensive tests
+- [`README.md`](https://github.com/raphaelmansuy/adk_training/blob/main/tutorial_implementation/tutorial06/README.md) - Detailed implementation guide
+- [`Makefile`](https://github.com/raphaelmansuy/adk_training/blob/main/tutorial_implementation/tutorial06/Makefile) - Development commands
 
 **Quick Start with Working Code:**
 ```bash

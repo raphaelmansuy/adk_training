@@ -1,10 +1,26 @@
 ---
 id: state_memory
+title: "Tutorial 08: State and Memory - Persistent Agent Context"
+description: "Manage agent state and memory across conversations using session, user, and application-level persistence for stateful interactions."
+sidebar_label: "08. State & Memory"
+sidebar_position: 8
+tags: ["intermediate", "state", "memory", "persistence", "context"]
+keywords: ["agent state", "memory management", "session state", "user state", "persistent context"]
+status: "completed"
+difficulty: "intermediate"
+estimated_time: "1 hour"
+prerequisites: ["Tutorial 01: Hello World Agent", "Tutorial 02: Function Tools"]
+learning_objectives:
+  - "Understand different state scopes (session, user, app, temp)"
+  - "Implement persistent agent memory"
+  - "Build conversational agents with context"
+  - "Manage state across multiple interactions"
+implementation_link: "https://github.com/raphaelmansuy/adk_training/tree/main/tutorial_implementation/tutorial08"
 ---
 
 # Tutorial 08: State Memory - Managing Conversation Context and Data
 
-> **💡 [View the complete working implementation and test suite here.](../tutorial_implementation/tutorial08/README.md)**
+> **💡 [View the complete working implementation and test suite here.](https://github.com/raphaelmansuy/adk_training/tree/main/tutorial_implementation/tutorial08/README.md)**
 
 ## Overview
 

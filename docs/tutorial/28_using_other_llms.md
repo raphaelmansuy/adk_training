@@ -1,5 +1,21 @@
 ---
 id: using_other_llms
+title: "Tutorial 28: Using Other LLMs - Multi-Model Support"
+description: "Configure agents to work with different LLM providers including OpenAI, Anthropic, and local models for diverse AI capabilities."
+sidebar_label: "28. Other LLMs"
+sidebar_position: 28
+tags: ["advanced", "llms", "multi-model", "providers", "configuration"]
+keywords: ["other llms", "openai", "anthropic", "multi-model", "llm providers", "model configuration"]
+status: "draft"
+difficulty: "advanced"
+estimated_time: "1.5 hours"
+prerequisites: ["Tutorial 01: Hello World Agent", "Tutorial 22: Model Selection", "Multiple LLM API access"]
+learning_objectives:
+  - "Configure agents with different LLM providers"
+  - "Compare capabilities across model providers"
+  - "Implement model fallback strategies"
+  - "Optimize for different LLM strengths"
+implementation_link: "https://github.com/raphaelmansuy/adk_training/tree/main/tutorial_implementation/tutorial28"
 ---
 
 # Tutorial 28: Using Other LLMs with LiteLLM

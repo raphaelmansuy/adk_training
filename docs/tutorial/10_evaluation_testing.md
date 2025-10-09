@@ -1,5 +1,21 @@
 ---
 id: evaluation_testing
+title: "Tutorial 10: Evaluation and Testing - Agent Quality Assurance"
+description: "Build comprehensive testing frameworks for agents including unit tests, integration tests, and automated evaluation metrics."
+sidebar_label: "10. Evaluation & Testing"
+sidebar_position: 10
+tags: ["intermediate", "testing", "evaluation", "qa", "metrics"]
+keywords: ["agent testing", "evaluation", "unit tests", "integration tests", "quality assurance", "metrics"]
+status: "completed"
+difficulty: "intermediate"
+estimated_time: "1.5 hours"
+prerequisites: ["Tutorial 01: Hello World Agent", "Tutorial 02: Function Tools", "Basic pytest knowledge"]
+learning_objectives:
+  - "Create comprehensive test suites for agents"
+  - "Implement automated evaluation metrics"
+  - "Build CI/CD pipelines for agent testing"
+  - "Test agent configurations and tool integrations"
+implementation_link: "https://github.com/raphaelmansuy/adk_training/tree/main/tutorial_implementation/tutorial10"
 ---
 
 # Tutorial 10: Evaluation & Testing - Quality Assurance for Agents
@@ -166,9 +182,9 @@ make test
 
 **Links**:
 
-- **[Working Implementation](tutorial_implementation/tutorial10/)** - Complete code and tests
-- **[Test Results](tutorial_implementation/tutorial10/README.md#test-results)** - Expected output
-- **[Demo Prompts](tutorial_implementation/tutorial10/README.md#demo-prompts)** - Try these examples
+- **[Working Implementation](https://github.com/raphaelmansuy/adk_training/tree/main/tutorial_implementation/tutorial10/)** - Complete code and tests
+- **[Test Results](https://github.com/raphaelmansuy/adk_training/tree/main/tutorial_implementation/tutorial10/README.md#test-results)** - Expected output
+- **[Demo Prompts](https://github.com/raphaelmansuy/adk_training/tree/main/tutorial_implementation/tutorial10/README.md#demo-prompts)** - Try these examples
 
 ---
 

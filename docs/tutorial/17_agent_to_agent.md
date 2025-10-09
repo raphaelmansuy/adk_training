@@ -1,5 +1,21 @@
 ---
 id: agent_to_agent
+title: "Tutorial 17: Agent-to-Agent Communication - Distributed Systems"
+description: "Build distributed agent systems with agent-to-agent communication, delegation, and coordination for complex multi-agent orchestration."
+sidebar_label: "17. Agent-to-Agent"
+sidebar_position: 17
+tags: ["advanced", "agent-communication", "distributed", "delegation", "coordination"]
+keywords: ["agent-to-agent", "distributed systems", "agent communication", "delegation", "multi-agent coordination"]
+status: "draft"
+difficulty: "advanced"
+estimated_time: "2 hours"
+prerequisites: ["Tutorial 04: Sequential Workflows", "Tutorial 06: Multi-Agent Systems"]
+learning_objectives:
+  - "Implement agent-to-agent communication patterns"
+  - "Build distributed agent networks"
+  - "Design delegation and coordination systems"
+  - "Handle cross-agent state management"
+implementation_link: "https://github.com/raphaelmansuy/adk_training/tree/main/tutorial_implementation/tutorial17"
 ---
 
 # Tutorial 17: Agent-to-Agent (A2A) Communication

@@ -1,5 +1,21 @@
 ---
 id: multimodal_image
+title: "Tutorial 21: Multimodal and Image Processing - Visual AI Agents"
+description: "Build agents that process images, documents, and multimodal content using Gemini's vision capabilities for visual analysis and understanding."
+sidebar_label: "21. Multimodal & Images"
+sidebar_position: 21
+tags: ["advanced", "multimodal", "images", "vision", "visual-ai"]
+keywords: ["multimodal", "image processing", "vision", "visual ai", "document analysis", "gemini vision"]
+status: "draft"
+difficulty: "advanced"
+estimated_time: "2 hours"
+prerequisites: ["Tutorial 01: Hello World Agent", "Gemini Pro Vision access"]
+learning_objectives:
+  - "Process images and visual content with agents"
+  - "Build document analysis systems"
+  - "Create multimodal conversation agents"
+  - "Implement visual understanding workflows"
+implementation_link: "https://github.com/raphaelmansuy/adk_training/tree/main/tutorial_implementation/tutorial21"
 ---
 
 # Tutorial 21: Multimodal & Image Generation

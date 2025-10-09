@@ -1,5 +1,21 @@
 ---
 id: built_in_tools_grounding
+title: "Tutorial 11: Built-in Tools and Grounding - Search and Web Access"
+description: "Use ADK's built-in tools for web search, grounding, and information retrieval to create agents with real-world knowledge access."
+sidebar_label: "11. Built-in Tools & Grounding"
+sidebar_position: 11
+tags: ["intermediate", "built-in-tools", "grounding", "search", "web-access"]
+keywords: ["built-in tools", "grounding", "web search", "information retrieval", "Google Search", "real-world knowledge"]
+status: "completed"
+difficulty: "intermediate"
+estimated_time: "1 hour"
+prerequisites: ["Tutorial 01: Hello World Agent", "Tutorial 02: Function Tools"]
+learning_objectives:
+  - "Use ADK's built-in search and grounding tools"
+  - "Build agents with real-world information access"
+  - "Implement web search capabilities"
+  - "Configure grounding for factual accuracy"
+implementation_link: "https://github.com/raphaelmansuy/adk_training/tree/main/tutorial_implementation/tutorial11"
 ---
 
 # Tutorial 11: Built-in Tools & Grounding

@@ -1,5 +1,21 @@
 ---
 id: sequential_workflows
+title: "Tutorial 04: Sequential Workflows - Agent Pipelines"
+description: "Chain multiple agents together in sequential workflows to create complex multi-step processes like research → analysis → report generation."
+sidebar_label: "04. Sequential Workflows"
+sidebar_position: 4
+tags: ["intermediate", "sequential", "workflows", "pipelines", "multi-agent"]
+keywords: ["sequential workflows", "agent pipelines", "multi-step", "SequentialAgent", "research pipeline"]
+status: "completed"
+difficulty: "intermediate"
+estimated_time: "1 hour"
+prerequisites: ["Tutorial 01: Hello World Agent", "Tutorial 02: Function Tools", "Tutorial 03: OpenAPI Tools"]
+learning_objectives:
+  - "Create SequentialAgent workflows for multi-step processes"
+  - "Build research → analysis → report pipelines"
+  - "Pass data between agents using output_key and state"
+  - "Handle errors in sequential workflows"
+implementation_link: "https://github.com/raphaelmansuy/adk_training/tree/main/tutorial_implementation/tutorial04"
 ---
 
 # Tutorial 04: Sequential Workflows - Build Agent Pipelines
@@ -15,7 +31,7 @@ Connect your agents to create sophisticated multi-step workflows! Learn how to c
 3. **Editor Agent** - Reviews and suggests improvements
 4. **Formatter Agent** - Converts to final markdown format
 
-**Implementation**: [tutorial_implementation/tutorial04](../tutorial_implementation/tutorial04/) - Complete working blog creation pipeline with tests
+**Implementation**: [tutorial_implementation/tutorial04](https://github.com/raphaelmansuy/adk_training/tree/main/tutorial_implementation/tutorial04/) - Complete working blog creation pipeline with tests
 
 Each agent's output feeds into the next, creating a complete content creation pipeline!
 

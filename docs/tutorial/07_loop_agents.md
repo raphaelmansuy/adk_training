@@ -1,5 +1,21 @@
 ---
 id: loop_agents
+title: "Tutorial 07: Loop Agents - Iterative Refinement"
+description: "Create self-improving agents using LoopAgent for iterative refinement, quality control, and progressive enhancement of outputs."
+sidebar_label: "07. Loop Agents"
+sidebar_position: 7
+tags: ["advanced", "loop-agents", "iterative", "refinement", "quality-control"]
+keywords: ["loop agents", "iterative refinement", "quality control", "LoopAgent", "progressive enhancement"]
+status: "completed"
+difficulty: "advanced"
+estimated_time: "1.5 hours"
+prerequisites: ["Tutorial 04: Sequential Workflows", "Tutorial 06: Multi-Agent Systems"]
+learning_objectives:
+  - "Use LoopAgent for iterative improvement processes"
+  - "Build critic-refiner agent patterns"
+  - "Implement quality control loops"
+  - "Handle loop termination conditions"
+implementation_link: "https://github.com/raphaelmansuy/adk_training/tree/main/tutorial_implementation/tutorial07"
 ---
 
 # Tutorial 07: Loop Agents - Iterative Refinement with Critic/Refiner Patterns
@@ -8,7 +24,7 @@ id: loop_agents
 
 Learn how to build self-improving agent systems using **`LoopAgent`**! This tutorial teaches you iterative refinement patterns - perfect for when quality matters more than speed. Build agents that critique their own work and keep improving until it's excellent.
 
-**🎯 Working Implementation Available**: A complete, tested essay refinement system is available at [`tutorial_implementation/tutorial07/`](../tutorial_implementation/tutorial07/). The implementation includes comprehensive tests, documentation, and a user-friendly setup process.
+**🎯 Working Implementation Available**: A complete, tested essay refinement system is available at [`tutorial_implementation/tutorial07/`](https://github.com/raphaelmansuy/adk_training/tree/main/tutorial_implementation/tutorial07). The implementation includes comprehensive tests, documentation, and a user-friendly setup process.
 
 **🚀 Quick Start**: Want to see it in action immediately? Jump to the [Complete Working Code](#complete-code-reference) section below!
 
@@ -569,15 +585,15 @@ And you understand how to build iterative refinement systems!
 
 ## Complete Code Reference
 
-**Working Implementation**: See [`tutorial_implementation/tutorial07/`](../tutorial_implementation/tutorial07/) for a complete, tested version with comprehensive documentation.
+**Working Implementation**: See [`tutorial_implementation/tutorial07/`](https://github.com/raphaelmansuy/adk_training/tree/main/tutorial_implementation/tutorial07) for a complete, tested version with comprehensive documentation.
 
 **🚀 Ready to run the code?** The implementation is fully functional with 22 passing tests. Just follow the Quick Start instructions below!
 
 **Key Files:**
-- [`essay_refiner/agent.py`](../tutorial_implementation/tutorial07/essay_refiner/agent.py) - Complete LoopAgent orchestration with critic-refiner pattern
-- [`tests/test_agent.py`](../tutorial_implementation/tutorial07/tests/test_agent.py) - 22 comprehensive tests covering all functionality
-- [`README.md`](../tutorial_implementation/tutorial07/README.md) - Detailed implementation guide and architecture overview
-- [`Makefile`](../tutorial_implementation/tutorial07/Makefile) - Development commands for testing and deployment
+- [`essay_refiner/agent.py`](https://github.com/raphaelmansuy/adk_training/blob/main/tutorial_implementation/tutorial07/essay_refiner/agent.py) - Complete LoopAgent orchestration with critic-refiner pattern
+- [`tests/test_agent.py`](https://github.com/raphaelmansuy/adk_training/blob/main/tutorial_implementation/tutorial07/tests/test_agent.py) - 22 comprehensive tests covering all functionality
+- [`README.md`](https://github.com/raphaelmansuy/adk_training/blob/main/tutorial_implementation/tutorial07/README.md) - Detailed implementation guide and architecture overview
+- [`Makefile`](https://github.com/raphaelmansuy/adk_training/blob/main/tutorial_implementation/tutorial07/Makefile) - Development commands for testing and deployment
 
 **Quick Start with Working Code:**
 ```bash

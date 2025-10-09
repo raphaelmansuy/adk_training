@@ -1,5 +1,21 @@
 ---
 id: parallel_processing
+title: "Tutorial 05: Parallel Processing - Concurrent Agent Execution"
+description: "Execute multiple agents simultaneously using ParallelAgent for faster processing and independent task execution."
+sidebar_label: "05. Parallel Processing"
+sidebar_position: 5
+tags: ["intermediate", "parallel", "concurrent", "performance", "multi-agent"]
+keywords: ["parallel processing", "concurrent execution", "ParallelAgent", "performance", "independent tasks"]
+status: "completed"
+difficulty: "intermediate"
+estimated_time: "1 hour"
+prerequisites: ["Tutorial 01: Hello World Agent", "Tutorial 04: Sequential Workflows"]
+learning_objectives:
+  - "Use ParallelAgent for concurrent task execution"
+  - "Understand when to use parallel vs sequential workflows"
+  - "Handle errors in parallel execution"
+  - "Optimize agent performance with parallelism"
+implementation_link: "https://github.com/raphaelmansuy/adk_training/tree/main/tutorial_implementation/tutorial05"
 ---
 
 # Tutorial 05: Parallel Processing - Run Multiple Agents Simultaneously
@@ -8,7 +24,7 @@ id: parallel_processing
 
 Learn how to execute multiple agents concurrently to dramatically speed up your workflows! This tutorial teaches you the **`ParallelAgent`** pattern and the powerful **fan-out/gather** technique - essential for any real-world agent system that needs performance.
 
-**🎯 Working Implementation Available**: A complete, tested travel planning system is available at [`tutorial_implementation/tutorial05/`](../tutorial_implementation/tutorial05/). The implementation includes comprehensive tests, documentation, and a user-friendly setup process.
+**🎯 Working Implementation Available**: A complete, tested travel planning system is available at [`tutorial_implementation/tutorial05/`](https://github.com/raphaelmansuy/adk_training/tree/main/tutorial_implementation/tutorial05/). The implementation includes comprehensive tests, documentation, and a user-friendly setup process.
 
 ## Prerequisites
 
@@ -565,13 +581,13 @@ And you understand when/how to use parallel execution!
 
 ## Complete Code Reference
 
-**Working Implementation**: See [`tutorial_implementation/tutorial05/`](../tutorial_implementation/tutorial05/) for a complete, tested version with comprehensive documentation.
+**Working Implementation**: See [`tutorial_implementation/tutorial05/`](https://github.com/raphaelmansuy/adk_training/tree/main/tutorial_implementation/tutorial05/) for a complete, tested version with comprehensive documentation.
 
 **Key Files:**
-- [`travel_planner/agent.py`](../tutorial_implementation/tutorial05/travel_planner/agent.py) - Complete agent implementation
-- [`tests/test_agent.py`](../tutorial_implementation/tutorial05/tests/test_agent.py) - 57 comprehensive tests
-- [`README.md`](../tutorial_implementation/tutorial05/README.md) - Detailed implementation guide
-- [`Makefile`](../tutorial_implementation/tutorial05/Makefile) - Development commands
+- [`travel_planner/agent.py`](https://github.com/raphaelmansuy/adk_training/tree/main/tutorial_implementation/tutorial05/travel_planner/agent.py) - Complete agent implementation
+- [`tests/test_agent.py`](https://github.com/raphaelmansuy/adk_training/tree/main/tutorial_implementation/tutorial05/tests/test_agent.py) - 57 comprehensive tests
+- [`README.md`](https://github.com/raphaelmansuy/adk_training/tree/main/tutorial_implementation/tutorial05/README.md) - Detailed implementation guide
+- [`Makefile`](https://github.com/raphaelmansuy/adk_training/tree/main/tutorial_implementation/tutorial05/Makefile) - Development commands
 
 **Quick Start with Working Code:**
 ```bash

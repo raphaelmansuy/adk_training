@@ -1708,7 +1708,7 @@ Learn Next.js, Vite, Streamlit, and Slack integrations
 
 **🎉 Tutorial 34 Complete!**
 
-**Next**: [Tutorial 35: AG-UI Deep Dive](../logs/35_agui_deep_dive.md)
+🎊 **Congratulations!** You've completed all 34 tutorials in the ADK Training series. You now have comprehensive knowledge of Google Agent Development Kit from basic concepts to production deployment.
 
 ---
 

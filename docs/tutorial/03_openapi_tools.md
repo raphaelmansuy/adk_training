@@ -1,5 +1,21 @@
 ---
 id: openapi_tools
+title: "Tutorial 03: OpenAPI Tools - REST API Integration"
+description: "Integrate REST APIs into your agents using OpenAPI specifications for seamless external service integration. Connect to weather APIs, databases, and third-party services."
+sidebar_label: "03. OpenAPI Tools"
+sidebar_position: 3
+tags: ["beginner", "openapi", "rest-api", "tools", "integration"]
+keywords: ["openapi", "rest api", "integration", "tools", "external services", "weather api"]
+status: "completed"
+difficulty: "beginner"
+estimated_time: "45 minutes"
+prerequisites: ["Tutorial 01: Hello World Agent", "Tutorial 02: Function Tools"]
+learning_objectives:
+  - "Use OpenAPIToolset for REST API integration"
+  - "Create weather agents with real API data"
+  - "Handle API authentication and errors"
+  - "Structure API responses for agent consumption"
+implementation_link: "https://github.com/raphaelmansuy/adk_training/tree/main/tutorial_implementation/tutorial03"
 ---
 
 # Tutorial 03: OpenAPI Tools - Connect Your Agent to Web APIs
@@ -84,7 +100,7 @@ toolset = OpenAPIToolset(spec=api_spec)
 
 **API**: https://api.chucknorris.io/
 
-**Implementation**: [tutorial_implementation/tutorial03](../tutorial_implementation/tutorial03/) - Complete working example with tests
+**Implementation**: [tutorial_implementation/tutorial03](https://github.com/raphaelmansuy/adk_training/tree/main/tutorial_implementation/tutorial03/) - Complete working example with tests
 
 ---
 

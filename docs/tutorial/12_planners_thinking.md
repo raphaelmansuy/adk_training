@@ -1,5 +1,21 @@
 ---
 id: planners_thinking
+title: "Tutorial 12: Planners and Thinking - Strategic Agent Planning"
+description: "Implement planning and reasoning capabilities in agents using strategic thinking patterns, task decomposition, and execution planning."
+sidebar_label: "12. Planners & Thinking"
+sidebar_position: 12
+tags: ["advanced", "planning", "reasoning", "strategic-thinking", "task-decomposition"]
+keywords: ["agent planning", "strategic thinking", "reasoning", "task decomposition", "execution planning", "decision making"]
+status: "completed"
+difficulty: "advanced"
+estimated_time: "2 hours"
+prerequisites: ["Tutorial 01: Hello World Agent", "Tutorial 04: Sequential Workflows", "Tutorial 07: Loop Agents"]
+learning_objectives:
+  - "Implement strategic planning patterns in agents"
+  - "Build task decomposition and execution systems"
+  - "Create reasoning and decision-making workflows"
+  - "Design multi-step planning strategies"
+implementation_link: "https://github.com/raphaelmansuy/adk_training/tree/main/tutorial_implementation/tutorial12"
 ---
 
 # Tutorial 12: Planners & Thinking Configuration

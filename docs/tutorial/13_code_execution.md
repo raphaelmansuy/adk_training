@@ -1,5 +1,21 @@
 ---
 id: code_execution
+title: "Tutorial 13: Code Execution - Dynamic Python Code Generation"
+description: "Enable your agents to write and execute Python code for calculations, data analysis, and complex computations using Gemini 2.0+'s built-in code execution capability."
+sidebar_label: "13. Code Execution"
+sidebar_position: 13
+tags: ["advanced", "code-execution", "python", "calculations", "data-analysis"]
+keywords: ["code execution", "python code", "calculations", "data analysis", "BuiltInCodeExecutor"]
+status: "draft"
+difficulty: "advanced"
+estimated_time: "1.5 hours"
+prerequisites: ["Tutorial 01: Hello World Agent", "Tutorial 02: Function Tools", "Gemini 2.0+ model access"]
+learning_objectives:
+  - "Use BuiltInCodeExecutor for code generation and execution"
+  - "Understand model-side code execution patterns"
+  - "Build data analysis agents"
+  - "Handle code execution errors effectively"
+implementation_link: "https://github.com/raphaelmansuy/adk_training/tree/main/tutorial_implementation/tutorial13"
 ---
 
 # Tutorial 13: Code Execution

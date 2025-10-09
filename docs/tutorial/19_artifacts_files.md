@@ -1,5 +1,21 @@
 ---
 id: artifacts_files
+title: "Tutorial 19: Artifacts and Files - Content Generation and Management"
+description: "Generate and manage files, documents, and artifacts using agents for content creation, code generation, and file processing workflows."
+sidebar_label: "19. Artifacts & Files"
+sidebar_position: 19
+tags: ["advanced", "artifacts", "files", "content-generation", "file-management"]
+keywords: ["artifacts", "file generation", "content creation", "document processing", "file management"]
+status: "draft"
+difficulty: "advanced"
+estimated_time: "1.5 hours"
+prerequisites: ["Tutorial 01: Hello World Agent", "Tutorial 02: Function Tools"]
+learning_objectives:
+  - "Generate files and documents with agents"
+  - "Manage file artifacts and content"
+  - "Build content creation workflows"
+  - "Handle file processing and manipulation"
+implementation_link: "https://github.com/raphaelmansuy/adk_training/tree/main/tutorial_implementation/tutorial19"
 ---
 
 # Tutorial 19: Artifacts & File Management

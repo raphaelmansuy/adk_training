@@ -1,5 +1,21 @@
 ---
 id: yaml_configuration
+title: "Tutorial 20: YAML Configuration - Declarative Agent Setup"
+description: "Configure agents using YAML files for declarative setup, easier maintenance, and configuration management across environments."
+sidebar_label: "20. YAML Configuration"
+sidebar_position: 20
+tags: ["intermediate", "yaml", "configuration", "declarative", "setup"]
+keywords: ["yaml configuration", "declarative setup", "agent config", "configuration management", "environment setup"]
+status: "draft"
+difficulty: "intermediate"
+estimated_time: "1 hour"
+prerequisites: ["Tutorial 01: Hello World Agent", "YAML syntax knowledge"]
+learning_objectives:
+  - "Configure agents using YAML files"
+  - "Manage environment-specific configurations"
+  - "Build declarative agent setups"
+  - "Organize configuration across projects"
+implementation_link: "https://github.com/raphaelmansuy/adk_training/tree/main/tutorial_implementation/tutorial20"
 ---
 
 # Tutorial 20: Agent Configuration with YAML

@@ -1,5 +1,21 @@
 ---
 id: advanced_observability
+title: "Tutorial 24: Advanced Observability - Enterprise Monitoring"
+description: "Implement enterprise-grade observability with metrics, traces, logs, and alerting for production agent systems at scale."
+sidebar_label: "24. Advanced Observability"
+sidebar_position: 24
+tags: ["advanced", "observability", "monitoring", "enterprise", "production"]
+keywords: ["enterprise observability", "metrics", "traces", "logs", "alerting", "production monitoring"]
+status: "draft"
+difficulty: "advanced"
+estimated_time: "2.5 hours"
+prerequisites: ["Tutorial 18: Events & Observability", "Tutorial 23: Production Deployment", "Monitoring tools experience"]
+learning_objectives:
+  - "Implement enterprise observability patterns"
+  - "Set up metrics, traces, and logs"
+  - "Configure alerting and dashboards"
+  - "Monitor agent performance at scale"
+implementation_link: "https://github.com/raphaelmansuy/adk_training/tree/main/tutorial_implementation/tutorial24"
 ---
 
 # Tutorial 24: Advanced Observability & Monitoring

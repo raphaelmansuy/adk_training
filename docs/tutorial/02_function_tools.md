@@ -1,10 +1,25 @@
 ---
 id: function_tools
+title: "Tutorial 02: Function Tools - Give Your Agent Superpowers"
+description: "Learn how to add custom Python functions as tools to make your agent capable of calculations, data processing, and problem-solving."
+sidebar_label: "02. Function Tools"
+sidebar_position: 2
+tags: ["beginner", "tools", "functions", "python"]
+keywords: ["adk tools", "function tools", "agent capabilities", "python functions"]
+status: "completed"
+difficulty: "beginner"
+estimated_time: "45 minutes"
+prerequisites: ["Tutorial 01: Hello World Agent", "Basic Python functions"]
+learning_objectives:
+  - "Create custom function tools"
+  - "Understand tool registration and usage"
+  - "Build agents with problem-solving capabilities"
+implementation_link: "https://github.com/raphaelmansuy/adk_training/tree/main/tutorial_implementation/tutorial02"
 ---
 
 # Tutorial 02: Function Tools - Give Your Agent Superpowers
 
-> **💡 Working Implementation**: See the complete, tested code at [`tutorial_implementation/tutorial02/`](../tutorial_implementation/tutorial02/)
+> **💡 Working Implementation**: See the complete, tested code at [`tutorial_implementation/tutorial02/`](https://github.com/raphaelmansuy/adk_training/tree/main/tutorial_implementation/tutorial02/)
 
 ## Overview
 

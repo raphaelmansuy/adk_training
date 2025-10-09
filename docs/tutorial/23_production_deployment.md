@@ -1,5 +1,21 @@
 ---
 id: production_deployment
+title: "Tutorial 23: Production Deployment - Scalable Agent Systems"
+description: "Deploy agents to production environments using Cloud Run, Kubernetes, and Vertex AI for scalable, reliable agent systems."
+sidebar_label: "23. Production Deployment"
+sidebar_position: 23
+tags: ["advanced", "production", "deployment", "cloud-run", "kubernetes"]
+keywords: ["production deployment", "cloud run", "kubernetes", "vertex ai", "scalability", "reliability"]
+status: "draft"
+difficulty: "advanced"
+estimated_time: "2.5 hours"
+prerequisites: ["Tutorial 01: Hello World Agent", "Google Cloud Platform account", "Docker knowledge"]
+learning_objectives:
+  - "Deploy agents to Google Cloud Run"
+  - "Configure production environments"
+  - "Set up monitoring and logging"
+  - "Implement scalability and reliability patterns"
+implementation_link: "https://github.com/raphaelmansuy/adk_training/tree/main/tutorial_implementation/tutorial23"
 ---
 
 # Tutorial 23: Production Deployment Strategies

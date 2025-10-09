@@ -1,5 +1,21 @@
 ---
 id: mcp_integration
+title: "Tutorial 16: Model Context Protocol (MCP) Integration - Standardized Tool Protocols"
+description: "Integrate MCP servers for standardized tool access including filesystem, databases, and external services using the Model Context Protocol."
+sidebar_label: "16. MCP Integration"
+sidebar_position: 16
+tags: ["advanced", "mcp", "protocol", "tools", "standardization"]
+keywords: ["model context protocol", "mcp servers", "standardized tools", "filesystem", "databases", "tool protocols"]
+status: "draft"
+difficulty: "advanced"
+estimated_time: "2 hours"
+prerequisites: ["Tutorial 01: Hello World Agent", "Tutorial 02: Function Tools", "MCP server setup"]
+learning_objectives:
+  - "Use MCPToolset for standardized tool access"
+  - "Configure and connect to MCP servers"
+  - "Build agents with filesystem and database access"
+  - "Understand MCP protocol specifications"
+implementation_link: "https://github.com/raphaelmansuy/adk_training/tree/main/tutorial_implementation/tutorial16"
 ---
 
 # Tutorial 16: Model Context Protocol (MCP) Integration

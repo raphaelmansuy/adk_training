@@ -1,5 +1,21 @@
 ---
 id: callbacks_guardrails
+title: "Tutorial 09: Callbacks and Guardrails - Agent Safety and Monitoring"
+description: "Implement safety guardrails and monitoring callbacks to control agent behavior, prevent harmful outputs, and track agent performance."
+sidebar_label: "09. Callbacks & Guardrails"
+sidebar_position: 9
+tags: ["advanced", "safety", "callbacks", "guardrails", "monitoring"]
+keywords: ["agent safety", "guardrails", "callbacks", "monitoring", "content filtering", "safety controls"]
+status: "completed"
+difficulty: "advanced"
+estimated_time: "1.5 hours"
+prerequisites: ["Tutorial 01: Hello World Agent", "Tutorial 08: State & Memory"]
+learning_objectives:
+  - "Implement safety guardrails for agent outputs"
+  - "Use callbacks for monitoring and logging"
+  - "Build content filtering and validation systems"
+  - "Track agent performance and behavior"
+implementation_link: "https://github.com/raphaelmansuy/adk_training/tree/main/tutorial_implementation/tutorial09"
 ---
 
 # Tutorial 09: Callbacks & Guardrails - Control Flow and Monitoring
@@ -1039,7 +1055,7 @@ def test_before_model_blocks_profanity():
 
 A complete, production-ready implementation of this tutorial is available at:
 
-**📁 [tutorial_implementation/tutorial09/content_moderator/](tutorial_implementation/tutorial09/content_moderator/)**
+**📁 [tutorial_implementation/tutorial09/content_moderator/](https://github.com/raphaelmansuy/adk_training/tree/main/tutorial_implementation/tutorial09/content_moderator/)**
 
 ### What's Included
 

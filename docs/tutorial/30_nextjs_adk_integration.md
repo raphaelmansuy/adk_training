@@ -1,5 +1,21 @@
 ---
 id: nextjs_adk_integration
+title: "Tutorial 30: Next.js ADK Integration - React Chat Interfaces"
+description: "Build modern chat interfaces using Next.js and CopilotKit to create seamless React-based agent interactions with real-time features."
+sidebar_label: "30. Next.js ADK Integration"
+sidebar_position: 30
+tags: ["ui", "nextjs", "react", "copilotkit", "chat-interface"]
+keywords: ["nextjs", "react", "copilotkit", "chat interface", "ui integration", "web interface"]
+status: "draft"
+difficulty: "intermediate"
+estimated_time: "2 hours"
+prerequisites: ["Tutorial 01: Hello World Agent", "React/Next.js experience", "Node.js setup"]
+learning_objectives:
+  - "Build Next.js chat interfaces with CopilotKit"
+  - "Integrate ADK agents with React components"
+  - "Create real-time agent interactions"
+  - "Deploy agent-powered web applications"
+implementation_link: "https://github.com/raphaelmansuy/adk_training/tree/main/tutorial_implementation/tutorial30"
 ---
 
 # Tutorial 30: Next.js 15 + ADK Integration (AG-UI Protocol)
