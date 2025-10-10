@@ -1289,7 +1289,7 @@ You've mastered code execution for AI agents:
 
 **Resources**:
 
-- [ADK Code Execution Docs](https://google.github.io/adk-docs/tools/code-execution/)
+- [ADK Code Execution Docs](https://ai.google.dev/gemini-api/docs/code-execution/)
 - [Gemini 2.0 Code Execution](https://cloud.google.com/vertex-ai/generative-ai/docs/model-reference/gemini)
 - [Python Standard Library](https://docs.python.org/3/library/)
 
