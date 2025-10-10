@@ -37,6 +37,19 @@ implementation_link: "https://github.com/raphaelmansuy/adk_training/tree/main/tu
 Context Protocol (MCP), expanding your agent's capabilities with community-built
 tool servers.
 
+## 🚀 Quick Start
+
+The easiest way to get started is with our **working implementation**:
+
+```bash
+cd tutorial_implementation/tutorial16
+make setup
+make dev
+```
+
+Then open `http://localhost:8000` in your browser and try the MCP filesystem
+agent!
+
 **Prerequisites**:
 
 - Tutorial 01 (Hello World Agent)
@@ -56,6 +69,19 @@ tool servers.
 - Best practices for production MCP deployments
 
 **Time to Complete**: 50-65 minutes
+
+---
+
+:::warning ADK 1.16.0+ Callback Signature Change
+
+**Critical Update**: ADK 1.16.0 changed the `before_tool_callback` signature.
+
+**Old (< 1.16.0)**: `callback_context, tool_name, args`  
+**New (1.16.0+)**: `tool, args, tool_context`
+
+See **Section 7: Human-in-the-Loop (HITL) with MCP** for details.
+
+:::
 
 ---
 
@@ -886,7 +912,398 @@ Browse the complete list at the [MCP Server Registry](https://github.com/modelco
 
 ---
 
-## 7. Best Practices
+## 7. Human-in-the-Loop (HITL) with MCP
+
+**ADK 1.16.0+ Callback Signature**: Implementing approval workflows for destructive operations.
+
+### Why HITL Matters
+
+MCP filesystem servers provide powerful file manipulation capabilities, but **destructive operations** 
+(write, move, delete) need human approval in production to prevent:
+
+- Accidental file overwrites
+- Unintended file deletions
+- Security breaches
+- Data loss
+
+### ADK 1.16.0 Callback Signature
+
+**Critical Discovery**: ADK 1.16.0 changed the callback signature significantly.
+
+**Correct Signature** (ADK 1.16.0+):
+```python
+from typing import Dict, Any, Optional
+
+def before_tool_callback(
+    tool,  # BaseTool object (NOT string!)
+    args: Dict[str, Any],
+    tool_context  # Has .state attribute (NOT callback_context!)
+) -> Optional[Dict[str, Any]]:
+    """
+    Callback invoked before tool execution.
+    
+    Args:
+        tool: BaseTool object with .name attribute
+        args: Arguments passed to the tool
+        tool_context: Context with state access via .state
+        
+    Returns:
+        None: Allow tool execution
+        dict: Block tool execution, return this result instead
+    """
+    # Extract tool name from object
+    tool_name = tool.name if hasattr(tool, 'name') else str(tool)
+    
+    # Access state via tool_context.state (NOT callback_context.state)
+    count = tool_context.state.get('temp:tool_count', 0) or 0
+    tool_context.state['temp:tool_count'] = count + 1
+    
+    # Your approval logic here
+    return None  # Allow execution
+```
+
+**Key Changes from Older Versions**:
+
+| Aspect | Old (< 1.16.0) | New (1.16.0+) |
+|--------|----------------|---------------|
+| First parameter | `callback_context` | **Removed** |
+| Tool parameter | `tool_name: str` | `tool` (object) |
+| State access | `callback_context.state` | `tool_context.state` |
+| Tool name | Direct string | Extract from `tool.name` |
+
+### Complete HITL Implementation
+
+```python
+"""
+MCP Agent with Human-in-the-Loop Approval Workflow
+Demonstrates ADK 1.16.0 callback signature.
+"""
+
+import os
+import logging
+from typing import Dict, Any, Optional
+from google.adk.agents import Agent
+from google.adk.tools.mcp_tool import McpToolset, StdioConnectionParams
+
+# Setup logging
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
+
+
+def before_tool_callback(
+    tool,  # BaseTool object
+    args: Dict[str, Any],
+    tool_context  # Has .state attribute
+) -> Optional[Dict[str, Any]]:
+    """
+    Human-in-the-Loop callback for MCP filesystem operations.
+    
+    Implements approval workflow for destructive operations:
+    - Write operations require confirmation
+    - Move/delete operations require explicit approval
+    - Read operations are allowed without confirmation
+    
+    ADK Best Practice: Use before_tool_callback for:
+    1. Validation: Check arguments are safe
+    2. Authorization: Require approval for sensitive operations
+    3. Logging: Track tool usage for audit
+    4. Rate limiting: Prevent abuse
+    
+    Args:
+        tool: BaseTool object being called (has .name attribute)
+        args: Arguments passed to the tool
+        tool_context: ToolContext with state and invocation access
+        
+    Returns:
+        None: Allow tool execution
+        dict: Block tool execution and return this result instead
+    """
+    # Extract tool name from tool object
+    tool_name = tool.name if hasattr(tool, 'name') else str(tool)
+    
+    logger.info(f"[TOOL REQUEST] {tool_name} with args: {args}")
+    
+    # Track tool usage in session state
+    tool_count = tool_context.state.get('temp:tool_count', 0) or 0  # Handle None
+    tool_context.state['temp:tool_count'] = tool_count + 1
+    tool_context.state['temp:last_tool'] = tool_name
+    
+    # Define destructive operations that require approval
+    DESTRUCTIVE_OPERATIONS = {
+        'write_file': 'Writing files modifies content',
+        'write_text_file': 'Writing files modifies content',
+        'move_file': 'Moving files changes file locations',
+        'create_directory': 'Creating directories modifies filesystem structure',
+    }
+    
+    # Check if this is a destructive operation
+    if tool_name in DESTRUCTIVE_OPERATIONS:
+        reason = DESTRUCTIVE_OPERATIONS[tool_name]
+        
+        # Log the approval request
+        logger.warning(f"[APPROVAL REQUIRED] {tool_name}: {reason}")
+        logger.info(f"[APPROVAL REQUEST] Arguments: {args}")
+        
+        # Check approval flag in state
+        auto_approve = tool_context.state.get('user:auto_approve_file_ops', False)
+        
+        if not auto_approve:
+            # Return blocking response - tool won't execute
+            return {
+                'status': 'requires_approval',
+                'message': (
+                    f"⚠️ APPROVAL REQUIRED\n\n"
+                    f"Operation: {tool_name}\n"
+                    f"Reason: {reason}\n"
+                    f"Arguments: {args}\n\n"
+                    f"To approve, set state['user:auto_approve_file_ops'] = True\n"
+                    f"Or use the ADK UI approval workflow.\n\n"
+                    f"This operation has been BLOCKED for safety."
+                ),
+                'tool_name': tool_name,
+                'args': args,
+                'requires_approval': True
+            }
+        else:
+            logger.info(f"[APPROVED] {tool_name} approved via auto_approve flag")
+    
+    # Allow non-destructive operations (read, list, search, get_info)
+    logger.info(f"[ALLOWED] {tool_name} approved automatically")
+    return None  # None means allow tool execution
+
+
+def create_mcp_filesystem_agent(
+    base_directory: str = None,
+    enable_hitl: bool = True
+) -> Agent:
+    """
+    Create MCP filesystem agent with optional HITL.
+    
+    Args:
+        base_directory: Directory to restrict access to (default: ./sample_files)
+        enable_hitl: Enable Human-in-the-Loop approval workflow
+        
+    Returns:
+        Agent with MCP filesystem tools and HITL callback
+    """
+    # Default to sample_files directory
+    if base_directory is None:
+        current_dir = os.getcwd()
+        base_directory = os.path.join(current_dir, 'sample_files')
+        if not os.path.exists(base_directory):
+            os.makedirs(base_directory, exist_ok=True)
+    
+    base_directory = os.path.abspath(base_directory)
+    logger.info(f"[SECURITY] MCP filesystem access restricted to: {base_directory}")
+    
+    # Create MCP toolset
+    mcp_tools = McpToolset(
+        connection_params=StdioConnectionParams(
+            command='npx',
+            args=[
+                '-y',
+                '@modelcontextprotocol/server-filesystem',
+                base_directory
+            ],
+            timeout=30.0  # 30 second timeout
+        ),
+        retry_on_closed_resource=True
+    )
+    
+    # Create agent with HITL callback
+    agent = Agent(
+        model='gemini-2.0-flash-exp',
+        name='mcp_filesystem_agent',
+        description='MCP filesystem agent with HITL approval workflow',
+        instruction=f"""
+You are a filesystem assistant with access to: {base_directory}
+
+IMPORTANT SECURITY BOUNDARIES:
+- You can ONLY access files within: {base_directory}
+- All destructive operations (write, move, create) require approval
+- Read operations are allowed without approval
+
+AVAILABLE TOOLS:
+- read_file: Read file contents (APPROVED automatically)
+- list_directory: List directory contents (APPROVED automatically)
+- search_files: Search for files (APPROVED automatically)
+- get_file_info: Get file metadata (APPROVED automatically)
+- write_file: Write file contents (REQUIRES APPROVAL)
+- move_file: Move/rename files (REQUIRES APPROVAL)
+- create_directory: Create directories (REQUIRES APPROVAL)
+
+APPROVAL WORKFLOW:
+1. When you attempt a destructive operation, it will be BLOCKED
+2. You'll receive an "APPROVAL REQUIRED" message
+3. Explain to the user what was blocked and why
+4. User must approve before operation proceeds
+5. Once approved, you can proceed with the operation
+
+Always explain what you're about to do before performing destructive operations.
+        """.strip(),
+        tools=[mcp_tools],
+        
+        # Enable Human-in-the-Loop callback if requested
+        before_tool_callback=before_tool_callback if enable_hitl else None
+    )
+    
+    return agent
+
+
+# Example usage
+if __name__ == '__main__':
+    from google.adk.agents import Runner
+    import asyncio
+    
+    async def main():
+        agent = create_mcp_filesystem_agent(
+            base_directory='./sample_files',
+            enable_hitl=True  # Enable approval workflow
+        )
+        
+        runner = Runner()
+        
+        # This will be approved automatically (read operation)
+        result1 = await runner.run_async(
+            "List all files in the directory",
+            agent=agent
+        )
+        print(result1.content.parts[0].text)
+        
+        # This will be BLOCKED (write operation requires approval)
+        result2 = await runner.run_async(
+            "Create a file called test.txt with content: Hello World",
+            agent=agent
+        )
+        print(result2.content.parts[0].text)
+        # Expected: "⚠️ APPROVAL REQUIRED..." message
+    
+    asyncio.run(main())
+```
+
+### Testing HITL Implementation
+
+The tutorial includes **25 comprehensive tests** covering all aspects of the HITL workflow:
+
+```python
+# tests/test_hitl.py - Comprehensive HITL test suite
+
+import pytest
+from unittest.mock import Mock
+from mcp_agent.agent import before_tool_callback
+
+class TestDestructiveOperationDetection:
+    """Test detection of operations requiring approval."""
+    
+    @pytest.mark.parametrize("operation_name", [
+        "write_file",
+        "write_text_file",
+        "move_file",
+        "create_directory"
+    ])
+    def test_destructive_operations_require_approval(self, operation_name):
+        """All destructive operations should require approval."""
+        mock_tool = Mock()
+        mock_tool.name = operation_name
+        
+        mock_context = Mock()
+        mock_context.state = {}  # No auto_approve flag
+        
+        result = before_tool_callback(
+            tool=mock_tool,
+            args={'path': '/test/file.txt'},
+            tool_context=mock_context
+        )
+        
+        # Should return approval required message
+        assert result is not None
+        assert result['status'] == 'requires_approval'
+        assert 'APPROVAL REQUIRED' in result['message']
+
+# Run tests
+# pytest tests/test_hitl.py -v
+# Expected: 25 passed
+```
+
+**Test Coverage** (25 tests):
+
+1. **Tool Name Extraction** (2 tests) - Extract names from tool objects
+2. **Destructive Operation Detection** (8 tests) - Block write/move/create
+3. **Approval Workflow** (3 tests) - Auto-approve flag behavior
+4. **State Management** (3 tests) - Tool counting and tracking
+5. **Approval Message Content** (4 tests) - Message formatting
+6. **Edge Cases** (3 tests) - None values, empty args, unknown tools
+7. **Integration Scenarios** (2 tests) - Real workflow testing
+
+### HITL Best Practices
+
+**DO**:
+
+- ✅ Use callbacks for all destructive operations
+- ✅ Extract tool name: `tool_name = tool.name if hasattr(tool, 'name') else str(tool)`
+- ✅ Access state via `tool_context.state` (not `callback_context.state`)
+- ✅ Handle None values: `count = state.get('key', 0) or 0`
+- ✅ Log approval requests for audit trail
+- ✅ Provide clear approval messages with context
+- ✅ Test with comprehensive test suite
+
+**DON'T**:
+
+- ❌ Use old callback signature (`callback_context` parameter removed in 1.16.0)
+- ❌ Treat `tool` as string (it's a BaseTool object)
+- ❌ Access `callback_context.state` (doesn't exist in 1.16.0)
+- ❌ Forget to handle None in state values
+- ❌ Block read operations (only destructive ones)
+- ❌ Deploy without testing approval workflow
+
+### Migration from Older ADK Versions
+
+If migrating from ADK < 1.16.0, update your callbacks:
+
+```python
+# OLD (< 1.16.0) - DON'T USE
+def before_tool_callback(
+    callback_context: CallbackContext,  # REMOVED in 1.16.0
+    tool_name: str,  # Now an object, not string
+    args: Dict[str, Any]
+) -> Optional[Dict[str, Any]]:
+    count = callback_context.state.get('count', 0)  # Wrong state access
+    if tool_name in DESTRUCTIVE_OPS:
+        # Check approval
+        pass
+    return None
+
+# NEW (1.16.0+) - CORRECT
+def before_tool_callback(
+    tool,  # Object, not string!
+    args: Dict[str, Any],
+    tool_context  # Replaces callback_context
+) -> Optional[Dict[str, Any]]:
+    tool_name = tool.name if hasattr(tool, 'name') else str(tool)
+    count = tool_context.state.get('count', 0) or 0  # Handle None
+    if tool_name in DESTRUCTIVE_OPS:
+        # Check approval
+        pass
+    return None
+```
+
+### Real-World HITL Logs
+
+From actual ADK web server with HITL enabled:
+
+```log
+2025-10-10 17:55:23,896 - INFO - [TOOL REQUEST] write_file with args: {'content': '...', 'path': 'toto'}
+2025-10-10 17:55:23,896 - WARNING - [APPROVAL REQUIRED] write_file: Writing files modifies content
+2025-10-10 17:55:23,896 - INFO - [APPROVAL REQUEST] Arguments: {'content': '...', 'path': 'toto'}
+```
+
+✅ Tool name extracted correctly (`write_file`)  
+✅ HITL blocking triggered  
+✅ Approval workflow operational
+
+---
+
+## 8. Best Practices
 
 ### ✅ DO: Use Retry on Closed Resource
 
@@ -1694,6 +2111,206 @@ if __name__ == '__main__':
 - **Real-time feeds**: Use `SseConnectionParams` + OAuth2
 - **Interactive APIs**: Use `StreamableHTTPConnectionParams` + OAuth2
 - **Production Enterprise**: SSE or HTTP with OAuth2 authentication
+
+---
+
+## 9. Troubleshooting & Common Issues
+
+### Callback Signature Errors
+
+**Error**: `TypeError: before_tool_callback() missing 1 required positional argument`
+
+**Cause**: Using old callback signature with ADK 1.16.0+
+
+```python
+# ❌ OLD - DON'T USE (< 1.16.0)
+def before_tool_callback(callback_context, tool_name, args):
+    pass
+
+# ✅ NEW - CORRECT (1.16.0+)
+def before_tool_callback(tool, args, tool_context):
+    pass
+```
+
+**Error**: `TypeError: before_tool_callback() got an unexpected keyword argument 'tool_name'`
+
+**Cause**: ADK 1.16.0 changed parameter name from `tool_name` to `tool`
+
+**Solution**: Update parameter name to `tool`
+
+**Error**: `AttributeError: 'str' object has no attribute 'state'`
+
+**Cause**: Trying to access `callback_context.state` which doesn't exist
+
+**Solution**: Use `tool_context.state` instead:
+
+```python
+# ❌ WRONG
+count = callback_context.state.get('count', 0)
+
+# ✅ CORRECT
+count = tool_context.state.get('count', 0)
+```
+
+**Error**: Tool name prints as `<google.adk.tools.mcp_tool.mcp_tool.MCPTool object at 0x...>`
+
+**Cause**: `tool` parameter is a BaseTool object, not a string
+
+**Solution**: Extract the name:
+
+```python
+# ✅ CORRECT
+tool_name = tool.name if hasattr(tool, 'name') else str(tool)
+```
+
+**Error**: `TypeError: unsupported operand type(s) for +: 'NoneType' and 'int'`
+
+**Cause**: State value is None instead of 0
+
+**Solution**: Use `or 0` fallback:
+
+```python
+# ❌ WRONG
+count = tool_context.state.get('count', 0) + 1
+
+# ✅ CORRECT
+count = tool_context.state.get('count', 0) or 0
+tool_context.state['count'] = count + 1
+```
+
+### MCP Server Connection Issues
+
+**Error**: `npx: command not found`
+
+**Solution**: Install Node.js and npm
+
+```bash
+# macOS
+brew install node
+
+# Ubuntu/Debian
+sudo apt install nodejs npm
+
+# Verify
+npx --version
+```
+
+**Error**: `ConnectionError: MCP server failed to start`
+
+**Solution**: Check server path and permissions
+
+```python
+# Verify server installation
+connection_params=StdioConnectionParams(
+    command='npx',
+    args=[
+        '-y',  # Auto-install if missing
+        '@modelcontextprotocol/server-filesystem',
+        '/absolute/path/to/directory'  # Use absolute paths!
+    ],
+    timeout=30.0  # Increase timeout if needed
+)
+```
+
+**Error**: `EACCES: permission denied`
+
+**Solution**: Check directory permissions
+
+```bash
+# Create directory with proper permissions
+mkdir -p sample_files
+chmod 755 sample_files
+
+# Verify
+ls -la sample_files
+```
+
+### HITL Approval Issues
+
+**Issue**: All operations blocked, even read operations
+
+**Cause**: Overly broad destructive operations list
+
+**Solution**: Only block write/move/create/delete:
+
+```python
+DESTRUCTIVE_OPERATIONS = {
+    'write_file',
+    'move_file',
+    'create_directory',
+    # Don't include read operations!
+}
+```
+
+**Issue**: Auto-approve flag not working
+
+**Cause**: Using wrong state scope
+
+**Solution**: Use `user:` prefix for persistent approval:
+
+```python
+# ❌ WRONG - session-scoped
+auto_approve = tool_context.state.get('auto_approve', False)
+
+# ✅ CORRECT - user-scoped (persists across sessions)
+auto_approve = tool_context.state.get('user:auto_approve_file_ops', False)
+```
+
+### Testing Issues
+
+**Error**: `ImportError: cannot import name 'CallbackContext'`
+
+**Cause**: Importing removed class from ADK 1.16.0
+
+**Solution**: Don't import CallbackContext:
+
+```python
+# ❌ DON'T IMPORT
+from google.adk.types import CallbackContext
+
+# ✅ USE MOCK INSTEAD
+from unittest.mock import Mock
+
+mock_context = Mock()
+mock_context.state = {}
+```
+
+**Issue**: Tests pass but real server fails
+
+**Cause**: Mock doesn't match real ADK behavior
+
+**Solution**: Test with real ADK Runner:
+
+```python
+# Add integration test
+async def test_with_real_runner():
+    from google.adk.agents import Runner
+    
+    agent = create_mcp_filesystem_agent()
+    runner = Runner()
+    
+    result = await runner.run_async(
+        "List files",
+        agent=agent
+    )
+    
+    assert result.content
+```
+
+### Migration Checklist
+
+Upgrading from ADK < 1.16.0? Use this checklist:
+
+- [ ] Update callback signature to `(tool, args, tool_context)`
+- [ ] Remove `callback_context` parameter
+- [ ] Change `tool_name` to `tool`
+- [ ] Extract tool name: `tool.name if hasattr(tool, 'name') else str(tool)`
+- [ ] Replace `callback_context.state` with `tool_context.state`
+- [ ] Add `or 0` fallbacks for state values
+- [ ] Remove `CallbackContext` imports
+- [ ] Run all tests (unit + integration)
+- [ ] Test with real ADK web server
+- [ ] Update documentation
 
 ---
 
