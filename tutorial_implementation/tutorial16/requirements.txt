@@ -1,0 +1,14 @@
+# Tutorial 16: MCP Integration Requirements
+
+# Core ADK with MCP support (1.16.0+ recommended for SSE/HTTP)
+google-genai>=1.16.0
+
+# Testing
+pytest>=7.4.0
+pytest-asyncio>=0.21.0
+pytest-cov>=4.1.0
+
+# Code quality
+black>=23.0.0
+isort>=5.12.0
+flake8>=6.0.0

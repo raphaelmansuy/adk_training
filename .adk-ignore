@@ -1,0 +1,38 @@
+# ADK Ignore File
+# Directories and files that should not be discovered as agents
+
+# Documentation and planning directories
+context_engineering/
+research/
+docs/
+
+# Build artifacts
+build/
+dist/
+*.egg-info/
+
+# Cache directories
+__pycache__/
+.pytest_cache/
+.ruff_cache/
+
+# Version control
+.git/
+.github/
+
+# IDE and editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Logs
+logs/
+log/
+*.log
+
+# Test files (unless they contain agents)
+test_tutorials/
+
+# Node modules
+node_modules/
