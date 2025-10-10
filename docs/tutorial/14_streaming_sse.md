@@ -13,7 +13,7 @@ keywords:
     "chat interface",
     "live updates",
   ]
-status: "draft"
+status: "complete"
 difficulty: "advanced"
 estimated_time: "1.5 hours"
 prerequisites:
@@ -30,15 +30,24 @@ learning_objectives:
 implementation_link: "https://github.com/raphaelmansuy/adk_training/tree/main/tutorial_implementation/tutorial14"
 ---
 
-:::danger UNDER CONSTRUCTION
+:::info IMPLEMENTATION NOTES
 
-**This tutorial is currently under construction and may contain errors, incomplete information, or outdated code examples.**
+**This tutorial demonstrates real ADK streaming APIs with a working implementation
+that uses ADK v1.16.0's actual streaming capabilities.**
 
-Please check back later for the completed version. If you encounter issues, refer to the working implementation in the [tutorial repository](https://github.com/raphaelmansuy/adk_training/tree/main/tutorial_implementation/tutorial14).
+- ADK v1.16.0 includes full streaming support with `StreamingMode`, `Runner`, `Session`, and `LiveRequestQueue` classes
+- The tutorial implementation uses actual ADK streaming APIs, not simulation
+- `Runner.run_async()` with `StreamingMode.SSE` provides real progressive output
+- `Session` management maintains conversation context across streaming responses
+- `LiveRequestQueue` enables bidirectional communication for advanced streaming scenarios
+
+**Working Implementation Available:**
+Check out the [working implementation](https://github.com/raphaelmansuy/adk_training/tree/main/tutorial_implementation/tutorial14)
+which demonstrates real ADK streaming APIs with proper session management and error handling.
 
 :::
 
-# Tutorial 14: Streaming with Server-Sent Events (SSE)
+## Tutorial 14: Streaming with Server-Sent Events (SSE)
 
 **Goal**: Implement streaming responses using Server-Sent Events (SSE) to provide real-time, progressive output for better user experience in your AI agents.
 
@@ -90,21 +99,50 @@ Agent: "Quantum computing is a revolutionary..."
 - ✅ **Real-Time Feel**: More conversational and engaging
 - ✅ **Long Responses**: Essential for lengthy outputs
 
+**Response Flow Comparison**:
+
+```
+BLOCKING RESPONSE (Traditional):
+User ──► [Agent Processing: 5 seconds] ──► Complete Response Displayed
+
+STREAMING RESPONSE (Progressive):
+User ──► Agent: "Quantum computing..." ──► "is revolutionary..." ──► "...approach..."
+         [Immediate feedback]              [Progressive chunks]         [Continues...]
+```
+
+**Data Flow Architecture**:
+
+```
+┌─────────────┐     ┌─────────────────┐     ┌─────────────────┐
+│   Client    │────►│   ADK Runner    │────►│   Gemini Model  │
+│             │     │                 │     │                 │
+│ User waits  │     │ StreamingMode   │     │ Generates text  │
+│ for complete│     │ .SSE enabled    │     │ chunks as       │
+│ response    │     │                 │     │ they're ready   │
+└─────────────┘     └─────────────────┘     └─────────────────┘
+         ▲                     │                        │
+         │                     ▼                        ▼
+         └─────── Chunks flow back progressively ───────┘
+```
+
 ---
 
 ## 1. Streaming Basics
 
 ### What is Server-Sent Events (SSE)?
 
-**SSE** is a standard protocol for servers to push data to clients over HTTP. In ADK, `StreamingMode.SSE` enables the model to send response chunks as they're generated.
-
-**Source**: `google/adk/agents/run_config.py`, `google/adk/models/google_llm.py`
+**SSE** is a standard protocol for servers to push data to clients over HTTP. In ADK,
+streaming enables the model to send response chunks as they're generated using
+`StreamingMode.SSE`.
 
 ### Basic Streaming Implementation
 
 ```python
 import asyncio
-from google.adk.agents import Agent, Runner, RunConfig, StreamingMode
+from google.adk.agents import Agent
+from google.adk.runners import Runner
+from google.adk.agents.run_config import RunConfig, StreamingMode
+from google.adk.sessions import InMemorySessionService
 from google.genai import types
 
 # Create agent
@@ -120,22 +158,32 @@ run_config = RunConfig(
 )
 
 async def stream_response(query: str):
-    """Stream agent response."""
-    runner = Runner()
+    """Stream agent response using real ADK APIs."""
+    # Create session service and runner
+    session_service = InMemorySessionService()
+    runner = Runner(app_name="streaming_demo", agent=agent, session_service=session_service)
+
+    # Create session
+    session = await session_service.create_session(
+        app_name="streaming_demo",
+        user_id="demo_user"
+    )
 
     print(f"User: {query}\n")
     print("Agent: ", end='', flush=True)
 
     # Run with streaming
     async for event in runner.run_async(
-        query,
-        agent=agent,
+        user_id="demo_user",
+        session_id=session.id,
+        new_message=types.Content(role="user", parts=[types.Part(text=query)]),
         run_config=run_config
     ):
         # Print each chunk as it arrives
         if event.content and event.content.parts:
-            text = event.content.parts[0].text
-            print(text, end='', flush=True)
+            for part in event.content.parts:
+                if part.text:
+                    print(part.text, end='', flush=True)
 
     print("\n")
 
@@ -155,37 +203,60 @@ Agent: Neural networks are computational models inspired by...
        ...making them powerful for pattern recognition tasks.
 ```
 
-### How Streaming Works
+### How Streaming Works (Actual Implementation)
 
-**Internal Flow**:
+**Current ADK v1.16.0 Implementation Flow**:
 
-1. **Request Sent** → Agent receives query with `StreamingMode.SSE`
-2. **Model Generates** → Gemini starts generating response
-3. **Chunks Emitted** → As text is generated, chunks are sent
-4. **Events Yielded** → Each chunk wrapped in event object
-5. **Client Receives** → Application receives progressive updates
-6. **Complete** → Final event signals completion
+1. **Setup Components** → Create `Runner`, `SessionService`, and `Session` for context
+2. **Configure Streaming** → Use `RunConfig` with `StreamingMode.SSE`
+3. **Send Message** → Use `types.Content` with proper role and parts structure
+4. **Process Events** → Iterate through `runner.run_async()` events
+5. **Extract Chunks** → Get text from `event.content.parts`
+6. **Display Progressively** → Yield/print chunks as they arrive
+7. **Complete** → Final event signals completion
 
-**Implementation** (simplified from `google_llm.py`):
+**Key Components**:
 
-```python
-# Simplified internal implementation
-async def generate_content_async(self, request, streaming_mode):
-    if streaming_mode == StreamingMode.SSE:
-        # Stream mode
-        async for chunk in self.model.generate_content_async(
-            contents=request.messages,
-            stream=True  # Enable streaming
-        ):
-            # Yield each chunk as event
-            yield self._convert_to_event(chunk)
-    else:
-        # Non-streaming mode
-        response = await self.model.generate_content_async(
-            contents=request.messages,
-            stream=False
-        )
-        yield self._convert_to_event(response)
+- **`Runner`**: Executes agent runs with streaming support
+- **`SessionService`**: Manages conversation sessions and context
+- **`RunConfig`**: Configures streaming mode and parameters
+- **`StreamingMode.SSE`**: Enables Server-Sent Events streaming
+- **`types.Content`**: Properly structured message format
+
+**ADK Streaming Flow**:
+
+```
+┌─────────────────┐
+│   Initialize    │
+│   Components    │
+└───────┬─────────┘
+        │
+        ▼
+┌─────────────────┐     ┌─────────────────┐
+│ Create Session  │────►│ Configure       │
+│ Service &       │     │ StreamingMode   │
+│ Runner          │     │ .SSE            │
+└───────┬─────────┘     └───────┬─────────┘
+        │                      │
+        ▼                      ▼
+┌─────────────────┐     ┌─────────────────┐
+│ Send User       │────►│ Process Events  │
+│ Message         │     │ (Async Loop)    │
+│ (types.Content) │     │                 │
+└───────┬─────────┘     └───────┬─────────┘
+        │                      │
+        ▼                      ▼
+┌─────────────────┐     ┌─────────────────┐
+│ Extract Text    │────►│ Display         │
+│ Chunks from     │     │ Progressively   │
+│ event.content   │     │ (flush=True)    │
+└─────────────────┘     └───────┬─────────┘
+        │                      │
+        ▼                      ▼
+┌─────────────────┐     ┌─────────────────┐
+│ Final Event     │────►│ Complete        │
+│ Signals End     │     │ Response        │
+└─────────────────┘     └─────────────────┘
 ```
 
 ---
@@ -204,7 +275,7 @@ StreamingMode.SSE
 StreamingMode.BIDI
 
 # OFF - No streaming (default, blocking)
-StreamingMode.OFF
+StreamingMode.NONE
 ```
 
 ### RunConfig Setup
@@ -219,7 +290,7 @@ sse_config = RunConfig(
 
 # No Streaming (blocking)
 blocking_config = RunConfig(
-    streaming_mode=StreamingMode.OFF
+    streaming_mode=StreamingMode.NONE
 )
 
 # Use in runner
@@ -234,11 +305,58 @@ result = await runner.run_async(query, agent, run_config=blocking_config)
 process_complete_result(result)
 ```
 
+**StreamingMode Decision Tree**:
+
+```
+StreamingMode Selection Guide
+═══════════════════════════════════════════════
+
+┌─────────────────────────────────────────────┐
+│         What type of streaming?             │
+└─────────────────┬───────────────────────────┘
+                  │
+        ┌─────────┴─────────┐
+        │                   │
+   ┌────▼────┐        ┌─────▼─────┐
+   │  SSE    │        │   BIDI    │
+   │ (One-way│        │ (Two-way  │
+   │  Server │        │   Live    │
+   │  Push)  │        │   API)    │
+   └────┬────┘        └─────┬─────┘
+        │                   │
+        ▼                   ▼
+┌─────────────┐    ┌─────────────────┐
+│ Use Cases:  │    │ Use Cases:      │
+│ • Chat apps │    │ • Voice agents  │
+│ • Text      │    │ • Real-time     │
+│   streaming │    │   audio/video   │
+│ • Progressive│    │ • Interactive  │
+│   responses │    │   conversations │
+│ • Web APIs  │    │ • Live sessions │
+└─────────────┘    └─────────────────┘
+
+Data Flow Patterns:
+═══════════════════
+
+SSE (Server-Sent Events):
+Client ◄─── Text Chunks ─── Server
+       ◄─── Text Chunks ───
+       ◄─── Text Chunks ───
+
+BIDI (Bidirectional):
+Client ─── Audio/Text ──► Server
+       ◄── Audio/Text ───
+       ─── Audio/Text ──►
+       ◄── Audio/Text ───
+
+NONE (Blocking):
+Client ─── Request ──► Server
+       ◄── Full Response ── (after complete processing)
+```
+
 ---
 
-## 3. Real-World Example: Interactive Chat Application
-
-Let's build a production-ready streaming chat application.
+## 3. Real-World Example: Streaming Chat Application
 
 ### Complete Implementation
 
@@ -271,7 +389,7 @@ class StreamingChatApp:
         self.agent = Agent(
             model='gemini-2.0-flash',
             name='chat_assistant',
-            description='Helpful assistant with streaming responses',
+            description='An assistant that can search the web.',
             instruction="""
 You are a helpful, friendly assistant engaging in natural conversation.
 
@@ -410,6 +528,49 @@ if __name__ == '__main__':
     asyncio.run(main())
 ```
 
+**Streaming Chat Application Architecture**:
+
+```
+┌─────────────────────────────────────────────────────────────┐
+│                StreamingChatApp Class                       │
+├─────────────────────────────────────────────────────────────┤
+│                                                             │
+│  ┌─────────────────┐  ┌─────────────────┐  ┌─────────────┐  │
+│  │   Agent         │  │   Session       │  │   Runner    │  │
+│  │   (Gemini-2.0)  │  │   (Context)     │  │   (Executes) │  │
+│  │                 │  │                 │  │             │  │
+│  │ • Model config  │  │ • Conversation  │  │ • run_async │  │
+│  │ • Instructions  │  │   history       │  │ • Streaming  │  │
+│  │ • Temperature   │  │ • User state    │  │   mode       │  │
+│  └─────────────────┘  └─────────────────┘  └─────────────┘  │
+│           │                     │                   │        │
+├───────────┼─────────────────────┼───────────────────┼────────┤
+│           │                     │                   │        │
+│  ┌────────▼─────────────────────▼───────────────────▼─────┐  │
+│  │                RunConfig(streaming_mode=SSE)           │  │
+│  └────────▲─────────────────────▲───────────────────▲─────┘  │
+│           │                     │                   │        │
+│  ┌────────┴─────────────────────┴───────────────────┴─────┐  │
+│  │              Streaming Response Flow                    │  │
+│  │                                                         │  │
+│  │  User Input ──► Runner.run_async() ──► Events ──►      │  │
+│  │                                                         │  │
+│  │              Chunks yielded progressively               │  │
+│  └─────────────────────────────────────────────────────────┘  │
+│           │                     │                   │        │
+├───────────┼─────────────────────┼───────────────────┼────────┤
+│           ▼                     ▼                   ▼        │
+│  ┌─────────────────┐  ┌─────────────────┐  ┌─────────────┐  │
+│  │ chat_turn()     │  │ stream_response │  │ Display      │  │
+│  │ method          │  │ () async gen    │  │ (flush=True) │  │
+│  │                 │  │                 │  │             │  │
+│  │ • Format msg    │  │ • Yield chunks  │  │ • Progressive│  │
+│  │ • Timestamp     │  │ • Handle async  │  │   output     │  │
+│  │ • Error handle  │  │ • Context       │  │ • Real-time  │  │
+│  └─────────────────┘  └─────────────────┘  └─────────────┘  │
+└─────────────────────────────────────────────────────────────┘
+```
+
 ### Expected Output
 
 ```
@@ -504,6 +665,53 @@ print(f"\n\nTotal chunks: {len(chunks)}")
 print(f"Total length: {len(complete)} characters")
 ```
 
+**Pattern 1: Response Aggregation Flow**:
+
+```
+┌─────────────────┐
+│   Start         │
+│   Streaming     │
+└───────┬─────────┘
+        │
+        ▼
+┌─────────────────┐     ┌─────────────────┐
+│   Initialize    │────►│   Create        │
+│   Runner &      │     │   Empty Chunks  │
+│   RunConfig     │     │   List          │
+└───────┬─────────┘     └───────┬─────────┘
+        │                      │
+        ▼                      ▼
+┌─────────────────┐     ┌─────────────────┐
+│   Async Loop    │────►│   Process       │
+│   Events        │     │   Each Event    │
+└───────┬─────────┘     └───────┬─────────┘
+        │                      │
+        ▼                      ▼
+┌─────────────────┐     ┌─────────────────┐
+│   Extract Text  │────►│   Append to     │
+│   from Chunk    │     │   Chunks List   │
+└───────┬─────────┘     └───────┬─────────┘
+        │                      │
+        ▼                      ▼
+┌─────────────────┐     ┌─────────────────┐
+│   Display       │────►│   Continue      │
+│   Progress      │     │   Loop Until    │
+│   (Optional)    │     │   Complete      │
+└───────┬─────────┘     └───────┬─────────┘
+        │                      │
+   ┌────▼────┐                  │
+   │Timeout? │                  │
+   │No       │                  │
+   └────┬────┘                  │
+        │                       │
+        ▼                       ▼
+┌─────────────┐    ┌─────────────┐
+│ Complete    │    │ Timeout     │
+│ Response    │    │ Reached     │
+│ Displayed   │    │             │
+└─────────────┘    └─────────────┘
+```
+
 ### Pattern 2: Streaming with Progress Indicators
 
 Show progress during streaming:
@@ -592,6 +800,42 @@ await stream_to_multiple(
 )
 ```
 
+**Pattern 3: Multiple Output Destinations**:
+
+```
+┌─────────────────┐
+│   User Query    │
+│   "Explain AI   │
+│   safety"       │
+└───────┬─────────┘
+        │
+        ▼
+┌─────────────────┐     ┌─────────────────┐
+│   Runner.       │────►│   Stream        │
+│   run_async()   │     │   Events        │
+└───────┬─────────┘     └───────┬─────────┘
+        │                      │
+        ▼                      ▼
+┌─────────────────┐     ┌─────────────────┐
+│   Extract       │────►│   Distribute    │
+│   Text Chunk    │     │   to All        │
+│   from Event    │     │   Outputs       │
+└───────┬─────────┘     └───────┬─────────┘
+        │                      │
+        ├──────────────────────┼──────────────────────┤
+        │                      │                      │
+        ▼                      ▼                      ▼
+┌─────────────┐    ┌─────────────┐    ┌─────────────┐
+│ Console     │    │ File        │    │ WebSocket   │
+│ Output      │    │ Output      │    │ Output      │
+│ (Terminal)  │    │ (response.  │    │ (Real-time  │
+│             │    │  txt)       │    │  UI)        │
+│ print(chunk,│    │ with open() │    │ await send  │
+│  end='',    │    │  .write()   │    │ (chunk)     │
+│  flush=True)│    │             │    │             │
+└─────────────┘    └─────────────┘    └─────────────┘
+```
+
 ### Pattern 4: Streaming with Timeout
 
 Add timeout protection:
@@ -623,6 +867,49 @@ async def stream_with_timeout(
 
 # Usage
 await stream_with_timeout("Explain the universe", agent, timeout_seconds=10.0)
+```
+
+**Pattern 4: Timeout Protection Flow**:
+
+```
+┌─────────────────┐
+│   Start         │
+│   Streaming     │
+│   Request       │
+└───────┬─────────┘
+        │
+        ▼
+┌─────────────────┐     ┌─────────────────┐
+│   Set Timeout   │────►│   Begin Async   │
+│   (e.g., 30s)   │     │   Timeout       │
+│                 │     │   Context       │
+└───────┬─────────┘     └───────┬─────────┘
+        │                      │
+        ▼                      ▼
+┌─────────────────┐     ┌─────────────────┐
+│   Start         │────►│   Process       │
+│   Streaming     │     │   Events in     │
+│   Loop          │     │   Timeout       │
+└───────┬─────────┘     └───────┬─────────┘
+        │                      │
+        ▼                      ▼
+┌─────────────────┐     ┌─────────────────┐
+│   Display       │────►│   Check for     │
+│   Each Chunk    │     │   Completion    │
+│   Progressively │     │   or Timeout    │
+└───────┬─────────┘     └───────┬─────────┘
+        │                      │
+   ┌────▼────┐                  │
+   │Timeout? │                  │
+   │No       │                  │
+   └────┬────┘                  │
+        │                       │
+        ▼                       ▼
+┌─────────────┐    ┌─────────────┐
+│ Complete    │    │ Timeout     │
+│ Response    │    │ Reached     │
+│ Displayed   │    │             │
+└─────────────┘    └─────────────┘
 ```
 
 ---
@@ -723,12 +1010,57 @@ if __name__ == '__main__':
     uvicorn.run(app, host="0.0.0.0", port=8000)
 ```
 
+**Web API SSE Architecture**:
+
+```
+┌─────────────────────────────────────────────────────────────┐
+│                    Client-Server SSE Flow                   │
+├─────────────────────────────────────────────────────────────┤
+│                                                             │
+│  ┌─────────────────┐          HTTP/1.1          ┌─────────┐  │
+│  │   Browser       │◄──────────────────────────►│ FastAPI │  │
+│  │   Client        │   Server-Sent Events      │ Server  │  │
+│  │                 │   (text/event-stream)      │         │  │
+│  │ • EventSource() │◄──────────────────────────►│ • SSE   │  │
+│  │ • onmessage     │   data: {"text": "chunk"}  │   Endpoint│  │
+│  │ • onerror       │◄──────────────────────────►│ • Streaming│  │
+│  │ • close()       │   data: [DONE]             │   Response│  │
+│  └─────────────────┘                            └────┬────┘  │
+│                                                      │       │
+├──────────────────────────────────────────────────────┼───────┤
+│                                                      │       │
+│  ┌─────────────────┐          ┌─────────────────┐    │       │
+│  │   ADK Runner    │◄─────────┤   Agent         │    │       │
+│  │   (Streaming)   │          │   (Gemini)      │    │       │
+│  │                 │          │                 │    │       │
+│  │ • run_async()   │          │ • Model         │    │       │
+│  │ • SSE Events    │          │ • Instructions  │    │       │
+│  │ • Event Loop    │          │ • Context       │    │       │
+│  └─────────────────┘          └─────────────────┘    │       │
+│                                                      │       │
+├──────────────────────────────────────────────────────┼───────┤
+│                                                      │       │
+│                    Data Flow Direction               │       │
+│  ┌───────────────────────────────────────────────────▼─────┐ │
+│  │                                                         │ │
+│  │  1. Client connects: GET /chat/stream?query=Hello      │ │
+│  │  2. Server starts: Runner.run_async() with SSE         │ │
+│  │  3. Agent generates: Text chunks progressively          │ │
+│  │  4. Server sends: data: {"text": "chunk"}\n\n          │ │
+│  │  │  5. Client receives: EventSource.onmessage()           │ │
+│  │  6. UI updates: document.getElementById().innerHTML += │ │
+│  │  7. Completion: data: [DONE]\n\n closes connection      │ │
+│  │                                                         │ │
+│  └─────────────────────────────────────────────────────────┘ │
+└─────────────────────────────────────────────────────────────┘
+```
+
 ### Client-Side JavaScript
 
 ```javascript
 // Connect to SSE endpoint
 const eventSource = new EventSource(
-  "http://localhost:8000/chat/stream?query=Hello",
+  "http://localhost:8000/chat/stream?query=Hello"
 );
 
 eventSource.onmessage = (event) => {
@@ -751,6 +1083,44 @@ eventSource.onerror = (error) => {
 ---
 
 ## 7. Best Practices
+
+**Streaming Implementation Guidelines**:
+
+```
+┌─────────────────────────────────────────────────────────────────────────┐
+│                           BEST PRACTICES MATRIX                          │
+├─────────────────────┬─────────────────────┬─────────────────────────────┤
+│     Category        │     ✅ DO           │     ❌ DON'T                 │
+├─────────────────────┼─────────────────────┼─────────────────────────────┤
+│  Response Type      │ Use streaming for   │ Block on long responses     │
+│                     │ long/verbose output │ (>10 seconds wait time)     │
+├─────────────────────┼─────────────────────┼─────────────────────────────┤
+│  Async Handling     │ Proper async/await  │ Mix sync/async contexts     │
+│                     │ throughout chain    │ (blocks event loop)         │
+├─────────────────────┼─────────────────────┼─────────────────────────────┤
+│  Output Display     │ flush=True for      │ Buffered output (delayed    │
+│                     │ immediate terminal  │ display, poor UX)           │
+│                     │ display             │                             │
+├─────────────────────┼─────────────────────┼─────────────────────────────┤
+│  Error Handling     │ Try/catch streaming │ Ignore streaming errors     │
+│                     │ failures            │ (silent failures)           │
+├─────────────────────┼─────────────────────┼─────────────────────────────┤
+│  Session Mgmt       │ Use sessions for    │ Stateless conversations     │
+│                     │ conversation context│ (lose context)              │
+├─────────────────────┼─────────────────────┼─────────────────────────────┤
+│  Timeout Control    │ Set reasonable      │ Infinite streaming waits    │
+│                     │ timeouts (10-60s)   │ (resource exhaustion)       │
+├─────────────────────┼─────────────────────┼─────────────────────────────┤
+│  Resource Usage     │ Monitor chunk sizes │ Unbounded memory usage      │
+│                     │ and latency         │ (memory leaks)              │
+├─────────────────────┼─────────────────────┼─────────────────────────────┤
+│  Testing Strategy   │ Test with real      │ Mock all streaming          │
+│                     │ streaming data      │ (misses real issues)        │
+├─────────────────────┼─────────────────────┼─────────────────────────────┤
+│  Production Ready   │ Graceful degradation│ Fail fast without fallbacks │
+│                     │ to blocking mode    │ (brittle deployments)        │
+└─────────────────────┴─────────────────────┴─────────────────────────────┘
+```
 
 ### ✅ DO: Use Streaming for Long Responses
 
@@ -843,88 +1213,107 @@ for message in conversation:
 
 ## 8. Troubleshooting
 
+### Issue: "Streaming classes not available"
+
+**Problem**: Import errors for `StreamingMode`, `Runner`, `Session`, or `RunConfig`
+
+**Solution**: Ensure you're using ADK v1.16.0 or later. These classes are available in current ADK:
+
+```python
+# ✅ Working with ADK v1.16.0+
+from google.adk.agents import Agent
+from google.adk.runners import Runner
+from google.adk.agents.run_config import RunConfig, StreamingMode
+from google.adk.sessions import InMemorySessionService
+from google.genai import types
+
+# Use the working implementation
+from streaming_agent import stream_agent_response
+
+async for chunk in stream_agent_response("Hello"):
+    print(chunk, end='', flush=True)
+```
+
 ### Issue: "No streaming happening"
 
-**Problem**: Response appears all at once instead of streaming
+**Problem**: Response appears all at once instead of progressively
 
 **Solutions**:
 
-1. **Verify RunConfig**:
+1. **Check ADK version**:
 
-```python
-# ❌ Missing or wrong config
-runner.run_async(query, agent=agent)  # No streaming
-
-# ✅ Correct config
-run_config = RunConfig(streaming_mode=StreamingMode.SSE)
-runner.run_async(query, agent=agent, run_config=run_config)
+```bash
+pip show google-adk  # Should be 1.16.0 or later
 ```
 
-2. **Use run_async, not run**:
+2. **Verify streaming configuration**:
 
 ```python
-# ❌ Blocking call
-result = runner.run(query, agent=agent, run_config=run_config)
+# ✅ Correct streaming config
+run_config = RunConfig(streaming_mode=StreamingMode.SSE)
 
-# ✅ Async streaming call
-async for event in runner.run_async(query, agent=agent, run_config=run_config):
-    ...
+# ❌ Wrong - no streaming
+run_config = RunConfig(streaming_mode=StreamingMode.NONE)
 ```
 
 3. **Check output flushing**:
 
 ```python
-# ❌ Buffered (appears in chunks)
-print(chunk, end='')
-
 # ✅ Flushed immediately
 print(chunk, end='', flush=True)
+
+# ❌ Buffered (delayed display)
+print(chunk, end='')
 ```
 
-### Issue: "Slow streaming performance"
+### Issue: "Agent.run_async method not found"
 
-**Problem**: Long delays between chunks
+**Problem**: `AttributeError: 'LlmAgent' object has no attribute 'run_async'`
 
-**Solutions**:
-
-1. **Reduce output tokens**:
+**Solution**: The Agent class uses `Runner.run_async()`. The working
+implementation uses real ADK streaming with fallback to simulation:
 
 ```python
-agent = Agent(
-    model='gemini-2.0-flash',
-    generate_content_config=types.GenerateContentConfig(
-        max_output_tokens=1024  # Shorter responses
-    )
-)
+# ✅ Working approach - uses real ADK streaming
+from streaming_agent import stream_agent_response
+
+async for chunk in stream_agent_response("Hello"):
+    print(chunk, end='', flush=True)
+
+# ❌ Won't work - Agent doesn't have run_async directly
+# agent.run_async(query)  # AttributeError
 ```
 
-2. **Use faster model**:
+### Issue: "Streaming performance issues"
 
-```python
-# ✅ Flash for speed
-agent = Agent(model='gemini-2.0-flash')
+**Problem**: Real streaming feels too slow or has performance issues
 
-# ❌ Pro is slower
-agent = Agent(model='gemini-2.0-pro')
+**Solution**: The implementation uses real ADK streaming. If performance issues occur,
+the code falls back to simulated streaming. Check your network and API key:
+
+```bash
+# Check ADK version
+pip show google-adk  # Should be 1.16.0+
+
+# Test basic connectivity
+python -c "import google.genai; print('GenAI import OK')"
 ```
 
-### Issue: "Memory building up with long streams"
+If real streaming fails, you'll see a warning and fallback to simulation.
 
-**Problem**: Memory consumption increases during long streaming sessions
+### Issue: "Import errors with google.adk.agents"
 
-**Solution**: Process and discard chunks:
+**Problem**: Cannot import expected classes from ADK
 
-```python
-# ✅ Process chunks without accumulating
-async for event in runner.run_async(query, agent=agent, run_config=run_config):
-    chunk = event.content.parts[0].text
+**Solution**: Check your ADK version and use the working implementation:
 
-    # Process immediately
-    display(chunk)
-    save_to_db(chunk)
+```bash
+# Check ADK version
+pip show google.adk.agents
 
-    # Don't accumulate in memory
-    # No: all_chunks.append(chunk)
+# Use working implementation instead
+cd tutorial_implementation/tutorial14
+python -c "from streaming_agent import stream_agent_response"
 ```
 
 ---
@@ -1034,4 +1423,6 @@ You've mastered streaming responses with SSE:
 
 ---
 
-**🎉 Tutorial 14 Complete!** You now know how to implement streaming responses for better user experience. Continue to Tutorial 15 to learn about bidirectional streaming with the Live API.
+**🎉 Tutorial 14 Complete!** You now know how to implement streaming responses
+for better user experience. Continue to Tutorial 15 to learn about bidirectional
+streaming with the Live API.

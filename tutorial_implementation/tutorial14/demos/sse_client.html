@@ -1,0 +1,263 @@
+<!--
+Streaming Chat Client - Tutorial 14
+
+Client-side JavaScript for connecting to SSE endpoints.
+-->
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Streaming Chat Client</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #333;
+            text-align: center;
+        }
+        #messages {
+            border: 1px solid #ccc;
+            padding: 15px;
+            height: 400px;
+            overflow-y: auto;
+            background: #fafafa;
+            border-radius: 4px;
+            margin-bottom: 15px;
+        }
+        .message {
+            margin-bottom: 10px;
+            padding: 8px;
+            border-radius: 4px;
+        }
+        .user-message {
+            background: #e3f2fd;
+            margin-left: 20%;
+        }
+        .agent-message {
+            background: #f3e5f5;
+            margin-right: 20%;
+        }
+        .error-message {
+            background: #ffebee;
+            color: #c62828;
+        }
+        .input-area {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+        #input {
+            flex: 1;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-size: 16px;
+        }
+        button {
+            padding: 10px 20px;
+            background: #1976d2;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        button:hover {
+            background: #1565c0;
+        }
+        button:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+        .status {
+            text-align: center;
+            margin-top: 10px;
+            font-style: italic;
+            color: #666;
+        }
+        .typing {
+            font-style: italic;
+            color: #666;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Streaming Chat Client</h1>
+        <div id="messages"></div>
+        <div class="input-area">
+            <input type="text" id="input" placeholder="Ask a question..." disabled>
+            <button id="sendBtn" onclick="sendMessage()" disabled>Send</button>
+        </div>
+        <div class="status" id="status">Connecting...</div>
+    </div>
+
+    <script>
+        const messages = document.getElementById('messages');
+        const input = document.getElementById('input');
+        const sendBtn = document.getElementById('sendBtn');
+        const status = document.getElementById('status');
+        let eventSource = null;
+        let currentAgentMessage = null;
+
+        // Initialize when page loads
+        window.onload = function() {
+            status.textContent = 'Ready to chat!';
+            input.disabled = false;
+            sendBtn.disabled = false;
+            input.focus();
+        };
+
+        function sendMessage() {
+            const query = input.value.trim();
+            if (!query) return;
+
+            // Close existing connection
+            if (eventSource) {
+                eventSource.close();
+            }
+
+            // Reset UI
+            input.disabled = true;
+            sendBtn.disabled = true;
+            status.textContent = 'Sending...';
+
+            // Add user message
+            addMessage('user', query);
+
+            // Clear input
+            input.value = '';
+
+            // Start new SSE connection
+            const url = `/chat/stream?query=${encodeURIComponent(query)}`;
+            eventSource = new EventSource(url);
+
+            eventSource.onopen = function() {
+                status.textContent = 'Streaming response...';
+                // Start agent message
+                currentAgentMessage = addMessage('agent', '');
+                showTypingIndicator();
+            };
+
+            eventSource.onmessage = function(event) {
+                try {
+                    const data = JSON.parse(event.data);
+
+                    if (data.type === 'chunk') {
+                        // Add chunk to current agent message
+                        hideTypingIndicator();
+                        appendToAgentMessage(data.text);
+                    } else if (data.type === 'done') {
+                        // Response complete
+                        hideTypingIndicator();
+                        status.textContent = 'Response complete!';
+                        eventSource.close();
+                        resetInput();
+                    } else if (data.type === 'error') {
+                        // Error occurred
+                        hideTypingIndicator();
+                        addMessage('error', `Error: ${data.message}`);
+                        status.textContent = 'Error occurred';
+                        eventSource.close();
+                        resetInput();
+                    }
+                } catch (e) {
+                    console.error('Parse error:', e, 'Raw data:', event.data);
+                    hideTypingIndicator();
+                    addMessage('error', 'Failed to parse response');
+                    status.textContent = 'Parse error';
+                    eventSource.close();
+                    resetInput();
+                }
+            };
+
+            eventSource.onerror = function(error) {
+                console.error('SSE Error:', error);
+                hideTypingIndicator();
+                addMessage('error', 'Connection failed');
+                status.textContent = 'Connection failed';
+                eventSource.close();
+                resetInput();
+            };
+        }
+
+        function addMessage(type, text) {
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message ${type}-message`;
+
+            let sender = '';
+            if (type === 'user') {
+                sender = 'You';
+            } else if (type === 'agent') {
+                sender = 'Agent';
+            } else if (type === 'error') {
+                sender = 'Error';
+            }
+
+            messageDiv.innerHTML = `<strong>${sender}:</strong> <span class="content">${text}</span>`;
+            messages.appendChild(messageDiv);
+            messages.scrollTop = messages.scrollHeight;
+
+            return messageDiv;
+        }
+
+        function appendToAgentMessage(text) {
+            if (currentAgentMessage) {
+                const content = currentAgentMessage.querySelector('.content');
+                content.textContent += text;
+                messages.scrollTop = messages.scrollHeight;
+            }
+        }
+
+        function showTypingIndicator() {
+            if (currentAgentMessage) {
+                const content = currentAgentMessage.querySelector('.content');
+                content.innerHTML = '<span class="typing">Typing...</span>';
+            }
+        }
+
+        function hideTypingIndicator() {
+            if (currentAgentMessage) {
+                const typing = currentAgentMessage.querySelector('.typing');
+                if (typing) {
+                    typing.remove();
+                }
+            }
+        }
+
+        function resetInput() {
+            setTimeout(() => {
+                input.disabled = false;
+                sendBtn.disabled = false;
+                status.textContent = 'Ready for next message';
+                input.focus();
+            }, 1000);
+        }
+
+        // Send message on Enter key
+        input.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter' && !input.disabled) {
+                sendMessage();
+            }
+        });
+
+        // Handle page unload
+        window.onbeforeunload = function() {
+            if (eventSource) {
+                eventSource.close();
+            }
+        };
+    </script>
+</body>
+</html>
