@@ -253,3 +253,16 @@ Use path: ./log/YYYYMMDD_HHMMSS_description_of_your_change.md
 - Never commit any file that contains secrets or API keys.
 
 - Prefer a pyproject instead of a setup.py file.
+
+
+- To avoid pagination in zsh always pipe your command with cat like this:
+
+```bash
+cd /Users/raphaelmansuy/Github/03-working/adk_training && python -c "
+from mcp.types import SamplingCapability
+print('SamplingCapability:', SamplingCapability)
+help(SamplingCapability)
+" | cat
+```
+
+- Always use the latest version of ADK and associated libraries. Check the official documentation and Github repositories for the latest versions.
