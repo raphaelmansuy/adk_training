@@ -1,19 +1,19 @@
 import React from 'react';
 import Layout from '@theme-original/Layout';
-import { SyntaxThemeSelector } from '../components/SyntaxThemeSelector';
+// import { SyntaxThemeSelector } from '../components/SyntaxThemeSelector';
 
 export default function CustomLayout(props) {
   return (
     <Layout {...props}>
-      <div style={{
+      {/* Theme selector disabled/hidden */}
+      {/* <div style={{
         position: 'fixed',
-        top: '50%',
-        right: '20px',
-        transform: 'translateY(-50%)',
+        top: '16px',
+        left: '20px',
         zIndex: 1000
       }}>
         <SyntaxThemeSelector />
-      </div>
+      </div> */}
       {props.children}
     </Layout>
   );

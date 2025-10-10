@@ -373,10 +373,6 @@ const config: Config = {
               label: 'Twitter/X',
               href: 'https://twitter.com/raphaelmansuy',
             },
-            {
-              label: 'Newsletter',
-              href: 'https://newsletter.adk-training.com',
-            },
           ],
         },
         {
@@ -402,14 +398,6 @@ const config: Config = {
             {
               label: 'Contact the Author',
               to: '/docs/contact',
-            },
-            {
-              label: 'Newsletter Signup',
-              href: 'https://newsletter.adk-training.com',
-            },
-            {
-              label: 'Schedule a Call',
-              href: 'https://calendly.com/raphaelmansuy',
             },
           ],
         },

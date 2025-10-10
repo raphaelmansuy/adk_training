@@ -8,21 +8,33 @@
 .themeButton {
   display: flex;
   align-items: center;
-  gap: 8px;
-  padding: 6px 12px;
-  background: var(--ifm-navbar-background-color);
+  gap: 6px;
+  padding: 6px 8px;
+  background: var(--ifm-background-color);
   border: 1px solid var(--ifm-color-emphasis-200);
-  border-radius: 6px;
-  color: var(--ifm-navbar-link-color);
-  font-size: 14px;
+  border-radius: 20px;
+  color: var(--ifm-color-emphasis-900);
+  font-size: 13px;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: all 0.3s ease;
   min-height: 32px;
+  white-space: nowrap;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+  max-width: 40px;
 }
 
 .themeButton:hover {
-  background: var(--ifm-color-emphasis-100);
+  background: var(--ifm-color-emphasis-50);
   border-color: var(--ifm-color-emphasis-300);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  max-width: 200px;
+  padding: 6px 12px;
+}
+
+.themeButton:focus {
+  outline: 2px solid var(--ifm-color-primary);
+  outline-offset: 2px;
 }
 
 .themePreview {
@@ -40,11 +52,27 @@
 .themeName {
   font-weight: 500;
   white-space: nowrap;
+  opacity: 0;
+  transform: translateX(-10px);
+  transition: all 0.3s ease;
+}
+
+.themeButton:hover .themeName {
+  opacity: 1;
+  transform: translateX(0);
 }
 
 .arrow {
-  transition: transform 0.2s ease;
+  transition: all 0.3s ease;
   margin-left: 4px;
+  opacity: 0;
+  transform: scale(0.8);
+}
+
+.themeButton:hover .arrow,
+.themeButton:focus .arrow {
+  opacity: 1;
+  transform: scale(1);
 }
 
 .arrowOpen {
@@ -58,15 +86,17 @@
   left: 0;
   right: 0;
   bottom: 0;
-  background: rgba(0, 0, 0, 0.5);
+  background: rgba(0, 0, 0, 0.25);
+  backdrop-filter: blur(4px);
   z-index: 999;
+  animation: fadeIn 0.2s ease-out;
 }
 
 /* Dropdown */
 .themeDropdown {
   position: absolute;
   top: 100%;
-  right: 0;
+  left: 0;
   margin-top: 8px;
   background: var(--ifm-background-color);
   border: 1px solid var(--ifm-color-emphasis-200);
@@ -76,6 +106,7 @@
   max-width: 400px;
   z-index: 1000;
   overflow: hidden;
+  animation: slideDown 0.2s ease-out;
 }
 
 .dropdownHeader {
@@ -198,6 +229,18 @@
 
 /* Responsive design */
 @media (max-width: 768px) {
+  .themeButton {
+    padding: 3px 6px;
+    font-size: 12px;
+    min-height: 24px;
+    gap: 4px;
+  }
+
+  .previewColors {
+    width: 12px;
+    height: 12px;
+  }
+
   .themeDropdown {
     position: fixed;
     top: 50%;
@@ -206,6 +249,7 @@
     margin: 0;
     max-width: 90vw;
     max-height: 80vh;
+    animation: modalSlideIn 0.3s ease-out;
   }
 
   .themeGrid {
@@ -214,5 +258,54 @@
 
   .themeSample {
     display: none;
+  }
+
+  .dropdownHeader {
+    padding: 12px 16px;
+  }
+
+  .dropdownHeader h3 {
+    font-size: 14px;
+  }
+
+  .dropdownHeader p {
+    font-size: 13px;
+  }
+
+  .themeOption {
+    padding: 10px 12px;
+    gap: 8px;
+  }
+}
+
+/* Animations */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes modalSlideIn {
+  from {
+    opacity: 0;
+    transform: translate(-50%, -60%);
+  }
+  to {
+    opacity: 1;
+    transform: translate(-50%, -50%);
   }
 }
