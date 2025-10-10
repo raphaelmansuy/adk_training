@@ -14,7 +14,7 @@ keywords:
     "databases",
     "tool protocols",
   ]
-status: "draft"
+status: "complete"
 difficulty: "advanced"
 estimated_time: "2 hours"
 prerequisites:
@@ -31,17 +31,11 @@ learning_objectives:
 implementation_link: "https://github.com/raphaelmansuy/adk_training/tree/main/tutorial_implementation/tutorial16"
 ---
 
-:::danger UNDER CONSTRUCTION
-
-**This tutorial is currently under construction and may contain errors, incomplete information, or outdated code examples.**
-
-Please check back later for the completed version. If you encounter issues, refer to the working implementation in the [tutorial repository](https://github.com/raphaelmansuy/adk_training/tree/main/tutorial_implementation/tutorial16).
-
-## :::
-
 # Tutorial 16: Model Context Protocol (MCP) Integration
 
-**Goal**: Integrate external tools and services into your agents using the Model Context Protocol (MCP), expanding your agent's capabilities with community-built tool servers.
+**Goal**: Integrate external tools and services into your agents using the Model
+Context Protocol (MCP), expanding your agent's capabilities with community-built
+tool servers.
 
 **Prerequisites**:
 
@@ -49,6 +43,7 @@ Please check back later for the completed version. If you encounter issues, refe
 - Tutorial 02 (Function Tools)
 - Node.js installed (for MCP servers)
 - Basic understanding of protocols and APIs
+- **ADK Version**: 1.15.0+ recommended (tool_name_prefix, OAuth2 features)
 
 **What You'll Learn**:
 
@@ -66,9 +61,12 @@ Please check back later for the completed version. If you encounter issues, refe
 
 ## Why MCP Matters
 
-**Problem**: Building custom tools for every external service is time-consuming and repetitive.
+**Problem**: Building custom tools for every external service is time-consuming
+and repetitive.
 
-**Solution**: **Model Context Protocol (MCP)** is an open standard for connecting AI agents to external tools and data sources. Instead of writing custom integrations, use **pre-built MCP servers** from the community.
+**Solution**: **Model Context Protocol (MCP)** is an open standard for connecting
+AI agents to external tools and data sources. Instead of writing custom
+integrations, use **pre-built MCP servers** from the community.
 
 **Benefits**:
 
@@ -81,8 +79,9 @@ Please check back later for the completed version. If you encounter issues, refe
 
 **MCP Ecosystem**:
 
-- Official MCP servers: filesystem, GitHub, Slack, database, etc.
-- Community servers: 100+ available
+- Official MCP servers: filesystem, GitHub, Slack, database, and more
+- Community servers: 100+ available servers covering databases, APIs,
+  development tools, and specialized services
 - Custom servers: Build your own for proprietary systems
 
 ---
@@ -91,7 +90,8 @@ Please check back later for the completed version. If you encounter issues, refe
 
 ### What is Model Context Protocol?
 
-**MCP** defines a standard way for AI models to discover and use external tools. An **MCP server** exposes:
+**MCP** defines a standard way for AI models to discover and use external tools.
+An **MCP server** exposes:
 
 - **Tools**: Functions the agent can call
 - **Resources**: Data the agent can access
@@ -99,7 +99,7 @@ Please check back later for the completed version. If you encounter issues, refe
 
 **Architecture**:
 
-```
+```text
 Agent (ADK)
     ↓
 MCPToolset (ADK wrapper)
@@ -140,11 +140,48 @@ mcp_tools = MCPToolset(
 # )
 ```
 
+**SSE (Server-Sent Events)** - ✅ **Supported in ADK 1.16.0+**
+
+SSE connections enable real-time, streaming communication with MCP servers:
+
+```python
+from google.adk.tools.mcp_tool import MCPToolset, SseConnectionParams
+
+# Connect via Server-Sent Events (SSE)
+mcp_tools = MCPToolset(
+    connection_params=SseConnectionParams(
+        url='https://api.example.com/mcp/sse',
+        headers={'Authorization': 'Bearer your-token'},  # Optional headers
+        timeout=30.0,  # Connection timeout
+        sse_read_timeout=300.0  # SSE read timeout
+    )
+)
+```
+
+**Streamable HTTP** - ✅ **Supported in ADK 1.16.0+**
+
+HTTP connections support bidirectional streaming communication:
+
+```python
+from google.adk.tools.mcp_tool import MCPToolset, StreamableHTTPConnectionParams
+
+# Connect via Streamable HTTP
+mcp_tools = MCPToolset(
+    connection_params=StreamableHTTPConnectionParams(
+        url='https://api.example.com/mcp/stream',
+        headers={'Authorization': 'Bearer your-token'},  # Optional headers
+        timeout=30.0,  # Connection timeout
+        sse_read_timeout=300.0  # Read timeout
+    )
+)
+```
+
 ---
 
 ## 2. Using MCP Filesystem Server
 
-The most common MCP server is the **filesystem server**, which gives agents controlled file access.
+The most common MCP server is the **filesystem server**, which gives agents
+controlled file access.
 
 ### Basic Setup
 
@@ -396,7 +433,7 @@ if __name__ == '__main__':
 
 ### Expected Output
 
-```
+```text
 ======================================================================
 ORGANIZING: /Users/username/Documents/ToOrganize
 ======================================================================
@@ -528,7 +565,8 @@ filesystem_tools = MCPToolset(
     connection_params=StdioConnectionParams(
         command='npx',
         args=['-y', '@modelcontextprotocol/server-filesystem', '/documents']
-    )
+    ),
+    tool_name_prefix='fs_'  # ADK 1.15.0+: Avoid name conflicts
 )
 
 # GitHub server (hypothetical)
@@ -536,16 +574,31 @@ github_tools = MCPToolset(
     connection_params=StdioConnectionParams(
         command='npx',
         args=['-y', '@modelcontextprotocol/server-github', '--token', 'YOUR_TOKEN']
-    )
+    ),
+    tool_name_prefix='gh_'  # ADK 1.15.0+: Avoid name conflicts
 )
 
 # Agent with multiple MCP toolsets
 agent = Agent(
     model='gemini-2.0-flash',
     name='multi_tool_agent',
-    instruction='You have access to both filesystem and GitHub operations.',
+    instruction='You have access to both filesystem (fs_*) and GitHub (gh_*) operations.',
     tools=[filesystem_tools, github_tools]
 )
+```
+
+**Tool Name Prefix** (ADK 1.15.0+):
+
+When using multiple MCP servers, tools from different servers might have
+conflicting names.
+The `tool_name_prefix` parameter prefixes all tool names to avoid conflicts:
+
+```python
+# Without prefix: Both servers might have a "read_file" tool
+# With prefix: "fs_read_file" and "gh_read_file"
+
+# Agent can distinguish: "Use fs_read_file to read local docs"
+# vs "Use gh_read_file to read repository files"
 ```
 
 ### Resource Access
@@ -564,7 +617,73 @@ MCP servers can expose **resources** (read-only data):
 
 ---
 
-## 5. Building Custom MCP Servers
+## 5. MCP Limitations
+
+### ❌ Sampling Not Supported (ADK 1.16.0)
+
+**Important Limitation**: Google ADK's MCP implementation **does not support
+sampling** as of version 1.16.0.
+
+#### What is MCP Sampling?
+
+MCP sampling allows servers to request LLM completions/generations from the client:
+
+```python
+# Server can request LLM generation (NOT supported by ADK):
+{
+  "method": "sampling/createMessage",
+  "params": {
+    "messages": [{"role": "user", "content": "Summarize this data"}],
+    "modelPreferences": {"hints": [{"name": "gemini-2.0-flash"}]},
+    "maxTokens": 100
+  }
+}
+```
+
+#### Why Sampling Matters
+
+Sampling enables **agentic behaviors** in MCP servers:
+
+- Dynamic content generation during tool execution
+- LLM-powered analysis and summarization
+- Conversational AI capabilities within server tools
+- Nested AI interactions (LLM calls within MCP server logic)
+
+#### ADK's Current Behavior
+
+```python
+# ADK returns error for sampling requests:
+{
+  "error": {
+    "code": -32600,
+    "message": "Sampling not supported"
+  }
+}
+```
+
+#### Workarounds
+
+**For MCP Servers**:
+
+- Implement your own LLM integration (direct API calls to Gemini)
+- Use pre-computed responses instead of dynamic generation
+- Handle text generation outside the MCP protocol
+
+**For ADK Applications**:
+
+- Use ADK's native LLM capabilities instead of MCP sampling
+- Implement sampling logic in your ADK agents directly
+- Consider hybrid approaches (MCP for tools, ADK for LLM calls)
+
+#### Future Support
+
+Sampling support may be added in future ADK versions. Check the
+[ADK changelog](https://github.com/google/adk-python/blob/main/CHANGELOG.md)
+for updates.
+
+---
+
+## 6. Building Custom MCP Servers
 
 ### Simple MCP Server (Node.js)
 
@@ -723,10 +842,47 @@ postgres = MCPToolset(
 
 ### Community MCP Servers
 
-Browse 100+ community servers at:
+The MCP ecosystem includes 100+ community-built servers covering specialized
+use cases:
 
-- [MCP Server Registry](https://github.com/modelcontextprotocol/servers)
-- [Awesome MCP Servers](https://github.com/punkpeye/awesome-mcp-servers)
+**Development & DevOps**:
+
+- Git integrations (GitLab, Bitbucket, Azure DevOps)
+- CI/CD tools (Jenkins, GitHub Actions, CircleCI)
+- Container management (Docker, Kubernetes, Podman)
+- Cloud platforms (AWS, Azure, GCP, DigitalOcean)
+
+**Databases & Data**:
+
+- MySQL, MongoDB, Redis, Elasticsearch
+- Data warehouses (BigQuery, Snowflake, ClickHouse, Redshift)
+- Vector databases (Pinecone, Weaviate, Chroma, Qdrant)
+- Graph databases (Neo4j, ArangoDB)
+
+**APIs & Integrations**:
+
+- REST APIs (OpenAPI/Swagger auto-generation)
+- GraphQL endpoints
+- Web scraping and automation (Playwright, Puppeteer)
+- Social media (Twitter/X, Discord, Bluesky, LinkedIn)
+
+**Productivity & Communication**:
+
+- Email servers (Gmail, Outlook, SendGrid)
+- Calendar integrations (Google Calendar, Outlook)
+- Task management (Linear, Jira, Asana, Monday.com)
+- Document processing (PDF tools, Office files, Notion)
+
+**Specialized Tools**:
+
+- Code analysis and linting
+- Testing frameworks (Jest, Pytest, Selenium)
+- Security scanning and vulnerability assessment
+- Financial data (stocks, crypto, banking APIs)
+- Weather, location, and mapping services
+- Media processing (images, video, audio)
+
+Browse the complete list at the [MCP Server Registry](https://github.com/modelcontextprotocol/servers).
 
 ---
 
@@ -857,7 +1013,7 @@ npx --version
 npx -y @modelcontextprotocol/server-filesystem /path/to/dir
 ```
 
-2. **Check path**:
+1. **Check path**:
 
 ```python
 import os
@@ -867,7 +1023,7 @@ print(f"Path exists: {os.path.exists(directory)}")
 print(f"Absolute path: {os.path.abspath(directory)}")
 ```
 
-3. **Use correct command**:
+1. **Use correct command**:
 
 ```python
 # ✅ Correct
@@ -979,7 +1135,9 @@ async def test_mcp_filesystem_write():
 
 **Source**: `google/adk/tools/mcp_tool/mcp_tool.py`, `contributing/samples/oauth2_client_credentials/`
 
-MCP supports **multiple authentication methods** for securing access to MCP servers. This is critical for production deployments where MCP servers access sensitive resources.
+MCP supports **multiple authentication methods** for securing access to MCP servers.
+This is critical for production deployments where MCP servers access sensitive
+resources.
 
 ### Supported Authentication Methods
 
@@ -1296,109 +1454,246 @@ mcp_tools = MCPToolset(
 )
 ```
 
-### Testing Authentication
+### SSE/HTTP with OAuth2 Authentication
+
+**ADK 1.16.0+** supports OAuth2 authentication with SSE and HTTP
+connections for secure production deployments.
+
+#### OAuth2 with SSE Connection
 
 ```python
-import pytest
-from unittest.mock import Mock, patch
+from google.adk.tools.mcp_tool import MCPToolset, SseConnectionParams
+from google.adk.auth.auth_credential import (
+    AuthCredential, AuthCredentialTypes, OAuth2Auth
+)
 
-@pytest.mark.asyncio
-async def test_mcp_oauth2_authentication():
-    """Test MCP with OAuth2 authentication."""
-
-    # Mock OAuth2 token endpoint
-    with patch('requests.post') as mock_post:
-        mock_post.return_value.json.return_value = {
-            'access_token': 'test-token-123',
-            'token_type': 'Bearer',
-            'expires_in': 3600
-        }
-
-        # Create MCP toolset with OAuth2
-        mcp_tools = MCPToolset(
-            connection_params=StdioConnectionParams(
-                command='npx',
-                args=['-y', '@test/secure-server']
-            ),
-            credential={
-                'type': 'oauth2',
-                'token_url': 'https://auth.test.com/token',
-                'client_id': 'test-client',
-                'client_secret': 'test-secret'
-            }
-        )
-
-        # Verify token was fetched
-        mock_post.assert_called_once()
-
-        # Test agent with authenticated MCP
-        agent = Agent(
-            model='gemini-2.5-flash',
-            tools=[mcp_tools]
-        )
-
-        runner = Runner()
-        result = await runner.run_async(
-            "Test authenticated query",
-            agent=agent
-        )
-
-        # Verify authentication worked
-        assert result is not None
-
-
-@pytest.mark.asyncio
-async def test_mcp_bearer_token():
-    """Test MCP with bearer token."""
-
-    mcp_tools = MCPToolset(
-        connection_params=StdioConnectionParams(
-            command='npx',
-            args=['-y', '@test/api-server']
-        ),
-        credential={
-            'type': 'bearer',
-            'token': 'test-bearer-token'
-        }
+# OAuth2 authentication for SSE
+oauth2_credential = AuthCredential(
+    auth_type=AuthCredentialTypes.OAUTH2,
+    oauth2=OAuth2Auth(
+        client_id='your-client-id',
+        client_secret='your-client-secret',
+        auth_uri='https://auth.example.com/oauth/authorize',
+        token_uri='https://auth.example.com/oauth/token',
+        scopes=['read', 'write']
     )
+)
 
-    agent = Agent(
-        model='gemini-2.5-flash',
-        tools=[mcp_tools]
-    )
-
-    runner = Runner()
-    result = await runner.run_async("Test query", agent=agent)
-
-    assert result is not None
+mcp_tools = MCPToolset(
+    connection_params=SseConnectionParams(
+        url='https://secure-api.example.com/mcp/sse',
+        headers={'X-API-Version': '1.0'},  # Additional headers
+        timeout=30.0,
+        sse_read_timeout=300.0
+    ),
+    auth_credential=oauth2_credential
+)
 ```
 
-### Troubleshooting Authentication
+#### OAuth2 with HTTP Connection
 
-**Error: "401 Unauthorized"**
+```python
+from google.adk.tools.mcp_tool import MCPToolset, StreamableHTTPConnectionParams
+from google.adk.auth.auth_credential import (
+    AuthCredential, AuthCredentialTypes, OAuth2Auth
+)
 
-- Check credential type matches server expectation
-- Verify client_id and client_secret are correct
-- Check token hasn't expired
-- Verify scopes include necessary permissions
+# OAuth2 authentication for HTTP streaming
+oauth2_credential = AuthCredential(
+    auth_type=AuthCredentialTypes.OAUTH2,
+    oauth2=OAuth2Auth(
+        client_id='your-client-id',
+        client_secret='your-client-secret',
+        auth_uri='https://auth.example.com/oauth/authorize',
+        token_uri='https://auth.example.com/oauth/token',
+        scopes=['api.read', 'api.write']
+    )
+)
 
-**Error: "403 Forbidden"**
+mcp_tools = MCPToolset(
+    connection_params=StreamableHTTPConnectionParams(
+        url='https://secure-api.example.com/mcp/stream',
+        headers={'Content-Type': 'application/json'},
+        timeout=30.0,
+        sse_read_timeout=300.0
+    ),
+    auth_credential=oauth2_credential
+)
+```
 
-- Check user has required permissions
-- Verify scopes are sufficient
-- Check rate limits not exceeded
+#### Bearer Token with SSE/HTTP
 
-**Error: "Token refresh failed"**
+```python
+from google.adk.auth.auth_credential import (
+    AuthCredential, AuthCredentialTypes, HttpAuth, HttpCredentials
+)
 
-- Verify token_url is accessible
-- Check network connectivity
-- Verify OAuth2 server is operational
+# Bearer token authentication
+bearer_credential = AuthCredential(
+    auth_type=AuthCredentialTypes.HTTP,
+    http=HttpAuth(
+        scheme='bearer',
+        credentials=HttpCredentials(token='your-bearer-token')
+    )
+)
 
-**Error: "Invalid credentials"**
+# With SSE
+mcp_tools_sse = MCPToolset(
+    connection_params=SseConnectionParams(
+        url='https://api.example.com/mcp/sse'
+    ),
+    auth_credential=bearer_credential
+)
 
-- Double-check credential dictionary structure
-- Verify credential type ('oauth2', 'bearer', 'basic', 'api_key')
-- Check for typos in credential fields
+# With HTTP
+mcp_tools_http = MCPToolset(
+    connection_params=StreamableHTTPConnectionParams(
+        url='https://api.example.com/mcp/stream'
+    ),
+    auth_credential=bearer_credential
+)
+```
+
+#### Complete Example: Production MCP Server with OAuth2
+
+```python
+"""
+Production MCP Server with OAuth2 Authentication
+ADK 1.16.0+ SSE/HTTP Connection Example
+"""
+
+import asyncio
+import os
+from google.adk.agents import Agent, Runner
+from google.adk.tools.mcp_tool import MCPToolset, SseConnectionParams
+from google.adk.auth.auth_credential import (
+    AuthCredential, AuthCredentialTypes, OAuth2Auth
+)
+
+# Environment setup
+os.environ['GOOGLE_GENAI_USE_VERTEXAI'] = '1'
+os.environ['GOOGLE_CLOUD_PROJECT'] = 'your-project'
+os.environ['GOOGLE_CLOUD_LOCATION'] = 'us-central1'
+
+
+async def main():
+    """Demonstrate OAuth2-secured SSE MCP integration."""
+
+    # OAuth2 configuration for SSE connection
+    oauth2_credential = AuthCredential(
+        auth_type=AuthCredentialTypes.OAUTH2,
+        oauth2=OAuth2Auth(
+            client_id=os.environ['OAUTH_CLIENT_ID'],
+            client_secret=os.environ['OAUTH_CLIENT_SECRET'],
+            auth_uri='https://auth.company.com/oauth/authorize',
+            token_uri='https://auth.company.com/oauth/token',
+            scopes=['mcp.read', 'mcp.write', 'documents.access']
+        )
+    )
+
+    # Create MCP toolset with OAuth2 + SSE
+    secure_mcp_tools = MCPToolset(
+        connection_params=SseConnectionParams(
+            url='https://mcp.company.com/sse/production',
+            headers={
+                'X-Client-Version': 'ADK-1.16.0',
+                'X-Environment': 'production'
+            },
+            timeout=30.0,
+            sse_read_timeout=600.0  # 10 minutes for long-running operations
+        ),
+        auth_credential=oauth2_credential,
+        tool_name_prefix='prod_'  # Avoid conflicts with other toolsets
+    )
+
+    # Create agent with authenticated SSE MCP access
+    agent = Agent(
+        model='gemini-2.5-flash',
+        name='production_mcp_agent',
+        description='Agent with OAuth2-secured SSE MCP access',
+        instruction="""
+You have authenticated access to production MCP servers via SSE connection.
+You can:
+- Access real-time data streams
+- Execute long-running operations
+- Handle streaming responses
+- Work with authenticated enterprise resources
+
+Connection details:
+- SSE endpoint with OAuth2 authentication
+- 10-minute timeout for complex operations
+- Production environment access
+        """.strip(),
+        tools=[secure_mcp_tools]
+    )
+
+    # Run queries with SSE + OAuth2
+    runner = Runner()
+
+    print("\n" + "="*70)
+    print("PRODUCTION MCP SERVER WITH SSE + OAUTH2")
+    print("="*70 + "\n")
+
+    # Query 1: Real-time data access
+    result1 = await runner.run_async(
+        "Get real-time sales data from the production database.",
+        agent=agent
+    )
+    print("📊 Real-time Sales Data:\n")
+    print(result1.content.parts[0].text)
+
+    await asyncio.sleep(1)
+
+    # Query 2: Streaming operation
+    result2 = await runner.run_async(
+        "Process the quarterly financial report and stream results.",
+        agent=agent
+    )
+    print("\n\n📈 Streaming Financial Report:\n")
+    print(result2.content.parts[0].text)
+
+    print("\n" + "="*70 + "\n")
+
+
+if __name__ == '__main__':
+    asyncio.run(main())
+```
+
+### SSE/HTTP Connection Benefits
+
+**SSE (Server-Sent Events)**:
+
+- ✅ Real-time streaming from server to client
+- ✅ Automatic reconnection on connection loss
+- ✅ Efficient for server-initiated updates
+- ✅ Lower latency than polling
+- ✅ Built-in keep-alive mechanism
+
+**HTTP Streaming**:
+
+- ✅ Bidirectional streaming communication
+- ✅ Full-duplex connection (send and receive)
+- ✅ Better for interactive, request-response patterns
+- ✅ Supports complex authentication flows
+- ✅ More flexible than SSE for advanced use cases
+
+### Choosing Connection Type
+
+| Feature | Stdio | SSE | HTTP Streaming |
+|---------|-------|-----|----------------|
+| **Use Case** | Local tools | Real-time data | Interactive APIs |
+| **Authentication** | Limited | Full OAuth2 | Full OAuth2 |
+| **Network** | Local only | Remote OK | Remote OK |
+| **Streaming** | No | Server→Client | Bidirectional |
+| **Production** | Development | Production | Production |
+| **Complexity** | Simple | Medium | Medium-High |
+
+**Recommendations**:
+
+- **Development/Local**: Use `StdioConnectionParams`
+- **Real-time feeds**: Use `SseConnectionParams` + OAuth2
+- **Interactive APIs**: Use `StreamableHTTPConnectionParams` + OAuth2
+- **Production Enterprise**: SSE or HTTP with OAuth2 authentication
 
 ---
 
@@ -1444,10 +1739,11 @@ You've mastered MCP integration and authentication for extended agent capabiliti
 
 **Resources**:
 
-- [MCP Specification](https://spec.modelcontextprotocol.io/)
+- [MCP Specification (2025-06-18)](https://spec.modelcontextprotocol.io/specification/2025-06-18/)
 - [Official MCP Servers](https://github.com/modelcontextprotocol/servers)
 - [Sample: mcp_stdio_server_agent](https://github.com/google/adk-python/tree/main/contributing/samples/mcp_stdio_server_agent/)
 
 ---
 
-**🎉 Tutorial 16 Complete!** You now know how to extend your agents with MCP tool servers. Continue to Tutorial 17 to learn about agent-to-agent communication.
+**🎉 Tutorial 16 Complete!** You now know how to extend your agents with MCP tool
+servers. Continue to Tutorial 17 to learn about agent-to-agent communication.
