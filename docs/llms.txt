@@ -1,0 +1,206 @@
+# ADK Training Hub
+
+> The most comprehensive and authoritative training resource for Google Agent Development Kit (ADK). Features 34 production-ready tutorials, deep mental models, automated testing, and real-world examples. Learn AI agent development from first principles to enterprise deployment with Google Gemini models.
+
+## Site Overview
+
+**Purpose**: Complete mastery of Google ADK through structured learning, practical implementation, and production deployment patterns.
+
+**Audience**: Developers from beginners to enterprise teams building AI agents.
+
+**Content Quality**: All examples are tested, production-ready, and derived from official ADK source code analysis.
+
+**Last Updated**: October 2025 (ADK v1.15+ compatible)
+
+## Learning Architecture
+
+### 🏗️ Foundation Layer (Start Here)
+Master the core concepts and mental models that underpin all ADK development.
+
+- **[Mental Models Overview](https://raphaelmansuy.github.io/adk_training/docs/overview)** - Essential frameworks for understanding AI agents as complete systems (Brain + Tools + Memory + Instructions + Workflows)
+- **[Learning Paths](https://raphaelmansuy.github.io/adk_training/docs/learning-paths)** - 5 structured progression paths from beginner to expert
+- **[ADK Cheat Sheet](https://raphaelmansuy.github.io/adk_training/docs/adk-cheat-sheet)** - Quick reference for common patterns, commands, and troubleshooting
+- **[Glossary](https://raphaelmansuy.github.io/adk_training/docs/glossary)** - Complete ADK terminology and concept definitions
+
+### 🛠️ Core Implementation (Essential Skills)
+Build fundamental agent capabilities with modern ADK patterns.
+
+- **[01: Hello World Agent](https://raphaelmansuy.github.io/adk_training/docs/01_hello_world_agent)** - Basic conversational agent using modern Agent class
+- **[02: Function Tools](https://raphaelmansuy.github.io/adk_training/docs/02_function_tools)** - Custom Python functions as callable tools with structured returns
+- **[03: OpenAPI Tools](https://raphaelmansuy.github.io/adk_training/docs/03_openapi_tools)** - Automatic REST API integration via OpenAPI specifications
+- **[11: Built-in Tools & Grounding](https://raphaelmansuy.github.io/adk_training/docs/11_built_in_tools_grounding)** - Google Search, Maps, and other pre-built capabilities
+
+### 🔄 Workflow Orchestration (Process Control)
+Master the three agent types: LLM Agents (flexible), Workflow Agents (deterministic), and Remote Agents (external).
+
+- **[04: Sequential Workflows](https://raphaelmansuy.github.io/adk_training/docs/04_sequential_workflows)** - SequentialAgent for ordered, dependent task execution
+- **[05: Parallel Processing](https://raphaelmansuy.github.io/adk_training/docs/05_parallel_processing)** - ParallelAgent for concurrent, independent task execution
+- **[06: Multi-Agent Systems](https://raphaelmansuy.github.io/adk_training/docs/06_multi_agent_systems)** - AgentTool pattern for agent-to-agent communication and delegation
+- **[07: Loop Agents](https://raphaelmansuy.github.io/adk_training/docs/07_loop_agents)** - Iterative refinement with critic/refiner patterns and quality gates
+
+### 🧠 Advanced Intelligence (LLM Mastery)
+Deep dive into model selection, prompting, reasoning, and specialized capabilities.
+
+- **[12: Planners & Thinking](https://raphaelmansuy.github.io/adk_training/docs/12_planners_thinking)** - Advanced reasoning patterns and structured thinking frameworks
+- **[22: Model Selection](https://raphaelmansuy.github.io/adk_training/docs/22_model_selection)** - Choosing the right Gemini model for your use case (2.0 Flash, Pro, etc.)
+- **[28: Using Other LLMs](https://raphaelmansuy.github.io/adk_training/docs/28_using_other_llms)** - Integration with non-Google models and providers
+
+### 💾 State & Persistence (Memory Systems)
+Manage conversation context, user data, and long-term memory across sessions.
+
+- **[08: State Memory](https://raphaelmansuy.github.io/adk_training/docs/08_state_memory)** - Session state, user state, and app state management
+- **[19: Artifacts & Files](https://raphaelmansuy.github.io/adk_training/docs/19_artifacts_files)** - File handling, binary data, and persistent storage patterns
+
+### 🎛️ Control & Quality (Production Readiness)
+Implement guardrails, monitoring, testing, and quality assurance.
+
+- **[09: Callbacks & Guardrails](https://raphaelmansuy.github.io/adk_training/docs/09_callbacks_guardrails)** - Request/response validation, logging, and policy enforcement
+- **[10: Evaluation & Testing](https://raphaelmansuy.github.io/adk_training/docs/10_evaluation_testing)** - Automated testing frameworks and quality metrics
+- **[18: Events & Observability](https://raphaelmansuy.github.io/adk_training/docs/18_events_observability)** - Event-driven architectures and monitoring patterns
+
+### 🌐 Real-time & Streaming (Interactive Agents)
+Build responsive agents with live interactions and streaming capabilities.
+
+- **[13: Code Execution](https://raphaelmansuy.github.io/adk_training/docs/13_code_execution)** - Safe code execution environments and sandboxing
+- **[14: Streaming & SSE](https://raphaelmansuy.github.io/adk_training/docs/14_streaming_sse)** - Server-sent events and real-time response streaming
+- **[15: Live API & Audio](https://raphaelmansuy.github.io/adk_training/docs/15_live_api_audio)** - Real-time API interactions and audio processing
+
+### 🔗 Integration & Communication (Agent Ecosystems)
+Connect agents with external systems and other agents.
+
+- **[16: MCP Integration](https://raphaelmansuy.github.io/adk_training/docs/16_mcp_integration)** - Model Context Protocol for standardized tool interfaces
+- **[17: Agent-to-Agent Communication](https://raphaelmansuy.github.io/adk_training/docs/17_agent_to_agent)** - A2A protocol and inter-agent messaging
+- **[20: YAML Configuration](https://raphaelmansuy.github.io/adk_training/docs/20_yaml_configuration)** - Declarative agent configuration and deployment
+
+### 🎨 Multimodal & Creative (Beyond Text)
+Handle images, audio, and multimodal interactions.
+
+- **[21: Multimodal Images](https://raphaelmansuy.github.io/adk_training/docs/21_multimodal_image)** - Image understanding, generation, and processing capabilities
+
+### 🚀 Production & Deployment (Enterprise Scale)
+Deploy agents to production environments with monitoring and scaling.
+
+- **[23: Production Deployment](https://raphaelmansuy.github.io/adk_training/docs/23_production_deployment)** - Cloud Run, Vertex AI, and GKE deployment strategies
+- **[24: Advanced Observability](https://raphaelmansuy.github.io/adk_training/docs/24_advanced_observability)** - Production monitoring, logging, and performance optimization
+- **[25: Best Practices](https://raphaelmansuy.github.io/adk_training/docs/25_best_practices)** - Security, performance, and maintainability patterns
+- **[26: Google Agentspace](https://raphaelmansuy.github.io/adk_training/docs/26_google_agentspace)** - Enterprise agent management and collaboration platform
+
+### 🔧 Third-Party & External Tools (Extended Capabilities)
+Integrate with external services and tools.
+
+- **[27: Third-Party Tools](https://raphaelmansuy.github.io/adk_training/docs/27_third_party_tools)** - Community tools and external integrations
+
+### 💻 UI Integration (User Interfaces)
+Build web interfaces and user experiences for your agents.
+
+- **[29: UI Integration Intro](https://raphaelmansuy.github.io/adk_training/docs/29_ui_integration_intro)** - Overview of UI integration patterns
+- **[30: Next.js ADK Integration](https://raphaelmansuy.github.io/adk_training/docs/30_nextjs_adk_integration)** - React/Next.js web applications with CopilotKit
+- **[31: React Vite ADK Integration](https://raphaelmansuy.github.io/adk_training/docs/31_react_vite_adk_integration)** - Modern Vite-based React applications
+- **[32: Streamlit ADK Integration](https://raphaelmansuy.github.io/adk_training/docs/32_streamlit_adk_integration)** - Python Streamlit web applications
+- **[33: Slack ADK Integration](https://raphaelmansuy.github.io/adk_training/docs/33_slack_adk_integration)** - Slack bot and messaging integrations
+- **[34: PubSub ADK Integration](https://raphaelmansuy.github.io/adk_training/docs/34_pubsub_adk_integration)** - Google Cloud Pub/Sub event-driven architectures
+
+## Architecture & Design References
+
+### System Design Patterns
+- **[Agent Architecture](https://raphaelmansuy.github.io/adk_training/docs/agent-architecture)** - Complete agent system design patterns and hierarchies
+- **[Workflows Orchestration](https://raphaelmansuy.github.io/adk_training/docs/workflows-orchestration)** - Advanced workflow composition and orchestration patterns
+- **[Advanced Patterns](https://raphaelmansuy.github.io/adk_training/docs/advanced-patterns)** - Complex multi-agent and distributed patterns
+
+### Decision Frameworks
+- **[Decision Frameworks](https://raphaelmansuy.github.io/adk_training/docs/decision-frameworks)** - Pattern selection guides and architectural decision trees
+
+### Tools & Capabilities
+- **[Tools Capabilities](https://raphaelmansuy.github.io/adk_training/docs/tools-capabilities)** - Complete tool ecosystem overview and selection guides
+- **[LLM Integration](https://raphaelmansuy.github.io/adk_training/docs/llm-integration)** - Model integration patterns and optimization strategies
+
+## Practical Implementation Resources
+
+### Code Quality Standards
+- **All tutorials include**: Complete runnable code with proper error handling
+- **Project structure**: Canonical ADK layout with `root_agent` exports
+- **Authentication**: Environment variable setup and API key management
+- **Testing**: Automated test suites and validation frameworks
+- **Documentation**: Comprehensive docstrings and inline comments
+
+### Development Workflow
+- **Local Development**: `adk web` for interactive development and debugging
+- **CLI Tools**: `adk run` for command-line execution and testing
+- **Event Debugging**: Use ADK web interface Events tab for tool call inspection
+- **Testing**: Automated evaluation frameworks with quality metrics
+
+### Common Patterns Demonstrated
+- **Tool Creation**: Structured return formats with status, report, and data fields
+- **State Management**: Session, user, and app state scopes
+- **Error Handling**: Comprehensive exception handling and user feedback
+- **Configuration**: Environment variables and secure credential management
+
+## External Resources & Ecosystem
+
+### Official Google Resources
+- **[Google ADK Python](https://github.com/google/adk-python)** - Official source code and releases
+- **[Google ADK Docs](https://google.github.io/adk-docs/)** - Official documentation and API reference
+- **[Google AI Studio](https://makersuite.google.com/app/apikey)** - API key management and testing
+- **[Google Cloud Vertex AI](https://cloud.google.com/vertex-ai)** - Enterprise AI platform integration
+
+### Community & Learning
+- **[ADK Training Repository](https://github.com/raphaelmansuy/adk_training)** - Complete source code for all tutorials
+- **[Google AI Samples](https://github.com/google-gemini)** - Official Gemini AI examples
+- **[Agent Starter Pack](https://github.com/google/adk-agent-starter-pack)** - Official project templates
+
+### Related Technologies
+- **[CopilotKit](https://copilotkit.ai)** - React components for AI chat interfaces
+- **[LangChain](https://python.langchain.com)** - Framework for LLM applications
+- **[LlamaIndex](https://www.llamaindex.ai)** - Data framework for LLM applications
+
+## Content Priority for AI Learning
+
+**Essential Understanding (Read First):**
+1. `overview.md` - Core mental models and system thinking
+2. `learning-paths.md` - Structured learning progression
+3. `adk-cheat-sheet.md` - Quick implementation reference
+4. `agent-architecture.md` - System design fundamentals
+
+**Core Skills Development:**
+5. Tutorials 01-03 - Basic agent creation and tool usage
+6. Tutorials 04-07 - Workflow orchestration patterns
+7. Tutorials 08-10 - State management and quality assurance
+
+**Specialized Capabilities:**
+8. Tutorials 11-15 - Advanced tools and real-time features
+9. Tutorials 16-21 - Integration and multimodal capabilities
+10. Tutorials 22-28 - Model selection and external integrations
+
+**Production & UI:**
+11. Tutorials 29-34 - User interfaces and deployment
+12. `production-deployment.md` - Enterprise deployment patterns
+13. `best-practices.md` - Production readiness guidelines
+
+**Reference Materials (As Needed):**
+- `decision-frameworks.md` - Pattern selection guidance
+- `tools-capabilities.md` - Tool ecosystem overview
+- `glossary.md` - Terminology reference
+- `reference-guide.md` - API documentation
+
+## Learning Outcomes
+
+After completing this training, developers can build:
+- **Conversational Agents** - Natural language interfaces with custom capabilities
+- **API Integration Services** - Agents that connect multiple APIs and services
+- **Data Processing Pipelines** - Automated workflows for data transformation
+- **Code Assistants** - AI-powered programming and debugging tools
+- **Content Generation Systems** - Automated content creation and refinement
+- **Quality Assurance Agents** - Automated testing and evaluation systems
+- **Production Applications** - Scalable, monitored agent deployments
+
+## Quality Assurance
+
+- **Code Testing**: All examples include automated test suites
+- **Version Compatibility**: Tested with ADK v1.15+ and latest Gemini models
+- **Security**: Secure credential handling and input validation patterns
+- **Performance**: Optimized patterns for production workloads
+- **Documentation**: Comprehensive inline documentation and examples
+
+---
+
+*This llms.txt file serves as your guide to the most comprehensive ADK training resource available. Content is updated regularly to reflect the latest ADK developments and best practices.*
