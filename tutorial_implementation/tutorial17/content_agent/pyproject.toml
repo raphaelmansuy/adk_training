@@ -1,0 +1,24 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "content_agent"
+version = "0.1.0"
+description = "A2A Content Agent for creating written content and summaries"
+authors = [{name = "ADK Training"}]
+dependencies = [
+    "a2a-sdk[http-server]>=0.3.0",
+    "httpx>=0.25.0",
+    "google-adk>=1.15.1"
+]
+requires-python = ">=3.10"
+
+[tool.setuptools]
+packages = ["content_agent"]
+
+[tool.setuptools.package-dir]
+content_agent = "."
+
+[project.scripts]
+content_agent = "content_agent.__main__:main"

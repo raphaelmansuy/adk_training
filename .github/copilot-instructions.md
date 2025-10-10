@@ -246,7 +246,7 @@ setup:
 
 ## What you must ensure
 
-- If you want to report what you have done, updated or achieve never report that in the tutorial or in the implementation. It must be done in a ./log directory at the root of the project.
+- If you want to report what you have done, updated or achieve never report that in the tutorial or in the implementation. It must be done in a ./log directory at the root of the project. Make it in consice way.
 
 Use path: ./log/YYYYMMDD_HHMMSS_description_of_your_change.md
 

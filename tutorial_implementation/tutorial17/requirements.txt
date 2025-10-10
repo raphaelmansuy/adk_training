@@ -1,0 +1,2 @@
+google-adk[a2a]>=1.15.1
+requests>=2.31.0

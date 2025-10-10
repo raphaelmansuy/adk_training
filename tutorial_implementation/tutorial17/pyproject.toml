@@ -1,0 +1,15 @@
+[build-system]
+requires = ["setuptools>=64", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "tutorial17"
+version = "0.1.0"
+description = "Tutorial 17: Agent-to-Agent Communication - A2A Orchestrator"
+requires-python = ">=3.9"
+dependencies = [
+    "google-adk>=1.15.1",
+]
+
+[tool.setuptools.packages.find]
+include = ["a2a_orchestrator*"]

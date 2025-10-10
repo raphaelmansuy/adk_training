@@ -1,0 +1,24 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "research_agent"
+version = "0.1.0"
+description = "A2A Research Agent for gathering and analyzing information"
+authors = [{name = "ADK Training"}]
+dependencies = [
+    "a2a-sdk[http-server]>=0.3.0",
+    "httpx>=0.25.0",
+    "google-adk>=1.15.1"
+]
+requires-python = ">=3.10"
+
+[tool.setuptools]
+packages = ["research_agent"]
+
+[tool.setuptools.package-dir]
+research_agent = "."
+
+[project.scripts]
+research_agent = "research_agent.__main__:main"
