@@ -26,11 +26,14 @@ learning_objectives:
 implementation_link: "https://github.com/raphaelmansuy/adk_training/tree/main/tutorial_implementation/tutorial19"
 ---
 
-:::danger UNDER CONSTRUCTION
+:::info Verified Against Official Sources
 
-**This tutorial is currently under construction and may contain errors, incomplete information, or outdated code examples.**
+This tutorial has been verified against the official ADK Python source code
+and documentation. All API calls, version numbering, and examples are accurate
+as of October 2025.
 
-Please check back later for the completed version. If you encounter issues, refer to the working implementation in the [tutorial repository](https://github.com/raphaelmansuy/adk_training/tree/main/tutorial_implementation/tutorial19).
+**Verification Date**: October 10, 2025  
+**ADK Version**: 1.16.0+
 
 :::
 
@@ -95,13 +98,66 @@ An **artifact** is a versioned file stored by the agent system. Each save create
 **Artifact Properties**:
 
 - **Filename**: Unique identifier
-- **Version**: Auto-incrementing integer (1, 2, 3, ...)
+- **Version**: Auto-incrementing integer starting at 0 (0, 1, 2, ...)
 - **Content**: The actual file data (as `types.Part`)
 - **Metadata**: Author, timestamp, context
+
+```text
+Artifact Structure:
+
++------------------------------------------------------------------+
+|                         ARTIFACT SYSTEM                          |
++------------------------------------------------------------------+
+|                                                                  |
+|  +--------------------+     +--------------------+               |
+|  |   Filename         |     |   Version History  |               |
+|  |  "report.txt"      |---->|   v0, v1, v2, ...  |               |
+|  +--------------------+     +--------------------+               |
+|           |                           |                          |
+|           v                           v                          |
+|  +--------------------+     +--------------------+               |
+|  |   Content          |     |   Metadata         |               |
+|  |  types.Part        |     |  Author, Timestamp |               |
+|  |  (text/binary)     |     |  Context Info      |               |
+|  +--------------------+     +--------------------+               |
+|                                                                  |
++------------------------------------------------------------------+
+```
+
+:::info Version Numbering
+Artifact versions are **0-indexed**. The first save returns version 0, the second returns version 1, and so on.
+:::
 
 ### Where Artifacts are Available
 
 Artifacts can be accessed in:
+
+```text
+Artifact Access Points:
+
++---------------------------------------------------------------------+
+|                      ARTIFACT API ACCESS                            |
++---------------------------------------------------------------------+
+|                                                                     |
+|  +-----------------------------+  +-----------------------------+   |
+|  |     CallbackContext         |  |       ToolContext           |   |
+|  |    (Agent Callbacks)        |  |    (Function Tools)         |   |
+|  +-----------------------------+  +-----------------------------+   |
+|  | - save_artifact()           |  | - save_artifact()           |   |
+|  | - load_artifact()           |  | - load_artifact()           |   |
+|  | - list_artifacts()          |  | - list_artifacts()          |   |
+|  +-----------------------------+  +-----------------------------+   |
+|               |                              |                      |
+|               +------------------------------+                      |
+|                              |                                      |
+|                              v                                      |
+|                   +----------------------+                          |
+|                   |  Artifact Service    |                          |
+|                   |  (Storage Backend)   |                          |
+|                   +----------------------+                          |
+|                                                                     |
++---------------------------------------------------------------------+
+```
 
 ```python
 # 1. Callback context
@@ -122,6 +178,73 @@ async def my_tool(query: str, tool_context: ToolContext):
     artifact = await tool_context.load_artifact('data.json')
     files = await tool_context.list_artifacts()
 ```
+
+### Configuring Artifact Storage
+
+Before using artifacts, configure an artifact service in your Runner:
+
+```text
+Storage Configuration Architecture:
+
++---------------------------------------------------------------------+
+|                           RUNNER                                    |
++---------------------------------------------------------------------+
+|                                                                     |
+|  +-----------------------+                                          |
+|  |       Agent           |                                          |
+|  |  (uses artifacts)     |                                          |
+|  +-----------------------+                                          |
+|             |                                                       |
+|             v                                                       |
+|  +-----------------------+        +--------------------------+      |
+|  |  Session Service      |        |  Artifact Service        |      |
+|  |  (state management)   |        |  (file storage)          |      |
+|  +-----------------------+        +--------------------------+      |
+|                                              |                      |
+|              +-------------------------------+                      |
+|              |                               |                      |
+|              v                               v                      |
+|   +---------------------+        +-------------------------+        |
+|   | InMemoryArtifact    |        | GcsArtifactService      |        |
+|   | Service             |        | (Google Cloud Storage)  |        |
+|   | (dev/testing)       |        | (production)            |        |
+|   +---------------------+        +-------------------------+        |
+|                                                                     |
++---------------------------------------------------------------------+
+```
+
+```python
+from google.adk.runners import Runner
+from google.adk.artifacts import InMemoryArtifactService, GcsArtifactService
+from google.adk.sessions import InMemorySessionService
+from google.adk.agents import Agent
+
+# Option 1: In-Memory Storage (development/testing)
+artifact_service = InMemoryArtifactService()
+
+# Option 2: Google Cloud Storage (production)
+# artifact_service = GcsArtifactService(bucket_name='your-gcs-bucket')
+
+# Create agent
+agent = Agent(
+    name='my_agent',
+    model='gemini-2.0-flash',
+    # ... other config
+)
+
+# Configure runner with artifact service
+runner = Runner(
+    agent=agent,
+    app_name='my_app',
+    session_service=InMemorySessionService(),
+    artifact_service=artifact_service  # Enable artifact storage
+)
+```
+
+:::warning Required Configuration
+If `artifact_service` is not configured, calling artifact methods will raise a
+`ValueError`. Always configure the artifact service before using artifacts.
+:::
 
 ---
 
@@ -187,25 +310,76 @@ async def save_image(context: CallbackContext, image_bytes: bytes):
 
 ### Versioning Behavior
 
+```text
+Artifact Versioning Timeline:
+
+Time: t0                  t1                  t2                  t3
+      |                   |                   |                   |
+      v                   v                   v                   v
++------------+      +------------+      +------------+      +------------+
+|   Save 1   |      |   Save 2   |      |   Save 3   |      |   Save 4   |
+| Version 0  |----->| Version 1  |----->| Version 2  |----->| Version 3  |
++------------+      +------------+      +------------+      +------------+
+| "Draft"    |      | "Revised"  |      | "Final"    |      | "Updated"  |
++------------+      +------------+      +------------+      +------------+
+      |                   |                   |                   |
+      +-------------------+-------------------+-------------------+
+                              |
+                              v
+                  +------------------------+
+                  | All Versions Retained  |
+                  | Can Load Any Version   |
+                  | (0, 1, 2, 3, ...)      |
+                  +------------------------+
+```
+
 ```python
-# First save - creates version 1
+# First save - creates version 0
 v1 = await context.save_artifact('report.txt', part1)
-print(v1)  # Output: 1
+print(v1)  # Output: 0
 
-# Second save - creates version 2
+# Second save - creates version 1
 v2 = await context.save_artifact('report.txt', part2)
-print(v2)  # Output: 2
+print(v2)  # Output: 1
 
-# Third save - creates version 3
+# Third save - creates version 2
 v3 = await context.save_artifact('report.txt', part3)
-print(v3)  # Output: 3
+print(v3)  # Output: 2
 
-# All versions retained and accessible
+# All versions retained and accessible (0, 1, 2, ...)
 ```
 
 ---
 
 ## 3. Loading Artifacts
+
+```text
+Artifact Lifecycle Operations:
+
++---------------------------------------------------------------------+
+|                    ARTIFACT OPERATIONS                              |
++---------------------------------------------------------------------+
+|                                                                     |
+|  +-----------------+     +------------------+     +---------------+ |
+|  |  save_artifact  |---->| Artifact Storage |---->| Returns       | |
+|  |  (filename,     |     | (all versions)   |     | Version       | |
+|  |   content)      |     |                  |     | Number        | |
+|  +-----------------+     +------------------+     +---------------+ |
+|                                  |                                  |
+|                                  |                                  |
+|  +-----------------+             |              +---------------+   |
+|  |  load_artifact  |-------------+              | Returns       |   |
+|  |  (filename,     |                            | Artifact      |   |
+|  |   version?)     |-----------------+          | Content       |   |
+|  +-----------------+                 |          +---------------+   |
+|                                      |                              |
+|  +-----------------+                 |          +---------------+   |
+|  |  list_artifacts |                 +--------->| Storage       |   |
+|  |  ()             |---------------------------->| Backend       |   |
+|  +-----------------+                            +---------------+   |
+|                                                                     |
++---------------------------------------------------------------------+
+```
 
 ### Load Latest Version
 
@@ -230,7 +404,8 @@ async def load_report(context: CallbackContext):
 async def load_version(context: CallbackContext, filename: str, version: int):
     """Load specific artifact version."""
 
-    # Load version 2 of the file
+    # Load version 1 (second save) of the file
+    # Remember: versions are 0-indexed (0=first, 1=second, 2=third)
     artifact = await context.load_artifact(
         filename=filename,
         version=version
@@ -305,11 +480,80 @@ async def list_by_extension(context: CallbackContext, extension: str):
     return filtered
 ```
 
+### Built-in Artifact Loading Tool
+
+ADK provides a built-in tool for automatically loading artifacts into LLM
+context:
+
+```python
+from google.adk.tools.load_artifacts_tool import load_artifacts_tool
+from google.adk.agents import Agent
+
+# Add to your agent's tools
+agent = Agent(
+    name='artifact_agent',
+    model='gemini-2.0-flash',
+    tools=[
+        load_artifacts_tool,  # Built-in artifact loader
+        # ... your other tools
+    ]
+)
+```
+
+**What it does**:
+
+- Automatically lists available artifacts for the agent
+- Loads artifact content when the LLM requests it
+- Handles both session-scoped and user-scoped artifacts
+- Provides artifact content in the conversation context
+
+**When to use**:
+
+- When you want the LLM to discover and use artifacts automatically
+- For conversational access to stored files
+- When building document Q&A or analysis agents
+
 ---
 
 ## 5. Real-World Example: Document Processor
 
 Let's build a document processing pipeline with comprehensive artifact management.
+
+```text
+Document Processing Pipeline:
+
++---------------------------------------------------------------------+
+|                   DOCUMENT PROCESSING WORKFLOW                      |
++---------------------------------------------------------------------+
+|                                                                     |
+|   Input Document                                                    |
+|         |                                                           |
+|         v                                                           |
+|   +------------------+                                              |
+|   | 1. Extract Text  |-----> Artifact: document_extracted.txt (v0)  |
+|   +------------------+                                              |
+|         |                                                           |
+|         v                                                           |
+|   +------------------+                                              |
+|   | 2. Summarize     |-----> Artifact: document_summary.txt (v0)   |
+|   +------------------+                                              |
+|         |                                                           |
+|         v                                                           |
+|   +------------------+                                              |
+|   | 3. Translate     |-----> Artifact: document_Spanish.txt (v0)   |
+|   |    (Spanish)     |-----> Artifact: document_French.txt (v0)    |
+|   +------------------+                                              |
+|         |                                                           |
+|         v                                                           |
+|   +------------------+                                              |
+|   | 4. Create Report |-----> Artifact: document_FINAL_REPORT.md    |
+|   +------------------+       (combines all artifacts)              |
+|         |                                                           |
+|         v                                                           |
+|   Final Output: Complete report with all processing stages         |
+|                                                                     |
++---------------------------------------------------------------------+
+```
 
 ### Complete Implementation
 
@@ -621,28 +865,28 @@ OPERATIONS: extract, summarize, translate, report
 I'll process the document 'contract_2025_Q3' through the complete pipeline:
 
 **Step 1: Text Extraction**
-Text extracted and saved as version 1
+Text extracted and saved as version 0
 
 **Step 2: Summarization**
-Summary created as version 1
+Summary created as version 0
 
 **Step 3: Translation to Spanish**
-Translation to Spanish saved as version 1
+Translation to Spanish saved as version 0
 
 **Step 4: Translation to French**
-Translation to French saved as version 1
+Translation to French saved as version 0
 
 **Step 5: Final Report**
-Final report created as version 1
+Final report created as version 0
 
 **Processing Complete!**
 
 Artifacts created:
-- contract_2025_Q3_extracted.txt (v1)
-- contract_2025_Q3_summary.txt (v1)
-- contract_2025_Q3_Spanish.txt (v1)
-- contract_2025_Q3_French.txt (v1)
-- contract_2025_Q3_FINAL_REPORT.md (v1)
+- contract_2025_Q3_extracted.txt (v0)
+- contract_2025_Q3_summary.txt (v0)
+- contract_2025_Q3_Spanish.txt (v0)
+- contract_2025_Q3_French.txt (v0)
+- contract_2025_Q3_FINAL_REPORT.md (v0)
 
 All stages completed successfully. The document has been extracted, summarized,
 translated to Spanish and French, and a comprehensive report has been generated.
@@ -659,18 +903,18 @@ OPERATIONS: extract, summarize, report
 Processing 'technical_spec_v2':
 
 **Step 1: Text Extraction**
-Text extracted and saved as version 1
+Text extracted and saved as version 0
 
 **Step 2: Summarization**
-Summary created as version 1
+Summary created as version 0
 
 **Step 3: Final Report**
-Final report created as version 1
+Final report created as version 0
 
 **Artifacts created:**
-- technical_spec_v2_extracted.txt (v1)
-- technical_spec_v2_summary.txt (v1)
-- technical_spec_v2_FINAL_REPORT.md (v1)
+- technical_spec_v2_extracted.txt (v0)
+- technical_spec_v2_summary.txt (v0)
+- technical_spec_v2_FINAL_REPORT.md (v0)
 
 Processing complete.
 
@@ -737,28 +981,55 @@ Total Steps: 8
 
 ## 6. Credential Management
 
-### Saving Credentials
+:::warning Advanced Topic
+Credential management in ADK uses the authentication framework with `AuthConfig`
+objects. This is more complex than simple key-value storage. For most use cases,
+consider using **session state** for API keys instead.
+:::
 
-```python
-async def store_api_key(context: CallbackContext, service: str, key: str):
-    """Store API key securely."""
+```text
+Credential Storage Options:
 
-    await context.save_credential(
-        name=f"{service}_api_key",
-        value=key
-    )
-
-    print(f"API key for {service} stored securely")
++---------------------------------------------------------------------+
+|                    CREDENTIAL MANAGEMENT                            |
++---------------------------------------------------------------------+
+|                                                                     |
+|  Simple Approach (Recommended):                                    |
+|  +---------------------------+     +-------------------------+      |
+|  | Session State Storage     |---->| API Keys in State       |      |
+|  | context.state['api_key']  |     | Easy to Use             |      |
+|  +---------------------------+     +-------------------------+      |
+|                                                                     |
+|  Advanced Approach (Production):                                   |
+|  +---------------------------+     +-------------------------+      |
+|  | Authentication Framework  |---->| AuthConfig + Credential |      |
+|  | save_credential()         |     | OAuth, Tokens, etc.     |      |
+|  | load_credential()         |     | Secure Storage          |      |
+|  +---------------------------+     +-------------------------+      |
+|                                                                     |
++---------------------------------------------------------------------+
 ```
 
-### Loading Credentials
+### Simple API Key Storage (Recommended)
+
+For simple API key storage, use session state:
 
 ```python
+from google.adk.agents import CallbackContext
+
+async def store_api_key(context: CallbackContext, service: str, key: str):
+    """Store API key in session state."""
+    
+    # Store in session state
+    context.state[f'{service}_api_key'] = key
+    print(f"API key for {service} stored in session")
+
 async def get_api_key(context: CallbackContext, service: str) -> Optional[str]:
-    """Retrieve stored API key."""
-
-    key = await context.load_credential(f"{service}_api_key")
-
+    """Retrieve API key from session state."""
+    
+    # Load from session state
+    key = context.state.get(f'{service}_api_key')
+    
     if key:
         print(f"API key for {service} retrieved")
         return key
@@ -767,26 +1038,66 @@ async def get_api_key(context: CallbackContext, service: str) -> Optional[str]:
         return None
 ```
 
-### Using Credentials in Tools
+### Using API Keys in Tools
 
 ```python
 from google.adk.tools import FunctionTool
 from google.adk.tools.tool_context import ToolContext
 
 async def call_external_api(query: str, tool_context: ToolContext) -> str:
-    """Call external API using stored credentials."""
+    """Call external API using stored API key."""
 
-    # Load API key
-    api_key = await tool_context.load_credential('openai_api_key')
+    # Load API key from state
+    api_key = tool_context.state.get('openai_api_key')
 
     if not api_key:
         return "Error: API key not configured"
 
     # Use API key for external call
-    # response = requests.post(url, headers={'Authorization': f'Bearer {api_key}'}, ...)
+    # response = requests.post(
+    #     url, 
+    #     headers={'Authorization': f'Bearer {api_key}'}
+    # )
 
     return "API call successful"
 ```
+
+### Advanced: Authentication Framework
+
+For production credential management with OAuth, API tokens, and secure storage:
+
+**Official Credential API**:
+
+```python
+from google.adk.agents import CallbackContext
+from google.adk.auth.auth_credential import AuthCredential
+from google.adk.tools import AuthConfig
+
+async def save_credential_advanced(
+    context: CallbackContext, 
+    auth_config: AuthConfig
+):
+    """Save credential using authentication framework."""
+    await context.save_credential(auth_config)
+
+async def load_credential_advanced(
+    context: CallbackContext,
+    auth_config: AuthConfig
+) -> Optional[AuthCredential]:
+    """Load credential using authentication framework."""
+    return await context.load_credential(auth_config)
+```
+
+:::info Learn More
+For complete authentication patterns including OAuth, API authentication, and
+secure credential storage, see:
+
+- **Tutorial 15**: Authentication & Security (coming soon)
+- **Official Docs**: [Authentication Guide](https://google.github.io/adk-docs/tools/authentication/)
+
+The credential API requires understanding `AuthConfig` construction and the
+authentication framework. For simple use cases, session state is sufficient.
+:::
 
 ---
 
@@ -879,6 +1190,39 @@ await context.save_artifact('data.csv', types.Part.from_text(raw_data_with_pii))
 ---
 
 ## 8. Advanced Patterns
+
+```text
+Advanced Artifact Patterns:
+
++---------------------------------------------------------------------+
+|                      ADVANCED PATTERNS                              |
++---------------------------------------------------------------------+
+|                                                                     |
+|  Pattern 1: Diff Tracking                                          |
+|  +-------------------+     +-------------------+                    |
+|  | Version N-1       |---->| Compare Versions  |                    |
+|  +-------------------+     +-------------------+                    |
+|  | Version N         |---->| Generate Diff     |                    |
+|  +-------------------+     +-------------------+                    |
+|                                                                     |
+|  Pattern 2: Pipeline Processing                                    |
+|  +----------+     +----------+     +----------+     +----------+    |
+|  | Input    |---->| Stage 1  |---->| Stage 2  |---->| Output   |    |
+|  | Artifact |     | Artifact |     | Artifact |     | Artifact |    |
+|  +----------+     +----------+     +----------+     +----------+    |
+|                                                                     |
+|  Pattern 3: Metadata Embedding                                     |
+|  +------------------------------------------------------------+     |
+|  | Artifact Content                                           |     |
+|  | +--------------------------------------------------------+ |     |
+|  | | Metadata: {author, timestamp, version, tags}           | |     |
+|  | +--------------------------------------------------------+ |     |
+|  | | Actual Content: {...}                                  | |     |
+|  | +--------------------------------------------------------+ |     |
+|  +------------------------------------------------------------+     |
+|                                                                     |
++---------------------------------------------------------------------+
+```
 
 ### Pattern 1: Artifact Diff Tracking
 
@@ -1002,7 +1346,7 @@ else:
 # ✅ Good
 v1 = await context.save_artifact('file.txt', part1)
 v2 = await context.save_artifact('file.txt', part2)
-# v1 = 1, v2 = 2
+# v1 = 0, v2 = 1 (0-indexed versions)
 
 # Load specific version
 artifact = await context.load_artifact('file.txt', version=v1)
