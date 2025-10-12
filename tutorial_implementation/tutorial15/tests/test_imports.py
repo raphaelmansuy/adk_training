@@ -9,55 +9,37 @@ import pytest
 def test_import_package():
     """Test importing main package."""
     import voice_assistant
+
     assert voice_assistant is not None
-    assert hasattr(voice_assistant, '__version__')
+    assert hasattr(voice_assistant, "__version__")
 
 
 def test_import_voice_assistant():
     """Test importing VoiceAssistant class."""
     from voice_assistant import VoiceAssistant
+
     assert VoiceAssistant is not None
 
 
 def test_import_root_agent():
     """Test importing root_agent."""
     from voice_assistant import root_agent
+
     assert root_agent is not None
 
 
-def test_import_basic_live():
-    """Test importing basic_live module."""
-    from voice_assistant import basic_live
-    assert basic_live is not None
+# Removed: basic_live.py (duplicate of basic_demo.py)
 
 
-def test_import_demo():
-    """Test importing demo module."""
-    from voice_assistant import demo
-    assert demo is not None
-
-
-def test_import_interactive():
-    """Test importing interactive module."""
-    from voice_assistant import interactive
-    assert interactive is not None
-
-
-def test_import_advanced():
-    """Test importing advanced module."""
-    from voice_assistant import advanced
-    assert advanced is not None
-
-
-def test_import_multi_agent():
-    """Test importing multi_agent module."""
-    from voice_assistant import multi_agent
-    assert multi_agent is not None
+# Removed demo scripts: demo.py, basic_demo.py, advanced.py, multi_agent.py, 
+# direct_live_audio.py, interactive.py
+# Use 'adk web' for Live API interaction instead
 
 
 def test_pyaudio_availability():
     """Test PyAudio availability flag."""
     from voice_assistant.agent import PYAUDIO_AVAILABLE
+
     assert isinstance(PYAUDIO_AVAILABLE, bool)
 
 
@@ -68,7 +50,7 @@ def test_adk_imports():
     from google.adk.apps import App
     from google.adk.runners import Runner
     from google.genai import types
-    
+
     assert Agent is not None
     assert Runner is not None
     assert RunConfig is not None

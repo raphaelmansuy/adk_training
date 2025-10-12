@@ -9,7 +9,7 @@ _STEPS = [
     "Verify your Google Cloud project has billing enabled and Vertex AI API activated (gcloud services enable aiplatform.googleapis.com).",
     "Upgrade to a paid Vertex AI plan (standard or enterprise) if you are still on the free tier.",
     "Open a Google Cloud support case or contact your account team requesting Gemini Live API publisher model access for your project and region (example: us-central1).",
-    "In your request, include the exact model ids you plan to use (e.g., gemini-live-2.5-flash-preview-native-audio or other native audio variants) and confirm required regions.",
+    "In your request, include the exact model ids you plan to use (e.g., gemini-2.0-flash-live-preview-04-09 for Vertex Live API) and confirm required regions.",
     "After Google enables the models, run 'make live_models_list' to confirm they are discoverable and update VOICE_ASSISTANT_LIVE_MODEL accordingly.",
 ]
 
