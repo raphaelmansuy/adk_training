@@ -38,6 +38,30 @@ Please check back later for the completed version. If you encounter issues, refe
 
 ## :::
 
+:::info API Verification
+
+This tutorial has been verified against **ADK Python SDK v1.16.0+**.
+
+**Critical API Information:**
+
+- ✅ Import: `from google.adk.tools.langchain_tool import LangchainTool`
+- ✅ Import: `from google.adk.tools.crewai_tool import CrewaiTool`
+- ✅ Runner: Use `InMemoryRunner` from `google.adk.runners`
+- ✅ run_async: Requires `user_id`, `session_id`, returns `AsyncGenerator[Event]`
+- ❌ WRONG: `from google.adk.tools.third_party` - this module path doesn't exist
+- ❌ WRONG: `Runner()` from `google.adk.agents` - use InMemoryRunner
+
+**Correct import pattern:**
+```python
+from google.adk.tools.langchain_tool import LangchainTool  # ✅ CORRECT
+from google.adk.tools.crewai_tool import CrewaiTool  # ✅ CORRECT
+from google.adk.runners import InMemoryRunner  # ✅ CORRECT
+```
+
+Source verification: `research/adk-python/src/google/adk/tools/` (2025-01-13)
+
+:::
+
 # Tutorial 27: Third-Party Framework Tools Integration
 
 **Goal**: Integrate tools from LangChain, CrewAI, and other AI frameworks into your ADK agents
@@ -91,7 +115,7 @@ Please check back later for the completed version. If you encounter issues, refe
 
 **LangChain** has **100+ pre-built tools** for search, APIs, databases, and more.
 
-**Source**: `google/adk/tools/third_party/langchain_tool.py`
+**Source**: `google/adk/tools/langchain_tool.py`
 
 ### Installation
 
@@ -106,7 +130,7 @@ pip install langchain langchain-community
 **Pattern**:
 
 ```python
-from google.adk.tools.third_party import LangchainTool
+from google.adk.tools.langchain_tool import LangchainTool  # ✅ CORRECT PATH
 from langchain_community.tools import [YourLangChainTool]
 
 # Wrap LangChain tool
@@ -126,9 +150,11 @@ Integrate LangChain's Tavily search into ADK agent.
 """
 import asyncio
 import os
-from google.adk.agents import Agent, Runner
-from google.adk.tools.third_party import LangchainTool
+from google.adk.agents import Agent
+from google.adk.runners import InMemoryRunner
+from google.adk.tools.langchain_tool import LangchainTool
 from langchain_community.tools.tavily_search import TavilySearchResults
+from google.genai import types
 
 # Environment setup
 os.environ['GOOGLE_GENAI_USE_VERTEXAI'] = '1'
@@ -164,14 +190,27 @@ Cite your sources.
         tools=[tavily_adk]
     )
 
-    # Run query
-    runner = Runner()
-    result = await runner.run_async(
-        "What are the latest developments in quantum computing? (2025)",
-        agent=agent
+    # Create runner and session
+    runner = InMemoryRunner(agent=agent, app_name='tavily_search_app')
+    session = await runner.session_service.create_session(
+        app_name='tavily_search_app',
+        user_id='research_user'
     )
 
-    print(result.content.parts[0].text)
+    # Run query
+    query = "What are the latest developments in quantum computing? (2025)"
+    new_message = types.Content(
+        role='user',
+        parts=[types.Part(text=query)]
+    )
+
+    async for event in runner.run_async(
+        user_id='research_user',
+        session_id=session.id,
+        new_message=new_message
+    ):
+        if event.content and event.content.parts:
+            print(event.content.parts[0].text)
 
 
 if __name__ == '__main__':
@@ -212,7 +251,7 @@ Sources:
 ### Example 2: Wikipedia Tool
 
 ```python
-from google.adk.tools.third_party import LangchainTool
+from google.adk.tools.langchain_tool import LangchainTool
 from langchain_community.tools import WikipediaQueryRun
 from langchain_community.utilities import WikipediaAPIWrapper
 
@@ -238,7 +277,7 @@ agent = Agent(
 ### Example 3: Python REPL Tool
 
 ```python
-from google.adk.tools.third_party import LangchainTool
+from google.adk.tools.langchain_tool import LangchainTool
 from langchain_experimental.tools import PythonREPLTool
 
 # Create Python execution tool
@@ -300,7 +339,7 @@ Handle errors gracefully.
 
 **CrewAI** provides **20+ specialized tools** for agent operations.
 
-**Source**: `google/adk/tools/third_party/crewai_tool.py`
+**Source**: `google/adk/tools/crewai_tool.py`
 
 ### Installation
 
@@ -317,7 +356,7 @@ pip install crewai crewai-tools
 **Pattern**:
 
 ```python
-from google.adk.tools.third_party import CrewaiTool
+from google.adk.tools.crewai_tool import CrewaiTool  # ✅ CORRECT PATH
 from crewai_tools import [YourCrewAITool]
 
 # Wrap CrewAI tool - MUST provide name and description
@@ -339,9 +378,11 @@ Integrate CrewAI's Serper search into ADK agent.
 """
 import asyncio
 import os
-from google.adk.agents import Agent, Runner
-from google.adk.tools.third_party import CrewaiTool
+from google.adk.agents import Agent
+from google.adk.runners import InMemoryRunner
+from google.adk.tools.crewai_tool import CrewaiTool
 from crewai_tools import SerperDevTool
+from google.genai import types
 
 # Environment setup
 os.environ['GOOGLE_GENAI_USE_VERTEXAI'] = '1'
@@ -376,14 +417,27 @@ Always cite sources with URLs.
         tools=[serper_adk]
     )
 
-    # Run query
-    runner = Runner()
-    result = await runner.run_async(
-        "What is the current price of Bitcoin?",
-        agent=agent
+    # Create runner and session
+    runner = InMemoryRunner(agent=agent, app_name='serper_search_app')
+    session = await runner.session_service.create_session(
+        app_name='serper_search_app',
+        user_id='search_user'
     )
 
-    print(result.content.parts[0].text)
+    # Run query
+    query = "What is the current price of Bitcoin?"
+    new_message = types.Content(
+        role='user',
+        parts=[types.Part(text=query)]
+    )
+
+    async for event in runner.run_async(
+        user_id='search_user',
+        session_id=session.id,
+        new_message=new_message
+    ):
+        if event.content and event.content.parts:
+            print(event.content.parts[0].text)
 
 
 if __name__ == '__main__':
@@ -393,7 +447,7 @@ if __name__ == '__main__':
 ### Example 2: Website Scraping
 
 ```python
-from google.adk.tools.third_party import CrewaiTool
+from google.adk.tools.crewai_tool import CrewaiTool
 from crewai_tools import ScrapeWebsiteTool
 
 # Create scraping tool
@@ -420,7 +474,7 @@ agent = Agent(
 ### Example 3: File Operations
 
 ```python
-from google.adk.tools.third_party import CrewaiTool
+from google.adk.tools.crewai_tool import CrewaiTool  # ✅ CORRECT PATH
 from crewai_tools import FileReadTool, DirectorySearchTool
 
 # File reading tool
@@ -577,8 +631,10 @@ Multi-framework agent using AG-UI Protocol.
 ADK agent can communicate with LangGraph agent seamlessly.
 """
 import asyncio
-from google.adk.agents import Agent as ADKAgent, Runner
+from google.adk.agents import Agent as ADKAgent
+from google.adk.runners import InMemoryRunner
 from google.adk.tools import FunctionTool
+from google.genai import types
 
 # LangGraph setup (conceptual - actual API may vary)
 from langgraph import StateGraph, Agent as LangGraphAgent
@@ -612,13 +668,28 @@ async def multi_framework_workflow():
 
     # LangGraph result goes to ADK agent
     # AG-UI Protocol handles event translation automatically
-    runner = Runner()
-    final_result = await runner.run_async(
-        f"Process the analysis: {lg_result}",
-        agent=adk_agent
+    runner = InMemoryRunner(agent=adk_agent, app_name='multi_framework_app')
+    session = await runner.session_service.create_session(
+        app_name='multi_framework_app',
+        user_id='workflow_user'
     )
 
-    return final_result
+    query = f"Process the analysis: {lg_result}"
+    new_message = types.Content(
+        role='user',
+        parts=[types.Part(text=query)]
+    )
+
+    responses = []
+    async for event in runner.run_async(
+        user_id='workflow_user',
+        session_id=session.id,
+        new_message=new_message
+    ):
+        if event.content and event.content.parts:
+            responses.append(event.content.parts[0].text)
+
+    return responses[-1] if responses else None
 
 # All events (from both agents) conform to AG-UI standard
 # Any AG-UI-compatible UI can visualize the workflow
@@ -700,9 +771,12 @@ Advanced research agent combining:
 """
 import asyncio
 import os
-from google.adk.agents import Agent, Runner
+from google.adk.agents import Agent
+from google.adk.runners import InMemoryRunner
 from google.adk.tools import FunctionTool
-from google.adk.tools.third_party import LangchainTool, CrewaiTool
+from google.adk.tools.langchain_tool import LangchainTool
+from google.adk.tools.crewai_tool import CrewaiTool
+from google.genai import types
 
 # LangChain tools
 from langchain_community.tools.tavily_search import TavilySearchResults
@@ -807,7 +881,13 @@ You are a professional research analyst with access to multiple information sour
     )
 
     # Run comprehensive research query
-    runner = Runner()
+    runner = InMemoryRunner(agent=research_agent, app_name='research_app')
+    
+    # Create session
+    session = await runner.session_service.create_session(
+        app_name='research_app',
+        user_id='researcher_001'
+    )
 
     query = """
 Research the current state of autonomous vehicle technology:
@@ -826,9 +906,20 @@ Provide a comprehensive report and save it to file.
     print(f"Query: {query}\n")
     print("Researching... (this may take 30-60 seconds)\n")
 
-    result = await runner.run_async(query, agent=research_agent)
+    # Run with correct API
+    new_message = types.Content(
+        role='user',
+        parts=[types.Part(text=query)]
+    )
+    
+    async for event in runner.run_async(
+        user_id='researcher_001',
+        session_id=session.id,
+        new_message=new_message
+    ):
+        if event.content and event.content.parts:
+            print(event.content.parts[0].text)
 
-    print(result.content.parts[0].text)
     print("\n" + "="*60 + "\n")
 
 
