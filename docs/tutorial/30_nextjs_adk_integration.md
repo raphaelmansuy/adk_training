@@ -31,13 +31,30 @@ learning_objectives:
 implementation_link: "https://github.com/raphaelmansuy/adk_training/tree/main/tutorial_implementation/tutorial30"
 ---
 
-:::danger UNDER CONSTRUCTION
+:::tip Working Implementation Available
 
-**This tutorial is currently under construction and may contain errors, incomplete information, or outdated code examples.**
+**A complete, tested implementation of this tutorial is available!**
 
-Please check back later for the completed version. If you encounter issues, refer to the working implementation in the [tutorial repository](https://github.com/raphaelmansuy/adk_training/tree/main/tutorial_implementation/tutorial30).
+👉 [View Implementation](./../../tutorial_implementation/tutorial30)
 
-## :::
+The implementation includes:
+- ✅ Python ADK agent with customer support tools
+- ✅ FastAPI backend with AG-UI integration
+- ✅ Next.js 15 frontend with CopilotKit
+- ✅ Comprehensive test suite (30+ tests passing)
+- ✅ Production-ready Makefile
+- ✅ Complete documentation
+
+**Quick Start:**
+```bash
+cd tutorial_implementation/tutorial30
+make setup
+# Configure your API key in agent/.env
+make dev
+# Open http://localhost:3000
+```
+
+:::
 
 # Tutorial 30: Next.js 15 + ADK Integration (AG-UI Protocol)
 
