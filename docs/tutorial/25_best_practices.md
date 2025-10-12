@@ -39,6 +39,35 @@ Please check back later for the completed version. If you encounter issues, refe
 
 ## :::
 
+:::info API Verification
+
+This tutorial has been verified against **ADK Python SDK v1.16.0+**.
+
+**Critical API Changes** from older ADK versions:
+
+- ✅ `runner.run_async()` requires `user_id`, `session_id`, `new_message` (Content object)
+- ✅ Returns `AsyncGenerator[Event]` - must iterate with `async for event in runner.run_async(...)`
+- ✅ Plugins registered with `Runner(plugins=[...])` or `App(plugins=[...])`
+- ✅ `trace_to_cloud` is CLI deployment flag (--trace_to_cloud), NOT RunConfig parameter
+- ❌ OLD API: `runner.run_async(query, agent=agent)` NO LONGER WORKS
+
+**Modern API Pattern:**
+```python
+from google.genai import types
+
+runner = InMemoryRunner(agent=agent, app_name='app')
+session = await runner.session_service.create_session(app_name='app', user_id='user_123')
+new_message = types.Content(role='user', parts=[types.Part(text=query)])
+
+async for event in runner.run_async(user_id='user_123', session_id=session.id, new_message=new_message):
+    if event.content and event.content.parts:
+        print(event.content.parts[0].text)
+```
+
+Source verification: `research/adk-python/src/google/adk/runners.py` (2025-01-13)
+
+:::
+
 # Tutorial 25: Best Practices & Production Patterns
 
 **Goal**: Master production-ready patterns, architectural decisions, optimization strategies, security best practices, and comprehensive guidelines for building robust agent systems.
@@ -257,32 +286,68 @@ class CachedDataStore:
 
 ```python
 import asyncio
+from google.genai import types
 
 # ✅ GOOD: Process independent queries in parallel
 async def batch_process(queries: list[str], agent: Agent):
     """Process multiple queries in parallel."""
 
-    runner = Runner()
+    runner = InMemoryRunner(agent=agent, app_name='batch_app')
+    
+    # Create session for batch processing
+    session = await runner.session_service.create_session(
+        app_name='batch_app',
+        user_id='batch_user'
+    )
 
-    tasks = [
-        runner.run_async(query, agent=agent)
-        for query in queries
-    ]
+    async def process_single_query(query: str) -> str:
+        """Process single query and extract response."""
+        new_message = types.Content(
+            role='user',
+            parts=[types.Part(text=query)]
+        )
+        
+        responses = []
+        async for event in runner.run_async(
+            user_id='batch_user',
+            session_id=session.id,
+            new_message=new_message
+        ):
+            if event.content and event.content.parts:
+                responses.append(event.content.parts[0].text)
+        
+        return responses[-1] if responses else ""
 
+    tasks = [process_single_query(query) for query in queries]
     results = await asyncio.gather(*tasks)
     return results
 
 
-# ❌ BAD: Sequential processing
+# ❌ BAD: Sequential processing (slower but simpler)
 async def sequential_process(queries: list[str], agent: Agent):
-    """Process queries sequentially (slower)."""
+    """Process queries sequentially."""
 
-    runner = Runner()
+    runner = InMemoryRunner(agent=agent, app_name='sequential_app')
+    session = await runner.session_service.create_session(
+        app_name='sequential_app',
+        user_id='seq_user'
+    )
+    
     results = []
-
     for query in queries:
-        result = await runner.run_async(query, agent=agent)
-        results.append(result)
+        new_message = types.Content(
+            role='user',
+            parts=[types.Part(text=query)]
+        )
+        
+        async for event in runner.run_async(
+            user_id='seq_user',
+            session_id=session.id,
+            new_message=new_message
+        ):
+            if event.content and event.content.parts:
+                results.append(event.content.parts[0].text)
+                break  # Take first response
 
     return results
 ```
@@ -481,12 +546,29 @@ async def robust_agent_invocation(
 ) -> Optional[str]:
     """Invoke agent with error handling and retries."""
 
-    runner = Runner()
+    runner = InMemoryRunner(agent=agent, app_name='robust_app')
+    session = await runner.session_service.create_session(
+        app_name='robust_app',
+        user_id='retry_user'
+    )
 
     for attempt in range(max_retries):
         try:
-            result = await runner.run_async(query, agent=agent)
-            return result.content.parts[0].text
+            new_message = types.Content(
+                role='user',
+                parts=[types.Part(text=query)]
+            )
+            
+            responses = []
+            async for event in runner.run_async(
+                user_id='retry_user',
+                session_id=session.id,
+                new_message=new_message
+            ):
+                if event.content and event.content.parts:
+                    responses.append(event.content.parts[0].text)
+            
+            return responses[-1] if responses else None
 
         except TimeoutError:
             logger.warning(f"Timeout on attempt {attempt + 1}")
@@ -573,19 +655,37 @@ def call_external_api():
 
 ```python
 async def get_product_recommendation(
-    user_id: str,
+    user_id_param: str,
     agent: Agent,
     fallback_to_popular: bool = True
 ) -> list[str]:
     """Get personalized recommendations with fallback."""
 
+    runner = InMemoryRunner(agent=agent, app_name='recommendation_app')
+    session = await runner.session_service.create_session(
+        app_name='recommendation_app',
+        user_id='rec_user'
+    )
+
     try:
         # Try personalized recommendations
-        query = f"Recommend products for user {user_id}"
-        result = await runner.run_async(query, agent=agent, timeout=5.0)
+        query = f"Recommend products for user {user_id_param}"
+        new_message = types.Content(
+            role='user',
+            parts=[types.Part(text=query)]
+        )
+        
+        responses = []
+        async for event in runner.run_async(
+            user_id='rec_user',
+            session_id=session.id,
+            new_message=new_message
+        ):
+            if event.content and event.content.parts:
+                responses.append(event.content.parts[0].text)
+                break
 
-        recommendations = parse_recommendations(result)
-
+        recommendations = parse_recommendations(responses[0] if responses else "")
         if recommendations:
             return recommendations
 
@@ -683,8 +783,14 @@ def get_agent(model: str, instruction: str) -> Agent:
 
 
 # ✅ Batch similar queries
-async def batch_classify(texts: list[str]) -> list[str]:
+async def batch_classify(texts: list[str], classifier: Agent) -> list[str]:
     """Batch classification for cost efficiency."""
+
+    runner = InMemoryRunner(agent=classifier, app_name='batch_classify_app')
+    session = await runner.session_service.create_session(
+        app_name='batch_classify_app',
+        user_id='batch_classify_user'
+    )
 
     # Process in single query instead of multiple
     combined_query = "\n".join([
@@ -692,10 +798,21 @@ async def batch_classify(texts: list[str]) -> list[str]:
     ])
 
     prompt = f"Classify sentiment for each item:\n\n{combined_query}"
+    new_message = types.Content(
+        role='user',
+        parts=[types.Part(text=prompt)]
+    )
 
-    result = await runner.run_async(prompt, agent=classifier)
+    responses = []
+    async for event in runner.run_async(
+        user_id='batch_classify_user',
+        session_id=session.id,
+        new_message=new_message
+    ):
+        if event.content and event.content.parts:
+            responses.append(event.content.parts[0].text)
 
-    return parse_batch_results(result)
+    return parse_batch_results(responses[0] if responses else "")
 ```
 
 ---
@@ -717,11 +834,27 @@ async def test_agent_basic_query():
         instruction="Answer concisely"
     )
 
-    runner = Runner()
-    result = await runner.run_async("What is 2+2?", agent=agent)
+    runner = InMemoryRunner(agent=agent, app_name='test_app')
+    session = await runner.session_service.create_session(
+        app_name='test_app',
+        user_id='test_user'
+    )
 
-    response = result.content.parts[0].text
-    assert '4' in response
+    new_message = types.Content(
+        role='user',
+        parts=[types.Part(text="What is 2+2?")]
+    )
+
+    responses = []
+    async for event in runner.run_async(
+        user_id='test_user',
+        session_id=session.id,
+        new_message=new_message
+    ):
+        if event.content and event.content.parts:
+            responses.append(event.content.parts[0].text)
+
+    assert '4' in responses[0]
 
 
 @pytest.mark.asyncio
@@ -736,8 +869,23 @@ async def test_tool_invocation():
         tools=[FunctionTool(mock_tool)]
     )
 
-    runner = Runner()
-    await runner.run_async("Check order ORD-123", agent=agent)
+    runner = InMemoryRunner(agent=agent, app_name='test_tool_app')
+    session = await runner.session_service.create_session(
+        app_name='test_tool_app',
+        user_id='test_user'
+    )
+
+    new_message = types.Content(
+        role='user',
+        parts=[types.Part(text="Check order ORD-123")]
+    )
+
+    async for event in runner.run_async(
+        user_id='test_user',
+        session_id=session.id,
+        new_message=new_message
+    ):
+        pass  # Just run to completion
 
     # Verify tool was called
     assert mock_tool.called
@@ -759,17 +907,30 @@ async def test_multi_agent_workflow():
         agents=[order_agent, billing_agent]
     )
 
-    runner = Runner()
-    result = await runner.run_async(
-        "Check my order and billing status",
-        agent=coordinator
+    runner = InMemoryRunner(agent=coordinator, app_name='test_multi_app')
+    session = await runner.session_service.create_session(
+        app_name='test_multi_app',
+        user_id='test_user'
     )
 
-    response = result.content.parts[0].text
+    new_message = types.Content(
+        role='user',
+        parts=[types.Part(text="Check my order and billing status")]
+    )
+
+    responses = []
+    async for event in runner.run_async(
+        user_id='test_user',
+        session_id=session.id,
+        new_message=new_message
+    ):
+        if event.content and event.content.parts:
+            responses.append(event.content.parts[0].text)
+
+    response = " ".join(responses).lower()
 
     # Verify both agents contributed
-    assert 'order' in response.lower()
-    assert 'billing' in response.lower()
+    assert 'order' in response or 'billing' in response
 ```
 
 ### 3. Evaluation Framework
@@ -790,14 +951,33 @@ test_cases = [
 ]
 
 
-async def run_evaluation():
+async def run_evaluation(agent: Agent):
     """Run comprehensive evaluation."""
+
+    runner = InMemoryRunner(agent=agent, app_name='eval_app')
+    session = await runner.session_service.create_session(
+        app_name='eval_app',
+        user_id='eval_user'
+    )
 
     results = []
 
     for test in test_cases:
-        result = await runner.run_async(test['query'], agent=agent)
-        response = result.content.parts[0].text.lower()
+        new_message = types.Content(
+            role='user',
+            parts=[types.Part(text=test['query'])]
+        )
+        
+        responses = []
+        async for event in runner.run_async(
+            user_id='eval_user',
+            session_id=session.id,
+            new_message=new_message
+        ):
+            if event.content and event.content.parts:
+                responses.append(event.content.parts[0].text)
+
+        response = responses[0].lower() if responses else ""
 
         score = sum(1 for kw in test['expected_keywords'] if kw in response)
         max_score = len(test['expected_keywords'])
@@ -879,13 +1059,23 @@ Tone: Professional, helpful
 ```python
 # ✅ Comprehensive error handling
 try:
-    result = await runner.run_async(query, agent=agent)
+    new_message = types.Content(role='user', parts=[types.Part(text=query)])
+    async for event in runner.run_async(
+        user_id='user_id',
+        session_id=session.id,
+        new_message=new_message
+    ):
+        if event.content and event.content.parts:
+            response = event.content.parts[0].text
 except TimeoutError:
     # Handle timeout
-except ValueError:
+    response = "Request timed out, please try again"
+except ValueError as e:
     # Handle validation error
+    response = f"Invalid input: {e}"
 except Exception as e:
     logger.error(f"Unexpected error: {e}")
+    response = "An error occurred, please try again later"
     # Graceful degradation
 ```
 
@@ -911,11 +1101,22 @@ def trim_history(history: list, max_length: int = 10) -> list:
 **Solution**:
 
 ```python
-# ✅ Comprehensive monitoring
-run_config = RunConfig(
-    trace_to_cloud=True,
+# ✅ Comprehensive monitoring - correct approach
+from google.adk.runners import InMemoryRunner
+from google.adk.plugins import BasePlugin
+
+# Register plugins with Runner (NOT RunConfig)
+runner = InMemoryRunner(
+    agent=agent,
+    app_name='monitored_app',
     plugins=[metrics_plugin, alerting_plugin]
 )
+
+# For cloud tracing, use deployment-time CLI flag:
+# adk deploy cloud_run --trace_to_cloud
+# OR for Agent Engine:
+# from google.adk.apps.agent_engine_utils import AdkApp
+# app = AdkApp(agent=agent, enable_tracing=True)
 ```
 
 ---

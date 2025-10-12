@@ -39,6 +39,41 @@ Please check back later for the completed version. If you encounter issues, refe
 
 ## :::
 
+:::info Verify Runner API Usage
+
+**CRITICAL**: ADK v1.16+ changed the Runner API. All examples in this tutorial use the correct pattern.
+
+**Correct Runner API** (verified in source code):
+- ✅ CORRECT: `from google.adk.runners import InMemoryRunner`
+- ✅ CORRECT: `runner = InMemoryRunner(agent=agent, app_name='app')`
+- ✅ CORRECT: Create session, then use async iteration with `async for event in runner.run_async(...)`
+
+**Common Mistakes to Avoid**:
+- ❌ WRONG: `from google.adk.agents import Runner` - this class doesn't exist in v1.16+
+- ❌ WRONG: `runner = Runner()` - use InMemoryRunner instead
+- ❌ WRONG: `result = await runner.run_async(query, agent=agent)` - use async iteration
+
+**Required Pattern**:
+```python
+from google.adk.runners import InMemoryRunner
+from google.genai import types
+
+runner = InMemoryRunner(agent=agent, app_name='app')
+session = await runner.session_service.create_session(
+    app_name='app', user_id='user_id'
+)
+new_message = types.Content(role='user', parts=[types.Part(text=query)])
+async for event in runner.run_async(
+    user_id='user_id', session_id=session.id, new_message=new_message
+):
+    if event.content and event.content.parts:
+        print(event.content.parts[0].text)
+```
+
+**Source**: `/research/adk-python/src/google/adk/runners.py`
+
+:::
+
 # Tutorial 28: Using Other LLMs with LiteLLM
 
 **Goal**: Use OpenAI, Claude, Ollama, and other LLMs in your ADK agents via LiteLLM
@@ -116,9 +151,11 @@ Source: contributing/samples/hello_world_litellm/agent.py
 """
 import asyncio
 import os
-from google.adk.agents import Agent, Runner
+from google.adk.agents import Agent
+from google.adk.runners import InMemoryRunner
 from google.adk.models import LiteLlm
 from google.adk.tools import FunctionTool
+from google.genai import types
 
 # Environment setup
 os.environ['OPENAI_API_KEY'] = 'sk-...'  # Your OpenAI API key
@@ -144,15 +181,27 @@ async def main():
         tools=[FunctionTool(calculate_square)]
     )
 
-    # Run queries
-    runner = Runner()
-
-    result = await runner.run_async(
-        "What is the square of 12?",
-        agent=agent
+    # Create runner and session
+    runner = InMemoryRunner(agent=agent, app_name='gpt4o_app')
+    session = await runner.session_service.create_session(
+        app_name='gpt4o_app',
+        user_id='user_001'
     )
 
-    print(result.content.parts[0].text)
+    # Run query with async iteration
+    query = "What is the square of 12?"
+    new_message = types.Content(
+        role='user',
+        parts=[types.Part(text=query)]
+    )
+    
+    async for event in runner.run_async(
+        user_id='user_001',
+        session_id=session.id,
+        new_message=new_message
+    ):
+        if event.content and event.content.parts:
+            print(event.content.parts[0].text)
 
 
 if __name__ == '__main__':
@@ -232,9 +281,11 @@ ADK agent using Anthropic Claude 3.7 Sonnet via LiteLLM.
 """
 import asyncio
 import os
-from google.adk.agents import Agent, Runner
+from google.adk.agents import Agent
+from google.adk.runners import InMemoryRunner
 from google.adk.models import LiteLlm
 from google.adk.tools import FunctionTool
+from google.genai import types
 
 # Environment setup
 os.environ['ANTHROPIC_API_KEY'] = 'sk-ant-...'  # Your Anthropic API key
@@ -272,8 +323,12 @@ You excel at:
         tools=[FunctionTool(analyze_sentiment)]
     )
 
-    # Run query
-    runner = Runner()
+    # Create runner and session
+    runner = InMemoryRunner(agent=agent, app_name='claude_app')
+    session = await runner.session_service.create_session(
+        app_name='claude_app',
+        user_id='user_001'
+    )
 
     query = """
 Analyze the sentiment of this product review and explain your reasoning:
@@ -282,9 +337,19 @@ incredibly well and provides helpful, accurate responses. The interface
 is intuitive and the speed is impressive. Highly recommended!"
     """.strip()
 
-    result = await runner.run_async(query, agent=agent)
-
-    print(result.content.parts[0].text)
+    # Run query with async iteration
+    new_message = types.Content(
+        role='user',
+        parts=[types.Part(text=query)]
+    )
+    
+    async for event in runner.run_async(
+        user_id='user_001',
+        session_id=session.id,
+        new_message=new_message
+    ):
+        if event.content and event.content.parts:
+            print(event.content.parts[0].text)
 
 
 if __name__ == '__main__':
@@ -434,9 +499,11 @@ Source: contributing/samples/hello_world_ollama/agent.py
 """
 import asyncio
 import os
-from google.adk.agents import Agent, Runner
+from google.adk.agents import Agent
+from google.adk.runners import InMemoryRunner
 from google.adk.models import LiteLlm
 from google.adk.tools import FunctionTool
+from google.genai import types
 
 # Environment setup for Ollama
 os.environ['OLLAMA_API_BASE'] = 'http://localhost:11434'
@@ -469,19 +536,32 @@ async def main():
         tools=[FunctionTool(get_weather)]
     )
 
-    # Run queries
-    runner = Runner()
+    # Create runner and session
+    runner = InMemoryRunner(agent=agent, app_name='ollama_app')
+    session = await runner.session_service.create_session(
+        app_name='ollama_app',
+        user_id='user_001'
+    )
 
     print("\n" + "="*60)
     print("LOCAL OLLAMA AGENT (Privacy-First)")
     print("="*60 + "\n")
 
-    result = await runner.run_async(
-        "What's the weather like in San Francisco?",
-        agent=agent
+    # Run query with async iteration
+    query = "What's the weather like in San Francisco?"
+    new_message = types.Content(
+        role='user',
+        parts=[types.Part(text=query)]
     )
+    
+    async for event in runner.run_async(
+        user_id='user_001',
+        session_id=session.id,
+        new_message=new_message
+    ):
+        if event.content and event.content.parts:
+            print(event.content.parts[0].text)
 
-    print(result.content.parts[0].text)
     print("\n" + "="*60 + "\n")
 
 
@@ -573,8 +653,10 @@ ADK agent using Azure OpenAI.
 """
 import asyncio
 import os
-from google.adk.agents import Agent, Runner
+from google.adk.agents import Agent
+from google.adk.runners import InMemoryRunner
 from google.adk.models import LiteLlm
+from google.genai import types
 
 # Azure OpenAI configuration
 os.environ['AZURE_API_KEY'] = 'your-azure-key'
@@ -596,14 +678,27 @@ async def main():
         instruction='You are an enterprise assistant running on Azure.'
     )
 
-    # Run query
-    runner = Runner()
-    result = await runner.run_async(
-        "Explain the benefits of Azure OpenAI for enterprises",
-        agent=agent
+    # Create runner and session
+    runner = InMemoryRunner(agent=agent, app_name='azure_app')
+    session = await runner.session_service.create_session(
+        app_name='azure_app',
+        user_id='user_001'
     )
 
-    print(result.content.parts[0].text)
+    # Run query with async iteration
+    query = "Explain the benefits of Azure OpenAI for enterprises"
+    new_message = types.Content(
+        role='user',
+        parts=[types.Part(text=query)]
+    )
+    
+    async for event in runner.run_async(
+        user_id='user_001',
+        session_id=session.id,
+        new_message=new_message
+    ):
+        if event.content and event.content.parts:
+            print(event.content.parts[0].text)
 
 
 if __name__ == '__main__':
@@ -646,8 +741,10 @@ ADK agent using Claude 3.7 Sonnet via Vertex AI.
 """
 import asyncio
 import os
-from google.adk.agents import Agent, Runner
+from google.adk.agents import Agent
+from google.adk.runners import InMemoryRunner
 from google.adk.models import LiteLlm
+from google.genai import types
 
 # Vertex AI configuration
 os.environ['GOOGLE_CLOUD_PROJECT'] = 'your-project'
@@ -668,14 +765,27 @@ async def main():
         instruction='You leverage Claude via Google Cloud infrastructure.'
     )
 
-    # Run query
-    runner = Runner()
-    result = await runner.run_async(
-        "Compare Claude direct vs. Claude on Vertex AI",
-        agent=agent
+    # Create runner and session
+    runner = InMemoryRunner(agent=agent, app_name='vertex_claude_app')
+    session = await runner.session_service.create_session(
+        app_name='vertex_claude_app',
+        user_id='user_001'
     )
 
-    print(result.content.parts[0].text)
+    # Run query with async iteration
+    query = "Compare Claude direct vs. Claude on Vertex AI"
+    new_message = types.Content(
+        role='user',
+        parts=[types.Part(text=query)]
+    )
+    
+    async for event in runner.run_async(
+        user_id='user_001',
+        session_id=session.id,
+        new_message=new_message
+    ):
+        if event.content and event.content.parts:
+            print(event.content.parts[0].text)
 
 
 if __name__ == '__main__':
@@ -742,8 +852,6 @@ Explain quantum entanglement to a 12-year-old.
 Use an analogy they can relate to.
     """.strip()
 
-    runner = Runner()
-
     print("\n" + "="*70)
     print("MULTI-PROVIDER MODEL COMPARISON")
     print("="*70 + "\n")
@@ -760,9 +868,28 @@ Use an analogy they can relate to.
             instruction='You explain complex topics clearly and simply.'
         )
 
+        # Create runner and session for this model
+        runner = InMemoryRunner(agent=agent, app_name='compare_app')
+        session = await runner.session_service.create_session(
+            app_name='compare_app',
+            user_id='user_001'
+        )
+
         try:
-            result = await runner.run_async(query, agent=agent)
-            response = result.content.parts[0].text
+            # Run query with async iteration
+            new_message = types.Content(
+                role='user',
+                parts=[types.Part(text=query)]
+            )
+            
+            response = ""
+            async for event in runner.run_async(
+                user_id='user_001',
+                session_id=session.id,
+                new_message=new_message
+            ):
+                if event.content and event.content.parts:
+                    response = event.content.parts[0].text
 
             print(response)
             print(f"\n[Length: {len(response)} chars]")
@@ -907,11 +1034,28 @@ async def run_with_fallback(query: str):
     for model_name, model in models:
         try:
             agent = Agent(model=model)
-            runner = Runner()
-            result = await runner.run_async(query, agent=agent)
+            runner = InMemoryRunner(agent=agent, app_name='fallback_app')
+            session = await runner.session_service.create_session(
+                app_name='fallback_app',
+                user_id='user_001'
+            )
+            
+            new_message = types.Content(
+                role='user',
+                parts=[types.Part(text=query)]
+            )
+            
+            result_text = None
+            async for event in runner.run_async(
+                user_id='user_001',
+                session_id=session.id,
+                new_message=new_message
+            ):
+                if event.content and event.content.parts:
+                    result_text = event.content.parts[0].text
 
             print(f"✅ Success with {model_name}")
-            return result
+            return result_text
 
         except Exception as e:
             print(f"❌ {model_name} failed: {e}")
@@ -939,19 +1083,39 @@ async def process_batch(queries: list[str]):
     cloud_model = GoogleGenAI(model='gemini-2.5-flash')
     cloud_agent = Agent(model=cloud_model)
 
-    runner = Runner()
     results = []
 
     for query in queries:
-        # Route by complexity
+        # Route by complexity and create appropriate runner
         if is_simple(query):
             # Free local processing
-            result = await runner.run_async(query, agent=local_agent)
+            runner = InMemoryRunner(agent=local_agent, app_name='batch_app')
         else:
             # Use cloud for complex
-            result = await runner.run_async(query, agent=cloud_agent)
-
-        results.append(result)
+            runner = InMemoryRunner(agent=cloud_agent, app_name='batch_app')
+        
+        # Create session
+        session = await runner.session_service.create_session(
+            app_name='batch_app',
+            user_id='batch_user'
+        )
+        
+        # Run query with async iteration
+        new_message = types.Content(
+            role='user',
+            parts=[types.Part(text=query)]
+        )
+        
+        result_text = None
+        async for event in runner.run_async(
+            user_id='batch_user',
+            session_id=session.id,
+            new_message=new_message
+        ):
+            if event.content and event.content.parts:
+                result_text = event.content.parts[0].text
+        
+        results.append(result_text)
 
     return results
 

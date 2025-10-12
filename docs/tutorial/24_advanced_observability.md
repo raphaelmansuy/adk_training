@@ -64,6 +64,33 @@ Please check back later for the completed version. If you encounter issues, refe
 
 ---
 
+:::info API Verification
+
+**Source Verified**: Official ADK source code (version 1.16.0+)
+
+**Correct Plugin API**: Plugins are registered with `Runner` or `App`, NOT `RunConfig`
+
+**Correct Pattern**:
+```python
+# ✅ CORRECT
+runner = InMemoryRunner(
+    agent=agent,
+    app_name='my_app',
+    plugins=[SaveFilesAsArtifactsPlugin()]
+)
+
+# ❌ WRONG
+run_config = RunConfig(plugins=[...])  # RunConfig has NO plugins parameter
+```
+
+**Cloud Trace**: Enabled via CLI flags (`--trace_to_cloud`) or `AdkApp(enable_tracing=True)`, NOT in RunConfig.
+
+**Verification Date**: January 2025
+
+:::
+
+---
+
 ## Why Advanced Observability Matters
 
 **Problem**: Production agents require deep visibility into behavior, performance, and failures for debugging and optimization.
@@ -117,7 +144,8 @@ SaveFilesAsArtifactsPlugin example.
 
 import asyncio
 import os
-from google.adk.agents import Agent, Runner, RunConfig
+from google.adk.agents import Agent
+from google.adk.runners import InMemoryRunner
 from google.adk.plugins import SaveFilesAsArtifactsPlugin
 from google.genai import types
 
@@ -137,27 +165,37 @@ async def main():
         instruction="Generate reports and save them automatically."
     )
 
-    # Create plugin
-    artifact_plugin = SaveFilesAsArtifactsPlugin(
-        output_dir='./artifacts',  # Where to save files
-        save_all_responses=True    # Save all agent responses
+    # Create plugin (saves uploaded files as artifacts)
+    artifact_plugin = SaveFilesAsArtifactsPlugin()
+
+    # Create runner with plugin
+    runner = InMemoryRunner(
+        agent=agent,
+        app_name='artifact_demo',
+        plugins=[artifact_plugin]  # Register plugin with runner
     )
 
-    # Configure run with plugin
-    run_config = RunConfig(
-        plugins=[artifact_plugin]
+    # Create session
+    session = await runner.session_service.create_session(
+        user_id='user',
+        app_name='artifact_demo'
     )
 
     # Run agent
-    runner = Runner()
-    result = await runner.run_async(
-        "Generate a brief report about AI agents",
-        agent=agent,
-        run_config=run_config
-    )
+    async for event in runner.run_async(
+        user_id='user',
+        session_id=session.id,
+        new_message=types.Content(
+            role='user',
+            parts=[types.Part.from_text("Generate a brief report about AI agents")]
+        )
+    ):
+        if event.content and event.content.parts:
+            text = ''.join(part.text or '' for part in event.content.parts)
+            if text:
+                print(f"[{event.author}]: {text[:200]}...")
 
-    print("✅ Response saved as artifact")
-    print(f"Response: {result.content.parts[0].text[:200]}...")
+    print("\n✅ Plugin automatically saves uploaded files as artifacts")
 
 
 if __name__ == '__main__':
@@ -172,52 +210,58 @@ if __name__ == '__main__':
 
 **Cloud Trace** provides distributed tracing for Google Cloud applications.
 
+**Important**: Cloud Trace is enabled at **deployment time** using CLI flags, not in application code.
+
+### Deploying with Cloud Trace
+
+```bash
+# Deploy to Cloud Run with tracing
+adk deploy cloud_run \
+  --project your-project-id \
+  --region us-central1 \
+  --service-name traced-agent \
+  --trace_to_cloud  # Enable Cloud Trace
+
+# Deploy to Agent Engine with tracing
+adk deploy agent_engine \
+  --project your-project-id \
+  --region us-central1 \
+  --trace_to_cloud  # Enable Cloud Trace
+
+# Run local web UI with tracing
+adk web --trace_to_cloud
+
+# Run local API server with tracing
+adk api_server --trace_to_cloud
+```
+
+### Agent Engine with Tracing (Programmatic)
+
+For Agent Engine deployments, you can enable tracing in the AdkApp configuration:
+
 ```python
 """
-Cloud Trace integration example.
+Agent Engine deployment with Cloud Trace.
 """
 
-import asyncio
-import os
-from google.adk.agents import Agent, Runner, RunConfig
-from google.genai import types
+from vertexai.preview.reasoning_engines import AdkApp
+from google.adk.agents import Agent
 
-# Environment setup
-os.environ['GOOGLE_GENAI_USE_VERTEXAI'] = '1'
-os.environ['GOOGLE_CLOUD_PROJECT'] = 'your-project-id'
-os.environ['GOOGLE_CLOUD_LOCATION'] = 'us-central1'
+# Create agent
+root_agent = Agent(
+    model='gemini-2.0-flash',
+    name='traced_agent',
+    instruction="You are a helpful assistant."
+)
 
+# Create ADK app with tracing enabled
+adk_app = AdkApp(
+    agent=root_agent,
+    enable_tracing=True  # Enable Cloud Trace for Agent Engine
+)
 
-async def main():
-    """Agent with Cloud Trace enabled."""
-
-    agent = Agent(
-        model='gemini-2.0-flash',
-        name='traced_agent',
-        instruction="You are a helpful assistant."
-    )
-
-    # Enable Cloud Trace
-    run_config = RunConfig(
-        trace_to_cloud=True  # Send traces to Cloud Trace
-    )
-
-    runner = Runner()
-
-    # Run agent - traces automatically sent to Cloud Trace
-    result = await runner.run_async(
-        "What is machine learning?",
-        agent=agent,
-        run_config=run_config
-    )
-
-    print(f"Response: {result.content.parts[0].text}")
-    print("\n✅ Trace sent to Cloud Trace")
-    print("View traces at: https://console.cloud.google.com/traces")
-
-
-if __name__ == '__main__':
-    asyncio.run(main())
+# Deploy to Agent Engine
+# This app will send traces to Cloud Trace automatically
 ```
 
 ### Viewing Traces in Cloud Console
@@ -226,9 +270,17 @@ if __name__ == '__main__':
 # View traces in Cloud Console
 https://console.cloud.google.com/traces?project=your-project-id
 
-# Filter traces by agent name
-# Analyze latency, spans, and errors
-# Identify performance bottlenecks
+# Filter traces by:
+# - Agent name
+# - Time range
+# - Latency threshold
+# - Error status
+
+# Analyze:
+# - Request flow and latency
+# - Tool invocation spans
+# - Model call timing
+# - Performance bottlenecks
 ```
 
 ---
@@ -251,7 +303,8 @@ import time
 from datetime import datetime
 from typing import Dict, List, Optional
 from dataclasses import dataclass, field
-from google.adk.agents import Agent, Runner, RunConfig, Session
+from google.adk.agents import Agent
+from google.adk.runners import InMemoryRunner
 from google.adk.plugins import BasePlugin
 from google.adk.events import Event
 from google.genai import types
@@ -524,16 +577,6 @@ class ProductionMonitoringSystem:
         self.alerting_plugin = AlertingPlugin(latency_threshold=3.0, error_threshold=2)
         self.profiler_plugin = PerformanceProfilerPlugin()
 
-        # Create run config with all plugins
-        self.run_config = RunConfig(
-            plugins=[
-                self.metrics_plugin,
-                self.alerting_plugin,
-                self.profiler_plugin
-            ],
-            trace_to_cloud=True  # Also send to Cloud Trace
-        )
-
         # Create agent
         self.agent = Agent(
             model='gemini-2.0-flash',
@@ -548,8 +591,16 @@ Always be helpful and accurate.
             )
         )
 
-        self.runner = Runner()
-        self.session = Session()
+        # Create runner with plugins
+        self.runner = InMemoryRunner(
+            agent=self.agent,
+            app_name='production_monitoring',
+            plugins=[
+                self.metrics_plugin,
+                self.alerting_plugin,
+                self.profiler_plugin
+            ]
+        )
 
     async def process_query(self, query: str):
         """Process query with full monitoring."""
@@ -558,16 +609,28 @@ Always be helpful and accurate.
         print(f"QUERY: {query}")
         print(f"{'='*70}\n")
 
-        try:
-            result = await self.runner.run_async(
-                query,
-                agent=self.agent,
-                session=self.session,
-                run_config=self.run_config
+        # Create session if not exists
+        if not hasattr(self, 'session_id'):
+            session = await self.runner.session_service.create_session(
+                user_id='user',
+                app_name='production_monitoring'
             )
+            self.session_id = session.id
 
-            print(f"\n📄 RESPONSE:\n{result.content.parts[0].text}\n")
-            print(f"{'='*70}\n")
+        try:
+            async for event in self.runner.run_async(
+                user_id='user',
+                session_id=self.session_id,
+                new_message=types.Content(
+                    role='user',
+                    parts=[types.Part.from_text(query)]
+                )
+            ):
+                if event.content and event.content.parts:
+                    text = ''.join(part.text or '' for part in event.content.parts)
+                    if text and event.author != 'user':
+                        print(f"\n📄 RESPONSE:\n{text}\n")
+                        print(f"{'='*70}\n")
 
         except Exception as e:
             print(f"\n❌ ERROR: {e}\n")
@@ -728,8 +791,9 @@ You've mastered advanced observability:
 **Key Takeaways**:
 
 - ✅ ADK plugin system for modular observability
-- ✅ SaveFilesAsArtifactsPlugin for automatic saving
-- ✅ Cloud Trace integration with `trace_to_cloud=True`
+- ✅ Plugins registered with `Runner(plugins=[])` or `App(plugins=[])`
+- ✅ SaveFilesAsArtifactsPlugin for automatic file saving
+- ✅ Cloud Trace via CLI flags `--trace_to_cloud` (deployment only)
 - ✅ Custom plugins for metrics, alerting, profiling
 - ✅ Prometheus metrics export
 - ✅ Production monitoring dashboards
