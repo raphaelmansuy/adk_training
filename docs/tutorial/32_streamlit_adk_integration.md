@@ -799,6 +799,16 @@ When the user asks about their data:
 
 agent = get_agent()
 
+# Initialize runner and session
+from google.adk.runners import InMemoryRunner
+
+@st.cache_resource
+def get_runner():
+    """Initialize ADK runner for agent execution."""
+    return InMemoryRunner(agent=agent, app_name='data_analysis_app')
+
+runner = get_runner()
+
 # Tool execution mapping
 TOOLS = {
     "analyze_column": analyze_column,
@@ -809,6 +819,20 @@ TOOLS = {
 # Initialize session state
 if "messages" not in st.session_state:
     st.session_state.messages = []
+
+if "session_id" not in st.session_state:
+    # Create session for this Streamlit session
+    import asyncio
+    from google.genai import types
+    
+    async def create_session():
+        return await runner.session_service.create_session(
+            app_name='data_analysis_app',
+            user_id='streamlit_user'
+        )
+    
+    session = asyncio.run(create_session())
+    st.session_state.session_id = session.id
 
 if "dataframe" not in st.session_state:
     st.session_state.dataframe = None
@@ -909,24 +933,30 @@ Dataset information:
             full_response = ""
 
             try:
-                # Proper ADK execution pattern
+                # Proper ADK execution pattern with InMemoryRunner
                 import asyncio
                 from google.genai import types
 
-                events = asyncio.run(runner.run_async(
-                    user_id='user1',
-                    session_id='session1',
-                    new_message=types.Content(
-                        parts=[types.Part(text=f"{context}\n\nUser question: {prompt}")],
-                        role='user'
+                async def get_response(prompt_text: str):
+                    """Helper to execute agent in async context."""
+                    new_message = types.Content(
+                        role='user',
+                        parts=[types.Part(text=prompt_text)]
                     )
-                ))
+                    
+                    response_text = ""
+                    async for event in runner.run_async(
+                        user_id='streamlit_user',
+                        session_id=st.session_state.session_id,
+                        new_message=new_message
+                    ):
+                        if event.content and event.content.parts:
+                            response_text += event.content.parts[0].text
+                    
+                    return response_text
 
-                # Extract response text
-                full_response = ''.join([
-                    e.content.parts[0].text for e in events
-                    if hasattr(e, 'content') and hasattr(e.content, 'parts')
-                ])
+                # Execute agent
+                full_response = asyncio.run(get_response(f"{context}\n\nUser question: {prompt}"))
 
                 # Display response
                 message_placeholder.markdown(full_response)
@@ -1475,16 +1505,26 @@ logger = logging.getLogger(__name__)
 
 # Wrap agent calls
 try:
-    # Proper ADK execution pattern
+    # Proper ADK execution pattern with InMemoryRunner
     import asyncio
     from google.genai import types
 
-    events = asyncio.run(runner.run_async(
-        user_id='user1',
-        session_id='session1',
-        new_message=types.Content(parts=[types.Part(text=message)], role='user')
-    ))
-    response = ''.join([e.content.parts[0].text for e in events if hasattr(e, 'content')])
+    async def get_response(message: str):
+        """Helper to execute agent in async context."""
+        new_message = types.Content(role='user', parts=[types.Part(text=message)])
+        
+        response_text = ""
+        async for event in runner.run_async(
+            user_id=st.session_state.get("user_id", "streamlit_user"),
+            session_id=st.session_state.session_id,
+            new_message=new_message
+        ):
+            if event.content and event.content.parts:
+                response_text += event.content.parts[0].text
+        
+        return response_text
+
+    response = asyncio.run(get_response(message))
     # ... process response
 except Exception as e:
     logger.error(f"Agent error: {e}", exc_info=True)
@@ -1532,12 +1572,22 @@ start_time = time.time()
 import asyncio
 from google.genai import types
 
-events = asyncio.run(runner.run_async(
-    user_id='user1',
-    session_id='session1',
-    new_message=types.Content(parts=[types.Part(text=message)], role='user')
-))
-response = ''.join([e.content.parts[0].text for e in events if hasattr(e, 'content')])
+async def get_response(message: str):
+    """Helper to execute agent in async context."""
+    new_message = types.Content(role='user', parts=[types.Part(text=message)])
+    
+    response_text = ""
+    async for event in runner.run_async(
+        user_id=st.session_state.get("user_id", "streamlit_user"),
+        session_id=st.session_state.session_id,
+        new_message=new_message
+    ):
+        if event.content and event.content.parts:
+            response_text += event.content.parts[0].text
+    
+    return response_text
+
+response = asyncio.run(get_response(message))
 
 latency = time.time() - start_time
 

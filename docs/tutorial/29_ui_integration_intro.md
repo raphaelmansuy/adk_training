@@ -12,6 +12,24 @@ Please check back later for the completed version. If you encounter issues, refe
 
 :::
 
+:::info Verify Runner API Usage
+
+**CRITICAL**: ADK v1.16+ changed the Runner API. All code examples use the correct pattern.
+
+**Correct Runner API** (verified in source code):
+- ✅ CORRECT: `from google.adk.runners import InMemoryRunner`
+- ✅ CORRECT: `runner = InMemoryRunner(agent=agent, app_name='app')`
+- ✅ CORRECT: Create session, then use `async for event in runner.run_async(...)`
+
+**Common Mistakes to Avoid**:
+- ❌ WRONG: `from google.adk.agents import Runner` - doesn't exist in v1.16+
+- ❌ WRONG: `runner = Runner()` - use InMemoryRunner
+- ❌ WRONG: `await runner.run_async(query, agent=agent)` - use async iteration
+
+**Source**: `/research/adk-python/src/google/adk/runners.py`
+
+:::
+
 **Estimated Reading Time**: 35-45 minutes  
 **Difficulty Level**: Intermediate  
 **Prerequisites**: Tutorials 1-3 (ADK Basics), Tutorial 14 (Streaming & SSE)
@@ -415,7 +433,9 @@ agent = Agent(
 
 ```python
 import streamlit as st
-from google.adk.agents import Agent, Runner
+import asyncio
+from google.adk.agents import Agent
+from google.adk.runners import InMemoryRunner
 from google.genai import types
 
 # Initialize agent
@@ -426,22 +446,40 @@ agent = Agent(
 )
 
 # Initialize runner
-runner = Runner(app_name='streamlit_app', agent=agent)
+runner = InMemoryRunner(agent=agent, app_name='streamlit_app')
+
+async def get_response(prompt: str, session_id: str):
+    """Get agent response with proper async pattern."""
+    # Create session
+    session = await runner.session_service.create_session(
+        app_name='streamlit_app',
+        user_id='user1'
+    )
+    
+    # Run query with async iteration
+    new_message = types.Content(
+        role='user',
+        parts=[types.Part(text=prompt)]
+    )
+    
+    response_text = ""
+    async for event in runner.run_async(
+        user_id='user1',
+        session_id=session.id,
+        new_message=new_message
+    ):
+        if event.content and event.content.parts:
+            response_text += event.content.parts[0].text
+    
+    return response_text
 
 # Streamlit UI
 if prompt := st.chat_input("Ask me about your data"):
     st.chat_message("user").write(prompt)
-
-    # Proper ADK execution pattern
-    import asyncio
-    events = asyncio.run(runner.run_async(
-        user_id='user1',
-        session_id='session1',
-        new_message=types.Content(parts=[types.Part(text=prompt)], role='user')
-    ))
-    response_text = ''.join([e.content.parts[0].text for e in events if hasattr(e, 'content')])
-
-    st.chat_message("assistant").write(response_text)
+    
+    # Get response
+    response = asyncio.run(get_response(prompt, 'session1'))
+    st.chat_message("assistant").write(response)
 ```
 
 **Covered in**: Tutorial 32 (Streamlit)
@@ -483,7 +521,8 @@ if prompt := st.chat_input("Ask me about your data"):
 
 ```python
 from slack_bolt import App
-from google.adk.agents import Agent, Runner
+from google.adk.agents import Agent
+from google.adk.runners import InMemoryRunner
 from google.genai import types
 import asyncio
 
@@ -497,20 +536,44 @@ agent = Agent(
 )
 
 # Initialize runner
-runner = Runner(app_name='slack_bot', agent=agent)
+runner = InMemoryRunner(agent=agent, app_name='slack_bot')
+
+async def get_agent_response(user_id: str, channel_id: str, text: str):
+    """Get agent response with proper async pattern."""
+    # Create session
+    session = await runner.session_service.create_session(
+        app_name='slack_bot',
+        user_id=user_id
+    )
+    
+    # Run query with async iteration
+    new_message = types.Content(
+        role='user',
+        parts=[types.Part(text=text)]
+    )
+    
+    response_text = ""
+    async for event in runner.run_async(
+        user_id=user_id,
+        session_id=session.id,
+        new_message=new_message
+    ):
+        if event.content and event.content.parts:
+            response_text += event.content.parts[0].text
+    
+    return response_text
 
 @app.message("")
 def handle_message(message, say):
-    # Proper ADK execution pattern
-    events = asyncio.run(runner.run_async(
-        user_id=message['user'],
-        session_id=message['channel'],
-        new_message=types.Content(parts=[types.Part(text=message['text'])], role='user')
+    # Get agent response
+    response = asyncio.run(get_agent_response(
+        message['user'],
+        message['channel'],
+        message['text']
     ))
-    response_text = ''.join([e.content.parts[0].text for e in events if hasattr(e, 'content')])
-
+    
     # Reply in Slack thread
-    say(response_text, thread_ts=message['ts'])
+    say(response, thread_ts=message['ts'])
 
 app.start(port=3000)
 ```
@@ -571,7 +634,8 @@ topic_path = publisher.topic_path('my-project', 'agent-requests')
 publisher.publish(topic_path, data=b'Process document X')
 
 # Initialize agent once at startup (outside callback)
-from google.adk.agents import Agent, Runner
+from google.adk.agents import Agent
+from google.adk.runners import InMemoryRunner
 from google.genai import types
 import asyncio
 
@@ -582,21 +646,40 @@ agent = Agent(
 )
 
 # Initialize runner
-runner = Runner(app_name='pubsub_processor', agent=agent)
+runner = InMemoryRunner(agent=agent, app_name='pubsub_processor')
+
+async def process_message(message_text: str, message_id: str):
+    """Process message with proper async pattern."""
+    # Create session
+    session = await runner.session_service.create_session(
+        app_name='pubsub_processor',
+        user_id='system'
+    )
+    
+    # Run query with async iteration
+    new_message = types.Content(
+        role='user',
+        parts=[types.Part(text=message_text)]
+    )
+    
+    async for event in runner.run_async(
+        user_id='system',
+        session_id=session.id,
+        new_message=new_message
+    ):
+        if event.content and event.content.parts:
+            # Process event (e.g., publish result)
+            print(event.content.parts[0].text)
 
 # Subscriber
 subscriber = pubsub_v1.SubscriberClient()
 subscription_path = subscriber.subscription_path('my-project', 'agent-sub')
 
 def callback(message):
-    # Proper ADK execution pattern
-    events = asyncio.run(runner.run_async(
-        user_id='system',
-        session_id=message.message_id,
-        new_message=types.Content(parts=[types.Part(text=message.data.decode())], role='user')
-    ))
-
-    # Publish result or acknowledge
+    # Process message
+    asyncio.run(process_message(message.data.decode(), message.message_id))
+    
+    # Acknowledge
     message.ack()
 
 subscriber.subscribe(subscription_path, callback=callback)
@@ -877,25 +960,35 @@ START
 **Always persist agent state for conversation continuity**:
 
 ```python
-from google.adk.agents import Agent, Runner
+from google.adk.agents import Agent
+from google.adk.runners import InMemoryRunner
 from google.genai import types
 import asyncio
 
 # ❌ Bad: New agent every request (loses context)
 @app.post("/chat")
-def chat(message: str):
+async def chat_bad(message: str):
     agent = Agent(
         model='gemini-2.0-flash-exp',
         name='support_agent',
         instruction='You are a helpful support agent'
     )
-    runner = Runner(app_name='support', agent=agent)
-    events = asyncio.run(runner.run_async(
+    runner = InMemoryRunner(agent=agent, app_name='support')
+    session = await runner.session_service.create_session(
+        app_name='support', user_id='user1'
+    )
+    
+    new_message = types.Content(role='user', parts=[types.Part(text=message)])
+    response_text = ""
+    async for event in runner.run_async(
         user_id='user1',
-        session_id='session1',
-        new_message=types.Content(parts=[types.Part(text=message)], role='user')
-    ))
-    return ''.join([e.content.parts[0].text for e in events if hasattr(e, 'content')])
+        session_id=session.id,
+        new_message=new_message
+    ):
+        if event.content and event.content.parts:
+            response_text += event.content.parts[0].text
+    
+    return response_text
 
 # ✅ Good: Initialize agent and runner once, reuse for conversations
 agent = Agent(
@@ -903,17 +996,28 @@ agent = Agent(
     name='support_agent',
     instruction='You are a helpful support agent with conversation memory'
 )
-runner = Runner(app_name='support', agent=agent)
+runner = InMemoryRunner(agent=agent, app_name='support')
 
 @app.post("/chat")
-def chat(user_id: str, session_id: str, message: str):
+async def chat(user_id: str, session_id: str, message: str):
+    # Create or get session
+    session = await runner.session_service.create_session(
+        app_name='support',
+        user_id=user_id
+    )
+    
     # Runner manages conversation history with session_id
-    events = asyncio.run(runner.run_async(
+    new_message = types.Content(role='user', parts=[types.Part(text=message)])
+    response_text = ""
+    async for event in runner.run_async(
         user_id=user_id,
-        session_id=session_id,
-        new_message=types.Content(parts=[types.Part(text=message)], role='user')
-    ))
-    return ''.join([e.content.parts[0].text for e in events if hasattr(e, 'content')])
+        session_id=session.id,
+        new_message=new_message
+    ):
+        if event.content and event.content.parts:
+            response_text += event.content.parts[0].text
+    
+    return response_text
 ```
 
 ---
