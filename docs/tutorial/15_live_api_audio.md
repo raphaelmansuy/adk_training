@@ -34,15 +34,18 @@ implementation_link: "/tutorial_implementation/tutorial15"
 
 **This tutorial has been verified against official Google ADK sources and updated with critical corrections.**
 
-**Key corrections made (October 11, 2025)**:
-- ✅ Fixed LiveRequestQueue API: Use `send_content()` for text, `send_realtime()` for audio only
+**Key corrections made (October 12, 2025)**:
+- ✅ Fixed LiveRequestQueue API: Use `send_content()` for text, `send_realtime()` for audio/video blobs
 - ✅ Fixed queue closing: Use `close()` not `send_end()`
 - ✅ Fixed run_live() signature: Requires `live_request_queue`, `user_id`, `session_id` parameters
 - ✅ Fixed response_modalities: Can only use ONE modality per session (TEXT or AUDIO, not both)
 - ✅ Updated ProactivityConfig usage: Uses `proactive_audio=True` not `threshold`
 - ✅ Verified all model names and voice configurations against official docs
+- ✅ Updated with full audio support implementation using PyAudio
+- ✅ Added AUDIO_SETUP.md for platform-specific installation
+- ✅ Removed incorrect PyAudio examples from required paths
 
-Please review the corrected code examples. Working implementation will be available in the [tutorial repository](https://github.com/raphaelmansuy/adk_training/tree/main/tutorial_implementation/tutorial15).
+**Working implementation available**: [Tutorial 15 Implementation](https://github.com/raphaelmansuy/adk_training/tree/main/tutorial_implementation/tutorial15)
 
 :::
 
@@ -295,25 +298,20 @@ from google.genai import types
 run_config = RunConfig(
     streaming_mode=StreamingMode.BIDI,
 
-    # Audio input configuration
+    # Audio input/output configuration
     speech_config=types.SpeechConfig(
         # Voice output configuration
         voice_config=types.VoiceConfig(
             prebuilt_voice_config=types.PrebuiltVoiceConfig(
                 voice_name='Puck'  # Agent's voice
             )
-        ),
-
-        # Optional: Audio transcription
-        audio_transcription_config=types.AudioTranscriptionConfig(
-            model='chirp',
-            enable_word_timestamps=True,
-            language_codes=['en-US']
         )
     ),
 
-    # Response format
-    response_modalities=['TEXT', 'AUDIO']  # Return both text and audio
+    # Response format - ONLY ONE modality per session
+    response_modalities=['audio']  # For audio responses
+    # OR
+    # response_modalities=['text']  # For text responses
 )
 ```
 
@@ -345,44 +343,42 @@ run_config = RunConfig(
 ### Response Modalities
 
 ```python
-# Text only
-response_modalities=['TEXT']
+# Text only (use lowercase to avoid Pydantic serialization warnings)
+response_modalities=['text']
 
-# Audio only
-response_modalities=['AUDIO']
+# Audio only (use lowercase to avoid Pydantic serialization warnings)
+response_modalities=['audio']
 
-# IMPORTANT: You can only set ONE modality per session, not both
-# Setting both ['TEXT', 'AUDIO'] will cause an error
+# CRITICAL: You can only set ONE modality per session
+# Native audio models REQUIRE 'audio' modality
+# Text-capable models can use 'text' modality
+# Setting both ['text', 'audio'] will cause errors
 ```
 
 ---
 
-## 4. Real-World Example: Voice Assistant
+## 4. Real-World Example: Basic Demo
 
-Let's build a complete voice assistant with Live API.
+Let's build a basic Live API demo with text responses.
 
-### Complete Implementation
+### Simple Text-Based Demo
 
 ```python
 """
-Voice Assistant with Live API
-Real-time voice conversation with audio input/output.
+Basic Live API Demo
+Simple bidirectional streaming with text responses.
 """
 
 import asyncio
 import os
-import wave
-import pyaudio
-from google.adk.agents import Agent, Runner, RunConfig, StreamingMode, LiveRequestQueue
+from google.adk.agents import Agent, LiveRequestQueue
+from google.adk.agents.run_config import RunConfig, StreamingMode
+from google.adk.apps import App
+from google.adk.runners import Runner
+from google.adk.sessions import InMemorySessionService
 from google.genai import types
 
-# Environment setup
-os.environ['GOOGLE_GENAI_USE_VERTEXAI'] = '1'
-os.environ['GOOGLE_CLOUD_PROJECT'] = 'your-project-id'
-os.environ['GOOGLE_CLOUD_LOCATION'] = 'us-central1'
-
-
-class VoiceAssistant:
+async def basic_live_demo():
     """Real-time voice assistant using Live API."""
 
     def __init__(self):
