@@ -58,13 +58,13 @@ This tutorial has been verified against official Google Cloud documentation.
 
 **What You'll Learn**:
 
-- Understanding Google AgentSpace architecture
-- Deploying ADK agents to AgentSpace
+- Understanding Gemini Enterprise architecture
+- Deploying ADK agents to Gemini Enterprise via Vertex AI Agent Builder
 - Using pre-built Google agents (Idea Generation, Deep Research, NotebookLM)
-- Building custom agents with Agent Designer
+- Building custom agents with Agent Designer (no-code builder)
 - Managing agents at scale with governance and orchestration
-- Integrating enterprise data sources (SharePoint, Drive, OneDrive)
-- AgentSpace pricing and licensing
+- Integrating enterprise data sources (SharePoint, Drive, OneDrive, Salesforce)
+- Gemini Enterprise pricing and licensing (Business $21, Enterprise Standard $30, Plus custom)
 - Best practices for enterprise agent management
 
 ---
@@ -112,9 +112,9 @@ This tutorial has been verified against official Google Cloud documentation.
     Deploy from ADK                             Access via Web
 ```
 
-**Why Use AgentSpace?**
+**Why Use Gemini Enterprise?**
 
-| Need                            | AgentSpace Solution                             |
+| Need                            | Gemini Enterprise Solution                      |
 | ------------------------------- | ----------------------------------------------- |
 | Deploy ADK agents to production | Managed hosting with auto-scaling               |
 | Manage multiple agents          | Agent Gallery with discovery and sharing        |
@@ -129,7 +129,7 @@ This tutorial has been verified against official Google Cloud documentation.
 
 ## 1. Pre-built Google Agents
 
-AgentSpace includes **production-ready agents** built by Google:
+Gemini Enterprise includes **production-ready agents** built by Google:
 
 ### Idea Generation Agent
 
@@ -228,87 +228,23 @@ Sources: [15 citations from research papers, industry reports, news]
 
 ---
 
-## 2. Agent Designer (Low-Code)
+## 2. Why Use Gemini Enterprise?
 
-**Agent Designer** lets you build custom agents **without coding**.
-
-### How It Works
-
-1. **Define Agent Purpose**: Describe what the agent should do
-2. **Select Data Sources**: Connect to enterprise data
-3. **Configure Tools**: Choose from pre-built tool library
-4. **Set Instructions**: Define agent behavior and personality
-5. **Test & Iterate**: Try agent with sample queries
-6. **Deploy**: Publish to Agent Gallery
-
-### Example: Customer Support Agent
-
-**Step 1: Purpose**
-
-```
-Name: "Customer Support Specialist"
-Description: "Helps customers with product questions, troubleshooting, and returns"
-```
-
-**Step 2: Data Sources**
-
-- Knowledge Base (Drive folder)
-- Product Documentation (SharePoint)
-- FAQ Database
-- Order History (Salesforce)
-
-**Step 3: Tools**
-
-- Knowledge Search
-- Product Lookup
-- Order Tracking
-- Return Processing
-
-**Step 4: Instructions**
-
-```
-You are a friendly and helpful customer support agent.
-
-Guidelines:
-- Always greet customers warmly
-- Search the knowledge base before answering
-- If unsure, say so and escalate to human
-- Offer next steps at the end of each interaction
-- Be empathetic to frustrated customers
-
-Tone: Professional yet conversational
-Response length: Concise (2-3 paragraphs max)
-```
-
-**Step 5: Test**
-
-```
-Test Query: "My order #12345 arrived damaged. What should I do?"
-
-Agent Response:
-"I'm sorry to hear your order arrived damaged! Let me help you with that.
-
-I've looked up order #12345, and I can start a return for you right away.
-You have two options:
-1. Free return shipping with a full refund (7-10 days)
-2. Immediate replacement with expedited shipping (2-3 days)
-
-Which would you prefer? I'll also include a 15% discount code for your next
-purchase as an apology for the inconvenience."
-```
-
-**Step 6: Deploy**
-
-- Click "Publish to Gallery"
-- Set access permissions (team-wide, company-wide, or private)
-- Configure usage limits
-- Enable monitoring
+| Feature                  | Reason                                                                                                         |
+| ------------------------ | -------------------------------------------------------------------------------------------------------------- |
+| **No Infrastructure**    | Zero Kubernetes/scaling concerns - just deploy                                                                 |
+| **Enterprise-Ready**     | Built-in auth, audit logs, SOC2/HIPAA compliance                                                               |
+| **Pre-Built Agents**     | Library of tested Google agents (e.g., Deep Research, NotebookLM, Idea Generation) ready to use immediately    |
+| **Agent Designer**       | No-code builder for users to create agents with GUI                                                            |
+| **Data Connectors**      | One-click integration with Drive, Gmail, Salesforce, SharePoint, Adobe Experience Manager, ServiceNow, and SAP |
+| **Unified Governance**   | Centralized control over all agents (custom + Google's), permissions, secrets, data access                     |
+| **Pay-As-You-Go Agents** | Inference costs only for what you use; no VM costs to serve models                                             |
 
 ---
 
 ## 3. Agent Gallery
 
-**Agent Gallery** is AgentSpace's **marketplace for discovering and sharing agents**.
+**Agent Gallery** is Gemini Enterprise's **marketplace for discovering and sharing agents**.
 
 ### Features
 
@@ -365,36 +301,36 @@ purchase as an apology for the inconvenience."
 ### Using Gallery Agents
 
 ```python
-# Conceptual example - actual API may differ
-from google.cloud import agentspace
+# Conceptual example - actual API uses Vertex AI Agent Builder
+from google.cloud import aiplatform
+from google.cloud.aiplatform import AgentBuilderClient
 
-# Initialize AgentSpace client
-client = agentspace.AgentSpaceClient(project='your-project')
+# Initialize Vertex AI
+aiplatform.init(project='your-project', location='us-central1')
 
-# Browse gallery
-agents = client.list_gallery_agents(category='marketing')
+# List available agents from gallery
+client = AgentBuilderClient()
+agents = client.list_agents(parent='projects/your-project/locations/us-central1')
 for agent in agents:
-    print(f"{agent.name}: {agent.rating}⭐ - {agent.installs} installs")
+    print(f"{agent.display_name}: {agent.description}")
 
-# Deploy agent from gallery
-deployed = client.deploy_agent(
-    agent_id='content-generator-v2',
-    permissions=['marketing-team@company.com']
-)
+# Deploy a custom ADK agent (use adk deploy command, or programmatically)
+# adk deploy agent_engine --agent-path ./my_agent --project your-project
 
-# Use deployed agent
+# Query deployed agent via Agent Builder API
+agent_name = 'projects/your-project/locations/us-central1/agents/agent-abc123'
 response = client.query_agent(
-    agent_id=deployed.id,
-    query="Generate blog post outline about AI in healthcare"
+    agent=agent_name,
+    query_input="Generate blog post outline about AI in healthcare"
 )
-print(response.content)
+print(response.response_text)
 ```
 
 ---
 
-## 4. Deploying ADK Agents to AgentSpace
+## 4. Deploying ADK Agents to Gemini Enterprise
 
-**Build locally with ADK → Deploy to AgentSpace for production**
+**Build locally with ADK → Deploy to Gemini Enterprise for production**
 
 ### Deployment Process
 
@@ -450,20 +386,26 @@ adk package \
   --output sales-agent-v1.zip
 ```
 
-**Step 4: Deploy to AgentSpace**
+**Step 4: Deploy to Gemini Enterprise**
 
 ```bash
-# Deploy via gcloud CLI
-gcloud agentspace agents deploy sales-agent-v1.zip \
+# Deploy via ADK CLI (Vertex AI Agent Engine)
+adk deploy agent_engine \
+  --agent-path ./my_agent \
+  --project your-project \
+  --region us-central1 \
+  --display-name "Sales Analyst Agent"
+
+# Or package and deploy manually
+gcloud ai agent-builder agents create \
   --project=your-project \
   --region=us-central1 \
-  --name="Sales Analyst Agent" \
-  --description="Q4 sales analysis" \
-  --permissions=sales-team@company.com
+  --display-name="Sales Analyst Agent" \
+  --description="Q4 sales analysis"
 
 # Output:
 # Deployed: sales-analyst-prod (agent-abc123)
-# URL: https://agentspace.google.com/agents/agent-abc123
+# URL: https://console.cloud.google.com/gen-app-builder/agents/agent-abc123
 ```
 
 **Step 5: Configure Production Settings**
@@ -494,19 +436,19 @@ connectors:
     permissions: read
 ```
 
-**Step 6: Monitor in AgentSpace Dashboard**
+**Step 6: Monitor in Gemini Enterprise Console**
 
-- Real-time usage metrics
-- Error rates and logs
-- Cost tracking
-- User feedback
-- Performance trends
+- Real-time usage metrics (Cloud Console → Gen App Builder → Agents)
+- Error rates and logs (Cloud Logging integration)
+- Cost tracking (BigQuery billing export)
+- User feedback (built-in rating system)
+- Performance trends (Cloud Monitoring dashboards)
 
 ---
 
 ## 5. Data Connectors
 
-AgentSpace provides **pre-built connectors** for enterprise data sources.
+Gemini Enterprise provides **pre-built connectors** for enterprise data sources.
 
 ### Available Connectors
 
@@ -1127,18 +1069,18 @@ You've learned how to deploy and manage agents at enterprise scale with Google A
 - ✅ Deploy ADK agents with `adk package` and `gcloud agentspace deploy`
 - ✅ Monitor with built-in dashboards and custom metrics
 
-**When to Use AgentSpace**:
+**When to Use Gemini Enterprise**:
 
-| Use Case                        | AgentSpace?                                  |
-| ------------------------------- | -------------------------------------------- |
-| Prototyping new agent           | ❌ Use ADK locally                           |
-| Production deployment           | ✅ Deploy to AgentSpace                      |
-| Personal project                | ❌ Run locally or Cloud Run                  |
-| Enterprise with 50+ users       | ✅ AgentSpace with governance                |
-| Need pre-built agents           | ✅ Use Gallery agents                        |
-| Custom agent with complex logic | [FLOW] Build with ADK → Deploy to AgentSpace |
-| Manage multiple teams           | ✅ AgentSpace with RBAC                      |
-| Need enterprise data connectors | ✅ SharePoint, Drive, Salesforce connectors  |
+| Use Case                        | Gemini Enterprise?                                  |
+| ------------------------------- | --------------------------------------------------- |
+| Prototyping new agent           | ❌ Use ADK locally                                  |
+| Production deployment           | ✅ Deploy to Gemini Enterprise                      |
+| Personal project                | ❌ Run locally or Cloud Run                         |
+| Enterprise with 50+ users       | ✅ Gemini Enterprise with governance                |
+| Need pre-built agents           | ✅ Use Gallery agents (Deep Research, NotebookLM)   |
+| Custom agent with complex logic | [FLOW] Build with ADK → Deploy to Gemini Enterprise |
+| Manage multiple teams           | ✅ Gemini Enterprise with RBAC                      |
+| Need enterprise data connectors | ✅ SharePoint, Drive, Salesforce connectors         |
 
 **Production Deployment Checklist**:
 
@@ -1172,4 +1114,4 @@ You've learned how to deploy and manage agents at enterprise scale with Google A
 
 ---
 
-**Congratulations!** You now understand how to scale ADK agents to enterprise production with Google AgentSpace. You can deploy custom agents, use pre-built agents, manage governance, and monitor operations at scale.
+**Congratulations!** You now understand how to scale ADK agents to enterprise production with Gemini Enterprise. You can deploy custom agents, use pre-built agents (Deep Research, NotebookLM, Idea Generation), manage governance with RBAC and compliance features, and monitor operations at scale through the Cloud Console.
