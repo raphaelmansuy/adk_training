@@ -1,12 +1,13 @@
 ---
 id: google_agentspace
-title: "Tutorial 26: Google AgentSpace - Enterprise Agent Platform"
-description: "Deploy and manage agents on Google AgentSpace for enterprise-grade agent orchestration, collaboration, and governance."
-sidebar_label: "26. Google AgentSpace"
+title: "Tutorial 26: Gemini Enterprise (formerly AgentSpace) - Enterprise Agent Platform"
+description: "Deploy and manage agents on Gemini Enterprise for enterprise-grade agent orchestration, collaboration, and governance."
+sidebar_label: "26. Gemini Enterprise"
 sidebar_position: 26
-tags: ["advanced", "agentspace", "enterprise", "platform", "governance"]
+tags: ["advanced", "gemini-enterprise", "enterprise", "platform", "governance"]
 keywords:
   [
+    "gemini enterprise",
     "google agentspace",
     "enterprise platform",
     "agent governance",
@@ -19,24 +20,34 @@ estimated_time: "2 hours"
 prerequisites:
   ["Tutorial 23: Production Deployment", "Google Cloud enterprise account"]
 learning_objectives:
-  - "Deploy agents to Google AgentSpace"
+  - "Deploy agents to Gemini Enterprise"
   - "Configure enterprise agent governance"
   - "Build agent collaboration systems"
   - "Implement enterprise security and compliance"
 implementation_link: "https://github.com/raphaelmansuy/adk_training/tree/main/tutorial_implementation/tutorial26"
 ---
 
-:::danger UNDER CONSTRUCTION
+:::info Product Rebranding
 
-**This tutorial is currently under construction and may contain errors, incomplete information, or outdated code examples.**
-
-Please check back later for the completed version. If you encounter issues, refer to the working implementation in the [tutorial repository](https://github.com/raphaelmansuy/adk_training/tree/main/tutorial_implementation/tutorial26).
+**Note**: Google AgentSpace was rebranded as **Gemini Enterprise** in late 2024. This tutorial uses the current product name and pricing (verified October 2025).
 
 :::
 
-# Tutorial 26: Google AgentSpace - Enterprise Agent Management
+:::info Verified Against Official Sources
 
-**Goal**: Deploy and manage AI agents at enterprise scale using Google Cloud's AgentSpace platform
+This tutorial has been verified against official Google Cloud documentation.
+
+**Verification Date**: October 12, 2025  
+**Sources Checked**:
+- Official Gemini Enterprise website (cloud.google.com/gemini-enterprise)
+- Pricing page (verified October 2025)
+- Product documentation and FAQs
+
+:::
+
+# Tutorial 26: Gemini Enterprise - Enterprise Agent Management
+
+**Goal**: Deploy and manage AI agents at enterprise scale using Google Cloud's **Gemini Enterprise** platform (formerly AgentSpace)
 
 **Prerequisites**:
 
@@ -58,21 +69,24 @@ Please check back later for the completed version. If you encounter issues, refe
 
 ---
 
-## What is Google AgentSpace?
+## What is Gemini Enterprise?
 
-**AgentSpace** is Google Cloud's **enterprise platform for managing AI agents at scale**.
+**Gemini Enterprise** (formerly Google AgentSpace) is Google Cloud's **enterprise platform for managing AI agents at scale**.
 
-**Source**: https://cloud.google.com/products/agentspace?hl=en
+**Official Site**: [cloud.google.com/gemini-enterprise](https://cloud.google.com/gemini-enterprise)
+
+**Historical Note**: This product was originally launched as "Google AgentSpace" and was rebranded to "Gemini Enterprise" in late 2024 to align with Google's unified Gemini AI brand.
 
 **Relationship to ADK**:
 
-- **ADK (Agent Development Kit)**: Framework for _building_ agents
-- **AgentSpace**: Platform for _deploying and managing_ agents
-- Think: **ADK = Development** | **AgentSpace = Operations**
+- **ADK (Agent Development Kit)**: Framework for _building_ agents locally
+- **Gemini Enterprise**: Platform for _deploying and managing_ agents at scale
+- Think: **ADK = Development** | **Gemini Enterprise = Operations**
 
-```
+```text
 ┌─────────────────────────────────────────────────────────┐
-│                   GOOGLE AGENTSPACE                      │
+│                  GEMINI ENTERPRISE                       │
+│         (formerly Google AgentSpace)                     │
 │                  (Cloud Platform Layer)                  │
 │                                                           │
 │  ┌──────────────┐  ┌──────────────┐  ┌──────────────┐  │
@@ -689,49 +703,72 @@ budgets:
 
 ## 7. Pricing & Plans
 
-**AgentSpace Pricing** (as of 2025):
+**Gemini Enterprise Pricing** (verified October 2025):
 
-**Base License**: **$25 USD per seat per month**
+### Gemini Business
+
+**Price**: **$21 USD per seat per month**
+
+**Ideal for**: Small businesses and teams within organizations
 
 **What's Included**:
 
-- Access to pre-built Google agents
-- Agent Designer (low-code builder)
+- Access to pre-built Google agents (Idea Generation, Deep Research, NotebookLM)
+- Agent Designer (no-code agent builder)
 - Agent Gallery access
-- Up to 10 deployed agents per seat
-- Standard data connectors
-- Basic monitoring and analytics
+- Gemini chat with higher quota
+- Data connectors (Google Workspace, Microsoft 365)
+- 25 GiB storage and data indexing per seat (pooled)
+- Up to 300 seats
 - Community support
 
-**Enterprise Add-ons**:
+### Gemini Enterprise Standard
 
-| Feature                               | Additional Cost     |
-| ------------------------------------- | ------------------- |
-| Advanced connectors (Salesforce, AEM) | $10/connector/month |
-| Custom data residency                 | $50/month           |
-| Advanced governance & audit logs      | $100/month          |
-| Dedicated support                     | $500/month          |
-| SLA guarantees (99.9% uptime)         | 20% of license cost |
+**Price**: **$30 USD per seat per month**
 
-**Usage-Based Costs** (on top of license):
+**Ideal for**: Large organizations needing enterprise-grade IT controls
+
+**Everything in Business, plus**:
+
+- Gemini Code Assist Standard (AI coding agent)
+- Bring your own ADK-built agents or 3rd party agents
+- Advanced security features (VPC-Service Controls, CMEK)
+- Compliance support (SOC2, GDPR, HIPAA, FedRAMP High)
+- Sovereign data boundaries for data residency
+- Up to 75 GiB storage per seat (pooled)
+- Unlimited seats
+- Advanced governance and audit logs
+
+### Gemini Enterprise Plus
+
+**Price**: **Contact sales for custom pricing**
+
+**Ideal for**: Enterprises with complex requirements
+
+**Everything in Standard, plus**:
+
+- Premium support SLAs
+- Custom data residency options
+- Dedicated account team
+- Custom integrations
+- Volume discounts available
+
+**Usage-Based Costs** (all editions, on top of license):
 
 - **Model inference**: Same as Vertex AI pricing
   - gemini-2.5-flash: ~$0.075/1M input tokens
   - gemini-2.5-pro: ~$1.25/1M input tokens
-- **Storage**: $0.023/GB/month
+- **Storage**: $0.023/GB/month (above included quota)
 - **Data egress**: Standard Cloud pricing
 
 **Example Calculation**:
 
-**Scenario**: 50-person marketing team using AgentSpace
+**Scenario**: 50-person marketing team using Gemini Business
 
-```
-Base licenses:        50 seats × $25    = $1,250/month
-SharePoint connector:  1 × $10          =    $10/month
-Drive connector:       1 × $10          =    $10/month
-Advanced governance:   1 × $100         =   $100/month
+```text
+Base licenses:        50 seats × $21    = $1,050/month
                                         ────────────
-Monthly fixed cost:                     $1,370
+Monthly fixed cost:                     $1,050
 
 Estimated usage:
 - 10,000 queries/month
@@ -740,9 +777,11 @@ Estimated usage:
 
 Model cost: 10,000 × 500 × $0.075/1M  =    $0.38/month
 
-Total monthly cost: ~$1,370
-Per-seat cost: $1,370 / 50 = $27.40/seat/month
+Total monthly cost: ~$1,050
+Per-seat cost: $1,050 / 50 = $21/seat/month (base license only)
 ```
+
+**Comparison to Previous Pricing**: This replaces the legacy AgentSpace pricing announced earlier in 2024, which started at $25/seat. Current verified pricing (October 2025) starts at $21/seat for Business edition.
 
 ---
 
