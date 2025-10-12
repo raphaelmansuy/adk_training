@@ -323,6 +323,11 @@ Guidelines:
     }
 )
 
+# Initialize runner for agent execution
+from google.adk.runners import InMemoryRunner
+
+runner = InMemoryRunner(agent=agent, app_name='document_processor')
+
 def process_document(message_data: dict) -> dict:
     """
     Process a document using ADK agent.
@@ -354,19 +359,32 @@ Provide:
 Format as JSON."""
 
     try:
-        # Proper ADK execution pattern
+        # Proper ADK execution pattern with InMemoryRunner
         import asyncio
         from google.genai import types
 
-        events = asyncio.run(runner.run_async(
-            user_id='system',
-            session_id=document_id,
-            new_message=types.Content(parts=[types.Part(text=prompt)], role='user')
-        ))
-        full_response = ''.join([
-            e.content.parts[0].text for e in events
-            if hasattr(e, 'content') and hasattr(e.content, 'parts')
-        ])
+        async def get_response(prompt: str, session_id: str):
+            """Helper to execute agent in async context."""
+            # Create session for this document
+            session = await runner.session_service.create_session(
+                app_name='document_processor',
+                user_id='system'
+            )
+            
+            new_message = types.Content(role='user', parts=[types.Part(text=prompt)])
+            
+            response_text = ""
+            async for event in runner.run_async(
+                user_id='system',
+                session_id=session.id,
+                new_message=new_message
+            ):
+                if event.content and event.content.parts:
+                    response_text += event.content.parts[0].text
+            
+            return response_text
+
+        full_response = asyncio.run(get_response(prompt, document_id))
 
         result = {
             "document_id": document_id,
@@ -642,24 +660,42 @@ Format:
 Be clear, precise, and actionable."""
 )
 
+# Initialize runner for summarizer agent
+from google.adk.runners import InMemoryRunner
+
+runner = InMemoryRunner(agent=agent, app_name='summarizer')
+
 def summarize_document(content: str, doc_id: str = 'default') -> str:
     """Generate summary using agent."""
-    # Proper ADK execution pattern
+    # Proper ADK execution pattern with InMemoryRunner
     import asyncio
     from google.genai import types
 
-    events = asyncio.run(runner.run_async(
-        user_id='system',
-        session_id=doc_id,
-        new_message=types.Content(
-            parts=[types.Part(text=f"Summarize this document:\n\n{content}")],
-            role='user'
+    async def get_summary(text: str):
+        """Helper to execute agent in async context."""
+        # Create session for this document
+        session = await runner.session_service.create_session(
+            app_name='summarizer',
+            user_id='system'
         )
-    ))
-    summary = ''.join([
-        e.content.parts[0].text for e in events
-        if hasattr(e, 'content') and hasattr(e.content, 'parts')
-    ])
+        
+        new_message = types.Content(
+            role='user',
+            parts=[types.Part(text=f"Summarize this document:\n\n{text}")]
+        )
+        
+        summary_text = ""
+        async for event in runner.run_async(
+            user_id='system',
+            session_id=session.id,
+            new_message=new_message
+        ):
+            if event.content and event.content.parts:
+                summary_text += event.content.parts[0].text
+        
+        return summary_text
+
+    summary = asyncio.run(get_summary(content))
     return summary
 
 def callback(message):
@@ -822,6 +858,11 @@ Be thorough and accurate.""",
     }
 )
 
+# Initialize runner for entity extractor agent
+from google.adk.runners import InMemoryRunner
+
+runner = InMemoryRunner(agent=agent, app_name='entity_extractor')
+
 TOOLS = {
     "extract_dates": extract_dates,
     "extract_numbers": extract_numbers
@@ -829,23 +870,35 @@ TOOLS = {
 
 def extract_entities(content: str, doc_id: str = 'default') -> dict:
     """Extract entities using agent."""
-    # Proper ADK execution pattern
+    # Proper ADK execution pattern with InMemoryRunner
     import asyncio
     from google.genai import types
 
-    events = asyncio.run(runner.run_async(
-        user_id='system',
-        session_id=doc_id,
-        new_message=types.Content(
-            parts=[types.Part(text=f"Extract all entities from:\n\n{content}")],
-            role='user'
+    async def get_entities(text: str):
+        """Helper to execute agent in async context."""
+        # Create session for this document
+        session = await runner.session_service.create_session(
+            app_name='entity_extractor',
+            user_id='system'
         )
-    ))
-    result = ''.join([
-        e.content.parts[0].text for e in events
-        if hasattr(e, 'content') and hasattr(e.content, 'parts')
-    ])
+        
+        new_message = types.Content(
+            role='user',
+            parts=[types.Part(text=f"Extract all entities from:\n\n{text}")]
+        )
+        
+        result_text = ""
+        async for event in runner.run_async(
+            user_id='system',
+            session_id=session.id,
+            new_message=new_message
+        ):
+            if event.content and event.content.parts:
+                result_text += event.content.parts[0].text
+        
+        return result_text
 
+    result = asyncio.run(get_entities(content))
     return result
 
 def callback(message):
