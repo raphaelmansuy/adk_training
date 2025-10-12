@@ -85,6 +85,20 @@ Please check back later for the completed version. If you encounter issues, refe
 
 ---
 
+:::info API Verification
+
+**Source Verified**: Official ADK source code (version 1.16.0+)
+
+**Correct API**: `config_agent_utils.from_config(config_path)`
+
+**Common Mistake**: Using `AgentConfig.from_yaml_file()` - this method **does not exist**. Instead, use `config_agent_utils.from_config()` which loads the YAML file and returns a ready-to-use agent instance.
+
+**Verification Date**: January 2025
+
+:::
+
+---
+
 ## 1. YAML Configuration Basics
 
 ### What is root_agent.yaml?
@@ -476,7 +490,7 @@ Load and run agent from YAML configuration.
 import asyncio
 import os
 from google.adk.agents import Runner, Session
-from google.adk.agents.agent_config import AgentConfig
+from google.adk.agents import config_agent_utils
 
 # Environment setup
 os.environ['GOOGLE_GENAI_USE_VERTEXAI'] = '1'
@@ -488,10 +502,7 @@ async def main():
     """Load configuration and run agent."""
 
     # Load agent from YAML configuration
-    config = AgentConfig.from_yaml_file('root_agent.yaml')
-
-    # Create agent from configuration
-    agent = config.to_agent()
+    agent = config_agent_utils.from_config('root_agent.yaml')
 
     # Create runner and session
     runner = Runner()
@@ -610,9 +621,10 @@ else I can assist you with today?
 ### Hybrid Approach (Best Practice)
 
 ```python
+from google.adk.agents import config_agent_utils
+
 # Load base configuration from YAML
-config = AgentConfig.from_yaml_file('base_agent.yaml')
-agent = config.to_agent()
+agent = config_agent_utils.from_config('base_agent.yaml')
 
 # Customize programmatically
 agent.tools.append(custom_complex_tool)
@@ -669,14 +681,13 @@ instruction: |
 ### ✅ DO: Validate Configuration
 
 ```python
-from google.adk.agents.agent_config import AgentConfig
+from google.adk.agents import config_agent_utils
 
 def validate_config(yaml_path: str) -> bool:
     """Validate agent configuration."""
 
     try:
-        config = AgentConfig.from_yaml_file(yaml_path)
-        agent = config.to_agent()
+        agent = config_agent_utils.from_config(yaml_path)
         print(f"✅ Configuration valid: {agent.name}")
         return True
 
@@ -741,11 +752,12 @@ sub_agents:
 ### Pattern 2: Configuration Inheritance
 
 ```python
+from google.adk.agents import config_agent_utils
+
 # Load base configuration
-base_config = AgentConfig.from_yaml_file('config/base.yaml')
+specialized_agent = config_agent_utils.from_config('config/base.yaml')
 
 # Create specialized variants
-specialized_agent = base_config.to_agent()
 specialized_agent.instruction += "\n\nSpecialized for domain X"
 specialized_agent.tools.append(domain_specific_tool)
 ```
@@ -753,9 +765,10 @@ specialized_agent.tools.append(domain_specific_tool)
 ### Pattern 3: Dynamic Tool Registration
 
 ```python
+from google.adk.agents import config_agent_utils
+
 # Load config
-config = AgentConfig.from_yaml_file('root_agent.yaml')
-agent = config.to_agent()
+agent = config_agent_utils.from_config('root_agent.yaml')
 
 # Add tools dynamically based on user permissions
 if user.has_permission('admin'):
@@ -785,7 +798,9 @@ print(f"Exists: {os.path.exists(config_path)}")
 2. **Specify absolute path**:
 
 ```python
-config = AgentConfig.from_yaml_file('/full/path/to/root_agent.yaml')
+from google.adk.agents import config_agent_utils
+
+agent = config_agent_utils.from_config('/full/path/to/root_agent.yaml')
 ```
 
 ### Issue: "Invalid YAML syntax"
@@ -828,7 +843,7 @@ You've mastered YAML agent configuration:
 **Key Takeaways**:
 
 - ✅ `root_agent.yaml` for declarative agent definitions
-- ✅ `AgentConfig.from_yaml_file()` to load configurations
+- ✅ `config_agent_utils.from_config()` to load configurations
 - ✅ YAML for rapid prototyping and configuration management
 - ✅ Python code for complex logic and customization
 - ✅ Hybrid approach combines best of both
