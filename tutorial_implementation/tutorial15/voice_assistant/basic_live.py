@@ -12,6 +12,21 @@ from google.adk.runners import Runner
 from google.adk.sessions import InMemorySessionService
 from google.genai import types
 
+LIVE_MODEL = os.getenv('VOICE_ASSISTANT_LIVE_MODEL')
+TEXT_FALLBACK_MODEL = os.getenv('VOICE_ASSISTANT_LIVE_TEXT_MODEL', 'gemini-live-2.5-flash-preview')
+
+
+def _resolve_live_model() -> str:
+    model = (LIVE_MODEL or TEXT_FALLBACK_MODEL).strip()
+    if not model:
+        return TEXT_FALLBACK_MODEL
+    if 'native-audio' in model or 'native_audio' in model:
+        fallback = TEXT_FALLBACK_MODEL
+        print("ℹ️  Native-audio Live model detected; using text-capable fallback "
+              f"'{fallback}' for scripted demo.")
+        return fallback
+    return model
+
 
 async def basic_live_session():
     """
@@ -25,8 +40,14 @@ async def basic_live_session():
     """
     
     # Create agent for live interaction
+    model_to_use = _resolve_live_model()
+    if not model_to_use:
+        raise RuntimeError(
+            "VOICE_ASSISTANT_LIVE_MODEL is not set. Refer to https://ai.google.dev/gemini-api/docs/live#before_you_begin_building"
+        )
+
     agent = Agent(
-        model='gemini-live-2.5-flash-preview',
+        model=model_to_use,
         name='live_assistant',
         description='Basic voice assistant for Live API demonstration',
         instruction='You are a helpful voice assistant. Respond naturally to user queries.'
@@ -42,7 +63,7 @@ async def basic_live_session():
                 )
             )
         ),
-        response_modalities=['text']  # Use string instead of enum to avoid pydantic warning
+        response_modalities=[types.Modality.TEXT],
     )
     
     # Create request queue for live communication
@@ -64,6 +85,7 @@ async def basic_live_session():
     print("BASIC LIVE API DEMONSTRATION")
     print("=" * 70)
     print()
+    print(f"Configured live model: {model_to_use}")
     
     # Send a test message
     print("🎤 User: Hello, how are you today?")

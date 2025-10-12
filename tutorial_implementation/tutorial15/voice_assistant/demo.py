@@ -25,10 +25,12 @@ async def run_demo():
     print()
     
     # Create assistant
-    assistant = VoiceAssistant(
-        model='gemini-live-2.5-flash-preview',
-        voice_name='Puck'
-    )
+    assistant = VoiceAssistant(voice_name='Puck')
+    if not assistant.use_vertex_live:
+        print("⚠️  Streaming mode unavailable with current credentials.")
+        print("   Falling back to Responses API with text-only replies.")
+        print(f"   Using fallback model: {assistant.text_model}")
+        print("   Override with VOICE_ASSISTANT_TEXT_MODEL if needed.\n")
     
     # Demo conversation
     demo_messages = [
@@ -74,10 +76,7 @@ async def run_interactive_demo():
     print("=" * 70)
     print()
     
-    assistant = VoiceAssistant(
-        model='gemini-live-2.5-flash-preview',
-        voice_name='Puck'
-    )
+    assistant = VoiceAssistant(voice_name='Puck')
     
     try:
         while True:
@@ -106,7 +105,10 @@ def main():
     """Main entry point."""
     
     # Check environment - support both Vertex AI and API keys for Live API
-    has_vertex = os.getenv('GOOGLE_GENAI_USE_VERTEXAI') and os.getenv('GOOGLE_CLOUD_PROJECT')
+    has_vertex_flag = os.getenv('GOOGLE_GENAI_USE_VERTEXAI')
+    project_id = os.getenv('GOOGLE_CLOUD_PROJECT')
+    location = os.getenv('GOOGLE_CLOUD_LOCATION') or os.getenv('GOOGLE_GENAI_VERTEXAI_LOCATION')
+    has_vertex = has_vertex_flag and project_id
     has_api_key = os.getenv('GOOGLE_API_KEY') or os.getenv('GEMINI_API_KEY')
     
     if not has_vertex and not has_api_key:
@@ -115,6 +117,7 @@ def main():
         print("   Option 1 - Vertex AI (recommended for Live API):")
         print("   • GOOGLE_GENAI_USE_VERTEXAI=1")
         print("   • GOOGLE_CLOUD_PROJECT=your-project-id")
+        print("   • GOOGLE_CLOUD_LOCATION=us-central1 (or your region)")
         print()
         print("   Option 2 - API Key (may have limitations):")
         print("   • GOOGLE_API_KEY=your-api-key")
@@ -125,6 +128,11 @@ def main():
         print("   2. Edit .env with your credentials")
         print()
         print("💡 Alternative: Try 'make basic_demo' for a simpler example")
+        return
+    if has_vertex and not location:
+        print("⚠️  Vertex AI requires a region. For example:")
+        print("   export GOOGLE_CLOUD_LOCATION=us-central1")
+        print("   export GOOGLE_GENAI_VERTEXAI_LOCATION=us-central1")
         return
     
     print(f"🔑 Using authentication: {'Vertex AI' if has_vertex else 'API Key'}")
