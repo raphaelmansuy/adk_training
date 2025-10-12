@@ -27,11 +27,16 @@ learning_objectives:
 implementation_link: "https://github.com/raphaelmansuy/adk_training/tree/main/tutorial_implementation/tutorial22"
 ---
 
-:::danger UNDER CONSTRUCTION
+:::info Verified Against Official Sources
 
-**This tutorial is currently under construction and may contain errors, incomplete information, or outdated code examples.**
+This tutorial has been verified against official Google AI documentation and ADK source code.
 
-Please check back later for the completed version. If you encounter issues, refer to the working implementation in the [tutorial repository](https://github.com/raphaelmansuy/adk_training/tree/main/tutorial_implementation/tutorial22).
+**Verification Date**: October 12, 2025  
+**ADK Version**: 1.16.0+  
+**Sources Checked**:
+- ADK Python source code (`llm_agent.py`)
+- Official Gemini API documentation (https://ai.google.dev/gemini-api/docs/models)
+- Vertex AI Gemini documentation
 
 :::
 
@@ -90,11 +95,11 @@ Please check back later for the completed version. If you encounter issues, refe
 
 **Source**: ADK supports all Gemini models via Google AI and Vertex AI
 
-**⚠️ IMPORTANT**: As of October 2025, **Gemini 2.5 Flash is the DEFAULT model** in ADK (`model: str = 'gemini-2.5-flash'` in source code).
+**⚠️ IMPORTANT**: As of October 2025, **Gemini 2.5 Flash is RECOMMENDED** for new agents due to its excellent price-performance ratio. Note that ADK's default model parameter is an empty string (which inherits from parent agent), so **always specify the model explicitly**.
 
 | Model                         | Context Window | Key Features                                | Best For                        | Status      |
 | ----------------------------- | -------------- | ------------------------------------------- | ------------------------------- | ----------- |
-| **gemini-2.5-flash** ⭐       | 1M tokens      | **DEFAULT**, thinking, fast, multimodal     | **General purpose**, production | **Stable**  |
+| **gemini-2.5-flash** ⭐       | 1M tokens      | **RECOMMENDED**, thinking, fast, multimodal | **General purpose**, production | **Stable**  |
 | **gemini-2.5-pro**            | 1M tokens      | State-of-the-art, complex reasoning, STEM   | Critical analysis, research     | **Stable**  |
 | **gemini-2.5-flash-lite**     | 1M tokens      | Ultra-fast, cost-efficient, high throughput | High-volume, simple tasks       | **Preview** |
 | **gemini-2.0-flash**          | 1M tokens      | Fast, thinking, code execution              | General purpose (legacy)        | Stable      |
@@ -150,10 +155,10 @@ MODELS = {
         'speed': 'fast',
         'cost': 'low',
         'quality': 'excellent',
-        'is_default': True,  # DEFAULT model in ADK
+        'is_recommended': True,  # RECOMMENDED model for new projects
         'generation': '2.5',
         'recommended_for': [
-            '⭐ DEFAULT for all new agents',
+            '⭐ RECOMMENDED for all new agents',
             'General agent applications',
             'Production systems',
             'Agentic workflows',
@@ -1224,21 +1229,23 @@ ollama pull mistral-small3.1
 
 ## 6. Best Practices
 
-### ✅ DO: Start with gemini-2.5-flash (DEFAULT)
+### ✅ DO: Always Specify Model Explicitly (Recommended: gemini-2.5-flash)
 
 ```python
-# ✅ Good - Start with the DEFAULT model (best price-performance)
+# ✅ Good - Always specify model explicitly for clarity
 agent = Agent(
-    model='gemini-2.5-flash',  # Or just omit - it's the default!
+    model='gemini-2.5-flash',  # RECOMMENDED: Best price-performance
     name='my_agent'
 )
 
-# Even simpler - omit model parameter
-agent = Agent(name='my_agent')  # Uses gemini-2.5-flash automatically
+# ❌ Bad - Relying on default (empty string, inherits from parent)
+agent = Agent(name='my_agent')  # Model defaults to '', inherits from parent
 
-# Test and optimize later
-# Downgrade to 2.5-flash-lite if ultra-simple tasks
-# Upgrade to 2.5-pro if complex reasoning needed
+# ✅ Good - Be explicit and intentional about model choice
+# Test and optimize based on your needs:
+# - Use 2.5-flash for general purpose (RECOMMENDED)
+# - Downgrade to 2.5-flash-lite if ultra-simple tasks
+# - Upgrade to 2.5-pro if complex reasoning needed
 ```
 
 ### ✅ DO: Benchmark Before Production
@@ -1290,7 +1297,8 @@ You've mastered model selection and optimization:
 
 **Key Takeaways**:
 
-- ⭐ **`gemini-2.5-flash` is the DEFAULT** - Best price-performance, first Flash with thinking
+- ⭐ **`gemini-2.5-flash` is RECOMMENDED** - Best price-performance, first Flash with thinking
+- ✅ **Always specify model explicitly** - Default is empty string (inherits from parent)
 - ✅ `gemini-2.5-pro` for complex reasoning in code, math, STEM
 - ✅ `gemini-2.5-flash-lite` for ultra-fast, cost-efficient high-throughput
 - ✅ `gemini-2.0-flash` and `gemini-1.5-*` models still available (legacy)
@@ -1301,7 +1309,8 @@ You've mastered model selection and optimization:
 
 **Production Checklist**:
 
-- [ ] Model selection based on requirements (default: gemini-2.5-flash)
+- [ ] Model selection based on requirements (recommended: gemini-2.5-flash)
+- [ ] Model explicitly specified in Agent constructor (don't rely on defaults)
 - [ ] Benchmarking completed on representative queries
 - [ ] Feature compatibility verified (2.5 Flash has thinking!)
 - [ ] Cost projections calculated
@@ -1313,11 +1322,12 @@ You've mastered model selection and optimization:
 
 **What You Learned**:
 
-1. **Gemini 2.5 is the new default** - Better performance, native thinking, best value
-2. **Complete model lineup** - From 2.5-flash-lite (fastest) to 2.5-pro (smartest)
-3. **LiteLLM integration** - Use OpenAI, Claude, Ollama when you need provider flexibility
-4. **Native vs LiteLLM** - Always prefer native Gemini for best performance
-5. **Selection framework** - Use MODELS dict and recommend_model() for systematic choices
+1. **Gemini 2.5 Flash is RECOMMENDED** - Best performance and value for new projects
+2. **Always specify models explicitly** - Default is empty string (inherits from parent)
+3. **Complete model lineup** - From 2.5-flash-lite (fastest) to 2.5-pro (smartest)
+4. **LiteLLM integration** - Use OpenAI, Claude, Ollama when you need provider flexibility
+5. **Native vs LiteLLM** - Always prefer native Gemini for best performance
+6. **Selection framework** - Use MODELS dict and recommend_model() for systematic choices
 
 **Next Steps**:
 
