@@ -1,10 +1,12 @@
 """
 Advanced Live API Features
-Examples of proactivity, affective dialog, and video streaming.
+Demonstrations for proactivity, affective dialog, and video streaming patterns.
 """
 
 import asyncio
 import os
+from typing import AsyncIterable
+
 from google.adk.agents import Agent, LiveRequestQueue
 from google.adk.agents.run_config import RunConfig, StreamingMode
 from google.adk.apps import App
@@ -12,267 +14,277 @@ from google.adk.runners import Runner
 from google.adk.sessions import InMemorySessionService
 from google.genai import types
 
+LIVE_MODEL = (os.getenv("VOICE_ASSISTANT_LIVE_MODEL") or "").strip()
 
-async def proactivity_example():
-    """
-    Demonstrate proactive agent behavior.
-    Agent can initiate conversation without user input.
-    """
-    
-    print("=" * 70)
-    print("PROACTIVITY EXAMPLE")
-    print("=" * 70)
-    print()
-    print("This example demonstrates an agent that can initiate conversation.")
-    print()
-    
-    # Create proactive agent
-    agent = Agent(
-        model='gemini-live-2.5-flash-preview',
-        name='proactive_assistant',
-        instruction="""
-You are a proactive assistant that can initiate helpful suggestions.
-When appropriate, offer relevant tips or information without being asked.
-        """.strip()
-    )
-    
-    # Configure with proactivity
-    run_config = RunConfig(
-        streaming_mode=StreamingMode.BIDI,
-        
-        # Enable proactive responses (requires v1alpha API)
-        proactivity=types.ProactivityConfig(
-            proactive_audio=True
-        ),
-        
-        speech_config=types.SpeechConfig(
-            voice_config=types.VoiceConfig(
-                prebuilt_voice_config=types.PrebuiltVoiceConfig(
-                    voice_name='Puck'
-                )
-            )
-        ),
-        
-        response_modalities=['text']
-    )
-    
-    # Create session
-    queue = LiveRequestQueue()
-    app = App(name='proactive_app', root_agent=agent)
-    session_service = InMemorySessionService()
-    runner = Runner(app=app, session_service=session_service)
-    
-    user_id = 'proactive_user'
-    session = await runner.session_service.create_session(
-        app_name=app.name,
-        user_id=user_id
-    )
-    
-    # Send initial message
-    print("🎤 User: I'm working on a presentation.")
-    queue.send_content(
-        types.Content(
-            role='user',
-            parts=[types.Part.from_text(text="I'm working on a presentation.")]
+
+def _resolve_live_model() -> str:
+    """Use the configured Live model for demos."""
+
+    model = LIVE_MODEL
+    if not model:
+        raise RuntimeError(
+            "Set VOICE_ASSISTANT_LIVE_MODEL to a Live API model. "
+            "Example: gemini-live-2.5-flash-preview-native-audio-09-2025"
         )
-    )
-    queue.close()
-    
-    print("🤖 Agent: ", end='', flush=True)
-    
-    async for event in runner.run_live(
-        live_request_queue=queue,
-        user_id=user_id,
-        session_id=session.id,
-        run_config=run_config
-    ):
-        if event.content and event.content.parts:
-            for part in event.content.parts:
-                if part.text:
-                    print(part.text, end='', flush=True)
-    
-    print("\n")
+
+    print(f"ℹ️  Using Live API model: {model}")
+    return model
+
+
+def _print_header(title: str) -> None:
+    print("=" * 70)
+    print(title)
     print("=" * 70)
 
 
-async def affective_dialog_example():
-    """
-    Demonstrate emotion detection in voice.
-    Agent adapts responses based on detected emotions.
-    """
-    
-    print("=" * 70)
-    print("AFFECTIVE DIALOG EXAMPLE")
-    print("=" * 70)
+async def _collect_text_events(events: AsyncIterable) -> None:
+    """Stream and display events from Live API (audio or text)."""
+
+    async for event in events:
+        content = getattr(event, "content", None)
+        if not content or not getattr(content, "parts", None):
+            continue
+        for part in content.parts:
+            # Check for text content
+            text = getattr(part, "text", None)
+            if text:
+                print(text, end="", flush=True)
+                continue
+            
+            # Check for audio content
+            inline_data = getattr(part, "inline_data", None)
+            if inline_data:
+                mime_type = getattr(inline_data, "mime_type", "")
+                if "audio" in mime_type:
+                    print("[🔊 Audio response received]", end="", flush=True)
+
+
+async def proactivity_example() -> None:
+    """Demonstrate proactive follow-ups from an assistant."""
+
+    model_to_use = _resolve_live_model()
+    _print_header("PROACTIVITY EXAMPLE")
+    print(f"Configured live model: {model_to_use}")
     print()
-    print("This example demonstrates emotion-aware responses.")
+    print("The agent keeps context and offers proactive follow-up options.")
     print()
-    
-    # Create emotion-aware agent
+
     agent = Agent(
-        model='gemini-live-2.5-flash-preview',
-        name='empathetic_assistant',
+        model=model_to_use,
+        name="proactive_planner",
         instruction="""
-You are an empathetic assistant that responds appropriately to user emotions.
-Adjust your tone and response based on the emotional context:
-- Happy: Be enthusiastic and encouraging
-- Sad: Be supportive and understanding
-- Angry: Be calm and helpful
-- Neutral: Be professional and informative
-        """.strip()
+You are a proactive planning assistant.
+Respond conversationally and offer helpful follow-up suggestions.
+If the user describes a goal, anticipate next steps and check if they want reminders.
+        """.strip(),
     )
-    
-    # Configure with affective dialog
+
     run_config = RunConfig(
         streaming_mode=StreamingMode.BIDI,
-        
-        # Enable emotion detection
-        enable_affective_dialog=True,
-        
+        response_modalities=[types.Modality.AUDIO],
         speech_config=types.SpeechConfig(
             voice_config=types.VoiceConfig(
-                prebuilt_voice_config=types.PrebuiltVoiceConfig(
-                    voice_name='Kore'  # Warm, empathetic voice
-                )
+                prebuilt_voice_config=types.PrebuiltVoiceConfig(voice_name="Aoede")
             )
         ),
-        
-        response_modalities=['text']
     )
-    
-    # Create session
-    queue = LiveRequestQueue()
-    app = App(name='affective_app', root_agent=agent)
+
+    app = App(name="proactivity_app", root_agent=agent)
     session_service = InMemorySessionService()
     runner = Runner(app=app, session_service=session_service)
-    
-    user_id = 'affective_user'
+
+    user_id = "proactivity_user"
     session = await runner.session_service.create_session(
         app_name=app.name,
-        user_id=user_id
+        user_id=user_id,
     )
-    
-    # Test with different emotional contexts
-    test_messages = [
-        ("I just got promoted at work!", "Happy"),
-        ("I'm having a really tough day...", "Sad"),
-        ("What's the weather forecast?", "Neutral")
+
+    scripted_turns = [
+        "I need to plan a birthday party for my friend this weekend.",
+        "Yes, please draft a quick checklist and ask if I need reminders.",
     ]
-    
-    for message, emotion in test_messages:
+
+    for turn in scripted_turns:
         queue = LiveRequestQueue()
-        
-        print(f"🎤 User ({emotion}): {message}")
+        print(f"🎤 User: {turn}")
         queue.send_content(
             types.Content(
-                role='user',
-                parts=[types.Part.from_text(text=message)]
+                role="user",
+                parts=[types.Part.from_text(text=turn)],
             )
         )
         queue.close()
-        
-        print("🤖 Agent: ", end='', flush=True)
-        
-        async for event in runner.run_live(
-            live_request_queue=queue,
-            user_id=user_id,
-            session_id=session.id,
-            run_config=run_config
-        ):
-            if event.content and event.content.parts:
-                for part in event.content.parts:
-                    if part.text:
-                        print(part.text, end='', flush=True)
-        
+
+        print("🤖 Agent: ", end="", flush=True)
+        await _collect_text_events(
+            runner.run_live(
+                live_request_queue=queue,
+                user_id=user_id,
+                session_id=session.id,
+                run_config=run_config,
+            )
+        )
         print("\n")
         await asyncio.sleep(0.5)
-    
-    print("=" * 70)
 
 
-async def video_streaming_example():
-    """
-    Demonstrate video streaming (conceptual).
-    Note: This requires actual video capture hardware.
-    """
-    
-    print("=" * 70)
-    print("VIDEO STREAMING EXAMPLE (CONCEPTUAL)")
-    print("=" * 70)
+async def affective_dialog_example() -> None:
+    """Show emotion-aware responses using affective dialog."""
+
+    model_to_use = _resolve_live_model()
+    _print_header("AFFECTIVE DIALOG EXAMPLE")
+    print(f"Configured live model: {model_to_use}")
     print()
-    print("This shows the pattern for video streaming.")
-    print("Actual implementation requires OpenCV and camera.")
+    print("Emotion detection steers response tone for different user moods.")
     print()
-    
-    # Create vision agent
+
     agent = Agent(
-        model='gemini-live-2.5-flash-preview',
-        name='vision_assistant',
+        model=model_to_use,
+        name="empathetic_assistant",
         instruction="""
-You analyze video streams in real-time.
-Describe what you see and identify objects, gestures, or actions.
-        """.strip()
+You are an empathetic assistant that adapts tone to the user's emotion.
+Keep responses concise, supportive, and emotionally aware.
+        """.strip(),
     )
-    
-    # Configure for video
+
     run_config = RunConfig(
         streaming_mode=StreamingMode.BIDI,
-        response_modalities=['text']
+        enable_affective_dialog=True,
+        response_modalities=[types.Modality.AUDIO],
+        speech_config=types.SpeechConfig(
+            voice_config=types.VoiceConfig(
+                prebuilt_voice_config=types.PrebuiltVoiceConfig(voice_name="Kore")
+            )
+        ),
     )
-    
-    print("Sample code for video streaming:")
+
+    app = App(name="affective_app", root_agent=agent)
+    session_service = InMemorySessionService()
+    runner = Runner(app=app, session_service=session_service)
+
+    user_id = "affective_user"
+    session = await runner.session_service.create_session(
+        app_name=app.name,
+        user_id=user_id,
+    )
+
+    test_messages = [
+        ("I just got promoted at work!", "Happy"),
+        ("I'm having a really tough day...", "Sad"),
+        ("What's the weather forecast?", "Neutral"),
+    ]
+
+    for message, emotion in test_messages:
+        queue = LiveRequestQueue()
+        print(f"🎤 User ({emotion}): {message}")
+        queue.send_content(
+            types.Content(
+                role="user",
+                parts=[types.Part.from_text(text=message)],
+            )
+        )
+        queue.close()
+
+        print("🤖 Agent: ", end="", flush=True)
+        await _collect_text_events(
+            runner.run_live(
+                live_request_queue=queue,
+                user_id=user_id,
+                session_id=session.id,
+                run_config=run_config,
+            )
+        )
+        print("\n")
+        await asyncio.sleep(0.5)
+
+
+async def video_streaming_example() -> None:
+    """Outline a conceptual pattern for video streaming."""
+
+    model_to_use = _resolve_live_model()
+    _print_header("VIDEO STREAMING EXAMPLE (CONCEPTUAL)")
+    print(f"Configured live model: {model_to_use}")
     print()
-    print("```python")
-    print("import cv2")
+    print("Video streaming requires camera capture and binary frame uploads.")
+    print("Below is a conceptual snippet showing the integration points.")
     print()
-    print("# Capture video")
-    print("cap = cv2.VideoCapture(0)")
-    print("queue = LiveRequestQueue()")
+
+    agent = Agent(
+        model=model_to_use,
+        name="vision_assistant",
+        instruction="""
+You analyze live video streams and describe notable objects, actions, and context.
+Keep observations brief and update as the scene changes.
+        """.strip(),
+    )
+
+    run_config = RunConfig(
+        streaming_mode=StreamingMode.BIDI,
+        response_modalities=[types.Modality.AUDIO],
+    )
+
+    _ = (agent, run_config)  # Placeholder to highlight configuration reuse
+
+    print("Sample integration code:\n")
+    print("""python
+import cv2
+from google.genai import types
+from google.adk.agents import LiveRequestQueue
+
+cap = cv2.VideoCapture(0)
+queue = LiveRequestQueue()
+
+try:
+    while True:
+        ret, frame = cap.read()
+        if not ret:
+            break
+
+        _, buffer = cv2.imencode('.jpg', frame)
+        frame_bytes = buffer.tobytes()
+
+        queue.send_realtime(
+            blob=types.Blob(data=frame_bytes, mime_type='image/jpeg')
+        )
+
+        await asyncio.sleep(0.1)  # ~10 FPS pacing
+finally:
+    queue.close()
+    cap.release()
+""")
     print()
-    print("while True:")
-    print("    ret, frame = cap.read()")
-    print("    if not ret:")
-    print("        break")
-    print()
-    print("    # Convert frame to bytes")
-    print("    _, buffer = cv2.imencode('.jpg', frame)")
-    print("    frame_bytes = buffer.tobytes()")
-    print()
-    print("    # Send frame to agent")
-    print("    queue.send_realtime(")
-    print("        blob=types.Blob(")
-    print("            data=frame_bytes,")
-    print("            mime_type='image/jpeg'")
-    print("        )")
-    print("    )")
-    print()
-    print("    await asyncio.sleep(0.1)  # ~10 FPS")
-    print()
-    print("queue.close()")
-    print("```")
+
+
+async def main() -> None:
+    """Run all advanced examples sequentially."""
+
+    if not os.getenv("GOOGLE_GENAI_USE_VERTEXAI") and not os.getenv("GOOGLE_API_KEY"):
+        print("⚠️  Configure GOOGLE_GENAI_USE_VERTEXAI + GOOGLE_CLOUD_PROJECT or GOOGLE_API_KEY.")
+        return
+
     print()
     print("=" * 70)
-
-
-async def main():
-    """Run all advanced examples."""
-    
-    # Check environment
-    if not os.getenv('GOOGLE_GENAI_USE_VERTEXAI') and not os.getenv('GOOGLE_API_KEY'):
-        print("⚠️  Please configure environment variables:")
-        print("   Set GOOGLE_GENAI_USE_VERTEXAI=1 and GOOGLE_CLOUD_PROJECT")
-        print("   OR set GOOGLE_API_KEY")
-        return
-    
-    # Run examples
-    await proactivity_example()
+    print("ADVANCED LIVE API FEATURES - CONCEPTUAL OVERVIEW")
+    print("=" * 70)
+    print()
+    print("This demo showcases advanced Live API patterns:")
+    print("  • Proactivity: Context-aware follow-ups and suggestions")
+    print("  • Affective Dialog: Emotion detection and adaptive responses")
+    print("  • Video Streaming: Real-time video analysis patterns")
+    print()
+    print("⚠️  NOTE: Full Live API execution requires:")
+    print("  1. Native audio model (e.g., gemini-live-2.5-flash-preview-native-audio-09-2025)")
+    print("  2. Audio I/O infrastructure (microphone, speakers)")
+    print("  3. PyAudio for audio capture and playback")
+    print()
+    print("For interactive voice demos, use: make interactive_demo")
+    print()
+    print("=" * 70)
     print()
     
-    await affective_dialog_example()
-    print()
-    
+    # Show conceptual patterns only
     await video_streaming_example()
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     asyncio.run(main())

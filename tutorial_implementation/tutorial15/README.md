@@ -47,11 +47,51 @@ make dev
 
 Open http://localhost:8000 and select "voice_assistant" from the dropdown.
 
-### Interactive Voice Mode (Requires Microphone)
+### Live API Demos
 
+**Text Input + Audio Output** (Recommended - Works with ADK Runner):
 ```bash
-python -m voice_assistant.interactive
+make basic_demo_text    # Text responses
+make basic_demo_audio   # Audio responses (plays through speakers)
 ```
+
+**True Audio Input** (Direct Live API - Bypasses ADK):
+```bash
+make direct_audio_demo  # Microphone → Agent → Speakers
+```
+
+⚠️ **Important Audio Limitation**: The ADK `Runner.run_live()` API currently only supports **text input with audio output**. For true bidirectional audio (microphone input), you must use:
+- `make direct_audio_demo` - Direct `genai.Client` API (bypasses ADK agents/tools)
+- `make dev` - ADK Web UI with audio button (WebSocket connection)
+
+See [Audio Input Limitation](#audio-input-limitation) below for details.
+
+## Audio Input Limitation
+
+**What Works ✅**:
+- Text input → Audio output (via ADK Runner)
+- Text input → Text output (via ADK Runner)
+- ADK Web UI audio streaming (WebSocket)
+
+**What Doesn't Work ❌**:
+- Audio input via `LiveRequestQueue.send_realtime()` + `Runner.run_live()`
+- Programmatic microphone input through ADK framework
+
+**Why This Matters**:
+ADK Runner doesn't support audio input blobs via `send_realtime()`. For true voice-to-voice interaction, you have two options:
+
+1. **Direct Live API** (`make direct_audio_demo`):
+   - Uses `google.genai.Client` directly
+   - True bidirectional audio support
+   - ❌ No ADK agent features (tools, state management)
+   - ✅ Official Google API, proven to work
+
+2. **ADK Web UI** (`make dev`):
+   - Full audio support via browser
+   - ✅ ADK agent features (tools, state)
+   - ❌ Not programmatic, manual interaction
+
+See `log/20251012_152300_tutorial15_audio_input_critical_discovery.md` for detailed analysis.
 
 ## Testing
 
@@ -65,13 +105,14 @@ make test
 ```
 tutorial15/
 ├── voice_assistant/
-│   ├── __init__.py           # Package initialization
-│   ├── agent.py              # VoiceAssistant class (exports root_agent)
-│   ├── basic_live.py         # Simple Live API example
-│   ├── demo.py               # Text-based demo
-│   ├── interactive.py        # Microphone-based interaction
-│   ├── advanced.py           # Advanced features examples
-│   └── multi_agent.py        # Multi-agent voice sessions
+│   ├── __init__.py              # Package initialization
+│   ├── agent.py                 # VoiceAssistant class (exports root_agent)
+│   ├── audio_utils.py           # Audio recording/playback utilities
+│   ├── basic_demo.py            # ✅ Text→Audio demo (WORKS)
+│   ├── direct_live_audio.py     # ✅ Audio→Audio demo (Direct API)
+│   ├── demo.py                  # Text-based demo
+│   ├── advanced.py              # Advanced features examples
+│   └── multi_agent.py           # Multi-agent voice sessions
 ├── tests/
 │   ├── test_agent.py         # Agent configuration tests
 │   ├── test_imports.py       # Import validation
@@ -93,8 +134,9 @@ tutorial15/
 
 ## Live API Models
 
-**Half-Cascade Audio (Recommended for text+audio)**: `gemini-live-2.5-flash-preview`
-**Native Audio (Audio-only)**: `gemini-2.5-flash-native-audio-preview-09-2025`
+**Native Audio (Default)**: `gemini-live-2.5-flash-preview-native-audio`
+**Half-Cascade Audio (Text+Audio blend)**: `gemini-live-2.5-flash-preview`
+**Additional Native Audio SKUs**: `gemini-2.5-flash-native-audio-preview-09-2025`
 
 ## Important Notes
 

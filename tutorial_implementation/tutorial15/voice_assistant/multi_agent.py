@@ -12,6 +12,8 @@ from google.adk.runners import Runner
 from google.adk.sessions import InMemorySessionService
 from google.genai import types
 
+LIVE_MODEL = os.getenv('VOICE_ASSISTANT_LIVE_MODEL', 'gemini-2.0-flash-live-001')
+
 
 async def multi_agent_voice_example():
     """
@@ -31,14 +33,14 @@ async def multi_agent_voice_example():
     
     # Create specialized agents
     greeter = Agent(
-        model='gemini-live-2.5-flash-preview',
+        model=LIVE_MODEL,
         name='greeter',
         description='Friendly greeting specialist',
         instruction='Greet users warmly and ask how you can help. Be brief and welcoming.'
     )
     
     expert = Agent(
-        model='gemini-live-2.5-flash-preview',
+        model=LIVE_MODEL,
         name='expert',
         description='Technical expert',
         instruction='Provide detailed, accurate expert answers to technical questions.'
@@ -46,7 +48,7 @@ async def multi_agent_voice_example():
     
     # Orchestrator agent coordinates the others
     orchestrator = Agent(
-        model='gemini-live-2.5-flash-preview',
+        model=LIVE_MODEL,
         name='orchestrator',
         description='Multi-agent coordinator',
         instruction="""
@@ -73,7 +75,7 @@ When they ask technical questions, route to expert.
                 )
             )
         ),
-        response_modalities=['text']
+    response_modalities=[types.Modality.TEXT]
     )
     
     # Create app and runner
