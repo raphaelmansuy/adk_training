@@ -1,10 +1,9 @@
 # Tutorial 15: Live API and Audio - Real-Time Voice Interactions
 # Makefile for development, testing, and voice assistant demos
 
-.PHONY: help setup dev test demo clean
-.PHONY: basic_demo advanced_demo multi_demo all_demos
+.PHONY: help setup dev test clean
 .PHONY: lint format validate
-.PHONY: live_env_check audio_deps_check live_smoke live_models_doc live_access_help direct_audio_demo
+.PHONY: live_env_check live_smoke live_models_doc live_access_help
 
 # Default environment values targeting a region that hosts Gemini Live preview.
 # For Vertex AI: gemini-2.0-flash-live-preview-04-09 (from official ADK samples)
@@ -20,26 +19,16 @@ help:
 	@echo ""
 	@echo "📋 QUICK START:"
 	@echo "  make setup    # Install dependencies"
-	@echo "  make demo     # Run text-based demo (API key or Vertex AI)"
-	@echo "  make basic_demo # Live API streaming demo (requires Vertex AI)"
-	@echo ""
-	@echo "🎯 DEVELOPMENT COMMANDS:"
-	@echo "  make setup    # Install dependencies and package"
-	@echo "  make dev      # Start ADK web interface (requires GOOGLE_API_KEY)"
+	@echo "  make dev      # Start ADK web interface (✅ RECOMMENDED for Live API)"
 	@echo "  make test     # Run comprehensive test suite"
 	@echo ""
-🎪 DEMO COMMANDS:"
-	@echo "  make demo              # Text-based conversation demo (no mic needed)"
-	@echo "  make basic_demo_text   # Live API: TEXT input → TEXT output"
-	@echo "  make basic_demo_audio  # Live API: TEXT input → AUDIO output (✅ WORKS)"
-	@echo "  make direct_audio_demo # Direct API: AUDIO input → AUDIO output (bypasses ADK)"
-	@echo "  make advanced_demo     # Advanced features (proactivity, affective dialog)"
-	@echo "  make multi_demo        # Multi-agent voice coordination"
+	@echo "🔧 DIAGNOSTICS & SETUP:"
+	@echo "  make live_env_check    # Verify Vertex AI Live API configuration"
+	@echo "  make live_models_list  # List available Live API models in your project"
 	@echo "  make check_audio       # Check audio device availability"
 	@echo "  make live_smoke        # Quick Vertex Live connectivity smoke test"
 	@echo "  make live_models_doc   # Show docs for supported Live API models"
 	@echo "  make live_access_help  # Steps to request Gemini Live API activation"
-	@echo "  make all_demos         # Run all demos sequentially"
 	@echo ""
 	@echo "🧹 MAINTENANCE:"
 	@echo "  make clean    # Remove cache files and artifacts"
@@ -57,21 +46,32 @@ setup:
 	@echo "✅ Setup complete!"
 	@echo "💡 Next steps:"
 	@echo "   1. Copy .env.example to .env: cp .env.example .env"
-	@echo "   2. For text demo (make demo): Add GOOGLE_API_KEY to .env"
-	@echo "   3. For Live API (make basic_demo): Set GOOGLE_GENAI_USE_VERTEXAI=1 and GOOGLE_CLOUD_PROJECT"
-	@echo "      Override GOOGLE_CLOUD_LOCATION if your project uses a different region"
-	@echo "      Set VOICE_ASSISTANT_LIVE_MODEL to one of the supported Live API models"
-	@echo "      Docs: https://ai.google.dev/gemini-api/docs/live#before_you_begin_building"
-	@echo "   4. Run 'make demo' for basic text conversation"
-	@echo "   5. Run 'make basic_demo' for real-time streaming"
-	@echo "   6. For voice features: pip install pyaudio (optional)"
+	@echo "   2. Configure Vertex AI credentials:"
+	@echo "      export GOOGLE_GENAI_USE_VERTEXAI=1"
+	@echo "      export GOOGLE_CLOUD_PROJECT=your-project"
+	@echo "      export GOOGLE_CLOUD_LOCATION=us-central1"
+	@echo "      export VOICE_ASSISTANT_LIVE_MODEL=gemini-2.0-flash-live-preview-04-09"
+	@echo "   3. Run 'make dev' to start ADK web interface"
+	@echo "   4. Open http://localhost:8000 and select 'voice_assistant'"
 
-# Start ADK web interface
+# Start ADK web interface (RECOMMENDED for Live API)
 dev:
 	@echo "🌐 Starting ADK web interface..."
-	@echo "🔑 Make sure you have GOOGLE_API_KEY set in your environment"
-	@echo "🎙️  Select 'voice_assistant' from the agent dropdown"
-	@echo "📱 Visit http://localhost:8000 in your browser"
+	@echo "✅ This is the WORKING method for Live API bidirectional streaming"
+	@echo ""
+	@echo "📋 Prerequisites:"
+	@echo "   • Vertex AI: Set GOOGLE_GENAI_USE_VERTEXAI=1"
+	@echo "   • Project: Set GOOGLE_CLOUD_PROJECT=your-project"
+	@echo "   • Region: Set GOOGLE_CLOUD_LOCATION=us-central1"
+	@echo "   • Model: Set VOICE_ASSISTANT_LIVE_MODEL=gemini-2.0-flash-live-preview-04-09"
+	@echo ""
+	@echo "🎯 Usage:"
+	@echo "   1. Open http://localhost:8000 in your browser"
+	@echo "   2. Select 'voice_assistant' from the dropdown"
+	@echo "   3. Click the Audio/Microphone button (🎤)"
+	@echo "   4. Start typing or speaking"
+	@echo ""
+	@echo "🚀 Starting server..."
 	adk web
 
 # Run tests
@@ -80,35 +80,7 @@ test:
 	pytest tests/ -v --cov=voice_assistant --cov-report=term-missing
 	@echo "✅ All tests completed!"
 
-# Main demo (text-based, no microphone required)
-demo:
-	@echo "🎬 Running main voice assistant demo..."
-	@echo "💬 This demo shows text-based conversation (no microphone needed)"
-	@echo "🤖 Uses VoiceAssistant class with send_text() method"
-	@echo "🔑 Checking authentication..."
-	@if [ -n "$$GOOGLE_GENAI_USE_VERTEXAI" ]; then \
-		echo "   ✅ Using Vertex AI (project: $$GOOGLE_CLOUD_PROJECT, region: $${GOOGLE_CLOUD_LOCATION:-us-central1})"; \
-		if [ -z "$$GOOGLE_CLOUD_PROJECT" ]; then \
-			echo "   ⚠️  GOOGLE_CLOUD_PROJECT not set - Vertex AI may fail"; \
-		fi; \
-		if [ -z "$$GOOGLE_CLOUD_LOCATION" ]; then \
-			echo "   ℹ️  Defaulting region to us-central1; set GOOGLE_CLOUD_LOCATION to override"; \
-		fi; \
-	elif [ -n "$$GOOGLE_API_KEY" ] || [ -n "$$GEMINI_API_KEY" ]; then \
-		echo "   ✅ Using API Key"; \
-		echo "   ⚠️  Live API may have limitations with API keys"; \
-		echo "   ℹ️  Falling back to Responses API (text-only demo)"; \
-		echo "   🔁 Fallback model: $${VOICE_ASSISTANT_TEXT_MODEL:-gemini-2.5-flash}"; \
-	else \
-		echo "   ⚠️  No authentication found - demo will likely fail"; \
-		echo "   💡 Set GOOGLE_API_KEY or configure Vertex AI"; \
-	fi
-	@echo "📝 Sends pre-written messages and shows responses"
-	@echo "🚀 Starting demo script..."
-	python -m voice_assistant.demo
-	@echo "✅ Demo script finished!"
-
-# Environment helpers for Live API demos
+# Environment helpers for Live API diagnostics
 live_env_check:
 	@echo "🩺 Verifying Vertex Live environment..."
 	@if [ -z "$$GOOGLE_GENAI_USE_VERTEXAI" ]; then \
@@ -153,49 +125,6 @@ live_models_doc:
 live_access_help:
 	@python -m scripts.live_access_help
 
-# Check audio device availability
-check_audio:
-	@echo "🔍 Checking audio devices..."
-	@python -m voice_assistant.audio_utils
-
-# Basic demo with TEXT modality (fallback mode)
-basic_demo_text: live_env_check
-	@echo "🎯 Running Basic Live API Demo (TEXT MODE)..."
-	@echo "   Demonstrates fundamental bidirectional streaming with LiveRequestQueue"
-	@echo "   ⚠️  Requires Vertex AI authentication (not API keys)"
-	@echo "   🌎 Default region: us-central1; export GOOGLE_CLOUD_LOCATION to change"
-	@echo "   🔄 Sends one message and shows real-time text response"
-	@echo "   📡 Uses Live API for low-latency conversation"
-	python -m voice_assistant.basic_demo --text
-
-# Basic demo with AUDIO modality (requires PyAudio)
-basic_demo_audio: live_env_check audio_deps_check
-	@echo "🎯 Running Basic Live API Demo (AUDIO MODE)..."
-	@echo "   Demonstrates bidirectional streaming with audio playback"
-	@echo "   ⚠️  Requires: Vertex AI + PyAudio + Speakers"
-	@echo "   🌎 Default region: us-central1"
-	@echo "   🔄 Sends text message, receives and plays audio response"
-	@echo "   🔊 Audio output will play through your speakers"
-	@echo "   📡 Uses native audio Live API model"
-	python -m voice_assistant.basic_demo --audio
-
-# Alias for backward compatibility (defaults to text mode)
-basic_demo: basic_demo_text
-
-# Direct Live API demo (bypasses ADK Runner - true audio input/output)
-direct_audio_demo: live_env_check audio_deps_check
-	@echo "🎙️  Running Direct Live API Audio Demo..."
-	@echo "   TRUE bidirectional audio using google.genai.Client"
-	@echo "   ⚠️  Requires: Vertex AI + PyAudio + Microphone + Speakers"
-	@echo "   🎙️  Microphone input → Agent → Speaker output"
-	@echo "   ⚡ Bypasses ADK Runner (no agent tools/state)"
-	@echo "   📡 Uses direct Live API WebSocket connection"
-	@echo ""
-	@echo "💡 This is the only way to get true audio input with current ADK"
-	@echo "   ADK Runner.run_live() only supports text input + audio output"
-	@echo ""
-	python -m voice_assistant.direct_live_audio
-
 live_models_list:
 	@echo "📡 Querying Vertex AI for accessible Live API models..."
 	@if [ -z "$$GOOGLE_GENAI_USE_VERTEXAI" ]; then \
@@ -209,57 +138,6 @@ live_models_list:
 		exit 1; \
 	fi
 	@python -m scripts.list_live_models
-
-# Individual demo commands
-basic_demo: live_env_check
-	@echo "🎯 Running Basic Live API Demo..."
-	@echo "   Demonstrates fundamental bidirectional streaming with LiveRequestQueue"
-	@echo "   ⚠️  Requires Vertex AI authentication (not API keys)"
-	@echo "   🌎 Default region: $${GOOGLE_CLOUD_LOCATION:-us-central1}; export GOOGLE_CLOUD_LOCATION to change"
-	@echo "   🔄 Sends one message and shows real-time streaming response"
-	@echo "   🎤 Configured for voice output (Puck voice) but shows text responses"
-	@echo "   📡 Uses Live API for low-latency conversation"
-	python -m voice_assistant.basic_demo
-	@echo "✅ Basic demo completed!"
-
-advanced_demo:
-	@echo "⚡ Running Advanced Features Demo..."
-	@echo "   Shows proactivity, affective dialog, and video streaming concepts"
-	python -m voice_assistant.advanced
-	@echo "✅ Advanced demo completed!"
-
-multi_demo:
-	@echo "👥 Running Multi-Agent Voice Demo..."
-	@echo "   Demonstrates coordinated voice agents with sequential workflow"
-	python -m voice_assistant.multi_agent
-	@echo "✅ Multi-agent demo completed!"
-
-interactive_demo: live_env_check audio_deps_check
-	@echo "🎤 Running Interactive Voice Demo..."
-	@echo "⚠️  This requires a microphone and PyAudio!"
-	@echo "💡 Install PyAudio: pip install pyaudio"
-	@echo "   (May require system audio libraries on some platforms)"
-	python -m voice_assistant.interactive
-	@echo "✅ Interactive demo completed!"
-
-live_audio_demo: interactive_demo
-	@:
-
-# Run all demos sequentially
-all_demos:
-	@echo "🎪 Running ALL voice assistant demos..."
-	@echo "=========================================="
-	$(MAKE) demo
-	@echo ""
-	$(MAKE) basic_demo
-	@echo ""
-	$(MAKE) advanced_demo
-	@echo ""
-	$(MAKE) multi_demo
-	@echo ""
-	@echo "🎉 All demos completed!"
-	@echo "💡 For voice interaction: make interactive_demo (requires microphone)"
-	@echo "🔧 Pro tip: Run individual demos with 'make <demo_name>'"
 
 # Code quality
 lint:
