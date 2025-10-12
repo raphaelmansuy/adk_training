@@ -5,13 +5,13 @@ A comprehensive training repository for Google Agent Development Kit (ADK), feat
 This project provides a complete learning journey through Google ADK, featuring:
 
 - **34 comprehensive tutorials** covering everything from basic agents to production deployment
-- **15 completed tutorials** with working implementations and automated testing
-- **19 draft tutorials** with detailed documentation ready for implementation
+- **18 completed tutorials** with working implementations and automated testing
+- **16 draft tutorials** with detailed documentation ready for implementation
 - **Mental models framework** for understanding ADK patterns and Generative AI concepts
 - **Research and integration examples** for various UI frameworks and deployment scenarios
 - **Production-ready code examples** and best practices
 
-> **📊 Completion Status: 15/34 tutorials implemented (44%)**
+> **📊 Completion Status: 18/34 tutorials implemented (53%)**
 
 ## 📚 Documentation
 
@@ -49,10 +49,10 @@ Google Agent Development Kit (ADK) is a powerful framework for building AI agent
 │   ├── 12_planners_thinking.md    # ✅ COMPLETED - Advanced planning
 │   ├── 13_code_execution.md       # ✅ COMPLETED - Code execution
 │   ├── 14_streaming_sse.md        # ✅ COMPLETED - Real-time streaming
-│   ├── 15_live_api_audio.md       # 📝 DRAFT - Audio processing
-│   ├── 16_mcp_integration.md      # 📝 DRAFT - MCP protocol
+│   ├── 15_live_api_audio.md       # ✅ COMPLETED - Audio processing
+│   ├── 16_mcp_integration.md      # ✅ COMPLETED - MCP protocol
 │   ├── 17_agent_to_agent.md       # ✅ COMPLETED - Inter-agent communication
-│   ├── 18_events_observability.md # 📝 DRAFT - Monitoring & events
+│   ├── 18_events_observability.md # ✅ COMPLETED - Monitoring & events
 │   ├── 19_artifacts_files.md      # 📝 DRAFT - File handling
 │   ├── 20_yaml_configuration.md   # 📝 DRAFT - Configuration management
 │   ├── 21_multimodal_image.md     # 📝 DRAFT - Image processing
@@ -69,7 +69,7 @@ Google Agent Development Kit (ADK) is a powerful framework for building AI agent
 │   ├── 32_streamlit_adk_integration.md # 📝 DRAFT - Streamlit integration
 │   ├── 33_slack_adk_integration.md # 📝 DRAFT - Slack integration
 │   └── 34_pubsub_adk_integration.md # 📝 DRAFT - PubSub integration
-├── tutorial_implementation/       # ✅ 15 working implementations
+├── tutorial_implementation/       # ✅ 18 working implementations
 │   ├── tutorial01/                # Hello World Agent
 │   ├── tutorial02/                # Function Tools
 │   ├── tutorial03/                # OpenAPI Tools
@@ -84,7 +84,10 @@ Google Agent Development Kit (ADK) is a powerful framework for building AI agent
 │   ├── tutorial12/                # Planners & Thinking
 │   ├── tutorial13/                # Code Execution
 │   ├── tutorial14/                # Streaming & SSE
-│   └── tutorial17/                # Agent-to-Agent Communication
+│   ├── tutorial15/                # Live API Audio
+│   ├── tutorial16/                # MCP Integration
+│   ├── tutorial17/                # Agent-to-Agent Communication
+│   └── tutorial18/                # Events & Observability
 ├── research/                      # Integration research and examples
 │   ├── adk_ui_integration/        # UI framework integrations
 │   ├── adk-java/                  # Java ADK implementation
@@ -161,10 +164,10 @@ Advanced capabilities and integrations.
 
 - **Tutorial 13: Code Execution** ✅ - Safe code execution environments
 - **Tutorial 14: Streaming & SSE** ✅ - Real-time responses
-- **Tutorial 15: Live API Audio** 📝 - Audio processing & voice
-- **Tutorial 16: MCP Integration** 📝 - Model Context Protocol
+- **Tutorial 15: Live API Audio** ✅ - Audio processing & voice
+- **Tutorial 16: MCP Integration** ✅ - Model Context Protocol
 - **Tutorial 17: Agent-to-Agent Communication** ✅ - Inter-agent messaging
-- **Tutorial 18: Events & Observability** 📝 - Monitoring & logging
+- **Tutorial 18: Events & Observability** ✅ - Monitoring & logging
 - **Tutorial 19: Artifacts & Files** 📝 - File handling & processing
 - **Tutorial 20: YAML Configuration** 📝 - Declarative configuration
 - **Tutorial 21: Multimodal Image** 📝 - Image analysis & vision
@@ -216,10 +219,10 @@ User interface integration with modern frameworks.
 | 12       | Planners & Thinking          | ✅ Completed | Advanced     | 1.5hr |
 | 13       | Code Execution               | ✅ Completed | Advanced     | 1.5hr |
 | 14       | Streaming & SSE              | ✅ Completed | Intermediate | 1hr   |
-| 15       | Live API Audio               | 📝 Draft     | Advanced     | 1hr   |
-| 16       | MCP Integration              | 📝 Draft     | Advanced     | 1.5hr |
+| 15       | Live API Audio               | ✅ Completed | Advanced     | 1hr   |
+| 16       | MCP Integration              | ✅ Completed | Advanced     | 1.5hr |
 | 17       | Agent-to-Agent Communication | ✅ Completed | Advanced     | 1hr   |
-| 18       | Events & Observability       | 📝 Draft     | Advanced     | 1.5hr |
+| 18       | Events & Observability       | ✅ Completed | Advanced     | 1.5hr |
 | 19       | Artifacts & Files            | 📝 Draft     | Intermediate | 1hr   |
 | 20       | YAML Configuration           | 📝 Draft     | Intermediate | 1hr   |
 | 21       | Multimodal Image             | 📝 Draft     | Advanced     | 1hr   |
@@ -239,7 +242,7 @@ User interface integration with modern frameworks.
 
 ## 📊 Project Completion Status
 
-### ✅ Completed Tutorials (15/34)
+### ✅ Completed Tutorials (18/34)
 
 The following tutorials have been fully implemented with working code, comprehensive tests, and verified functionality:
 
@@ -268,7 +271,10 @@ The following tutorials have been fully implemented with working code, comprehen
 
 - **Tutorial 13**: Code Execution - Safe code execution environments and sandboxing
 - **Tutorial 14**: Streaming & SSE - Real-time streaming responses with Server-Sent Events
+- **Tutorial 15**: Live API Audio - Audio processing and voice interactions with Gemini Live API
+- **Tutorial 16**: MCP Integration - Model Context Protocol for standardized tool integration
 - **Tutorial 17**: Agent-to-Agent Communication - Distributed multi-agent systems with A2A protocol
+- **Tutorial 18**: Events & Observability - Advanced monitoring, logging, and event tracking
 
 **All completed tutorials include:**
 
@@ -279,13 +285,12 @@ The following tutorials have been fully implemented with working code, comprehen
 - ✅ Documentation and usage examples
 - ✅ Integration with ADK web interface
 
-### 📝 Draft Tutorials (19/34)
+### 📝 Draft Tutorials (16/34)
 
 The following tutorials have detailed documentation but require implementation:
 
-**Advanced Features (Tutorials 15-16, 18-28):**
+**Advanced Features (Tutorials 19-28):**
 
-- Audio processing, MCP protocol integration, observability
 - File handling, configuration management, multimodal capabilities
 - Model optimization, enterprise deployment, best practices
 - Third-party integrations and multi-provider LLM support
