@@ -266,3 +266,7 @@ help(SamplingCapability)
 ```
 
 - Always use the latest version of ADK and associated libraries. Check the official documentation and Github repositories for the latest versions.
+
+- When generating multi-line shell commands using heredocs (e.g., << 'EOF' ... EOF), always ensure the closing EOF delimiter starts exactly at column 0 (no leading spaces or tabs). For indented code blocks, use <<- 'EOF' instead, and indent content/delimiter with tabs only (not spaces). Review and unindent the delimiter before suggesting execution.
+
+- VERY Important: Avoid using heredoc (<< 'EOF' ... EOF or similar) in shell commands for writing multi-line files (e.g., cat > file.py << 'EOF'), as it often causes terminal hangs/crashes in VSCode due to indentation issues. Instead, suggest pasting code directly into the editor, using echo 'multi-line code' | sed 's/^/  /' > file.py for simple cases, or tools like printf for escaped multi-line output.
