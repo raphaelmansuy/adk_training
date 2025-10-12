@@ -30,22 +30,26 @@ learning_objectives:
 implementation_link: "/tutorial_implementation/tutorial15"
 ---
 
-:::danger UNDER CONSTRUCTION - CRITICAL CORRECTIONS APPLIED
+:::info UPDATED - ADK WEB FOCUSED APPROACH
 
-**This tutorial has been verified against official Google ADK sources and updated with critical corrections.**
+**This tutorial has been streamlined to focus on the working method for Live API: ADK Web Interface.**
 
-**Key corrections made (October 12, 2025)**:
-- ✅ Fixed LiveRequestQueue API: Use `send_content()` for text, `send_realtime()` for audio/video blobs
-- ✅ Fixed queue closing: Use `close()` not `send_end()`
-- ✅ Fixed run_live() signature: Requires `live_request_queue`, `user_id`, `session_id` parameters
-- ✅ Fixed response_modalities: Can only use ONE modality per session (TEXT or AUDIO, not both)
-- ✅ Updated ProactivityConfig usage: Uses `proactive_audio=True` not `threshold`
-- ✅ Verified all model names and voice configurations against official docs
-- ✅ Updated with full audio support implementation using PyAudio
-- ✅ Added AUDIO_SETUP.md for platform-specific installation
-- ✅ Removed incorrect PyAudio examples from required paths
+**Key Updates (January 12, 2025)**:
+- ✅ **Recommended Approach**: Use `adk web` for Live API bidirectional streaming
+- ✅ **Why**: `runner.run_live()` requires WebSocket server context (works in `adk web`, not standalone scripts)
+- ✅ **Core Components**: Agent definition and audio utilities for programmatic use
+- ✅ **Simplified**: Removed non-working standalone demo scripts
+- ✅ **Focus**: Single clear path - start ADK web server and use browser interface
 
 **Working implementation available**: [Tutorial 15 Implementation](https://github.com/raphaelmansuy/adk_training/tree/main/tutorial_implementation/tutorial15)
+
+**Quick Start**:
+```bash
+cd tutorial_implementation/tutorial15
+make setup  # Install dependencies
+make dev    # Start ADK web interface
+# Open http://localhost:8000 and select 'voice_assistant'
+```
 
 :::
 
@@ -107,6 +111,78 @@ User speaks ⟷ Agent hears in real-time
 - 📹 **Video Streaming**: Real-time video analysis
 - ⚡ **Low Latency**: Immediate responses
 - 🤖 **Proactivity**: Agent can initiate conversation
+
+---
+
+## Getting Started: ADK Web Interface
+
+:::tip RECOMMENDED APPROACH
+
+The **ADK Web Interface** (`adk web`) is the recommended and working method for Live API bidirectional streaming. This approach:
+
+- ✅ Uses the official `/run_live` WebSocket endpoint
+- ✅ Provides full bidirectional audio streaming
+- ✅ Works out-of-the-box with browser interface
+- ✅ Includes all ADK agent capabilities (tools, state, etc.)
+
+**Why not standalone scripts?** The `runner.run_live()` method requires an active WebSocket server context with a connected client. Standalone Python scripts don't provide this environment, which is why `adk web` is the official working pattern.
+
+:::
+
+### Quick Start with ADK Web
+
+**Step 1: Setup**
+
+```bash
+cd tutorial_implementation/tutorial15
+make setup  # Install dependencies and package
+```
+
+**Step 2: Configure Environment**
+
+```bash
+export GOOGLE_GENAI_USE_VERTEXAI=1
+export GOOGLE_CLOUD_PROJECT=your-project-id
+export GOOGLE_CLOUD_LOCATION=us-central1
+export VOICE_ASSISTANT_LIVE_MODEL=gemini-2.0-flash-live-preview-04-09
+```
+
+**Step 3: Start ADK Web**
+
+```bash
+make dev  # Starts web server on http://localhost:8000
+```
+
+**Step 4: Use in Browser**
+
+1. Open http://localhost:8000
+2. Select `voice_assistant` from the dropdown
+3. Click the **Audio/Microphone button** (🎤)
+4. Start your conversation!
+
+### How It Works
+
+The ADK web interface provides a `/run_live` WebSocket endpoint that:
+
+```
+Browser (Frontend)          ADK Web Server           Gemini Live API
+      |                            |                         |
+      |---- WebSocket connect ---->|                         |
+      |                            |                         |
+      |---- LiveRequest (audio) -->|                         |
+      |                            |---- process audio ----->|
+      |                            |                         |
+      |                            |<--- Event (response) ---|
+      |<--- Event (audio/text) ----|                         |
+      |                            |                         |
+```
+
+**Key Components**:
+
+- **Frontend**: Browser-based UI with microphone/speaker access
+- **WebSocket**: `/run_live` endpoint for bidirectional communication
+- **Live Request Queue**: Manages message flow between client and agent
+- **Concurrent Tasks**: `forward_events()` and `process_messages()` run simultaneously
 
 ---
 
@@ -357,48 +433,47 @@ response_modalities=['audio']
 
 ---
 
-## 4. Real-World Example: Basic Demo
+## 4. Building Your Voice Assistant
 
-Let's build a basic Live API demo with text responses.
+### Project Structure
 
-### Simple Text-Based Demo
+The Tutorial 15 implementation provides a clean, minimal structure:
+
+```
+tutorial_implementation/tutorial15/
+├── voice_assistant/
+│   ├── __init__.py           # Package exports
+│   ├── agent.py              # Core agent & VoiceAssistant class
+│   └── audio_utils.py        # AudioPlayer & AudioRecorder utilities
+├── tests/                    # Comprehensive test suite
+├── Makefile                  # Development commands
+├── requirements.txt          # Dependencies
+└── pyproject.toml           # Package configuration
+```
+
+### Core Agent Implementation
+
+The `voice_assistant/agent.py` file defines the root agent that ADK web discovers:
 
 ```python
-"""
-Basic Live API Demo
-Simple bidirectional streaming with text responses.
-"""
+"""Voice Assistant Agent for Live API"""
 
-import asyncio
 import os
-from google.adk.agents import Agent, LiveRequestQueue
-from google.adk.agents.run_config import RunConfig, StreamingMode
-from google.adk.apps import App
-from google.adk.runners import Runner
-from google.adk.sessions import InMemorySessionService
+from google.adk.agents import Agent
 from google.genai import types
 
-async def basic_live_demo():
-    """Real-time voice assistant using Live API."""
+# Environment configuration
+LIVE_MODEL = os.getenv(
+    "VOICE_ASSISTANT_LIVE_MODEL",
+    "gemini-2.0-flash-live-preview-04-09"
+)
 
-    def __init__(self):
-        """Initialize voice assistant."""
-
-        # Audio configuration
-        self.chunk_size = 1024
-        self.sample_rate = 16000
-        self.channels = 1
-        self.format = pyaudio.paInt16
-
-        # PyAudio instance
-        self.audio = pyaudio.PyAudio()
-
-        # Create voice agent
-        self.agent = Agent(
-            model='gemini-2.0-flash-live-preview-04-09',
-            name='voice_assistant',
-            description='Real-time voice assistant',
-            instruction="""
+# Root agent - ADK web will discover this
+root_agent = Agent(
+    model=LIVE_MODEL,
+    name="voice_assistant",
+    description="Real-time voice assistant with Live API support",
+    instruction="""
 You are a helpful voice assistant. Guidelines:
 
 - Respond naturally and conversationally
@@ -406,33 +481,95 @@ You are a helpful voice assistant. Guidelines:
 - Ask clarifying questions when needed
 - Be friendly and engaging
 - Use casual language appropriate for spoken conversation
-            """.strip(),
-            generate_content_config=types.GenerateContentConfig(
-                temperature=0.8,  # Natural conversation
-                max_output_tokens=150  # Concise for voice
+    """.strip(),
+    generate_content_config=types.GenerateContentConfig(
+        temperature=0.8,  # Natural, conversational tone
+        max_output_tokens=200  # Concise for voice
+    )
+)
+
+        ```
+
+**That's it!** The agent is now discoverable by `adk web`.
+
+### Using the Voice Assistant
+
+Once you've created the agent and run `make dev`, the ADK web server:
+
+1. **Discovers** the `root_agent` from `voice_assistant/agent.py`
+2. **Creates** a `/run_live` WebSocket endpoint
+3. **Handles** bidirectional audio streaming automatically
+4. **Manages** the LiveRequestQueue and concurrent event processing
+
+**In the browser**:
+- Select `voice_assistant` from the dropdown
+- Click the Audio/Microphone button
+- Start speaking or typing
+- The agent responds in real-time with audio output
+
+###AudioUtilities (Optional)
+
+For programmatic audio handling, `voice_assistant/audio_utils.py` provides:
+
+```python
+from voice_assistant.audio_utils import AudioPlayer, AudioRecorder
+
+# Play PCM audio
+player = AudioPlayer()
+player.play_pcm_bytes(audio_data)
+player.save_to_wav(audio_data, "output.wav")
+player.close()
+
+# Record from microphone
+recorder = AudioRecorder()
+audio_data = recorder.record(duration_seconds=5)
+recorder.save_to_wav(audio_data, "input.wav")
+recorder.close()
+```
+
+### Configuration Options
+
+**Environment Variables**:
+
+```bash
+# Model selection
+export VOICE_ASSISTANT_LIVE_MODEL=gemini-2.0-flash-live-preview-04-09
+
+# Vertex AI configuration
+export GOOGLE_GENAI_USE_VERTEXAI=1
+export GOOGLE_CLOUD_PROJECT=your-project
+export GOOGLE_CLOUD_LOCATION=us-central1
+```
+
+**Voice Selection** (modify agent.py):
+
+```python
+# Add speech_config to run_config in VoiceAssistant class
+run_config = RunConfig(
+    streaming_mode=StreamingMode.BIDI,
+    speech_config=types.SpeechConfig(
+        voice_config=types.VoiceConfig(
+            prebuilt_voice_config=types.PrebuiltVoiceConfig(
+                voice_name='Charon'  # Options: Puck, Charon, Kore, Fenrir, Aoede
             )
         )
+    )
+)
+```
 
-        # Configure live streaming with audio
-        self.run_config = RunConfig(
-            streaming_mode=StreamingMode.BIDI,
+### Testing
 
-            speech_config=types.SpeechConfig(
-                voice_config=types.VoiceConfig(
-                    prebuilt_voice_config=types.PrebuiltVoiceConfig(
-                        voice_name='Puck'
-                    )
-                ),
-                audio_transcription_config=types.AudioTranscriptionConfig(
-                    model='chirp',
-                    language_codes=['en-US']
-                )
-            ),
+Run the comprehensive test suite:
 
-            response_modalities=['TEXT', 'AUDIO']
-        )
+```bash
+make test
+```
 
-        self.runner = Runner()
+Tests verify:
+- ✅ Agent configuration
+- ✅ VoiceAssistant class functionality
+- ✅ Package structure and imports
+- ✅ Audio utilities availability
 
     async def record_audio(self, duration_seconds: int = 5) -> bytes:
         """
@@ -1039,6 +1176,20 @@ queue.close()  # Important!
 ---
 
 ## Summary
+
+:::tip IMPLEMENTATION RECOMMENDATION
+
+**For Production Live API Applications**: Use the `adk web` interface as demonstrated in this tutorial. The `/run_live` WebSocket endpoint is the official, tested pattern for bidirectional audio streaming.
+
+**Why ADK Web Works**:
+- Active WebSocket connection between browser and server
+- Concurrent task management (`forward_events()` + `process_messages()`)
+- Proper LiveRequestQueue handling
+- Full ADK agent capabilities (tools, state, memory)
+
+**Alternative**: For applications that need direct API access without the ADK framework, use `google.genai.Client.aio.live.connect()` directly (bypasses ADK Runner).
+
+:::
 
 You've mastered the Live API for real-time voice interactions:
 
