@@ -27,14 +27,22 @@ learning_objectives:
   - "Build voice-enabled conversation agents"
   - "Handle real-time audio processing"
   - "Implement voice interruption and turn-taking"
-implementation_link: "https://github.com/raphaelmansuy/adk_training/tree/main/tutorial_implementation/tutorial15"
+implementation_link: "/tutorial_implementation/tutorial15"
 ---
 
-:::danger UNDER CONSTRUCTION
+:::danger UNDER CONSTRUCTION - CRITICAL CORRECTIONS APPLIED
 
-**This tutorial is currently under construction and may contain errors, incomplete information, or outdated code examples.**
+**This tutorial has been verified against official Google ADK sources and updated with critical corrections.**
 
-Please check back later for the completed version. If you encounter issues, refer to the working implementation in the [tutorial repository](https://github.com/raphaelmansuy/adk_training/tree/main/tutorial_implementation/tutorial15).
+**Key corrections made (October 11, 2025)**:
+- ✅ Fixed LiveRequestQueue API: Use `send_content()` for text, `send_realtime()` for audio only
+- ✅ Fixed queue closing: Use `close()` not `send_end()`
+- ✅ Fixed run_live() signature: Requires `live_request_queue`, `user_id`, `session_id` parameters
+- ✅ Fixed response_modalities: Can only use ONE modality per session (TEXT or AUDIO, not both)
+- ✅ Updated ProactivityConfig usage: Uses `proactive_audio=True` not `threshold`
+- ✅ Verified all model names and voice configurations against official docs
+
+Please review the corrected code examples. Working implementation will be available in the [tutorial repository](https://github.com/raphaelmansuy/adk_training/tree/main/tutorial_implementation/tutorial15).
 
 :::
 
@@ -143,10 +151,25 @@ async def live_session():
     # Create request queue for live communication
     queue = LiveRequestQueue()
 
-    runner = Runner()
+    # Create runner with app or agent
+    from google.adk.apps import App
+    app = App(name='live_app', root_agent=agent)
+    runner = Runner(app=app)
 
-    # Start live session
-    async for event in runner.run_live(queue, agent=agent, run_config=run_config):
+    # Create or get session
+    user_id = 'test_user'
+    session = await runner.session_service.create_session(
+        app_name=app.name,
+        user_id=user_id
+    )
+
+    # Start live session with correct parameters
+    async for event in runner.run_live(
+        live_request_queue=queue,
+        user_id=user_id,
+        session_id=session.id,
+        run_config=run_config
+    ):
         if event.content and event.content.parts:
             # Process agent responses
             for part in event.content.parts:
@@ -198,14 +221,24 @@ from google.genai import types
 
 queue = LiveRequestQueue()
 
-# Send text message
-queue.send_realtime(text="Hello, how are you?")
+# Send text message using send_content (not send_realtime)
+queue.send_content(
+    types.Content(
+        role='user',
+        parts=[types.Part.from_text(text="Hello, how are you?")]
+    )
+)
 
 # Continue conversation
-queue.send_realtime(text="Tell me about quantum computing")
+queue.send_content(
+    types.Content(
+        role='user',
+        parts=[types.Part.from_text(text="Tell me about quantum computing")]
+    )
+)
 
 # End session
-queue.send_end()
+queue.close()
 ```
 
 ### Sending Audio
@@ -217,11 +250,11 @@ import wave
 with wave.open('audio_input.wav', 'rb') as audio_file:
     audio_data = audio_file.readframes(audio_file.getnframes())
 
-# Send audio to agent
+# Send audio to agent using send_realtime (for real-time audio input)
 queue.send_realtime(
     blob=types.Blob(
         data=audio_data,
-        mime_type='audio/pcm'  # Or 'audio/wav', 'audio/mp3'
+        mime_type='audio/pcm;rate=16000'  # Specify sample rate
     )
 )
 ```
@@ -241,11 +274,8 @@ queue.send_realtime(
 ### Queue Management
 
 ```python
-# Check queue status
-is_closed = queue.is_closed()
-
 # Close queue when done
-queue.send_end()
+queue.close()
 
 # Queue automatically manages:
 # - Buffering
@@ -321,11 +351,8 @@ response_modalities=['TEXT']
 # Audio only
 response_modalities=['AUDIO']
 
-# Both text and audio
-response_modalities=['TEXT', 'AUDIO']
-
-# With images (multimodal)
-response_modalities=['TEXT', 'AUDIO', 'IMAGE']
+# IMPORTANT: You can only set ONE modality per session, not both
+# Setting both ['TEXT', 'AUDIO'] will cause an error
 ```
 
 ---
@@ -475,16 +502,29 @@ You are a helpful voice assistant. Guidelines:
         # Create queue
         queue = LiveRequestQueue()
 
-        # Send user audio
+        # Setup runner and session (should be done once at init, shown here for clarity)
+        from google.adk.apps import App
+        app = App(name='voice_assistant', root_agent=self.agent)
+        runner = Runner(app=app)
+        
+        user_id = 'voice_user'
+        if not hasattr(self, '_session_id'):
+            session = await runner.session_service.create_session(
+                app_name=app.name,
+                user_id=user_id
+            )
+            self._session_id = session.id
+
+        # Send user audio (use send_realtime for audio)
         queue.send_realtime(
             blob=types.Blob(
                 data=user_audio,
-                mime_type='audio/pcm'
+                mime_type='audio/pcm;rate=16000'
             )
         )
 
         # Signal end of user input
-        queue.send_end()
+        queue.close()
 
         print("\n🤖 Agent responding...")
 
@@ -492,9 +532,10 @@ You are a helpful voice assistant. Guidelines:
         text_response = []
         audio_response = []
 
-        async for event in self.runner.run_live(
-            queue,
-            agent=self.agent,
+        async for event in runner.run_live(
+            live_request_queue=queue,
+            user_id=user_id,
+            session_id=self._session_id,
             run_config=self.run_config
         ):
             if event.content and event.content.parts:
@@ -558,21 +599,38 @@ You are a helpful voice assistant. Guidelines:
 
         queue = LiveRequestQueue()
 
+        # Create session
+        from google.adk.apps import App
+        app = App(name='voice_assistant', root_agent=self.agent)
+        runner = Runner(app=app)
+        
+        user_id = 'demo_user'
+        session = await runner.session_service.create_session(
+            app_name=app.name,
+            user_id=user_id
+        )
+
         for message in demo_messages:
             print(f"\n🎤 User: {message}")
 
-            # Send as text (in production, send audio)
-            queue.send_realtime(text=message)
+            # Send as text using send_content (correct method for text)
+            queue.send_content(
+                types.Content(
+                    role='user',
+                    parts=[types.Part.from_text(text=message)]
+                )
+            )
 
             await asyncio.sleep(0.5)
 
-        queue.send_end()
+        queue.close()
 
         print("\n🤖 Agent:")
 
-        async for event in self.runner.run_live(
-            queue,
-            agent=self.agent,
+        async for event in runner.run_live(
+            live_request_queue=queue,
+            user_id=user_id,
+            session_id=session.id,
             run_config=self.run_config
         ):
             if event.content and event.content.parts:
@@ -639,9 +697,10 @@ from google.genai import types
 run_config = RunConfig(
     streaming_mode=StreamingMode.BIDI,
 
-    # Enable proactive responses
+    # Enable proactive responses (requires v1alpha API)
+    # Note: Proactive audio only supported by native audio models
     proactivity=types.ProactivityConfig(
-        threshold=0.7  # 0.0 to 1.0, higher = more proactive
+        proactive_audio=True
     ),
 
     speech_config=types.SpeechConfig(
@@ -776,14 +835,37 @@ async def multi_agent_voice():
     """Run multi-agent voice session."""
 
     queue = LiveRequestQueue()
-    runner = Runner()
+    
+    # Setup app and runner
+    from google.adk.apps import App
+    app = App(name='multi_agent_voice', root_agent=orchestrator)
+    runner = Runner(app=app)
+    
+    # Create session
+    user_id = 'multi_agent_user'
+    session = await runner.session_service.create_session(
+        app_name=app.name,
+        user_id=user_id
+    )
 
-    # User speaks
-    queue.send_realtime(text="Hello, I have a question about quantum computing")
-    queue.send_end()
+    # User speaks (use send_content for text)
+    queue.send_content(
+        types.Content(
+            role='user',
+            parts=[types.Part.from_text(
+                text="Hello, I have a question about quantum computing"
+            )]
+        )
+    )
+    queue.close()
 
     # Orchestrator coordinates agents
-    async for event in runner.run_live(queue, agent=orchestrator, run_config=run_config):
+    async for event in runner.run_live(
+        live_request_queue=queue,
+        user_id=user_id,
+        session_id=session.id,
+        run_config=run_config
+    ):
         if event.content and event.content.parts:
             for part in event.content.parts:
                 if part.text:
@@ -832,15 +914,15 @@ agent = Agent(
 ### ✅ DO: Handle Audio Formats Properly
 
 ```python
-# ✅ Good - Correct audio format
+# ✅ Good - Correct audio format with sample rate
 queue.send_realtime(
     blob=types.Blob(
         data=audio_data,
-        mime_type='audio/pcm'  # Or 'audio/wav'
+        mime_type='audio/pcm;rate=16000'  # Specify sample rate
     )
 )
 
-# ❌ Bad - Wrong format
+# ❌ Bad - Wrong format or missing rate
 queue.send_realtime(
     blob=types.Blob(
         data=audio_data,
@@ -856,14 +938,20 @@ queue.send_realtime(
 queue = LiveRequestQueue()
 
 try:
-    queue.send_realtime(text="Hello")
+    queue.send_content(types.Content(
+        role='user',
+        parts=[types.Part.from_text(text="Hello")]
+    ))
     # ... process responses
 finally:
-    queue.send_end()  # Always close
+    queue.close()  # Always close
 
 # ❌ Bad - Forgot to close
 queue = LiveRequestQueue()
-queue.send_realtime(text="Hello")
+queue.send_content(types.Content(
+    role='user',
+    parts=[types.Part.from_text(text="Hello")]
+))
 # Queue left open
 ```
 
@@ -943,10 +1031,13 @@ speech_config=types.SpeechConfig(
 **Solution**:
 
 ```python
-# ✅ Always send_end()
+# ✅ Always close() the queue
 queue = LiveRequestQueue()
-queue.send_realtime(text="Hello")
-queue.send_end()  # Important!
+queue.send_content(types.Content(
+    role='user',
+    parts=[types.Part.from_text(text="Hello")]
+))
+queue.close()  # Important!
 ```
 
 ---
@@ -971,11 +1062,13 @@ You've mastered the Live API for real-time voice interactions:
 - [ ] Using Live API compatible model
 - [ ] `StreamingMode.BIDI` configured
 - [ ] Speech config with voice selection
-- [ ] Audio format properly set (audio/pcm or audio/wav)
-- [ ] Queue properly closed with `send_end()`
+- [ ] Audio format properly set (audio/pcm;rate=16000)
+- [ ] Queue properly closed with `close()`
 - [ ] Concise responses for voice (max_output_tokens=150-200)
 - [ ] Error handling for audio/network issues
 - [ ] Testing with actual audio devices
+- [ ] Only ONE response modality per session (TEXT or AUDIO, not both)
+- [ ] Correct run_live() parameters (live_request_queue, user_id, session_id)
 
 **Next Steps**:
 
