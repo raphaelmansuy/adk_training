@@ -35,9 +35,31 @@ as of October 2025.
 **Verification Date**: October 10, 2025  
 **ADK Version**: 1.16.0+
 
+**Implementation Note**: The reference implementation uses async tools with
+`ToolContext` and the correct `artifact=` parameter (not `part=`). All artifacts
+are saved and retrieved successfully. See the "Troubleshooting" section for
+important notes about the Artifacts tab UI display.
+
+:::
+
+:::warning Important: Artifacts Tab UI Limitation
+
+When using `InMemoryArtifactService` for local development, **the Artifacts tab
+in the web UI will appear empty**. This is expected behavior and does NOT mean
+your artifacts aren't working.
+
+**Your artifacts ARE being saved correctly!** Access them via:
+- ✅ Blue artifact buttons in chat (primary method)
+- ✅ Ask agent "Show me all saved artifacts"
+- ✅ Check server logs for HTTP 200 responses
+
+See the [Troubleshooting section](#9-troubleshooting) for complete details.
+
 :::
 
 # Tutorial 19: Artifacts & File Management
+
+[View Implementation](./../../tutorial_implementation/tutorial19)
 
 **Goal**: Master artifact storage, versioning, and retrieval to enable agents to create, manage, and track files across sessions, providing persistent state and audit trails.
 
@@ -127,6 +149,43 @@ Artifact Structure:
 :::info Version Numbering
 Artifact versions are **0-indexed**. The first save returns version 0, the second returns version 1, and so on.
 :::
+
+### Implementation Note: Async Tools with ToolContext
+
+**All artifact operations are asynchronous.** When building tools that use
+artifacts, they must be async functions that accept `ToolContext`:
+
+```python
+from google.adk.tools.tool_context import ToolContext
+from google.genai import types
+
+async def my_tool(param: str, tool_context: ToolContext) -> dict:
+    """Tool that saves artifacts."""
+    
+    # Create artifact content
+    content = f"Processed: {param}"
+    artifact_part = types.Part.from_text(text=content)
+    
+    # Save artifact (note: 'artifact' parameter, not 'part')
+    version = await tool_context.save_artifact(
+        filename='output.txt',
+        artifact=artifact_part  # Correct parameter name
+    )
+    
+    return {
+        'status': 'success',
+        'report': f'Saved as version {version}',
+        'data': {'version': version, 'filename': 'output.txt'}
+    }
+```
+
+**Key points**:
+
+- ✅ Use `async def` for tool functions
+- ✅ Accept `tool_context: ToolContext` parameter
+- ✅ Use `await` with `save_artifact()`, `load_artifact()`, `list_artifacts()`
+- ✅ Use `artifact=` parameter (not `part=`) in ADK 1.16.0+
+- ✅ Return structured dict with `status`, `report`, and `data` fields
 
 ### Where Artifacts are Available
 
@@ -1315,6 +1374,69 @@ async def load_with_metadata(context: CallbackContext, filename: str):
 
 ## 9. Troubleshooting
 
+### Issue: "Artifacts Tab is Empty" (UI Display Issue)
+
+:::info Expected Behavior
+**This is the #1 most common "issue" - but it's not actually a problem!**
+
+The Artifacts tab appears empty when using `InMemoryArtifactService`, but your artifacts **ARE being saved correctly**. This is a UI display limitation, not a functionality issue.
+:::
+
+**What's happening**:
+
+- ✅ Artifacts are being saved (check server logs for HTTP 200 responses)
+- ✅ Artifacts are being retrieved correctly
+- ✅ REST API is working perfectly
+- ❌ Artifacts sidebar doesn't populate (UI limitation only)
+
+**How to verify artifacts are working**:
+
+1. **Check server logs** - Look for successful saves:
+   ```
+   INFO: GET .../artifacts/document_extracted.txt/versions/0 HTTP/1.1" 200 OK
+   INFO: GET .../artifacts/document_summary.txt/versions/0 HTTP/1.1" 200 OK
+   ```
+
+2. **Look for blue buttons in chat** - Agent creates buttons like "display document_extracted.txt"
+   - These buttons work perfectly
+   - Click them to view artifact content
+   - This is the **primary way** to access artifacts in development
+
+3. **Ask the agent** - Use conversational access:
+   ```
+   "Show me all saved artifacts"
+   "Load document_extracted.txt"
+   "What artifacts have been created?"
+   ```
+
+**Why does this happen?**
+
+The ADK web UI's Artifacts sidebar expects specific metadata hooks that `InMemoryArtifactService` doesn't provide. The artifacts exist in memory and are fully functional via:
+- ✅ REST API endpoints (confirmed by logs)
+- ✅ Blue button displays (confirmed by UI)
+- ✅ Agent tool calls (confirmed by implementation)
+- ✅ Programmatic access (confirmed by tests)
+
+**Production deployment**:
+
+In production with `GcsArtifactService`, the Artifacts sidebar **will populate correctly** because the cloud backend provides the necessary metadata indexing.
+
+```python
+from google.adk.artifacts import GcsArtifactService
+
+# Production configuration - sidebar will work
+artifact_service = GcsArtifactService(bucket_name='your-bucket')
+```
+
+:::tip Workaround Summary
+1. **Primary**: Click blue artifact buttons in chat
+2. **Secondary**: Ask agent "Show me all saved artifacts"
+3. **Tertiary**: Check server logs for confirmation
+4. **Production**: Use GcsArtifactService for full UI support
+:::
+
+---
+
 ### Issue: "Artifact not found"
 
 **Solutions**:
@@ -1332,11 +1454,21 @@ print("Available:", artifacts)
 ```python
 # Check save return value
 version = await context.save_artifact('file.txt', part)
-if version:
+if version is not None:
     print(f"Saved successfully as version {version}")
 else:
     print("Save failed")
 ```
+
+3. **Check session scope**:
+
+```python
+# Artifacts are scoped to sessions
+# Make sure you're in the same session
+print(f"Current session: {context.session.id}")
+```
+
+---
 
 ### Issue: "Version conflict"
 
@@ -1350,6 +1482,45 @@ v2 = await context.save_artifact('file.txt', part2)
 
 # Load specific version
 artifact = await context.load_artifact('file.txt', version=v1)
+```
+
+---
+
+### Issue: "TypeError: save_artifact() got unexpected keyword argument"
+
+**Solution**: Use correct parameter names (changed in ADK 1.16.0+):
+
+```python
+# ✅ Correct - use 'artifact' parameter
+await tool_context.save_artifact(
+    filename='document.txt',
+    artifact=types.Part.from_text(text)
+)
+
+# ❌ Wrong - old 'part' parameter
+await tool_context.save_artifact(
+    filename='document.txt',
+    part=types.Part.from_text(text)  # This will fail
+)
+```
+
+---
+
+### Issue: "Artifact service not configured"
+
+**Solution**: Ensure artifact service is passed to Runner:
+
+```python
+from google.adk.artifacts import InMemoryArtifactService
+
+# ✅ Good - artifact service configured
+runner = Runner(
+    agent=agent,
+    artifact_service=InMemoryArtifactService()
+)
+
+# ❌ Bad - no artifact service
+runner = Runner(agent=agent)  # Will fail when calling artifact methods
 ```
 
 ---
