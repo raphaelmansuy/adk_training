@@ -420,6 +420,141 @@ GOOGLE_API_KEY=your_gemini_api_key_here
 
 **Step 5: Create Frontend**
 
+First, create a theme toggle component. Create `components/ThemeToggle.tsx`:
+
+```typescript
+"use client";
+
+import { useEffect, useState } from "react";
+
+export function ThemeToggle() {
+  const [theme, setTheme] = useState<"light" | "dark">("light");
+
+  useEffect(() => {
+    // Check system preference and localStorage on mount
+    const savedTheme = localStorage.getItem("theme") as "light" | "dark" | null;
+    const systemTheme = window.matchMedia("(prefers-color-scheme: dark)")
+      .matches
+      ? "dark"
+      : "light";
+    const initialTheme = savedTheme || systemTheme;
+    
+    setTheme(initialTheme);
+    document.documentElement.classList.toggle("dark", initialTheme === "dark");
+  }, []);
+
+  const toggleTheme = () => {
+    const newTheme = theme === "light" ? "dark" : "light";
+    setTheme(newTheme);
+    localStorage.setItem("theme", newTheme);
+    document.documentElement.classList.toggle("dark", newTheme === "dark");
+  };
+
+  return (
+    <button
+      onClick={toggleTheme}
+      className="flex items-center justify-center w-9 h-9 rounded-lg border border-border bg-background hover:bg-accent transition-colors"
+      aria-label="Toggle theme"
+    >
+      {theme === "light" ? (
+        <svg
+          className="w-5 h-5 text-foreground"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth={2}
+            d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"
+          />
+        </svg>
+      ) : (
+        <svg
+          className="w-5 h-5 text-foreground"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth={2}
+            d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"
+          />
+        </svg>
+      )}
+    </button>
+  );
+}
+```
+
+Update `app/globals.css` with minimal, clean styles:
+
+```css
+@import "tailwindcss";
+
+@layer base {
+  :root {
+    --background: 0 0% 100%;
+    --foreground: 222.2 84% 4.9%;
+    --card: 0 0% 100%;
+    --card-foreground: 222.2 84% 4.9%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 222.2 84% 4.9%;
+    --primary: 221.2 83.2% 53.3%;
+    --primary-foreground: 210 40% 98%;
+    --secondary: 210 40% 96.1%;
+    --secondary-foreground: 222.2 47.4% 11.2%;
+    --muted: 210 40% 96.1%;
+    --muted-foreground: 215.4 16.3% 46.9%;
+    --accent: 210 40% 96.1%;
+    --accent-foreground: 222.2 47.4% 11.2%;
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 210 40% 98%;
+    --border: 214.3 31.8% 91.4%;
+    --input: 214.3 31.8% 91.4%;
+    --ring: 221.2 83.2% 53.3%;
+    --radius: 0.5rem;
+  }
+
+  .dark {
+    --background: 222.2 84% 4.9%;
+    --foreground: 210 40% 98%;
+    --card: 222.2 84% 4.9%;
+    --card-foreground: 210 40% 98%;
+    --popover: 222.2 84% 4.9%;
+    --popover-foreground: 210 40% 98%;
+    --primary: 217.2 91.2% 59.8%;
+    --primary-foreground: 222.2 47.4% 11.2%;
+    --secondary: 217.2 32.6% 17.5%;
+    --secondary-foreground: 210 40% 98%;
+    --muted: 217.2 32.6% 17.5%;
+    --muted-foreground: 215 20.2% 65.1%;
+    --accent: 217.2 32.6% 17.5%;
+    --accent-foreground: 210 40% 98%;
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 210 40% 98%;
+    --border: 217.2 32.6% 17.5%;
+    --input: 217.2 32.6% 17.5%;
+    --ring: 224.3 76.3% 48%;
+  }
+}
+
+@layer base {
+  * {
+    border-color: hsl(var(--border));
+  }
+  
+  body {
+    background: hsl(var(--background));
+    color: hsl(var(--foreground));
+    font-feature-settings: "rlig" 1, "calt" 1;
+  }
+}
+```
+
 Update `app/layout.tsx`:
 
 ```typescript
@@ -455,35 +590,59 @@ Create `app/page.tsx`:
 import { CopilotKit } from "@copilotkit/react-core";
 import { CopilotChat } from "@copilotkit/react-ui";
 import "@copilotkit/react-ui/styles.css";
+import { ThemeToggle } from "@/components/ThemeToggle";
 
 export default function Home() {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100">
-      <CopilotKit runtimeUrl="http://localhost:8000/copilotkit">
-        {/* Header */}
-        <div className="container mx-auto px-4 py-8">
-          <div className="max-w-4xl mx-auto">
-            <h1 className="text-4xl font-bold text-gray-900 mb-2">
-              Customer Support
-            </h1>
-            <p className="text-lg text-gray-600 mb-8">
-              Hi! I'm your AI support assistant. How can I help you today?
-            </p>
-          </div>
-        </div>
+    <div className="min-h-screen bg-background">
+      <CopilotKit runtimeUrl="/api/copilotkit" agent="my_agent">
+        <div className="flex flex-col h-screen">
+          {/* Header */}
+          <header className="border-b">
+            <div className="container mx-auto px-4 py-4">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <div className="flex items-center justify-center w-10 h-10 bg-primary rounded-md">
+                    <svg
+                      className="w-5 h-5 text-primary-foreground"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"
+                      />
+                    </svg>
+                  </div>
+                  <div>
+                    <h1 className="text-lg font-semibold">Support Assistant</h1>
+                    <p className="text-xs text-muted-foreground">AI-Powered Help</p>
+                  </div>
+                </div>
+                <ThemeToggle />
+              </div>
+            </div>
+          </header>
 
-        {/* Chat Interface */}
-        <div className="container mx-auto px-4 pb-8">
-          <div className="max-w-4xl mx-auto bg-white rounded-lg shadow-xl overflow-hidden">
-            <CopilotChat
-              instructions="You are a customer support agent. Be helpful, empathetic, and professional."
-              labels={{
-                title: "Support Chat",
-                initial: "Hi! I'm here to help with your questions about our products, policies, and services. What can I assist you with today?",
-              }}
-              className="h-[600px]"
-            />
-          </div>
+          {/* Main Content */}
+          <main className="flex-1 overflow-hidden">
+            <div className="container mx-auto px-4 py-6 h-full">
+              <div className="h-full border rounded-lg bg-card">
+                <CopilotChat
+                  instructions="You are a friendly and professional customer support agent. Be helpful, empathetic, and provide clear, actionable solutions."
+                  labels={{
+                    title: "Support Chat",
+                    initial:
+                      "👋 Hi! I'm your AI support assistant.\n\nI can help you with:\n• Product information\n• Order tracking\n• Support tickets\n• General questions\n\nHow can I assist you today?",
+                  }}
+                  className="h-full"
+                />
+              </div>
+            </div>
+          </main>
         </div>
       </CopilotKit>
     </div>
