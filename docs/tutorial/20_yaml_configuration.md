@@ -13,9 +13,9 @@ keywords:
     "configuration management",
     "environment setup",
   ]
-status: "draft"
+status: "complete"
 difficulty: "intermediate"
-estimated_time: "1 hour"
+estimated_time: "45 minutes"
 prerequisites: ["Tutorial 01: Hello World Agent", "YAML syntax knowledge"]
 learning_objectives:
   - "Configure agents using YAML files"
@@ -24,14 +24,6 @@ learning_objectives:
   - "Organize configuration across projects"
 implementation_link: "https://github.com/raphaelmansuy/adk_training/tree/main/tutorial_implementation/tutorial20"
 ---
-
-:::danger UNDER CONSTRUCTION
-
-**This tutorial is currently under construction and may contain errors, incomplete information, or outdated code examples.**
-
-Please check back later for the completed version. If you encounter issues, refer to the working implementation in the [tutorial repository](https://github.com/raphaelmansuy/adk_training/tree/main/tutorial_implementation/tutorial20).
-
-:::
 
 # Tutorial 20: Agent Configuration with YAML
 
@@ -54,7 +46,48 @@ Please check back later for the completed version. If you encounter issues, refe
 - Loading and validating configurations
 - Best practices for config management
 
-**Time to Complete**: 40-55 minutes
+**Time to Complete**: 45 minutes
+
+---
+
+## Why YAML Configuration Matters
+
+**Problem**: Writing Python code for every agent configuration requires development expertise and makes rapid iteration difficult.
+
+**Solution**: **YAML configuration** enables declarative agent definitions that can be edited without code changes.
+
+**Benefits**:
+
+- 🚀 **Rapid Prototyping**: Change configurations without coding
+- 📝 **Readable**: Human-friendly format
+- [FLOW] **Version Control**: Easy to track config changes
+- 🎯 **Separation**: Configuration separate from implementation
+- 👥 **Accessibility**: Non-developers can modify agents
+- 🔧 **Reusable**: Share configurations across projects
+
+**Use Cases**:
+
+- Quick agent prototyping
+- Configuration-driven deployments
+- Multi-environment setups (dev, staging, prod)
+- Agent marketplace/templates
+- Non-technical team member modifications
+
+**Status**: YAML configuration is marked as `@experimental` in ADK. API may change.
+
+---
+
+:::info API Verification
+
+**Source Verified**: Official ADK source code (version 1.16.0+)
+
+**Correct API**: `config_agent_utils.from_config(config_path)`
+
+**Common Mistake**: Using `AgentConfig.from_yaml_file()` - this method **does not exist**. Instead, use `config_agent_utils.from_config()` which loads the YAML file and returns a ready-to-use agent instance.
+
+**Verification Date**: October 2025
+
+:::
 
 ---
 
