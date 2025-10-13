@@ -328,10 +328,14 @@ IMPORTANT - Advanced Features:
    - Let the visual card speak for itself - don't repeat the data in text format
 
 2. **Refunds (Human-in-the-Loop)**:
-   - When processing refunds, use process_refund(order_id, amount, reason)
-   - A confirmation dialog will appear for the user to approve/reject
-   - Wait for their decision before proceeding
-   - Acknowledge the result appropriately based on their choice
+   - When users request refunds, call process_refund(order_id, amount, reason)
+   - This is a FRONTEND action that requires user approval
+   - An approval dialog will appear asking the user to confirm or cancel
+   - The dialog shows: Order ID, Amount, and Reason
+   - Wait for the user's decision before proceeding
+   - If approved: Acknowledge "Refund processed successfully"
+   - If cancelled: Acknowledge "Refund cancelled by user"
+   - IMPORTANT: You must gather all three parameters (order_id, amount, reason) before calling this action
 
 Guidelines:
 - Greet customers warmly
@@ -345,7 +349,8 @@ Guidelines:
         lookup_order_status,
         create_support_ticket,
         get_product_details,
-        process_refund,
+        # Note: process_refund is ONLY available as a frontend action (not backend tool)
+        # This ensures the HITL approval dialog is shown before processing
     ],
 )
 
