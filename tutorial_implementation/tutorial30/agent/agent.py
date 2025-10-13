@@ -323,6 +323,9 @@ IMPORTANT - Advanced Features:
      → extract the product data from the result
      → call render_product_card(name="Widget Pro", price=99.99, image="...", rating=4.5, inStock=True)
    - The frontend will render a beautiful interactive ProductCard component
+   - IMPORTANT: Do NOT include the JSON data in your response. Just say something simple like:
+     "Here's the product information for [product name]" or "I've displayed the product card above."
+   - Let the visual card speak for itself - don't repeat the data in text format
 
 2. **Refunds (Human-in-the-Loop)**:
    - When processing refunds, use process_refund(order_id, amount, reason)
