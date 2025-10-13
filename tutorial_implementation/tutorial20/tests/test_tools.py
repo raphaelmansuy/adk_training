@@ -2,7 +2,7 @@
 # Validates tool function implementations
 
 import pytest
-from tutorial20.tools.customer_tools import (
+from customer_support.tools.customer_tools import (
     check_customer_status,
     log_interaction,
     get_order_status,

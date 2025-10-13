@@ -9,21 +9,21 @@ class TestProjectStructure:
     """Test that project has correct file structure."""
 
     def test_root_agent_yaml_exists(self):
-        """Test that root_agent.yaml exists in tutorial20 package."""
-        assert os.path.exists('tutorial20/root_agent.yaml'), "tutorial20/root_agent.yaml should exist"
+        """Test that root_agent.yaml exists in customer_support package."""
+        assert os.path.exists('customer_support/root_agent.yaml'), "customer_support/root_agent.yaml should exist"
 
     def test_tools_directory_exists(self):
-        """Test that tools directory exists within tutorial20 package."""
-        assert os.path.exists('tutorial20/tools'), "tutorial20/tools directory should exist"
-        assert os.path.isdir('tutorial20/tools'), "tutorial20/tools should be a directory"
+        """Test that tools directory exists within customer_support package."""
+        assert os.path.exists('customer_support/tools'), "customer_support/tools directory should exist"
+        assert os.path.isdir('customer_support/tools'), "customer_support/tools should be a directory"
 
     def test_tools_init_exists(self):
-        """Test that tutorial20/tools/__init__.py exists."""
-        assert os.path.exists('tutorial20/tools/__init__.py'), "tutorial20/tools/__init__.py should exist"
+        """Test that customer_support/tools/__init__.py exists."""
+        assert os.path.exists('customer_support/tools/__init__.py'), "customer_support/tools/__init__.py should exist"
 
     def test_customer_tools_exists(self):
-        """Test that tutorial20/tools/customer_tools.py exists."""
-        assert os.path.exists('tutorial20/tools/customer_tools.py'), "tutorial20/tools/customer_tools.py should exist"
+        """Test that customer_support/tools/customer_tools.py exists."""
+        assert os.path.exists('customer_support/tools/customer_tools.py'), "customer_support/tools/customer_tools.py should exist"
 
     def test_run_agent_exists(self):
         """Test that run_agent.py exists."""
@@ -66,7 +66,7 @@ class TestYAMLStructure:
         """Test that root_agent.yaml is valid YAML."""
         import yaml
 
-        with open('tutorial20/root_agent.yaml', 'r') as f:
+        with open('customer_support/root_agent.yaml', 'r') as f:
             config = yaml.safe_load(f)
 
         assert config is not None, "YAML should be valid"
@@ -76,7 +76,7 @@ class TestYAMLStructure:
         """Test that YAML has required top-level fields."""
         import yaml
 
-        with open('tutorial20/root_agent.yaml', 'r') as f:
+        with open('customer_support/root_agent.yaml', 'r') as f:
             config = yaml.safe_load(f)
 
         required_fields = ['name', 'model', 'description', 'instruction']
@@ -88,7 +88,7 @@ class TestYAMLStructure:
         """Test that YAML has no sub_agents (single-agent configuration)."""
         import yaml
 
-        with open('tutorial20/root_agent.yaml', 'r') as f:
+        with open('customer_support/root_agent.yaml', 'r') as f:
             config = yaml.safe_load(f)
 
         # Single-agent configuration should not have sub_agents
@@ -98,7 +98,7 @@ class TestYAMLStructure:
         """Test that YAML has tools configuration."""
         import yaml
 
-        with open('tutorial20/root_agent.yaml', 'r') as f:
+        with open('customer_support/root_agent.yaml', 'r') as f:
             config = yaml.safe_load(f)
 
         assert 'tools' in config, "YAML should have tools field"
@@ -109,13 +109,13 @@ class TestYAMLStructure:
         """Test that YAML tools are in correct format."""
         import yaml
 
-        with open('tutorial20/root_agent.yaml', 'r') as f:
+        with open('customer_support/root_agent.yaml', 'r') as f:
             config = yaml.safe_load(f)
 
         for i, tool in enumerate(config['tools']):
             assert isinstance(tool, dict), f"Tool {i} should be a dict"
             assert 'name' in tool, f"Tool {i} should have name field"
-            assert tool['name'].startswith('tutorial20.tools.'), f"Tool {i} name should reference tutorial20.tools module: {tool['name']}"
+            assert tool['name'].startswith('customer_support.tools.'), f"Tool {i} name should reference customer_support.tools module: {tool['name']}"
 
 
 class TestToolFunctionStructure:
@@ -123,7 +123,7 @@ class TestToolFunctionStructure:
 
     def test_all_tool_functions_defined(self):
         """Test that all expected tool functions are defined."""
-        from tutorial20.tools.customer_tools import (
+        from customer_support.tools.customer_tools import (
             check_customer_status,
             log_interaction,
             get_order_status,
@@ -156,8 +156,8 @@ class TestToolFunctionStructure:
             assert callable(func), f"{func.__name__} should be callable"
 
     def test_tools_init_exports_all_functions(self):
-        """Test that tutorial20.tools package exports all functions."""
-        from tutorial_implementation.tutorial20.customer_support import tools
+        """Test that customer_support.tools package exports all functions."""
+        from customer_support import tools
 
         expected_exports = [
             'check_customer_status',

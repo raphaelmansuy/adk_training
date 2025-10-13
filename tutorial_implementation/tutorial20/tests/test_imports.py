@@ -10,7 +10,7 @@ class TestImports:
     def test_tools_import(self):
         """Test that tools package can be imported."""
         try:
-            from tutorial_implementation.tutorial20.customer_support import tools
+            from customer_support import tools
             assert tools is not None
         except ImportError as e:
             pytest.fail(f"Failed to import tools package: {e}")
@@ -18,7 +18,7 @@ class TestImports:
     def test_customer_tools_import(self):
         """Test that customer_tools module can be imported."""
         try:
-            from tutorial20.tools import customer_tools
+            from customer_support.tools import customer_tools
             assert customer_tools is not None
         except ImportError as e:
             pytest.fail(f"Failed to import customer_tools: {e}")
@@ -26,7 +26,7 @@ class TestImports:
     def test_all_tool_functions_importable(self):
         """Test that all tool functions can be imported."""
         try:
-            from tutorial20.tools.customer_tools import (
+            from customer_support.tools.customer_tools import (
                 check_customer_status,
                 log_interaction,
                 get_order_status,
@@ -66,13 +66,13 @@ class TestToolFunctionSignatures:
 
     def test_tool_functions_are_callable(self):
         """Test that imported tool functions are callable."""
-        from tutorial20.tools.customer_tools import check_customer_status
+        from customer_support.tools.customer_tools import check_customer_status
 
         assert callable(check_customer_status)
 
     def test_tool_function_returns_dict(self):
         """Test that tool function returns a dictionary."""
-        from tutorial20.tools.customer_tools import check_customer_status
+        from customer_support.tools.customer_tools import check_customer_status
 
         result = check_customer_status('test')
         assert isinstance(result, dict)
