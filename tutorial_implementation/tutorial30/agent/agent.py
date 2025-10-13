@@ -195,6 +195,103 @@ def create_support_ticket(
     }
 
 
+def get_product_details(product_id: str) -> Dict[str, Any]:
+    """
+    Get product details from the database.
+    
+    Returns product information that can be displayed to the user.
+    The frontend will handle rendering this as a ProductCard component.
+
+    Args:
+        product_id: The product ID to look up (format: PROD-XXX)
+
+    Returns:
+        Dict with status, report, and product details
+    """
+    # Mock product database - replace with real database in production
+    products = {
+        "PROD-001": {
+            "name": "Widget Pro",
+            "price": 99.99,
+            "image": "https://placehold.co/400x400/6366f1/fff.png",
+            "rating": 4.5,
+            "inStock": True,
+        },
+        "PROD-002": {
+            "name": "Gadget Plus",
+            "price": 149.99,
+            "image": "https://placehold.co/400x400/8b5cf6/fff.png",
+            "rating": 4.8,
+            "inStock": True,
+        },
+        "PROD-003": {
+            "name": "Premium Kit",
+            "price": 299.99,
+            "image": "https://placehold.co/400x400/ec4899/fff.png",
+            "rating": 4.9,
+            "inStock": False,
+        },
+    }
+
+    product_id_upper = product_id.upper()
+
+    if product_id_upper in products:
+        product = products[product_id_upper]
+        return {
+            "status": "success",
+            "report": f"Here are the details for {product['name']}. I'll display it as a product card for you.",
+            "product": product,
+        }
+    else:
+        return {
+            "status": "error",
+            "report": f"Product {product_id} not found",
+            "error": "Please check the product ID and try again.",
+        }
+
+
+def process_refund(order_id: str, amount: float, reason: str) -> Dict[str, Any]:
+    """
+    Process a refund for an order.
+    
+    This is an advanced feature demonstrating Human-in-the-Loop (HITL) - 
+    the frontend will show a confirmation dialog before executing this action.
+    
+    IMPORTANT: This function requires user approval in the frontend.
+
+    Args:
+        order_id: The order ID to refund (format: ORD-XXXXX)
+        amount: The refund amount in dollars
+        reason: The reason for the refund
+
+    Returns:
+        Dict with status, report, and refund details
+    """
+    # In production, this would:
+    # 1. Validate order exists and belongs to user
+    # 2. Check refund eligibility (time window, return policy)
+    # 3. Process actual refund via payment processor
+    # 4. Update order status in database
+    # 5. Send confirmation email
+
+    # Mock refund processing
+    refund_id = f"REF-{uuid.uuid4().hex[:8].upper()}"
+
+    return {
+        "status": "success",
+        "report": f"Refund {refund_id} processed successfully for order {order_id}",
+        "refund": {
+            "refund_id": refund_id,
+            "order_id": order_id,
+            "amount": amount,
+            "reason": reason,
+            "status": "Processed",
+            "processed_at": datetime.now().isoformat(),
+            "estimated_credit_date": "3-5 business days",
+        },
+    }
+
+
 # ============================================================================
 # Agent Configuration
 # ============================================================================
@@ -210,9 +307,28 @@ Your responsibilities:
 - Search the knowledge base when needed using search_knowledge_base()
 - Look up order status using lookup_order_status() when customers ask about their orders
 - Create support tickets using create_support_ticket() for complex issues
+- Get product details using get_product_details() when customers ask about products
 - Be empathetic and professional
 - Escalate complex issues to human support when appropriate
 - Never make up information - if unsure, say so
+
+IMPORTANT - Advanced Features:
+
+1. **Product Information (Generative UI)**:
+   - When users ask about products, follow this two-step process:
+     a) First call get_product_details(product_id) to fetch product data
+     b) Then call render_product_card(name, price, image, rating, inStock) with the product details
+   - Example: "Show me product PROD-001"
+     → call get_product_details("PROD-001") 
+     → extract the product data from the result
+     → call render_product_card(name="Widget Pro", price=99.99, image="...", rating=4.5, inStock=True)
+   - The frontend will render a beautiful interactive ProductCard component
+
+2. **Refunds (Human-in-the-Loop)**:
+   - When processing refunds, use process_refund(order_id, amount, reason)
+   - A confirmation dialog will appear for the user to approve/reject
+   - Wait for their decision before proceeding
+   - Acknowledge the result appropriately based on their choice
 
 Guidelines:
 - Greet customers warmly
@@ -221,7 +337,13 @@ Guidelines:
 - Keep responses under 3 paragraphs unless more detail is requested
 - Use a friendly but professional tone
 - Format responses with markdown for better readability""",
-    tools=[search_knowledge_base, lookup_order_status, create_support_ticket],
+    tools=[
+        search_knowledge_base,
+        lookup_order_status,
+        create_support_ticket,
+        get_product_details,
+        process_refund,
+    ],
 )
 
 # Wrap ADK agent with AG-UI middleware
