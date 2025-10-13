@@ -148,5 +148,128 @@ class TestCreateSupportTicket:
             pytest.skip(f"Import failed (dependencies not installed): {e}")
 
 
+class TestCreateProductCard:
+    """Test the create_product_card tool (Advanced Feature 1: Generative UI)."""
+
+    def test_create_valid_product_card(self):
+        """Test creating a product card for a valid product."""
+        try:
+            from agent.agent import create_product_card
+
+            result = create_product_card("PROD-001")
+            assert result["status"] == "success"
+            assert "product" in result
+            assert result["product"]["name"] == "Widget Pro"
+            assert result["product"]["price"] == 99.99
+            assert "component" in result
+            assert result["component"] == "ProductCard"
+        except ImportError as e:
+            pytest.skip(f"Import failed (dependencies not installed): {e}")
+
+    def test_create_product_card_all_products(self):
+        """Test creating product cards for all available products."""
+        try:
+            from agent.agent import create_product_card
+
+            product_ids = ["PROD-001", "PROD-002", "PROD-003"]
+            for product_id in product_ids:
+                result = create_product_card(product_id)
+                assert result["status"] == "success"
+                assert "product" in result
+                assert "name" in result["product"]
+                assert "price" in result["product"]
+                assert "rating" in result["product"]
+                assert "inStock" in result["product"]
+        except ImportError as e:
+            pytest.skip(f"Import failed (dependencies not installed): {e}")
+
+    def test_create_invalid_product_card(self):
+        """Test creating a product card for an invalid product."""
+        try:
+            from agent.agent import create_product_card
+
+            result = create_product_card("PROD-999")
+            assert result["status"] == "error"
+            assert "error" in result or "report" in result
+        except ImportError as e:
+            pytest.skip(f"Import failed (dependencies not installed): {e}")
+
+    def test_product_card_lowercase_id(self):
+        """Test that product ID lookup is case-insensitive."""
+        try:
+            from agent.agent import create_product_card
+
+            result = create_product_card("prod-001")
+            assert result["status"] == "success"
+            assert "product" in result
+        except ImportError as e:
+            pytest.skip(f"Import failed (dependencies not installed): {e}")
+
+
+class TestProcessRefund:
+    """Test the process_refund tool (Advanced Feature 2: Human-in-the-Loop)."""
+
+    def test_process_refund_success(self):
+        """Test processing a refund successfully."""
+        try:
+            from agent.agent import process_refund
+
+            result = process_refund("ORD-12345", 99.99, "Product defective")
+            assert result["status"] == "success"
+            assert "refund" in result
+            assert "refund_id" in result["refund"]
+            assert result["refund"]["order_id"] == "ORD-12345"
+            assert result["refund"]["amount"] == 99.99
+            assert result["refund"]["reason"] == "Product defective"
+        except ImportError as e:
+            pytest.skip(f"Import failed (dependencies not installed): {e}")
+
+    def test_refund_id_format(self):
+        """Test that refund ID has correct format."""
+        try:
+            from agent.agent import process_refund
+
+            result = process_refund("ORD-12345", 50.00, "Test reason")
+            refund_id = result["refund"]["refund_id"]
+            assert refund_id.startswith("REF-")
+            assert len(refund_id) > 4  # REF- plus hash
+        except ImportError as e:
+            pytest.skip(f"Import failed (dependencies not installed): {e}")
+
+    def test_refund_includes_all_fields(self):
+        """Test that refund response includes all necessary fields."""
+        try:
+            from agent.agent import process_refund
+
+            result = process_refund("ORD-67890", 149.99, "Changed mind")
+            refund = result["refund"]
+            required_fields = [
+                "refund_id",
+                "order_id",
+                "amount",
+                "reason",
+                "status",
+                "processed_at",
+                "estimated_credit_date",
+            ]
+            for field in required_fields:
+                assert field in refund, f"Missing field: {field}"
+        except ImportError as e:
+            pytest.skip(f"Import failed (dependencies not installed): {e}")
+
+    def test_refund_different_amounts(self):
+        """Test processing refunds with different amounts."""
+        try:
+            from agent.agent import process_refund
+
+            amounts = [10.50, 99.99, 299.99, 1000.00]
+            for amount in amounts:
+                result = process_refund(f"ORD-{int(amount)}", amount, "Test")
+                assert result["status"] == "success"
+                assert result["refund"]["amount"] == amount
+        except ImportError as e:
+            pytest.skip(f"Import failed (dependencies not installed): {e}")
+
+
 if __name__ == "__main__":
     pytest.main([__file__, "-v"])

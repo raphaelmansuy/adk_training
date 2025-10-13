@@ -87,8 +87,13 @@ tutorial30/
 ├── nextjs_frontend/           # Next.js frontend
 │   ├── app/
 │   │   ├── layout.tsx         # Root layout
-│   │   ├── page.tsx           # Chat page with CopilotKit
+│   │   ├── page.tsx           # Chat page with CopilotKit & advanced features
+│   │   ├── advanced/
+│   │   │   └── page.tsx       # Advanced features demo page
 │   │   └── globals.css        # Tailwind styles
+│   ├── components/
+│   │   ├── ThemeToggle.tsx    # Dark/light mode toggle
+│   │   └── ProductCard.tsx    # Generative UI product card
 │   ├── package.json
 │   ├── tsconfig.json
 │   ├── next.config.js
@@ -97,12 +102,77 @@ tutorial30/
 │   ├── test_agent.py          # Agent configuration tests
 │   ├── test_imports.py        # Import validation
 │   ├── test_structure.py      # Project structure tests
-│   └── test_tools.py          # Tool function tests
+│   └── test_tools.py          # Tool function tests (including advanced features)
 ├── Makefile                   # Build commands
 ├── README.md                  # This file
 ├── requirements.txt           # Python dependencies
 └── pyproject.toml            # Python package config
 ```
+
+## ⚡ Advanced Features
+
+This implementation includes three powerful advanced features from Tutorial 30:
+
+### 1. 🎨 Generative UI
+
+The agent can render rich, interactive React components directly in the chat:
+
+- **Product Cards**: Display products with images, prices, ratings, and stock status
+- **Dynamic Components**: Agent decides when to use visual components vs text
+- **Implementation**: `create_product_card()` tool returns structured data, `ProductCard` component renders it
+
+**Try it**: "Show me product PROD-001"
+
+### 2. 🔐 Human-in-the-Loop (HITL)
+
+Sensitive operations require explicit user approval:
+
+- **Refund Approval**: User must confirm before processing refunds
+- **Confirmation Dialog**: Clear display of action details before approval
+- **Cancellation**: Users can deny requests, agent continues with alternative
+
+**Try it**: "I want a refund for order ORD-12345"
+
+### 3. 👤 Shared State
+
+Agent has real-time access to user context without asking:
+
+- **User Data**: Name, email, account type automatically available
+- **Order History**: Agent knows your orders (ORD-12345, ORD-67890)
+- **Member Info**: Join date and account status accessible
+
+**Try it**: "What's my account status?"
+
+**Learn More**: Visit `/advanced` in the running app for detailed implementation documentation.
+
+## 🏠 Home Page Structure
+
+The main page (`http://localhost:3000`) includes:
+
+1. **Header Section**
+   - Support Assistant branding
+   - User account display (logged in as John Doe)
+   - Advanced Features navigation link
+   - Dark/Light mode toggle
+
+2. **Chat Interface** (Fixed height: 600px)
+   - Real-time AI chat with CopilotKit
+   - Example prompts in initial message
+   - Streaming responses
+   - Tool execution feedback
+
+3. **Feature Showcase** (Below chat, scrollable)
+   - **Tabbed Interface**: Switch between three features
+   - **Generative UI Tab**: Live ProductCard examples
+   - **HITL Tab**: Mock refund approval dialog
+   - **Shared State Tab**: User account information display
+   - Appears directly on home page for immediate discoverability
+
+**User Flow**:
+- Land on page → See chat with example prompts
+- Scroll down → Discover advanced features with live demos
+- Click tabs → Explore each feature interactively
+- Visit `/advanced` → Read implementation details
 
 ## 🛠️ Available Commands
 
@@ -155,6 +225,24 @@ make clean              # Remove generated files
 - "My product stopped working after 2 months"
 - "I need help with a billing issue"
 - "Create a ticket for account access problems"
+
+### Advanced Features
+
+#### Generative UI (Feature 1)
+- "Show me product PROD-001"
+- "What products do you have available?"
+- "Tell me about the Widget Pro" (displays product card)
+- "Display product PROD-002" (shows Gadget Plus)
+
+#### Human-in-the-Loop (Feature 2)
+- "I want a refund for order ORD-12345"
+- "Process a refund of $99.99 for my order"
+- "Can you refund my purchase?" (requires approval dialog)
+
+#### Shared State (Feature 3)
+- "What's my account status?" (agent knows your name)
+- "Show me my recent orders" (agent has order history)
+- "When did I join?" (agent knows member since date)
 
 ## 🔧 Configuration
 
@@ -317,7 +405,61 @@ CopilotKit sends initial handshake requests during page load that don't match th
 
 **Want the full explanation?** See [TROUBLESHOOTING_422.md](./TROUBLESHOOTING_422.md) for a complete technical breakdown with verification steps.
 
-#### 1b. [Network] Unknown Error Occurred ⚠️ KNOWN ISSUE
+#### 1b. "Agent Not Found" Error ⚠️ FIXED
+
+**Symptom**: Red banner at bottom of chat interface says:
+```
+The requested agent was not found. Please set up at least one agent before proceeding.
+```
+
+**Fix Applied**: Removed the `agent="customer_support_agent"` prop from `<CopilotKit>` component. The AG-UI protocol automatically discovers the agent from the backend.
+
+**If you still see this error**:
+1. Make sure backend is running: `curl http://localhost:8000/health`
+2. Check browser console for connection errors
+3. Verify `/api/copilotkit` endpoint exists: `curl http://localhost:8000/docs`
+
+#### 1c. EmptyAdapter Requires Agent Lock Mode ✅ FIXED
+
+**Symptom**: Error in browser console:
+```
+Invalid adapter configuration: EmptyAdapter is only meant to be used with agent lock mode.
+For non-agent components like useCopilotChatSuggestions, CopilotTextarea, or CopilotTask,
+please use an LLM adapter instead.
+```
+
+**Root Cause**: When using `ExperimentalEmptyAdapter` (which delegates all LLM calls to your AG-UI agent), CopilotKit requires "agent lock mode" to be enabled. This ensures all requests go through your specific agent rather than trying to use non-existent LLM adapters.
+
+**Fix Applied**:
+
+1. **Frontend (`page.tsx`)**: Added `agent` prop to CopilotKit component:
+```tsx
+<CopilotKit runtimeUrl="/api/copilotkit" agent="customer_support_agent">
+  <ChatInterface />
+</CopilotKit>
+```
+
+2. **Backend Route (`route.ts`)**: Ensured agent name matches:
+```typescript
+const runtime = new CopilotRuntime({
+  agents: {
+    customer_support_agent: new HttpAgent({ url: `${backendUrl}/api/copilotkit` }),
+  },
+});
+```
+
+**Why This Is Required**:
+- `ExperimentalEmptyAdapter` has no LLM - it only proxies to your agents
+- CopilotKit features like `useCopilotChatSuggestions` need an LLM
+- Agent lock mode tells CopilotKit: "Use this specific agent for everything"
+- Without it, CopilotKit tries to use EmptyAdapter's non-existent LLM → Error
+
+**Verification**:
+1. Check browser console - error should be gone
+2. Agent name in `page.tsx` matches agent name in `route.ts`
+3. Agent name in `route.ts` matches backend agent name (`customer_support_agent`)
+
+#### 1d. [Network] Unknown Error Occurred ⚠️ KNOWN ISSUE
 
 **Symptom**: Red banner at bottom of chat interface says:
 ```

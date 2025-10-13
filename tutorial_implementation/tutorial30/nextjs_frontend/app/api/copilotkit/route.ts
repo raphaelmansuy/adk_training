@@ -23,7 +23,7 @@ const serviceAdapter = new ExperimentalEmptyAdapter();
 
 const runtime = new CopilotRuntime({
   agents: {
-    my_agent: new HttpAgent({ url: `${backendUrl}/api/copilotkit` }),
+    customer_support_agent: new HttpAgent({ url: `${backendUrl}/api/copilotkit` }),
   },
 });
 
