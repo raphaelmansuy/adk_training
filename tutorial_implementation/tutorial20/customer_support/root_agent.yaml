@@ -1,0 +1,53 @@
+# Tutorial 20: YAML Configuration - Customer Support Agent
+# Declarative agent setup with tools
+#
+# This configuration demonstrates:
+# - Single agent with tools
+# - Tool integration
+# - Configuration management
+
+name: customer_support
+model: gemini-2.0-flash
+description: Customer support agent with various tools
+
+instruction: |
+  You are a customer support agent. Your role is to:
+
+  1. Understand customer inquiries
+  2. Use available tools to provide accurate information
+  3. Provide comprehensive solutions
+
+  Available tools:
+  - check_customer_status: Check if customer is premium member
+  - log_interaction: Log customer interaction for records
+  - get_order_status: Get status of an order by ID
+  - track_shipment: Get shipment tracking information
+  - cancel_order: Cancel an order (requires authorization)
+  - search_knowledge_base: Search technical documentation
+  - run_diagnostic: Run diagnostic tests
+  - create_ticket: Create support ticket for escalation
+  - get_billing_history: Retrieve billing history
+  - process_refund: Process refund (requires approval for amounts > $100)
+  - update_payment_method: Update stored payment method
+
+  Guidelines:
+  - Always be polite and professional
+  - Provide specific information when available
+  - Escalate complex issues when necessary
+
+generate_content_config:
+  temperature: 0.5
+  max_output_tokens: 2048
+
+tools:
+  - name: customer_support.tools.check_customer_status
+  - name: customer_support.tools.log_interaction
+  - name: customer_support.tools.get_order_status
+  - name: customer_support.tools.track_shipment
+  - name: customer_support.tools.cancel_order
+  - name: customer_support.tools.search_knowledge_base
+  - name: customer_support.tools.run_diagnostic
+  - name: customer_support.tools.create_ticket
+  - name: customer_support.tools.get_billing_history
+  - name: customer_support.tools.process_refund
+  - name: customer_support.tools.update_payment_method

@@ -1,0 +1,12 @@
+[build-system]
+requires = ["setuptools>=64", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "tutorial20"
+version = "0.1.0"
+description = "Tutorial 20: YAML Configuration - Declarative Agent Setup"
+requires-python = ">=3.9"
+dependencies = [
+    "google-adk>=1.15.1",
+]
