@@ -214,25 +214,31 @@ Let's build a complete customer support system using YAML configuration.
 
 name: customer_support
 model: gemini-2.0-flash
-description: Customer support orchestrator handling inquiries, orders, and technical issues
+description: Customer support agent with various tools
 
 instruction: |
-  You are a customer support orchestrator. Your role is to:
+  You are a customer support agent. Your role is to:
 
   1. Understand customer inquiries
-  2. Route to appropriate specialized agents
-  3. Coordinate responses from multiple agents
-  4. Provide comprehensive solutions
+  2. Use available tools to provide accurate information
+  3. Provide comprehensive solutions
 
-  Available specialized agents:
-  - order_agent: Order status, tracking, cancellations
-  - technical_agent: Technical issues, troubleshooting
-  - billing_agent: Payment issues, refunds, invoices
+  Available tools:
+  - check_customer_status: Check if customer is premium member
+  - log_interaction: Log customer interaction for records
+  - get_order_status: Get status of an order by ID
+  - track_shipment: Get shipment tracking information
+  - cancel_order: Cancel an order (requires authorization)
+  - search_knowledge_base: Search technical documentation
+  - run_diagnostic: Run diagnostic tests
+  - create_ticket: Create support ticket for escalation
+  - get_billing_history: Retrieve billing history
+  - process_refund: Process refund (requires approval for amounts > $100)
+  - update_payment_method: Update stored payment method
 
   Guidelines:
   - Always be polite and professional
-  - Use specialized agents for their expertise
-  - Summarize information from multiple agents
+  - Provide specific information when available
   - Escalate complex issues when necessary
 
 generate_content_config:
@@ -240,115 +246,17 @@ generate_content_config:
   max_output_tokens: 2048
 
 tools:
-  - type: function
-    name: check_customer_status
-    description: Check if customer is premium member
-
-  - type: function
-    name: log_interaction
-    description: Log customer interaction for records
-
-sub_agents:
-  # Order Management Agent
-  - name: order_agent
-    model: gemini-2.0-flash
-    description: Handles order-related inquiries
-
-    instruction: |
-      You are an order management specialist. You can:
-
-      - Check order status
-      - Track shipments
-      - Process cancellations
-      - Handle returns
-
-      Always provide order numbers and tracking information.
-      Be specific about delivery dates and status.
-
-    generate_content_config:
-      temperature: 0.3
-      max_output_tokens: 1024
-
-    tools:
-      - type: function
-        name: get_order_status
-        description: Get status of an order by ID
-
-      - type: function
-        name: track_shipment
-        description: Get shipment tracking information
-
-      - type: function
-        name: cancel_order
-        description: Cancel an order (requires authorization)
-
-  # Technical Support Agent
-  - name: technical_agent
-    model: gemini-2.0-flash
-    description: Handles technical issues and troubleshooting
-
-    instruction: |
-      You are a technical support specialist. You can:
-
-      - Diagnose technical problems
-      - Provide step-by-step solutions
-      - Escalate complex issues
-      - Access knowledge base
-
-      Ask clarifying questions to understand the issue.
-      Provide clear, actionable instructions.
-      Use simple language for non-technical users.
-
-    generate_content_config:
-      temperature: 0.4
-      max_output_tokens: 1536
-
-    tools:
-      - type: function
-        name: search_knowledge_base
-        description: Search technical documentation
-
-      - type: function
-        name: run_diagnostic
-        description: Run diagnostic tests
-
-      - type: function
-        name: create_ticket
-        description: Create support ticket for escalation
-
-  # Billing Agent
-  - name: billing_agent
-    model: gemini-2.0-flash
-    description: Handles payment and billing inquiries
-
-    instruction: |
-      You are a billing specialist. You can:
-
-      - Check payment status
-      - Process refunds
-      - Explain charges
-      - Update payment methods
-
-      Always verify customer identity before discussing billing.
-      Explain charges clearly and itemize when necessary.
-      Follow company refund policies strictly.
-
-    generate_content_config:
-      temperature: 0.2
-      max_output_tokens: 1024
-
-    tools:
-      - type: function
-        name: get_billing_history
-        description: Retrieve billing history
-
-      - type: function
-        name: process_refund
-        description: Process refund (requires approval for amounts > $100)
-
-      - type: function
-        name: update_payment_method
-        description: Update stored payment method
+  - name: tools.check_customer_status
+  - name: tools.log_interaction
+  - name: tools.get_order_status
+  - name: tools.track_shipment
+  - name: tools.cancel_order
+  - name: tools.search_knowledge_base
+  - name: tools.run_diagnostic
+  - name: tools.create_ticket
+  - name: tools.get_billing_history
+  - name: tools.process_refund
+  - name: tools.update_payment_method
 ```
 
 ### Tool Implementations
@@ -541,57 +449,41 @@ if __name__ == '__main__':
 
 ```
 ======================================================================
-QUERY: I'm customer CUST-001 and I want to check my order ORD-001
+QUERY: Check the status of customer CUST-001
 ======================================================================
 
 RESPONSE:
-Hello! I see you're a premium member. Let me check on your order.
+Hello! I can help you check the customer status. Let me look that up for you.
 
-I've checked order ORD-001, and it's currently shipped! Here are the details:
-- Carrier: UPS
-- Tracking Number: 1Z999AA10123456784
-- Estimated Delivery: October 10, 2025
+Customer CUST-001 is premium member
 
-You can track your package at ups.com using the tracking number above.
 Is there anything else I can help you with?
 
 ======================================================================
 
 ======================================================================
-QUERY: I need help with a login error
+QUERY: What's the status of order ORD-001?
 ======================================================================
 
 RESPONSE:
-I'll connect you with our technical support specialist to help with
-your login issue.
+I'd be happy to check the status of your order. Let me look that up.
 
-The technical team suggests: To reset your password, go to Settings >
-Security > Reset Password
+Order ORD-001 status: shipped
 
-Additionally, I've run a diagnostic and recommend:
-1. Clear your app cache: Settings > Apps > Clear Cache
-2. Restart the application
-3. Try logging in again
-
-If the issue persists, I've created support ticket TKT-3847 with high
-priority for further investigation.
-
-Is this resolving your issue?
+If you need tracking information or have any other questions about this order, just let me know!
 
 ======================================================================
 
 ======================================================================
-QUERY: I'd like a refund of $75 for order ORD-002
+QUERY: Can you track shipment for order ORD-001?
 ======================================================================
 
 RESPONSE:
-I'll connect you with our billing specialist to process your refund request.
+I'll help you track that shipment. Let me get the tracking details.
 
-Good news! I've processed the refund of $75.00 for order ORD-002.
-The funds will appear in your original payment method within 3-5 business days.
+Tracking: UPS 1Z999AA10123456784, ETA: 2025-10-10
 
-I've also logged this interaction for our records. Is there anything
-else I can assist you with today?
+Your package is currently in transit and expected to arrive by October 10th, 2025. You can track it directly on the UPS website using the tracking number above.
 
 ======================================================================
 ```
