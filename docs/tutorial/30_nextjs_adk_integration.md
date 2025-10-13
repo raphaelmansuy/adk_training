@@ -1243,6 +1243,22 @@ Remember: You represent TechCo's commitment to excellent customer service!""",
 
 ## Advanced Features
 
+:::tip Complete Implementation Available
+
+All three advanced features are **fully implemented** in the working example at `/tutorial_implementation/tutorial30/nextjs_frontend/app/page.tsx`.
+
+**Try them now:**
+```bash
+cd tutorial_implementation/tutorial30
+make dev
+# Open http://localhost:3001
+```
+
+- 🎨 **Generative UI**: "Show me product PROD-001" → Beautiful product card renders
+- 🔐 **Human-in-the-Loop**: "I want a refund for ORD-12345" → Approval modal appears
+- 👤 **Shared State**: "What's my account status?" → Agent knows you're John Doe
+:::
+
 ```text
          Advanced Features Architecture
          
@@ -1281,37 +1297,78 @@ Remember: You represent TechCo's commitment to excellent customer service!""",
 
 ### Feature 1: Generative UI
 
-Render custom React components from agent responses.
+:::success Fully Implemented in Tutorial 30
 
-**Backend** (`agent/agent.py`):
+The working Generative UI implementation renders beautiful product cards:
+- ✅ **ProductCard component** with responsive design
+- ✅ **useCopilotAction** registration with proper render function
+- ✅ **Dynamic content** with product images, pricing, ratings
+- ✅ **Dark mode support** with Tailwind classes
 
-```python
-def create_product_card(product_id: str) -> Dict:
-    """Generate a product card with details."""
-    # Mock product data
-    products = {
-        "PROD-001": {
-            "name": "Widget Pro",
-            "price": 99.99,
-            "image": "/products/widget-pro.jpg",
-            "rating": 4.5,
-            "inStock": True
-        }
-    }
-
-    product = products.get(product_id, {})
-
-    # Return structured data for generative UI
-    return {
-        "component": "ProductCard",
-        "props": product
-    }
-
-# Agent can now return:
-# "Here's the product you asked about: {PRODUCT_CARD:PROD-001}"
+**Try it:**
+```bash
+cd tutorial_implementation/tutorial30
+make dev
+# Chat: "Show me product PROD-001"
+# Beautiful product card renders inline! 🎨
 ```
 
-**Frontend** - Create `app/components/ProductCard.tsx`:
+**Implementation:** `nextjs_frontend/app/page.tsx` (lines 45-89), `components/ProductCard.tsx`
+:::
+
+Render custom React components directly from agent responses.
+
+**Frontend Implementation** (`app/page.tsx`):
+
+```typescript
+"use client";
+import { useCopilotAction } from "@copilotkit/react-core";
+import { ProductCard } from "@/components/ProductCard";
+
+function ChatInterface() {
+  // State to store product data when agent calls action
+  const [currentProduct, setCurrentProduct] = useState<any>(null);
+
+  // Register action that agent can call to render product cards
+  useCopilotAction({
+    name: "render_product_card",
+    available: "remote", // Agent calls this from backend
+    description: "Render a product card UI component",
+    parameters: [
+      { name: "product_id", type: "string", description: "Product ID" },
+      { name: "name", type: "string", description: "Product name" },
+      { name: "price", type: "number", description: "Product price" },
+      { name: "image", type: "string", description: "Image URL" },
+      { name: "rating", type: "number", description: "Rating 0-5" },
+      { name: "in_stock", type: "boolean", description: "Stock status" },
+    ],
+    handler: async ({ product_id, name, price, image, rating, in_stock }) => {
+      // Store product data to trigger render
+      setCurrentProduct({ product_id, name, price, image, rating, in_stock });
+      
+      return `Product card rendered for ${name}`;
+    },
+    // Render function shows the UI in chat
+    render: ({ status, result }) => (
+      <div className="my-4 animate-fade-in">
+        {status === "executing" && (
+          <div className="flex items-center gap-2">
+            <div className="w-5 h-5 border-2 border-blue-500 border-t-transparent rounded-full animate-spin" />
+            <span>Loading product...</span>
+          </div>
+        )}
+        {status === "complete" && currentProduct && (
+          <ProductCard {...currentProduct} />
+        )}
+      </div>
+    ),
+  });
+
+  return <CopilotChat />;
+}
+```
+
+**Product Component** (`components/ProductCard.tsx`):
 
 ```typescript
 import Image from "next/image";
@@ -1321,33 +1378,39 @@ interface ProductCardProps {
   price: number;
   image: string;
   rating: number;
-  inStock: boolean;
+  in_stock: boolean;
 }
 
-export function ProductCard(props: ProductCardProps) {
+export function ProductCard({ name, price, image, rating, in_stock }: ProductCardProps) {
   return (
-    <div className="border rounded-lg p-4 bg-white shadow-sm">
-      <Image
-        src={props.image}
-        alt={props.name}
-        width={200}
-        height={200}
-        className="rounded-md mb-3"
-      />
-      <h3 className="font-semibold text-lg">{props.name}</h3>
-      <div className="flex items-center gap-2 mt-2">
-        <span className="text-2xl font-bold text-green-600">
-          ${props.price}
-        </span>
-        <span className="text-yellow-500">⭐ {props.rating}</span>
+    <div className="border border-gray-200 dark:border-gray-700 rounded-xl p-5 bg-white dark:bg-gray-800 shadow-lg max-w-sm">
+      <div className="relative w-full h-48 mb-4 rounded-lg overflow-hidden">
+        <Image
+          src={image}
+          alt={name}
+          fill
+          className="object-cover"
+        />
       </div>
-      {props.inStock ? (
-        <span className="inline-block mt-2 px-3 py-1 bg-green-100 text-green-800 rounded-full text-sm">
-          In Stock
+      
+      <h3 className="font-bold text-xl mb-2">{name}</h3>
+      
+      <div className="flex items-center justify-between mb-3">
+        <span className="text-3xl font-bold text-green-600 dark:text-green-500">
+          ${price.toFixed(2)}
+        </span>
+        <span className="text-yellow-500 flex items-center gap-1">
+          ⭐ {rating.toFixed(1)}
+        </span>
+      </div>
+      
+      {in_stock ? (
+        <span className="inline-block px-4 py-2 bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200 rounded-full text-sm font-semibold">
+          ✓ In Stock
         </span>
       ) : (
-        <span className="inline-block mt-2 px-3 py-1 bg-red-100 text-red-800 rounded-full text-sm">
-          Out of Stock
+        <span className="inline-block px-4 py-2 bg-red-100 dark:bg-red-900 text-red-800 dark:text-red-200 rounded-full text-sm font-semibold">
+          ✗ Out of Stock
         </span>
       )}
     </div>
@@ -1355,42 +1418,58 @@ export function ProductCard(props: ProductCardProps) {
 }
 ```
 
-Register component with CopilotKit:
+**Backend Agent** (`agent/agent.py`):
 
-```typescript
-import { useCopilotAction, renderCopilotComponent } from "@copilotkit/react-core";
-import { ProductCard } from "./components/ProductCard";
+```python
+# Agent uses the action but doesn't define it
+# The action is frontend-only, just like process_refund
 
-// In your component
-useCopilotAction({
-  name: "render_product_card",
-  description: "Render a product card UI component",
-  parameters: [
-    {
-      name: "name",
-      type: "string",
-      description: "Product name"
-    },
-    {
-      name: "price",
-      type: "number",
-      description: "Product price"
-    },
-    // ... other params
-  ],
-  handler: async (props) => {
-    return renderCopilotComponent(<ProductCard {...props} />);
-  }
-});
+# When user asks about products, agent calls:
+# render_product_card(product_id="PROD-001", name="Widget Pro", 
+#                     price=99.99, image="...", rating=4.5, in_stock=True)
+
+# Beautiful ProductCard component appears in chat! 🎨
 ```
 
-Now when agent mentions products, beautiful cards render inline! 🎨
+**How It Works:**
+
+1. User: "Show me product PROD-001"
+2. Agent recognizes request, calls `render_product_card` with product data
+3. Frontend handler receives data, stores in `currentProduct` state
+4. Render function displays `<ProductCard>` component inline in chat
+5. User sees beautiful, interactive product card with image, price, rating
+
+Now when agent mentions products, gorgeous cards render inline! 🎨
 
 ---
 
-### Feature 2: Human-in-the-Loop
+### Feature 2: Human-in-the-Loop (HITL)
 
-Let users approve sensitive actions:
+:::success Fully Implemented in Tutorial 30
+
+The working HITL implementation includes:
+- ✅ **Professional modal dialog** with solid design
+- ✅ **Keyboard shortcuts** (ESC to cancel, Enter to approve)
+- ✅ **Promise-based flow** that blocks agent until user decides
+- ✅ **Click-outside-to-close** functionality
+- ✅ **Full dark mode support**
+
+**See it in action:**
+```bash
+cd tutorial_implementation/tutorial30
+make dev
+# Chat: "I want a refund for ORD-12345"
+# Provide: Amount "100", Reason "Items arrived broken"
+# Beautiful modal appears for approval! 🎉
+```
+
+**Implementation details:** 
+- Frontend: `nextjs_frontend/app/page.tsx` (lines 99-279)
+- Backend: Agent does NOT have `process_refund` tool (frontend-only action)
+- Pattern: `available: "remote"` + Promise + React state + modal overlay
+:::
+
+Let users approve sensitive actions with a professional approval modal:
 
 ```text
          Human-in-the-Loop Workflow
@@ -1424,91 +1503,288 @@ Let users approve sensitive actions:
               +------------------+          +------------------+
 ```
 
-**Backend**:
+**Key Implementation Pattern:**
 
-```python
-# Mark functions that require approval
-FunctionDeclaration(
-    name="process_refund",
-    description="Process a refund for an order (requires user approval)",
-    parameters={
-        "type": "object",
-        "properties": {
-            "order_id": {"type": "string"},
-            "amount": {"type": "number"},
-            "reason": {"type": "string"}
-        },
-        "required": ["order_id", "amount", "reason"]
-    },
-    # Mark as requiring approval
-    metadata={"requires_approval": True}
-)
-```
+The HITL implementation uses a **frontend-only action** pattern:
 
-**Frontend**:
+1. **Backend** (`agent/agent.py`): Does NOT include `process_refund` in tools list
+2. **Frontend** (`app/page.tsx`): Implements `process_refund` with `available: "remote"`
+3. **Flow**: Agent calls action → Frontend handler → Modal shows → User decides → Promise resolves → Agent continues
+
+**Frontend Implementation** (Professional Modal):
 
 ```typescript
+"use client";
+import { useState, useEffect } from "react";
 import { useCopilotAction } from "@copilotkit/react-core";
 
-useCopilotAction({
-  name: "process_refund",
-  description: "Process a refund",
-  parameters: [...],
-  handler: async ({ order_id, amount, reason }) => {
-    // Show confirmation dialog
-    const confirmed = window.confirm(
-      `Approve refund of $${amount} for order ${order_id}?\n\nReason: ${reason}`
-    );
+function ChatInterface() {
+  // State to manage the approval dialog
+  const [refundRequest, setRefundRequest] = useState<{
+    order_id: string;
+    amount: number;
+    reason: string;
+  } | null>(null);
 
-    if (!confirmed) {
-      return { status: "cancelled", message: "Refund cancelled by user" };
+  // Frontend-only action that agent can call
+  useCopilotAction({
+    name: "process_refund",
+    available: "remote", // Frontend-only, not a backend tool
+    description: "Process a refund after user approval",
+    parameters: [
+      { name: "order_id", type: "string", description: "Order ID" },
+      { name: "amount", type: "number", description: "Refund amount" },
+      { name: "reason", type: "string", description: "Refund reason" },
+    ],
+    handler: async ({ order_id, amount, reason }) => {
+      // Store refund request to trigger modal
+      setRefundRequest({ order_id, amount, reason });
+      
+      // Return a Promise that resolves when user decides
+      return new Promise((resolve) => {
+        (window as any).__refundPromiseResolve = resolve;
+      });
+    },
+  });
+
+  // Handler for approve/cancel buttons
+  const handleRefundApproval = async (approved: boolean) => {
+    const resolve = (window as any).__refundPromiseResolve;
+    
+    if (resolve && refundRequest) {
+      resolve({
+        approved,
+        message: approved 
+          ? `Refund processed for ${refundRequest.order_id}`
+          : "Refund cancelled by user"
+      });
     }
+    
+    setRefundRequest(null);
+    delete (window as any).__refundPromiseResolve;
+  };
 
-    // Process refund
-    const result = await processRefund(order_id, amount, reason);
-    return result;
-  },
-});
+  // Keyboard support (ESC to cancel, Enter to approve)
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (refundRequest) {
+        if (e.key === "Escape") {
+          e.preventDefault();
+          handleRefundApproval(false);
+        } else if (e.key === "Enter" && !e.shiftKey) {
+          e.preventDefault();
+          handleRefundApproval(true);
+        }
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [refundRequest]);
+
+  return (
+    <div>
+      {/* Modal overlay - shows when refundRequest is set */}
+      {refundRequest && (
+        <div 
+          className="fixed inset-0 bg-black/80 flex items-center justify-center z-50"
+          onClick={(e) => {
+            if (e.target === e.currentTarget) {
+              handleRefundApproval(false); // Click backdrop to cancel
+            }
+          }}
+        >
+          <div className="bg-white dark:bg-gray-900 rounded-2xl p-8 max-w-md w-full shadow-2xl">
+            {/* Header */}
+            <div className="flex items-start gap-4 mb-6">
+              <div className="w-14 h-14 bg-yellow-400 rounded-full flex items-center justify-center">
+                <svg className="w-8 h-8 text-gray-900" /* ... warning icon ... */ />
+              </div>
+              <div>
+                <h2 className="text-2xl font-bold">Refund Approval Required</h2>
+                <p className="text-sm text-gray-600">Review details carefully</p>
+              </div>
+            </div>
+
+            {/* Details card */}
+            <div className="bg-gray-50 dark:bg-gray-800 rounded-lg p-5 mb-6">
+              <div className="py-2 border-b">
+                <span className="text-sm">Order ID</span>
+                <span className="font-mono font-semibold">{refundRequest.order_id}</span>
+              </div>
+              <div className="py-2 border-b">
+                <span className="text-sm">Amount</span>
+                <span className="text-2xl font-bold">${refundRequest.amount.toFixed(2)}</span>
+              </div>
+              <div className="pt-2">
+                <span className="text-sm">Reason</span>
+                <p>{refundRequest.reason}</p>
+              </div>
+            </div>
+
+            {/* Warning banner */}
+            <div className="bg-yellow-50 border-l-4 border-yellow-500 p-4 mb-6">
+              <p className="text-sm font-medium">
+                This action cannot be undone. Approving will process the refund immediately.
+              </p>
+            </div>
+
+            {/* Action buttons */}
+            <div className="flex gap-4">
+              <button
+                onClick={() => handleRefundApproval(false)}
+                className="flex-1 px-6 py-3.5 bg-gray-200 hover:bg-gray-300 rounded-xl font-bold"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={() => handleRefundApproval(true)}
+                className="flex-1 px-6 py-3.5 bg-green-600 hover:bg-green-700 text-white rounded-xl font-bold"
+              >
+                Approve Refund
+              </button>
+            </div>
+
+            {/* Keyboard hint */}
+            <p className="text-xs text-center text-gray-500 mt-5">
+              Press <kbd className="px-2 py-1 bg-gray-100 border rounded">ESC</kbd> to cancel
+            </p>
+          </div>
+        </div>
+      )}
+
+      {/* Your chat interface */}
+      <CopilotChat />
+    </div>
+  );
+}
 ```
 
-User sees: "Approve refund of $99.99 for order ORD-12345? Yes/No"
+**Why This Pattern Works:**
+
+1. **No Backend Tool Collision**: Backend doesn't have `process_refund`, so agent can't bypass approval
+2. **Promise Blocks Agent**: Agent waits for Promise to resolve before continuing
+3. **Professional UX**: Modal with proper styling, animations, and keyboard shortcuts
+4. **Type-Safe**: TypeScript ensures correct parameters
+5. **Accessible**: Keyboard navigation, ARIA labels, high contrast
+
+**User Experience:**
+
+User: "I want a refund for order ORD-12345"  
+Agent: "I can help with that. What's the amount and reason?"  
+User: "100, items arrived broken"  
+→ **Beautiful modal appears** with all details  
+→ User can approve (Enter) or cancel (ESC)  
+→ Agent receives decision and responds accordingly
 
 ---
 
 ### Feature 3: Shared State
 
-Sync agent state with app state in real-time:
+:::success Fully Implemented in Tutorial 30
+
+Shared state works seamlessly with `useCopilotReadable`:
+- ✅ **User context** automatically available to agent
+- ✅ **Real-time sync** when state changes
+- ✅ **No manual passing** of data required
+
+**Try it:**
+```bash
+cd tutorial_implementation/tutorial30
+make dev
+# Chat: "What's my account status?"
+# Agent knows you're John Doe with Premium account! 👤
+```
+
+**Implementation:** `nextjs_frontend/app/page.tsx` (lines 18-26, 40-43)
+:::
+
+Sync application state with the agent automatically using `useCopilotReadable`:
 
 ```typescript
 "use client";
-
 import { useCopilotReadable } from "@copilotkit/react-core";
 import { useState } from "react";
 
 export default function Home() {
-  const [user Data, setUserData] = useState({
+  // Application state (could come from auth, database, etc.)
+  const [userData, setUserData] = useState({
     name: "John Doe",
     email: "john@example.com",
     accountType: "Premium",
-    orders: ["ORD-12345", "ORD-67890"]
+    orders: ["ORD-12345", "ORD-67890"],
   });
 
-  // Make user data readable by agent
+  // Make state readable by agent - that's it!
   useCopilotReadable({
-    description: "Current user's account information",
-    value: userData
+    description: "Current user's account information and order history",
+    value: userData,
   });
 
   return (
     <CopilotKit runtimeUrl="http://localhost:8000/copilotkit">
-      {/* Agent can now access userData automatically! */}
       <CopilotChat />
+      {/* Agent automatically knows user context without manual passing! */}
     </CopilotKit>
   );
 }
 ```
 
-Agent automatically knows: "Hi John! I see you have 2 orders. Which one would you like to check?"
+**How It Works:**
+
+1. **Define State**: Create React state with user/app data
+2. **Make Readable**: Call `useCopilotReadable` with description and value
+3. **Agent Accesses**: Agent automatically receives context in every request
+
+**Example Interaction:**
+
+```text
+User: "What's my account status?"
+
+Agent Response: "Hi John! You have a Premium account with email 
+john@example.com. I see you have 2 orders: ORD-12345 and ORD-67890. 
+Would you like to check on any of them?"
+```
+
+**The agent knows ALL this without you explicitly telling it!** 🎯
+
+**Advanced: Multiple Readable States**
+
+```typescript
+// User profile
+useCopilotReadable({
+  description: "User profile information",
+  value: userProfile,
+});
+
+// Shopping cart
+useCopilotReadable({
+  description: "Current shopping cart contents",
+  value: cart,
+});
+
+// App preferences
+useCopilotReadable({
+  description: "User preferences and settings",
+  value: preferences,
+});
+
+// Agent now has access to all three contexts automatically!
+```
+
+**Real-Time Updates:**
+
+When state changes, agent automatically gets updated context:
+
+```typescript
+// User adds item to cart
+const addToCart = (item: Product) => {
+  setCart([...cart, item]);
+  // Agent immediately knows about new cart state!
+};
+```
+
+This enables truly context-aware conversations without manual data passing! 🚀
 
 ---
 
