@@ -11,14 +11,14 @@ class TestYAMLConfiguration:
     def test_config_file_exists(self):
         """Test that root_agent.yaml exists."""
         import os
-        config_path = 'tutorial20/root_agent.yaml'
-        assert os.path.exists(config_path), "tutorial20/root_agent.yaml should exist"
+        config_path = 'customer_support/root_agent.yaml'
+        assert os.path.exists(config_path), "customer_support/root_agent.yaml should exist"
 
     def test_config_agent_loading(self):
         """Test that agent can be loaded from YAML configuration."""
         try:
             from google.adk.agents import config_agent_utils
-            agent = config_agent_utils.from_config('tutorial20/root_agent.yaml')
+            agent = config_agent_utils.from_config('customer_support/root_agent.yaml')
             assert agent is not None
         except Exception as e:
             pytest.fail(f"Failed to load agent from YAML: {e}")
@@ -27,7 +27,7 @@ class TestYAMLConfiguration:
         """Test that loaded agent has correct basic properties."""
         from google.adk.agents import config_agent_utils
 
-        agent = config_agent_utils.from_config('tutorial20/root_agent.yaml')
+        agent = config_agent_utils.from_config('customer_support/root_agent.yaml')
 
         assert hasattr(agent, 'name')
         assert agent.name == "customer_support"
@@ -42,7 +42,7 @@ class TestYAMLConfiguration:
         """Test that agent has proper instruction."""
         from google.adk.agents import config_agent_utils
 
-        agent = config_agent_utils.from_config('tutorial20/root_agent.yaml')
+        agent = config_agent_utils.from_config('customer_support/root_agent.yaml')
 
         assert hasattr(agent, 'instruction')
         instruction = agent.instruction
@@ -53,7 +53,7 @@ class TestYAMLConfiguration:
         """Test that agent has no sub-agents (single-agent configuration)."""
         from google.adk.agents import config_agent_utils
 
-        agent = config_agent_utils.from_config('tutorial20/root_agent.yaml')
+        agent = config_agent_utils.from_config('customer_support/root_agent.yaml')
 
         assert hasattr(agent, 'sub_agents')
         assert len(agent.sub_agents) == 0  # Single-agent configuration
@@ -62,7 +62,7 @@ class TestYAMLConfiguration:
         """Test that agent has tools configured."""
         from google.adk.agents import config_agent_utils
 
-        agent = config_agent_utils.from_config('tutorial20/root_agent.yaml')
+        agent = config_agent_utils.from_config('customer_support/root_agent.yaml')
 
         assert hasattr(agent, 'tools')
         assert len(agent.tools) == 11  # All customer support tools
@@ -71,7 +71,7 @@ class TestYAMLConfiguration:
         """Test that agent tools are callable functions."""
         from google.adk.agents import config_agent_utils
 
-        agent = config_agent_utils.from_config('tutorial20/root_agent.yaml')
+        agent = config_agent_utils.from_config('customer_support/root_agent.yaml')
 
         assert hasattr(agent, 'tools')
         for tool in agent.tools:
@@ -95,7 +95,7 @@ class TestConfigurationValidation:
 
         with pytest.raises(Exception):
             from google.adk.agents import config_agent_utils
-            config_agent_utils.from_config('tutorial20/root_agent.yaml')
+            config_agent_utils.from_config('customer_support/root_agent.yaml')
 
 
 @pytest.mark.integration
@@ -106,7 +106,7 @@ class TestAgentIntegration:
         """Test that agent can be created without raising exceptions."""
         try:
             from google.adk.agents import config_agent_utils
-            agent = config_agent_utils.from_config('tutorial20/root_agent.yaml')
+            agent = config_agent_utils.from_config('customer_support/root_agent.yaml')
             # If we get here without exception, basic creation works
             assert True
         except Exception as e:
