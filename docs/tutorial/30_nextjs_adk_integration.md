@@ -250,27 +250,33 @@ cd customer-support-bot
 npm install @copilotkit/react-core @copilotkit/react-ui
 ```
 
-**Step 3: Create Agent Directory**
+**Step 3: Setup Project**
+
+Clone the tutorial implementation and install dependencies:
 
 ```bash
-mkdir agent
-cd agent
+# Clone and navigate to tutorial
+cd tutorial_implementation/tutorial30
 
-# Create Python virtual environment
-python -m venv venv
-source venv/bin/activate  # Windows: venv\Scripts\activate
+# Install all dependencies (backend + frontend)
+make setup
 
-# Install ADK and dependencies
-pip install google-genai fastapi uvicorn ag_ui_adk
+# Configure API key
+cp agent/.env.example agent/.env
+# Edit agent/.env and add your GOOGLE_API_KEY
+```
 
-# Create requirements.txt
-cat > requirements.txt << EOF
-google-genai>=1.15.0
-fastapi>=0.115.0
-uvicorn[standard]>=0.30.0
-ag_ui_adk>=0.1.0
-python-dotenv>=1.0.0
-EOF
+**Alternative Manual Setup:**
+
+```bash
+# Backend setup
+pip install -r requirements.txt
+pip install -e .
+
+# Frontend setup
+cd nextjs_frontend
+npm install
+cd ..
 ```
 
 **Step 4: Create Agent**
@@ -386,20 +392,105 @@ def create_support_ticket(issue_description: str, priority: str = "normal") -> s
             f"Our support team will contact you within 24 hours.")
 
 
-# Create ADK agent with tools using the new API
+def get_product_details(product_id: str) -> Dict[str, Any]:
+    """
+    Get product details from the database.
+    
+    Returns product information that can be displayed to the user.
+    The frontend will handle rendering this as a ProductCard component.
+
+    Args:
+        product_id: The product ID to look up (format: PROD-XXX)
+
+    Returns:
+        Dict with status, report, and product details
+    """
+    # Mock product database - replace with real database in production
+    products = {
+        "PROD-001": {
+            "name": "Widget Pro",
+            "price": 99.99,
+            "image": "https://placehold.co/400x400/6366f1/fff.png",
+            "rating": 4.5,
+            "inStock": True,
+        },
+        "PROD-002": {
+            "name": "Gadget Plus",
+            "price": 149.99,
+            "image": "https://placehold.co/400x400/8b5cf6/fff.png",
+            "rating": 4.8,
+            "inStock": True,
+        },
+        "PROD-003": {
+            "name": "Premium Kit",
+            "price": 299.99,
+            "image": "https://placehold.co/400x400/ec4899/fff.png",
+            "rating": 4.9,
+            "inStock": False,
+        },
+    }
+
+    product_id_upper = product_id.upper()
+
+    if product_id_upper in products:
+        product = products[product_id_upper]
+        return {
+            "status": "success",
+            "report": f"Here are the details for {product['name']}. "
+                        "I'll display it as a product card for you.",
+            "product": product,
+        }
+    else:
+        return {
+            "status": "error",
+            "report": f"Product {product_id} not found",
+            "error": "Please check the product ID and try again.",
+        }
+
+
+# Create ADK agent with tools
 adk_agent = Agent(
     name="customer_support_agent",
-    model="gemini-2.5-flash",  # or "gemini-2.0-flash-exp"
+    model="gemini-2.0-flash-exp",
     instruction="""You are a helpful customer support agent for an e-commerce company.
 
 Your responsibilities:
 - Answer customer questions clearly and concisely
 - Search the knowledge base when needed using search_knowledge_base()
-- Look up order status using lookup_order_status() when customers ask about their orders
+- Look up order status using lookup_order_status() when customers ask about
+  their orders
 - Create support tickets using create_support_ticket() for complex issues
+- Get product details using get_product_details() when customers ask about products
 - Be empathetic and professional
 - Escalate complex issues to human support when appropriate
 - Never make up information - if unsure, say so
+
+IMPORTANT - Advanced Features:
+
+1. **Product Information (Generative UI)**:
+   - When users ask about products, follow this two-step process:
+     a) First call get_product_details(product_id) to fetch product data
+     b) Then call render_product_card(name, price, image, rating, inStock)
+        with the product details
+   - Example: "Show me product PROD-001"
+     → call get_product_details("PROD-001") 
+     → extract the product data from the result
+     → call render_product_card(name="Widget Pro", price=99.99, image="...",
+        rating=4.5, inStock=True)
+   - The frontend will render a beautiful interactive ProductCard component
+   - IMPORTANT: Do NOT include the JSON data in your response. Just say something simple like:
+     "Here's the product information for [product name]" or "I've displayed the product card above."
+   - Let the visual card speak for itself - don't repeat the data in text format
+
+2. **Refunds (Human-in-the-Loop)**:
+   - When users request refunds, call process_refund(order_id, amount, reason)
+   - This is a FRONTEND action that requires user approval
+   - An approval dialog will appear asking the user to confirm or cancel
+   - The dialog shows: Order ID, Amount, and Reason
+   - Wait for the user's decision before proceeding
+   - If approved: Acknowledge "Refund processed successfully"
+   - If cancelled: Acknowledge "Refund cancelled by user"
+   - IMPORTANT: You must gather all three parameters (order_id, amount, reason) before calling this action
 
 Guidelines:
 - Greet customers warmly
@@ -408,7 +499,14 @@ Guidelines:
 - Keep responses under 3 paragraphs unless more detail is requested
 - Use a friendly but professional tone
 - Format responses with markdown for better readability""",
-    tools=[search_knowledge_base, lookup_order_status, create_support_ticket]
+    tools=[
+        search_knowledge_base,
+        lookup_order_status,
+        create_support_ticket,
+        get_product_details,
+        # Note: process_refund is ONLY available as a frontend action (not backend tool)
+        # This ensures the HITL approval dialog is shown before processing
+    ],
 )
 
 # Wrap ADK agent with AG-UI middleware
@@ -417,7 +515,7 @@ agent = ADKAgent(
     app_name="customer_support_app",
     user_id="demo_user",
     session_timeout_seconds=3600,
-    use_in_memory_services=True
+    use_in_memory_services=True,
 )
 
 # Create FastAPI app
@@ -627,63 +725,337 @@ Create `app/page.tsx`:
 ```typescript
 "use client";
 
-import { CopilotKit } from "@copilotkit/react-core";
+import { useState, useEffect } from "react";
+import { CopilotKit, useCopilotReadable, useCopilotAction } from "@copilotkit/react-core";
 import { CopilotChat } from "@copilotkit/react-ui";
 import "@copilotkit/react-ui/styles.css";
 import { ThemeToggle } from "@/components/ThemeToggle";
+import { ProductCard } from "@/components/ProductCard";
+
+/**
+ * ChatInterface component with advanced features:
+ * 1. Generative UI - Product cards rendered from agent responses
+ * 2. Human-in-the-Loop - User approval for refunds
+ * 3. Shared State - User context accessible to agent
+ */
+function ChatInterface() {
+  // Feature 3: Shared State - User context that agent can read
+  const [userData] = useState({
+    name: "John Doe",
+    email: "john@example.com",
+    accountType: "Premium",
+    orders: ["ORD-12345", "ORD-67890"],
+    memberSince: "2023-01-15",
+  });
+
+  // Feature 1: Generative UI - State to hold product data for rendering
+  const [currentProduct, setCurrentProduct] = useState<{
+    name: string;
+    price: number;
+    image: string;
+    rating: number;
+    inStock: boolean;
+  } | null>(null);
+
+  // Make user data readable by agent
+  useCopilotReadable({
+    description: "Current user's account information and order history",
+    value: userData,
+  });
+
+  // Feature 1: Generative UI - Frontend action that agent can call to render product cards
+  useCopilotAction({
+    name: "render_product_card",
+    available: "remote",
+    description: "Render a product card in the chat interface with product details",
+    parameters: [
+      { name: "name", type: "string", description: "Product name", required: true },
+      { name: "price", type: "number", description: "Product price in USD", required: true },
+      { name: "image", type: "string", description: "Product image URL", required: true },
+      { name: "rating", type: "number", description: "Product rating (0-5)", required: true },
+      { name: "inStock", type: "boolean", description: "Product availability", required: true },
+    ],
+    handler: async ({ name, price, image, rating, inStock }) => {
+      // Update state to show the product card
+      setCurrentProduct({ name, price, image, rating, inStock });
+      
+      return `Product card displayed successfully for ${name}`;
+    },
+    render: ({ args, status }) => {
+      if (status !== "complete") {
+        return (
+          <div className="p-4 border rounded-lg animate-pulse bg-card">
+            <div className="h-48 bg-muted rounded mb-4"></div>
+            <div className="h-4 bg-muted rounded w-3/4 mb-2"></div>
+            <div className="h-4 bg-muted rounded w-1/2"></div>
+          </div>
+        );
+      }
+
+      return (
+        <div className="my-4">
+          <ProductCard
+            name={args.name}
+            price={args.price}
+            image={args.image}
+            rating={args.rating}
+            inStock={args.inStock}
+          />
+        </div>
+      );
+    },
+  });
+
+  // Feature 2: Human-in-the-Loop - Refund approval
+  const [refundRequest, setRefundRequest] = useState<{
+    order_id: string;
+    amount: number;
+    reason: string;
+  } | null>(null);
+
+  // Frontend-only action that shows approval dialog
+  useCopilotAction({
+    name: "process_refund",
+    available: "remote",
+    description: "Process a refund after user approval",
+    parameters: [
+      { name: "order_id", type: "string", description: "Order ID to refund", required: true },
+      { name: "amount", type: "number", description: "Refund amount", required: true },
+      { name: "reason", type: "string", description: "Refund reason", required: true },
+    ],
+    handler: async ({ order_id, amount, reason }) => {
+      setRefundRequest({ order_id, amount, reason });
+      
+      // Return a promise that resolves when user approves/cancels
+      return new Promise((resolve) => {
+        (window as any).__refundPromiseResolve = resolve;
+      });
+    },
+    render: ({ args, status }) => {
+      if (status !== "complete") {
+        return (
+          <div className="p-5 border-2 border-yellow-300 dark:border-yellow-700 rounded-xl bg-gradient-to-br from-yellow-50 to-orange-50 dark:from-yellow-900/20 dark:to-orange-900/20 space-y-3 shadow-lg">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 bg-yellow-500 rounded-full flex items-center justify-center animate-pulse">
+                <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+              </div>
+              <div>
+                <h4 className="font-bold text-lg text-yellow-900 dark:text-yellow-100">Awaiting Your Approval</h4>
+                <p className="text-sm text-yellow-700 dark:text-yellow-300">Please review the modal dialog above</p>
+              </div>
+            </div>
+          </div>
+        );
+      }
+
+      return (
+        <div className="p-4 border-2 border-green-300 dark:border-green-700 rounded-lg bg-gradient-to-br from-green-50 to-emerald-50 dark:from-green-900/20 dark:to-emerald-900/20 flex items-center gap-3 shadow-md">
+          <div className="w-10 h-10 bg-green-500 rounded-full flex items-center justify-center">
+            <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7" />
+            </svg>
+          </div>
+          <div>
+            <p className="font-semibold text-green-900 dark:text-green-100">Decision Recorded</p>
+            <p className="text-sm text-green-700 dark:text-green-300">Processing your choice...</p>
+          </div>
+        </div>
+      );
+    },
+  });
+
+  // Render approval dialog when refundRequest is set
+  const handleRefundApproval = async (approved: boolean) => {
+    const resolve = (window as any).__refundPromiseResolve;
+    if (resolve && refundRequest) {
+      if (approved) {
+        resolve({
+          approved: true,
+          message: `Refund processed successfully for order ${refundRequest.order_id}`,
+        });
+      } else {
+        resolve({
+          approved: false,
+          message: "Refund cancelled by user",
+        });
+      }
+    }
+    
+    setRefundRequest(null);
+    delete (window as any).__refundPromiseResolve;
+  };
+
+  // Keyboard support for modal
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (refundRequest) {
+        if (e.key === "Escape") {
+          e.preventDefault();
+          handleRefundApproval(false);
+        } else if (e.key === "Enter" && !e.shiftKey) {
+          e.preventDefault();
+          handleRefundApproval(true);
+        }
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [refundRequest]);
+
+  return (
+    <div className="flex flex-col min-h-screen">
+      {/* HITL Approval Dialog */}
+      {refundRequest && (
+        <div 
+          className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4"
+          onClick={(e) => {
+            if (e.target === e.currentTarget) {
+              handleRefundApproval(false);
+            }
+          }}
+        >
+          <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-2xl p-8 max-w-md w-full shadow-2xl">
+            <div className="flex items-start gap-4 mb-6">
+              <div className="w-14 h-14 bg-yellow-400 rounded-full flex items-center justify-center shadow-lg">
+                <svg className="w-8 h-8 text-gray-900" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                </svg>
+              </div>
+              <div className="flex-1">
+                <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-1">Refund Approval Required</h2>
+                <p className="text-sm text-gray-600 dark:text-gray-400">Please review the details below carefully</p>
+              </div>
+            </div>
+
+            <div className="space-y-3 bg-gray-50 dark:bg-gray-800 rounded-lg p-5 mb-6">
+              <div className="flex justify-between items-center py-2 border-b border-gray-200 dark:border-gray-700">
+                <span className="text-sm font-medium text-gray-600 dark:text-gray-400">Order ID</span>
+                <span className="text-sm font-mono font-semibold text-gray-900 dark:text-gray-100 bg-gray-100 dark:bg-gray-700 px-3 py-1 rounded-md">
+                  {refundRequest.order_id}
+                </span>
+              </div>
+              <div className="flex justify-between items-center py-2 border-b border-gray-200 dark:border-gray-700">
+                <span className="text-sm font-medium text-gray-600 dark:text-gray-400">Refund Amount</span>
+                <span className="text-2xl font-bold text-gray-900 dark:text-gray-100">
+                  ${refundRequest.amount.toFixed(2)}
+                </span>
+              </div>
+              <div className="pt-2">
+                <span className="text-sm font-medium text-gray-600 dark:text-gray-400 block mb-2">Reason</span>
+                <div className="text-sm text-gray-900 dark:text-gray-100 bg-white dark:bg-gray-900 rounded-md p-3 border border-gray-200 dark:border-gray-700">
+                  {refundRequest.reason}
+                </div>
+              </div>
+            </div>
+
+            <div className="flex items-start gap-3 mb-6 p-4 bg-yellow-50 dark:bg-yellow-900/20 border-l-4 border-yellow-500 rounded-r-lg shadow-sm">
+              <svg className="w-5 h-5 text-yellow-600 dark:text-yellow-400 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+                <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />
+              </svg>
+              <p className="text-sm text-yellow-900 dark:text-yellow-100 font-medium">
+                This action cannot be undone. Approving will process the refund immediately.
+              </p>
+            </div>
+
+            <div className="flex gap-4">
+              <button
+                onClick={() => handleRefundApproval(false)}
+                className="flex-1 px-6 py-3.5 bg-gray-200 hover:bg-gray-300 dark:bg-gray-700 dark:hover:bg-gray-600 text-gray-900 dark:text-gray-100 rounded-xl font-bold transition-all"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={() => handleRefundApproval(true)}
+                className="flex-1 px-6 py-3.5 bg-green-600 hover:bg-green-700 dark:bg-green-600 dark:hover:bg-green-500 text-white rounded-xl font-bold transition-all"
+              >
+                Approve Refund
+              </button>
+            </div>
+
+            <p className="text-xs text-center text-gray-500 dark:text-gray-400 mt-5">
+              Press <kbd className="px-2 py-1 bg-gray-100 dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded text-xs font-mono text-gray-900 dark:text-gray-100 shadow-sm">ESC</kbd> to cancel
+            </p>
+          </div>
+        </div>
+      )}
+
+      {/* Header */}
+      <header className="border-b">
+        <div className="container mx-auto px-4 py-4">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <div className="flex items-center justify-center w-10 h-10 bg-primary rounded-md">
+                <svg
+                  className="w-5 h-5 text-primary-foreground"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"
+                  />
+                </svg>
+              </div>
+              <div>
+                <h1 className="text-lg font-semibold">Support Assistant</h1>
+                <p className="text-xs text-muted-foreground">
+                  AI-Powered Help • Logged in as {userData.name}
+                </p>
+              </div>
+            </div>
+            <div className="flex items-center gap-3">
+              <ThemeToggle />
+            </div>
+          </div>
+        </div>
+      </header>
+
+      {/* Main Content */}
+      <main className="flex-1">
+        <div className="container mx-auto px-4 py-6 h-[600px]">
+          <div className="h-full border rounded-lg bg-card">
+            <CopilotChat
+              instructions="You are a friendly and professional customer support agent. Be helpful, empathetic, and provide clear, actionable solutions. You have access to the user's account information."
+              labels={{
+                title: "Support Chat",
+                initial:
+                  "👋 Hi! I'm your AI support assistant.\n\n" +
+                  "**Try these example prompts:**\n\n" +
+                  "🎨 **Generative UI**\n" +
+                  "• \"Show me product PROD-001\"\n" +
+                  "• \"Display product PROD-002\"\n\n" +
+                  "🔐 **Human-in-the-Loop**\n" +
+                  "• \"I want a refund for order ORD-12345\"\n" +
+                  "• \"Process a refund for my purchase\"\n\n" +
+                  "👤 **Shared State**\n" +
+                  "• \"What's my account status?\"\n" +
+                  "• \"Show me my recent orders\"\n\n" +
+                  "📦 **General Support**\n" +
+                  "• \"What is your refund policy?\"\n" +
+                  "• \"Track my order ORD-67890\"\n" +
+                  "• \"I need help with a billing issue\"\n\n" +
+                  "💡 *Scroll down to see interactive demos of all features!*",
+              }}
+              className="h-full"
+            />
+          </div>
+        </div>
+      </main>
+    </div>
+  );
+}
 
 export default function Home() {
   return (
     <div className="min-h-screen bg-background">
-      <CopilotKit runtimeUrl="/api/copilotkit" agent="my_agent">
-        <div className="flex flex-col h-screen">
-          {/* Header */}
-          <header className="border-b">
-            <div className="container mx-auto px-4 py-4">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-3">
-                  <div className="flex items-center justify-center w-10 h-10 bg-primary rounded-md">
-                    <svg
-                      className="w-5 h-5 text-primary-foreground"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"
-                      />
-                    </svg>
-                  </div>
-                  <div>
-                    <h1 className="text-lg font-semibold">Support Assistant</h1>
-                    <p className="text-xs text-muted-foreground">AI-Powered Help</p>
-                  </div>
-                </div>
-                <ThemeToggle />
-              </div>
-            </div>
-          </header>
-
-          {/* Main Content */}
-          <main className="flex-1 overflow-hidden">
-            <div className="container mx-auto px-4 py-6 h-full">
-              <div className="h-full border rounded-lg bg-card">
-                <CopilotChat
-                  instructions="You are a friendly and professional customer support agent. Be helpful, empathetic, and provide clear, actionable solutions."
-                  labels={{
-                    title: "Support Chat",
-                    initial:
-                      "👋 Hi! I'm your AI support assistant.\n\nI can help you with:\n• Product information\n• Order tracking\n• Support tickets\n• General questions\n\nHow can I assist you today?",
-                  }}
-                  className="h-full"
-                />
-              </div>
-            </div>
-          </main>
-        </div>
+      <CopilotKit runtimeUrl="/api/copilotkit" agent="customer_support_agent">
+        <ChatInterface />
       </CopilotKit>
     </div>
   );
@@ -693,14 +1065,15 @@ export default function Home() {
 **Step 6: Run Everything**
 
 ```bash
-# Terminal 1: Run agent
-cd agent
-source venv/bin/activate
-python agent.py
+# Start both backend and frontend servers
+make dev
 
-# Terminal 2: Run Next.js
-cd ..
-npm run dev
+# Or run separately:
+# Terminal 1: Backend
+make dev-backend
+
+# Terminal 2: Frontend  
+make dev-frontend
 ```
 
 **Open http://localhost:3000** - Your custom support agent is live! 🚀
@@ -1425,8 +1798,8 @@ export function ProductCard({ name, price, image, rating, in_stock }: ProductCar
 # The action is frontend-only, just like process_refund
 
 # When user asks about products, agent calls:
-# render_product_card(product_id="PROD-001", name="Widget Pro", 
-#                     price=99.99, image="...", rating=4.5, in_stock=True)
+# get_product_details(product_id) to fetch data
+# Then render_product_card(name, price, image, rating, inStock) to display
 
 # Beautiful ProductCard component appears in chat! 🎨
 ```
@@ -1434,10 +1807,12 @@ export function ProductCard({ name, price, image, rating, in_stock }: ProductCar
 **How It Works:**
 
 1. User: "Show me product PROD-001"
-2. Agent recognizes request, calls `render_product_card` with product data
-3. Frontend handler receives data, stores in `currentProduct` state
-4. Render function displays `<ProductCard>` component inline in chat
-5. User sees beautiful, interactive product card with image, price, rating
+2. Agent calls `get_product_details("PROD-001")` to fetch product data
+3. Agent extracts product details from response
+4. Agent calls `render_product_card(name, price, image, rating, inStock)`
+5. Frontend handler receives data, stores in `currentProduct` state
+6. Render function displays `<ProductCard>` component inline in chat
+7. User sees beautiful, interactive product card with image, price, rating
 
 Now when agent mentions products, gorgeous cards render inline! 🎨
 
@@ -1537,34 +1912,106 @@ function ChatInterface() {
       { name: "reason", type: "string", description: "Refund reason" },
     ],
     handler: async ({ order_id, amount, reason }) => {
-      // Store refund request to trigger modal
+      console.log("🔍 HITL handler called with:", { order_id, amount, reason });
+      
+      // Store the refund request to show in the dialog
       setRefundRequest({ order_id, amount, reason });
       
-      // Return a Promise that resolves when user decides
+      // Return a promise that resolves when user approves/cancels
       return new Promise((resolve) => {
+        // We'll resolve this in the dialog buttons
         (window as any).__refundPromiseResolve = resolve;
       });
     },
+    render: ({ args, status }) => {
+      console.log("🔍 HITL render - Status:", status, "Args:", args);
+      
+      if (status !== "complete") {
+        // Show loading while waiting for user decision
+        return (
+          <div className="p-5 border-2 border-yellow-300 dark:border-yellow-700 rounded-xl bg-gradient-to-br from-yellow-50 to-orange-50 dark:from-yellow-900/20 dark:to-orange-900/20 space-y-3 shadow-lg">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 bg-yellow-500 rounded-full flex items-center justify-center animate-pulse">
+                <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+              </div>
+              <div>
+                <h4 className="font-bold text-lg text-yellow-900 dark:text-yellow-100">Awaiting Your Approval</h4>
+                <p className="text-sm text-yellow-700 dark:text-yellow-300">Please review the modal dialog above</p>
+              </div>
+            </div>
+            <div className="pl-13 space-y-1">
+              <div className="flex items-center gap-2 text-sm text-yellow-800 dark:text-yellow-200">
+                <div className="w-2 h-2 bg-yellow-500 rounded-full animate-pulse"></div>
+                <span>Order: <strong>{args.order_id}</strong></span>
+              </div>
+              <div className="flex items-center gap-2 text-sm text-yellow-800 dark:text-yellow-200">
+                <div className="w-2 h-2 bg-yellow-500 rounded-full animate-pulse" style={{ animationDelay: "0.2s" }}></div>
+                <span>Amount: <strong>${args.amount}</strong></span>
+              </div>
+            </div>
+          </div>
+        );
+      }
+
+      return (
+        <div className="p-4 border-2 border-green-300 dark:border-green-700 rounded-lg bg-gradient-to-br from-green-50 to-emerald-50 dark:from-green-900/20 dark:to-emerald-900/20 flex items-center gap-3 shadow-md">
+          <div className="w-10 h-10 bg-green-500 rounded-full flex items-center justify-center">
+            <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7" />
+            </svg>
+          </div>
+          <div>
+            <p className="font-semibold text-green-900 dark:text-green-100">Decision Recorded</p>
+            <p className="text-sm text-green-700 dark:text-green-300">Processing your choice...</p>
+          </div>
+        </div>
+      );
+    },
   });
 
-  // Handler for approve/cancel buttons
+  // Render approval dialog when refundRequest is set
   const handleRefundApproval = async (approved: boolean) => {
-    const resolve = (window as any).__refundPromiseResolve;
+    console.log("🔍 User decision:", approved ? "APPROVED" : "CANCELLED");
     
+    const resolve = (window as any).__refundPromiseResolve;
     if (resolve && refundRequest) {
-      resolve({
-        approved,
-        message: approved 
-          ? `Refund processed for ${refundRequest.order_id}`
-          : "Refund cancelled by user"
-      });
+      if (approved) {
+        // Call backend API to actually process the refund
+        try {
+          const response = await fetch("http://localhost:8000/api/copilotkit", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              action: "process_refund_backend",
+              params: refundRequest,
+            }),
+          });
+          const result = await response.json();
+          resolve({
+            approved: true,
+            message: `Refund processed successfully for order ${refundRequest.order_id}`,
+          });
+        } catch (error) {
+          resolve({
+            approved: true,
+            message: `Refund approved for order ${refundRequest.order_id} - $${refundRequest.amount}`,
+          });
+        }
+      } else {
+        resolve({
+          approved: false,
+          message: "Refund cancelled by user",
+        });
+      }
     }
     
     setRefundRequest(null);
     delete (window as any).__refundPromiseResolve;
   };
 
-  // Keyboard support (ESC to cancel, Enter to approve)
+  // Keyboard support for modal (ESC to cancel, Enter to approve)
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (refundRequest) {
@@ -1584,47 +2031,59 @@ function ChatInterface() {
 
   return (
     <div>
-      {/* Modal overlay - shows when refundRequest is set */}
+      {/* HITL Approval Dialog - Enhanced UX Modal */}
       {refundRequest && (
         <div 
-          className="fixed inset-0 bg-black/80 flex items-center justify-center z-50"
+          className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4 animate-in fade-in duration-200"
           onClick={(e) => {
+            // Close modal if clicking backdrop
             if (e.target === e.currentTarget) {
-              handleRefundApproval(false); // Click backdrop to cancel
+              handleRefundApproval(false);
             }
           }}
         >
-          <div className="bg-white dark:bg-gray-900 rounded-2xl p-8 max-w-md w-full shadow-2xl">
-            {/* Header */}
+          <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-2xl p-8 max-w-md w-full shadow-2xl animate-in zoom-in-95 duration-200">
+            {/* Header with icon */}
             <div className="flex items-start gap-4 mb-6">
-              <div className="w-14 h-14 bg-yellow-400 rounded-full flex items-center justify-center">
-                <svg className="w-8 h-8 text-gray-900" /* ... warning icon ... */ />
+              <div className="flex-shrink-0 w-14 h-14 bg-yellow-400 dark:bg-yellow-500 rounded-full flex items-center justify-center shadow-lg">
+                <svg className="w-8 h-8 text-gray-900 dark:text-gray-900" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                </svg>
               </div>
-              <div>
-                <h2 className="text-2xl font-bold">Refund Approval Required</h2>
-                <p className="text-sm text-gray-600">Review details carefully</p>
+              <div className="flex-1">
+                <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-1">Refund Approval Required</h2>
+                <p className="text-sm text-gray-600 dark:text-gray-400">Please review the details below carefully</p>
               </div>
             </div>
 
-            {/* Details card */}
-            <div className="bg-gray-50 dark:bg-gray-800 rounded-lg p-5 mb-6">
-              <div className="py-2 border-b">
-                <span className="text-sm">Order ID</span>
-                <span className="font-mono font-semibold">{refundRequest.order_id}</span>
+            {/* Refund details card */}
+            <div className="space-y-3 bg-gray-50 dark:bg-gray-800 rounded-lg p-5 mb-6 border border-gray-200 dark:border-gray-700">
+              <div className="flex justify-between items-center py-2 border-b border-gray-200 dark:border-gray-700">
+                <span className="text-sm font-medium text-gray-600 dark:text-gray-400">Order ID</span>
+                <span className="text-sm font-mono font-semibold text-gray-900 dark:text-gray-100 bg-gray-100 dark:bg-gray-700 px-3 py-1.5 rounded-md">
+                  {refundRequest.order_id}
+                </span>
               </div>
-              <div className="py-2 border-b">
-                <span className="text-sm">Amount</span>
-                <span className="text-2xl font-bold">${refundRequest.amount.toFixed(2)}</span>
+              <div className="flex justify-between items-center py-2 border-b border-gray-200 dark:border-gray-700">
+                <span className="text-sm font-medium text-gray-600 dark:text-gray-400">Refund Amount</span>
+                <span className="text-2xl font-bold text-gray-900 dark:text-gray-100">
+                  ${refundRequest.amount.toFixed(2)}
+                </span>
               </div>
               <div className="pt-2">
-                <span className="text-sm">Reason</span>
-                <p>{refundRequest.reason}</p>
+                <span className="text-sm font-medium text-gray-600 dark:text-gray-400 block mb-2">Reason</span>
+                <div className="text-sm text-gray-900 dark:text-gray-100 bg-white dark:bg-gray-900 rounded-md p-3 border border-gray-200 dark:border-gray-700">
+                  {refundRequest.reason}
+                </div>
               </div>
             </div>
 
-            {/* Warning banner */}
-            <div className="bg-yellow-50 border-l-4 border-yellow-500 p-4 mb-6">
-              <p className="text-sm font-medium">
+            {/* Warning message */}
+            <div className="flex items-start gap-3 mb-6 p-4 bg-yellow-50 dark:bg-yellow-900/20 border-l-4 border-yellow-500 rounded-r-lg shadow-sm">
+              <svg className="w-5 h-5 text-yellow-600 dark:text-yellow-400 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+                <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />
+              </svg>
+              <p className="text-sm text-yellow-900 dark:text-yellow-100 font-medium">
                 This action cannot be undone. Approving will process the refund immediately.
               </p>
             </div>
@@ -1633,21 +2092,27 @@ function ChatInterface() {
             <div className="flex gap-4">
               <button
                 onClick={() => handleRefundApproval(false)}
-                className="flex-1 px-6 py-3.5 bg-gray-200 hover:bg-gray-300 rounded-xl font-bold"
+                className="flex-1 px-6 py-3.5 bg-gray-200 hover:bg-gray-300 dark:bg-gray-700 dark:hover:bg-gray-600 text-gray-900 dark:text-gray-100 rounded-xl font-bold transition-all duration-200 hover:scale-105 active:scale-95 flex items-center justify-center gap-2 shadow-md"
               >
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M6 18L18 6M6 6l12 12" />
+                </svg>
                 Cancel
               </button>
               <button
                 onClick={() => handleRefundApproval(true)}
-                className="flex-1 px-6 py-3.5 bg-green-600 hover:bg-green-700 text-white rounded-xl font-bold"
+                className="flex-1 px-6 py-3.5 bg-green-600 hover:bg-green-700 dark:bg-green-600 dark:hover:bg-green-500 text-white rounded-xl font-bold transition-all duration-200 hover:scale-105 active:scale-95 flex items-center justify-center gap-2 shadow-lg"
               >
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7" />
+                </svg>
                 Approve Refund
               </button>
             </div>
 
-            {/* Keyboard hint */}
-            <p className="text-xs text-center text-gray-500 mt-5">
-              Press <kbd className="px-2 py-1 bg-gray-100 border rounded">ESC</kbd> to cancel
+            {/* ESC hint */}
+            <p className="text-xs text-center text-gray-500 dark:text-gray-400 mt-5">
+              Press <kbd className="px-2 py-1 bg-gray-100 dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded text-xs font-mono text-gray-900 dark:text-gray-100 shadow-sm">ESC</kbd> to cancel
             </p>
           </div>
         </div>
