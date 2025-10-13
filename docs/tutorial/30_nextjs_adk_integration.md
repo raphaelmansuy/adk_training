@@ -148,6 +148,46 @@ For deployment: [Sign up at Vercel](https://vercel.com)
 
 ## Quick Start (10 Minutes)
 
+```text
+         Quick Start Decision Flow
+         
+                    START
+                      |
+                      v
+         +-------------------------+
+         | Choose Setup Method     |
+         +-------------------------+
+              |              |
+     CLI      |              |   Manual
+     (Fast)   |              |   (Control)
+              v              v
+    +------------------+  +----------------------+
+    | Option 1:        |  | Option 2:            |
+    | Automated CLI    |  | Manual Setup         |
+    |                  |  |                      |
+    | • Run command    |  | • Create files       |
+    | • Auto-scaffold  |  | • Configure paths    |
+    | • Quick start    |  | • Understand flow    |
+    +------------------+  +----------------------+
+              |                      |
+              v                      v
+    +------------------+  +----------------------+
+    | 5 minutes        |  | 15 minutes           |
+    | Best for:        |  | Best for:            |
+    | • Beginners      |  | • Learning           |
+    | • Prototypes     |  | • Customization      |
+    +------------------+  +----------------------+
+              |                      |
+              +----------+-----------+
+                         |
+                         v
+              +---------------------+
+              | Both paths lead to: |
+              | Working Next.js app |
+              | with ADK agent      |
+              +---------------------+
+```
+
 ### Option 1: Use CopilotKit CLI (Recommended)
 
 The fastest way to get started:
@@ -787,11 +827,171 @@ Agent: "Our refund policy is...
 
 ---
 
+### Understanding AG-UI Protocol
+
+**AG-UI** (Agent-User Interaction Protocol) is an open, lightweight, event-based protocol that standardizes how AI agents connect to user-facing applications.
+
+#### What is AG-UI?
+
+AG-UI is complementary to other agentic protocols in the ecosystem:
+
+- **MCP** (Model Context Protocol) - Gives agents tools
+- **A2A** (Agent2Agent) - Allows agents to communicate with other agents  
+- **AG-UI** - Brings agents into user-facing applications
+
+```text
+                    The Agentic Protocol Stack
+                    
++-----------------------------------------------------------+
+|                    USER APPLICATION                       |
+|  (React, Next.js, Streamlit, Mobile Apps)                |
++-----------------------------------------------------------+
+                            |
+                            | AG-UI Protocol
+                            | (Agent-to-UI Communication)
+                            v
++-----------------------------------------------------------+
+|                    AGENT FRAMEWORK                        |
+|  (Google ADK, LangGraph, CrewAI, Pydantic AI)            |
++-----------------------------------------------------------+
+            |                           |
+            | A2A Protocol              | MCP Protocol
+            | (Agent-to-Agent)          | (Agent-to-Tools)
+            v                           v
++----------------------+    +-------------------------------+
+|   OTHER AGENTS       |    |    EXTERNAL TOOLS            |
+|  - Specialized       |    |  - APIs                      |
+|  - Collaborative     |    |  - Databases                 |
+|  - Domain-specific   |    |  - File Systems              |
++----------------------+    +-------------------------------+
+```
+
+#### Key Features
+
+- 💬 **Real-time Communication**: Streaming responses via WebSocket/SSE
+- 🔄 **Bi-directional State**: Sync state between agent and frontend
+- 🧩 **Generative UI**: Render custom React components from agent responses
+- 🧠 **Context Enrichment**: Share application state with agents in real-time
+- 🛠️ **Frontend Tools**: Execute frontend actions from agent workflows
+- 🧑‍💻 **Human-in-the-Loop**: Built-in approval flows for sensitive actions
+
+#### How It Works
+
+1. **Agent Backend** emits events compatible with AG-UI's ~16 standard event types
+2. **Middleware Layer** translates between agent framework (ADK) and frontend
+3. **Frontend SDK** receives events and updates UI in real-time
+4. **Transport Agnostic**: Works with WebSocket, SSE, or webhooks
+
+```text
+                    AG-UI Protocol Flow
+                    
+    USER INTERACTION                EVENTS                  AGENT PROCESSING
+          
++------------------+          +------------------+       +------------------+
+|   User Types     |          |  textMessage     |       |  Agent Receives  |
+|   "Help me"      |  ------> |  event created   | ----> |  user message    |
++------------------+          +------------------+       +------------------+
+                                                                  |
+                                                                  v
++------------------+          +------------------+       +------------------+
+|  Loading State   |          |  agentStateChange|       |  Agent Processes |
+|  Shows Spinner   | <------  |  status: thinking| <---- |  with LLM/tools  |
++------------------+          +------------------+       +------------------+
+                                                                  |
+                                                                  v
++------------------+          +------------------+       +------------------+
+|  Streamed Text   |          | textMessageChunk |       |  Response        |
+|  Appears Live    | <------  |  (multiple)      | <---- |  Generated       |
++------------------+          +------------------+       +------------------+
+                                                                  |
+                                                                  v
++------------------+          +------------------+       +------------------+
+|  Tool Execution  |          | toolExecutionStart|      |  Tool Called     |
+|  UI Component    | <------  | toolExecutionEnd | <---- |  (e.g. search)   |
++------------------+          +------------------+       +------------------+
+                                                                  |
+                                                                  v
++------------------+          +------------------+       +------------------+
+|  Final Message   |          |  textMessage     |       |  Complete        |
+|  with Results    | <------  |  complete: true  | <---- |  Response Ready  |
++------------------+          +------------------+       +------------------+
+```
+
+#### Framework Support
+
+AG-UI supports 15+ agent frameworks with official partnerships:
+
+| Framework | Status | Type |
+|-----------|--------|------|
+| **Google ADK** | ✅ Supported | Partnership |
+| **LangGraph** | ✅ Supported | Partnership |
+| **CrewAI** | ✅ Supported | Partnership |
+| **Pydantic AI** | ✅ Supported | 1st party |
+| **Mastra** | ✅ Supported | 1st party |
+| **LlamaIndex** | ✅ Supported | 1st party |
+| **AG2** | ✅ Supported | 1st party |
+| **Vercel AI SDK** | 🛠️ In Progress | Community |
+| **OpenAI Agent SDK** | 🛠️ In Progress | Community |
+
+[View all supported frameworks →](https://docs.ag-ui.com/introduction#supported-frameworks)
+
+#### Licensing
+
+- **AG-UI Protocol**: [MIT License](https://github.com/ag-ui-protocol/ag-ui/blob/main/LICENSE) - Open source, free for commercial use
+- **CopilotKit**: [MIT License](https://github.com/CopilotKit/CopilotKit/blob/main/LICENSE) - Open source, free for commercial use
+- **Google ADK**: [Apache 2.0 License](https://github.com/google/adk-python/blob/main/LICENSE) - Open source, free for commercial use
+
+All components in this tutorial are **fully open source** with permissive licenses suitable for commercial applications.
+
+#### Learn More
+
+- [AG-UI Official Documentation](https://ag-ui.com/)
+- [AG-UI GitHub Repository](https://github.com/ag-ui-protocol/ag-ui)
+- [AG-UI Dojo (Interactive Examples)](https://dojo.ag-ui.com/)
+- [CopilotKit Documentation](https://docs.copilotkit.ai/)
+
+---
+
 ## Building a Customer Support Agent
 
 ### Enhancing the Agent
 
 Let's add more realistic features to our support agent.
+
+```text
+         Customer Support Agent Architecture
+         
++-------------------------------------------------------+
+|                 AGENT CAPABILITIES                    |
++-------------------------------------------------------+
+|                                                       |
+|  +------------------+    +---------------------+     |
+|  | Knowledge Base   |    | Order Management    |     |
+|  | Search           |    | System              |     |
+|  |                  |    |                     |     |
+|  | - FAQs           |    | - Status Lookup     |     |
+|  | - Policies       |    | - Tracking Info     |     |
+|  | - Documentation  |    | - Order History     |     |
+|  +------------------+    +---------------------+     |
+|                                                       |
+|  +------------------+    +---------------------+     |
+|  | Support Ticket   |    | Customer Context    |     |
+|  | System           |    | Management          |     |
+|  |                  |    |                     |     |
+|  | - Create Tickets |    | - User Preferences  |     |
+|  | - Set Priority   |    | - Conversation      |     |
+|  | - Route to Team  |    | - Session State     |     |
+|  +------------------+    +---------------------+     |
+|                                                       |
++-------------------------------------------------------+
+                         |
+                         | All Tools Callable by Agent
+                         v
+              +----------------------+
+              | Gemini 2.5 Flash     |
+              | (LLM Orchestration)  |
+              +----------------------+
+```
 
 #### Feature 1: Order Status Lookup
 
@@ -1043,6 +1243,42 @@ Remember: You represent TechCo's commitment to excellent customer service!""",
 
 ## Advanced Features
 
+```text
+         Advanced Features Architecture
+         
++--------------------------------------------------------+
+|                   Your Application                     |
++--------------------------------------------------------+
+                          |
+         +----------------+----------------+
+         |                |                |
+         v                v                v
++------------------+ +------------------+ +------------------+
+| Feature 1:       | | Feature 2:       | | Feature 3:       |
+| Generative UI    | | Human-in-Loop    | | Shared State     |
+|                  | |                  | |                  |
+| • Agent returns  | | • useCopilotKit  | | • Persist data   |
+|   UI components  | | • Approval flows | | • Cross-session  |
+| • React render   | | • User control   | | • User context   |
++------------------+ +------------------+ +------------------+
+         |                |                |
+         v                v                v
++------------------+ +------------------+ +------------------+
+| Use Cases:       | | Use Cases:       | | Use Cases:       |
+| • Product cards  | | • Refunds        | | • User prefs     |
+| • Data viz       | | • Data deletion  | | • Cart state     |
+| • Interactive    | | • Sensitive ops  | | • Session data   |
++------------------+ +------------------+ +------------------+
+         |                |                |
+         +----------------+----------------+
+                          |
+                          v
+              +---------------------+
+              | AG-UI Protocol      |
+              | Standard Events     |
+              +---------------------+
+```
+
 ### Feature 1: Generative UI
 
 Render custom React components from agent responses.
@@ -1156,6 +1392,38 @@ Now when agent mentions products, beautiful cards render inline! 🎨
 
 Let users approve sensitive actions:
 
+```text
+         Human-in-the-Loop Workflow
+         
++----------------------+       +----------------------+
+|  Agent Determines    |       |  User Interface      |
+|  Action Needed       |       |                      |
+|                      |       |  "Approve refund     |
+|  "Process $99.99     | ----> |   of $99.99?"        |
+|   refund"            |       |                      |
+|                      |       |  [Approve] [Deny]    |
++----------------------+       +----------------------+
+                                        |
+                        +---------------+---------------+
+                        |                               |
+                        v                               v
+              +------------------+          +------------------+
+              |   User Approves  |          |   User Denies    |
+              +------------------+          +------------------+
+                        |                               |
+                        v                               v
+              +------------------+          +------------------+
+              | Execute Action   |          | Cancel Action    |
+              | Call refund API  |          | Notify agent     |
+              +------------------+          +------------------+
+                        |                               |
+                        v                               v
+              +------------------+          +------------------+
+              | Confirm Success  |          | Agent continues  |
+              | to user          |          | with alternative |
+              +------------------+          +------------------+
+```
+
 **Backend**:
 
 ```python
@@ -1264,6 +1532,41 @@ Agent automatically knows: "Hi John! I see you have 2 orders. Which one would yo
 
 ### Step 1: Deploy Agent to Cloud Run
 
+```text
+              Deployment Architecture
+              
+   LOCAL DEVELOPMENT           PRODUCTION DEPLOYMENT
+   
++-------------------+       +-------------------+
+|  Developer        |       |  Vercel CDN       |
+|  Laptop           |       |  (Global Edge)    |
+|                   |       |                   |
+|  localhost:3000   |       |  your-app         |
+|  (Next.js Dev)    |       |  .vercel.app      |
++-------------------+       +-------------------+
+         |                           |
+         |                           | HTTPS
+         v                           v
++-------------------+       +-------------------+
+|  localhost:8000   |       |  Cloud Run        |
+|  (Python Agent)   |       |  (Auto-scaled)    |
+|                   |       |                   |
+|  FastAPI + ADK    |       |  0-N Instances    |
++-------------------+       +-------------------+
+         |                           |
+         |                           |
+         v                           v
++-------------------+       +-------------------+
+|  Gemini API       |       |  Gemini API       |
+|  (Google AI)      |       |  (Google AI)      |
++-------------------+       +-------------------+
+
+  Development Setup           Production Setup
+  - Hot Reload                - Auto Scaling
+  - Local Testing             - Global CDN
+  - Fast Iteration            - High Availability
+```
+
 **Create `agent/Dockerfile`**:
 
 ```dockerfile
@@ -1342,6 +1645,57 @@ URL: `https://customer-support-bot.vercel.app`
 ---
 
 ### Step 3: Production Best Practices
+
+```text
+         Production Deployment Checklist
+         
+                    START
+                      |
+                      v
+         +-------------------------+
+         | Environment Variables   |
+         | • GOOGLE_API_KEY set    |
+         | • AGENT_URL configured  |
+         | • LOG_LEVEL=INFO        |
+         +-------------------------+
+                      |
+                      v
+         +-------------------------+
+         | CORS Configuration      |
+         | • Whitelist domains     |
+         | • No wildcards in prod  |
+         | • Credentials enabled   |
+         +-------------------------+
+                      |
+                      v
+         +-------------------------+
+         | Rate Limiting           |
+         | • slowapi middleware    |
+         | • Per-user limits       |
+         | • IP-based throttling   |
+         +-------------------------+
+                      |
+                      v
+         +-------------------------+
+         | Monitoring              |
+         | • Cloud Logging         |
+         | • Error tracking        |
+         | • Performance metrics   |
+         +-------------------------+
+                      |
+                      v
+         +-------------------------+
+         | Error Handling          |
+         | • Graceful fallbacks    |
+         | • User-friendly errors  |
+         | • Retry logic           |
+         +-------------------------+
+                      |
+                      v
+              +------------------+
+              | Production Ready |
+              +------------------+
+```
 
 **1. Environment Variables**
 
@@ -1422,6 +1776,51 @@ async def global_exception_handler(request, exc):
 ## Troubleshooting
 
 ### Common Issues
+
+```text
+             Troubleshooting Decision Tree
+             
+                    START
+                      |
+                      v
+         +-------------------------+
+         | Is chat loading at all? |
+         +-------------------------+
+              |              |
+          YES |              | NO
+              v              v
+    +------------------+  +----------------------+
+    | Messages sent?   |  | Check WebSocket URL  |
+    +------------------+  | /api/copilotkit path |
+              |           +----------------------+
+          YES |                      
+              v              
+    +------------------+  
+    | Agent responds?  |  
+    +------------------+  
+         |          |
+     YES |          | NO
+         v          v
+    +--------+  +----------------------+
+    | Check  |  | - Agent running?     |
+    | tools  |  | - API key set?       |
+    | work   |  | - Check logs         |
+    +--------+  +----------------------+
+         |
+         v
+    +----------------------+
+    | Tool names match?    |
+    | Type hints correct?  |
+    +----------------------+
+         |
+         v
+    +----------------------+
+    | Performance issue?   |
+    | - Use fast model     |
+    | - Shorter prompts    |
+    | - Add caching        |
+    +----------------------+
+```
 
 **Issue 1: WebSocket Connection Failed**
 
