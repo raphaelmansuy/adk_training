@@ -355,15 +355,26 @@ const config: Config = {
       { name: 'language', content: 'English' },
       { name: 'revisit-after', content: '3 days' },
 
-      // Open Graph meta tags
+      // Open Graph meta tags for better social sharing
       { property: 'og:type', content: 'website' },
       { property: 'og:site_name', content: 'Google ADK Training Hub' },
       { property: 'og:locale', content: 'en_US' },
+      { property: 'og:title', content: 'Google ADK Training Hub - Master AI Agent Development' },
+      { property: 'og:description', content: 'Complete hands-on training for Google Agent Development Kit with 34 free tutorials, production deployment patterns, multi-agent systems, and full-stack integration examples.' },
+      { property: 'og:image', content: 'https://raphaelmansuy.github.io/adk_training/img/docusaurus-social-card.jpg' },
+      { property: 'og:image:width', content: '1200' },
+      { property: 'og:image:height', content: '630' },
+      { property: 'og:image:alt', content: 'Google ADK Training Hub - Learn to build production AI agents with Google\'s Agent Development Kit' },
+      { property: 'og:url', content: 'https://raphaelmansuy.github.io/adk_training/' },
 
-      // Twitter Card meta tags
+      // Twitter Card meta tags for optimal Twitter sharing
       { name: 'twitter:card', content: 'summary_large_image' },
       { name: 'twitter:site', content: '@raphaelmansuy' },
       { name: 'twitter:creator', content: '@raphaelmansuy' },
+      { name: 'twitter:title', content: 'Google ADK Training Hub - Master AI Agent Development' },
+      { name: 'twitter:description', content: 'Complete hands-on training for Google Agent Development Kit with 34 free tutorials, production deployment patterns, multi-agent systems, and full-stack integration examples.' },
+      { name: 'twitter:image', content: 'https://raphaelmansuy.github.io/adk_training/img/docusaurus-social-card.jpg' },
+      { name: 'twitter:image:alt', content: 'Google ADK Training Hub - Learn to build production AI agents with Google\'s Agent Development Kit' },
 
       // LinkedIn meta tags
       { property: 'og:type', content: 'website' },
@@ -374,7 +385,7 @@ const config: Config = {
     ],
 
     // Replace with your project's social card
-    image: 'img/docusaurus-social-card.jpg',
+    image: 'https://raphaelmansuy.github.io/adk_training/img/docusaurus-social-card.jpg',
     colorMode: {
       respectPrefersColorScheme: true,
     },
