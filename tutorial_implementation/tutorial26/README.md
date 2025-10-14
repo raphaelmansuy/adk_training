@@ -58,6 +58,7 @@ tutorial26/
 
 ### Agent Architecture
 
+```text
 Enterprise Lead Qualifier Agent
 ═════════════════════════════════
 
@@ -72,17 +73,18 @@ Enterprise Lead Qualifier Agent
 │  │  │   • Tools: [check_company_size, score_lead,     │ │   │
 │  │  │            get_competitive_intel]               │ │   │
 │  │  └─────────────────────────────────────────────────┘ │   │
-│  │                                                          │    │
-│  │  Tool Orchestration:                                     │    │
-│  │  ┌─────────────┐  ┌─────────────┐  ┌─────────────┐       │    │
-│  │  │Company Lookup│  │Lead Scoring │  │Competitive  │      │    │
-│  │  │             │  │             │  │Intelligence │      │    │
-│  │  │• CRM APIs   │  │• Algorithm  │  │• Market Data│      │    │
-│  │  │• Clearbit   │  │• 0-100 pts  │  │• News APIs  │      │    │
-│  │  │• ZoomInfo   │  │• Thresholds │  │• Social     │      │    │
-│  │  └─────────────┘  └─────────────┘  └─────────────┘      │    │
-│  └─────────────────────────────────────────────────────────┘    │
+│  │                                                      │   │
+│  │  Tool Orchestration:                                 │   │
+│  │  ┌─────────────┐  ┌─────────────┐  ┌─────────────┐   │   │
+│  │  │Company      │  │Lead Scoring │  │Competitive  │   │   │
+│  │  │  Lookup     │  │             │  │Intelligence │   │   │
+│  │  │• CRM APIs   │  │• Algorithm  │  │• Market     │   │   │
+│  │  │• Clearbit   │  │• 0-100 pts  │  │  Data       │   │   │
+│  │  │• ZoomInfo   │  │• Thresholds │  │• News APIs  │   │   │
+│  │  └─────────────┘  └─────────────┘  └─────────────┘   │   │
+│  └──────────────────────────────────────────────────────┘   │
 └─────────────────────────────────────────────────────────────┘
+```
                               │
                               ▼
                  ┌─────────────────────────────┐
@@ -124,6 +126,7 @@ A production-ready agent that demonstrates enterprise deployment patterns:
 
 ### Lead Qualification Workflow
 
+```text
 User Request: "Qualify TechCorp as a sales lead"
            ↓
     ┌─────────────────┐
@@ -147,7 +150,8 @@ User Request: "Qualify TechCorp as a sales lead"
    │ (get_competitive_intel)
    └──────────────────────┘
            ↓
-     Final Recommendation
+    Final Recommendation
+```
 
 ### Tool Functions
 
@@ -523,6 +527,7 @@ make setup
 ## Links
 
 - **Tutorial**: [Tutorial 26: Gemini Enterprise](../../docs/tutorial/26_google_agentspace.md)
+- **Implementation**: [Enterprise Lead Qualifier Agent](./enterprise_agent/agent.py)
 - **Gemini Enterprise**: [cloud.google.com/gemini-enterprise](https://cloud.google.com/gemini-enterprise)
 - **ADK Documentation**: [google.github.io/adk-docs/](https://google.github.io/adk-docs/)
 - **Vertex AI Agent Builder**: [cloud.google.com/agent-builder](https://cloud.google.com/agent-builder)
@@ -544,6 +549,7 @@ _Built with ❤️ for the ADK community_
 
 ### Lead Scoring Algorithm
 
+```text
 Lead Score Calculation (0-100 points)
 ═══════════════════════════════════════
 
@@ -577,6 +583,7 @@ Input Parameters: company_size, industry, budget_tier
           │  40-69:  QUALIFIED          │
           │  0-39:   UNQUALIFIED        │
           └─────────────────────────────┘
+```
 
 **Example Calculation:**
 - TechCorp: 250 employees (Technology) + Enterprise budget
