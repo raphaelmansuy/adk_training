@@ -31,41 +31,6 @@ learning_objectives:
 implementation_link: "https://github.com/raphaelmansuy/adk_training/tree/main/tutorial_implementation/tutorial28"
 ---
 
-:::info Verify Runner API Usage
-
-**CRITICAL**: ADK v1.16+ changed the Runner API. All examples in this tutorial use the correct pattern.
-
-**Correct Runner API** (verified in source code):
-- ✅ CORRECT: `from google.adk.runners import InMemoryRunner`
-- ✅ CORRECT: `runner = InMemoryRunner(agent=agent, app_name='app')`
-- ✅ CORRECT: Create session, then use async iteration with `async for event in runner.run_async(...)`
-
-**Common Mistakes to Avoid**:
-- ❌ WRONG: `from google.adk.agents import Runner` - this class doesn't exist in v1.16+
-- ❌ WRONG: `runner = Runner()` - use InMemoryRunner instead
-- ❌ WRONG: `result = await runner.run_async(query, agent=agent)` - use async iteration
-
-**Required Pattern**:
-```python
-from google.adk.runners import InMemoryRunner
-from google.genai import types
-
-runner = InMemoryRunner(agent=agent, app_name='app')
-session = await runner.session_service.create_session(
-    app_name='app', user_id='user_id'
-)
-new_message = types.Content(role='user', parts=[types.Part(text=query)])
-async for event in runner.run_async(
-    user_id='user_id', session_id=session.id, new_message=new_message
-):
-    if event.content and event.content.parts:
-        print(event.content.parts[0].text)
-```
-
-**Source**: `/research/adk-python/src/google/adk/runners.py`
-
-:::
-
 # Tutorial 28: Using Other LLMs with LiteLLM
 
 **Goal**: Use OpenAI, Claude, Ollama, and other LLMs in your ADK agents via LiteLLM
