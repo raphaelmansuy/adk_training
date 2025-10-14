@@ -30,6 +30,29 @@ learning_objectives:
 implementation_link: "https://github.com/raphaelmansuy/adk_training/tree/main/tutorial_implementation/tutorial24"
 ---
 
+## 🚀 Working Implementation
+
+A complete, tested implementation of this tutorial is available in the repository:
+
+**[View Tutorial 24 Implementation →](../../tutorial_implementation/tutorial24/)**
+
+The implementation includes:
+
+- ✅ ObservabilityAgent with comprehensive plugin system
+- ✅ SaveFilesAsArtifactsPlugin, MetricsCollectorPlugin, AlertingPlugin, PerformanceProfilerPlugin
+- ✅ 4 comprehensive test files (all passing)
+- ✅ Makefile with setup, dev, test, demo commands
+- ✅ Complete README with usage examples and production deployment
+
+Quick start:
+
+```bash
+cd tutorial_implementation/tutorial24
+make setup
+export GOOGLE_API_KEY=your_key
+make dev
+```
+
 # Tutorial 24: Advanced Observability & Monitoring
 
 **Goal**: Master advanced observability patterns including plugin systems, Cloud Trace integration, custom metrics, distributed tracing, and production monitoring dashboards.
