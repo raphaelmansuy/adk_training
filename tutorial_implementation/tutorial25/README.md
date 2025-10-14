@@ -227,12 +227,16 @@ Expected: Request counts, latency, error rates, uptime
 
 ```python
 # Pydantic validation model
+from pydantic import BaseModel, Field, EmailStr, field_validator
+from typing import Optional
+
 class InputRequest(BaseModel):
     email: Optional[EmailStr] = Field(None)
     text: str = Field(..., min_length=1, max_length=10000)
     priority: str = Field("normal")
-    
-    @validator('text')
+
+    @classmethod
+    @field_validator('text')
     def validate_text(cls, v):
         dangerous = ['DROP TABLE', 'DELETE FROM', '; --', '<script>']
         # Check for dangerous patterns
