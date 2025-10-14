@@ -93,42 +93,118 @@ export function GitHubStats() {
     stars: 0,
     forks: 0,
     watchers: 0,
-    loading: true
+    loading: true,
+    error: null as string | null
   });
 
-  useEffect(() => {
-    // Simulate API call - in real implementation, fetch from GitHub API
-    const timer = setTimeout(() => {
-      setStats({
-        stars: 15,
-        forks: 3,
-        watchers: 8,
-        loading: false
-      });
-    }, 1000);
+  const CACHE_KEY = 'github-stats-cache';
+  const CACHE_DURATION = 60 * 60 * 1000; // 1 hour in milliseconds
+  const REPO_OWNER = 'raphaelmansuy';
+  const REPO_NAME = 'adk_training';
 
-    return () => clearTimeout(timer);
+  const fetchGitHubStats = async () => {
+    try {
+      const response = await fetch(`https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}`);
+      
+      if (!response.ok) {
+        throw new Error(`GitHub API error: ${response.status}`);
+      }
+      
+      const data = await response.json();
+      
+      const newStats = {
+        stars: data.stargazers_count || 0,
+        forks: data.forks_count || 0,
+        watchers: data.watchers_count || 0,
+        loading: false,
+        error: null
+      };
+      
+      // Cache the results
+      const cacheData = {
+        stats: newStats,
+        timestamp: Date.now()
+      };
+      localStorage.setItem(CACHE_KEY, JSON.stringify(cacheData));
+      
+      setStats(newStats);
+    } catch (error) {
+      console.error('Failed to fetch GitHub stats:', error);
+      setStats(prev => ({
+        ...prev,
+        loading: false,
+        error: 'Failed to load GitHub stats'
+      }));
+    }
+  };
+
+  const getCachedStats = () => {
+    try {
+      const cached = localStorage.getItem(CACHE_KEY);
+      if (cached) {
+        const { stats: cachedStats, timestamp } = JSON.parse(cached);
+        const now = Date.now();
+        
+        // Check if cache is still valid
+        if (now - timestamp < CACHE_DURATION) {
+          return cachedStats;
+        }
+      }
+    } catch (error) {
+      console.error('Error reading cached stats:', error);
+    }
+    return null;
+  };
+
+  useEffect(() => {
+    // Try to load from cache first
+    const cachedStats = getCachedStats();
+    if (cachedStats) {
+      setStats(cachedStats);
+      return;
+    }
+    
+    // If no cache or expired, fetch fresh data
+    fetchGitHubStats();
   }, []);
+
+  const handleRetry = () => {
+    setStats(prev => ({ ...prev, loading: true, error: null }));
+    fetchGitHubStats();
+  };
 
   if (stats.loading) {
     return <div className={styles.loading}>Loading GitHub stats...</div>;
+  }
+
+  if (stats.error) {
+    return (
+      <div className={styles.githubStats}>
+        <div className={styles.error}>
+          {stats.error}
+          <button onClick={handleRetry} className={styles.retryButton}>
+            Retry
+          </button>
+        </div>
+      </div>
+    );
   }
 
   return (
     <div className={styles.githubStats}>
       <div className={styles.statItem}>
         <span className={styles.statIcon}>⭐</span>
-        <span className={styles.statNumber}>{stats.stars}</span>
+        <span className={styles.statNumber}>{stats.stars.toLocaleString()}</span>
         <span className={styles.statLabel}>Stars</span>
       </div>
       <div className={styles.statItem}>
         <span className={styles.statIcon}>🔱</span>
-        <span className={styles.statNumber}>{stats.forks}</span>
+        <span className={styles.statNumber}>{stats.forks.toLocaleString()}</span>
         <span className={styles.statLabel}>Forks</span>
       </div>
       <div className={styles.statItem}>
         <span className={styles.statIcon}>👁️</span>
-        <span className={styles.statNumber}>{stats.watchers}</span>
+        <span className={styles.statNumber}>{stats.watchers.toLocaleString()}</span>
         <span className={styles.statLabel}>Watchers</span>
       </div>
     </div>

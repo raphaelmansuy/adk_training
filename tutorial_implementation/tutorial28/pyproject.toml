@@ -1,0 +1,15 @@
+[build-system]
+requires = ["setuptools>=64", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "tutorial28"
+version = "0.1.0"
+description = "Tutorial 28: Using Other LLMs with LiteLLM"
+requires-python = ">=3.9"
+dependencies = [
+    "google-adk>=1.15.1",
+    "litellm>=1.0.0",
+    "openai>=1.0.0",
+    "anthropic>=0.18.0",
+]

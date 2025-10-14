@@ -209,6 +209,34 @@
   font-style: italic;
 }
 
+.error {
+  text-align: center;
+  padding: 2rem;
+  color: var(--ifm-color-danger);
+  background: rgba(239, 68, 68, 0.1);
+  border-radius: 8px;
+  border: 1px solid var(--ifm-color-danger);
+}
+
+.retryButton {
+  display: inline-block;
+  margin-top: 0.5rem;
+  padding: 0.5rem 1rem;
+  border: none;
+  border-radius: 6px;
+  background: var(--ifm-color-primary);
+  color: white;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.retryButton:hover {
+  background: var(--ifm-color-primary-dark);
+  transform: translateY(-1px);
+}
+
 /* Learning Path Quiz */
 .quiz {
   background: var(--ifm-background-color);
