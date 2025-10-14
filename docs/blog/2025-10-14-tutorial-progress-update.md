@@ -32,7 +32,7 @@ Your first working agent in 30 minutes. Learn agent structure, model selection, 
 
 **Key concepts**: Agent configuration, instruction design, built-in tools
 
-**[View Tutorial →](https://raphaelmansuy.github.io/adk_training/docs/tutorial/01_hello_world_agent)**
+**[View Tutorial →](https://raphaelmansuy.github.io/adk_training/docs/hello_world_agent)**
 
 ### Tutorial 02: Function Tools ✅
 Create custom Python functions as agent tools. Build a weather agent that fetches real-time data from external APIs.
@@ -41,7 +41,7 @@ Create custom Python functions as agent tools. Build a weather agent that fetche
 
 **Key concepts**: Function tools, parameter validation, error handling
 
-**[View Tutorial →](https://raphaelmansuy.github.io/adk_training/docs/tutorial/02_function_tools)**
+**[View Tutorial →](https://raphaelmansuy.github.io/adk_training/docs/function_tools)**
 
 ### Tutorial 03: OpenAPI Tools ✅
 Integrate any REST API using OpenAPI specifications. Automatically generate tools from Swagger/OpenAPI definitions.
@@ -50,7 +50,7 @@ Integrate any REST API using OpenAPI specifications. Automatically generate tool
 
 **Key concepts**: OpenAPI integration, automatic tool generation, API authentication
 
-**[View Tutorial →](https://raphaelmansuy.github.io/adk_training/docs/tutorial/03_openapi_tools)**
+**[View Tutorial →](https://raphaelmansuy.github.io/adk_training/docs/openapi_tools)**
 
 ## 🟡 Workflow Orchestration (Tutorials 4-7) - 100% Complete
 
@@ -63,7 +63,7 @@ Chain multiple agents into ordered pipelines. Each agent's output feeds into the
 
 **Key concepts**: SequentialAgent, output_key, state interpolation
 
-**[View Tutorial →](https://raphaelmansuy.github.io/adk_training/docs/tutorial/04_sequential_workflows)**
+**[View Tutorial →](https://raphaelmansuy.github.io/adk_training/docs/sequential_workflows)**
 
 ### Tutorial 05: Parallel Processing ✅
 Execute multiple agents simultaneously. Perfect for independent tasks that don't depend on each other.
@@ -72,7 +72,7 @@ Execute multiple agents simultaneously. Perfect for independent tasks that don't
 
 **Key concepts**: ParallelAgent, concurrent execution, result aggregation
 
-**[View Tutorial →](https://raphaelmansuy.github.io/adk_training/docs/tutorial/05_parallel_processing)**
+**[View Tutorial →](https://raphaelmansuy.github.io/adk_training/docs/parallel_processing)**
 
 ### Tutorial 06: Multi-Agent Systems ✅
 Coordinate complex agent hierarchies. Build teams of specialized agents working together.
@@ -81,7 +81,7 @@ Coordinate complex agent hierarchies. Build teams of specialized agents working 
 
 **Key concepts**: Agent composition, delegation patterns, orchestration
 
-**[View Tutorial →](https://raphaelmansuy.github.io/adk_training/docs/tutorial/06_multi_agent_systems)**
+**[View Tutorial →](https://raphaelmansuy.github.io/adk_training/docs/multi_agent_systems)**
 
 ### Tutorial 07: Loop Agents ✅
 Implement iterative refinement with critic/refiner patterns. Agents that improve their output through multiple iterations.
@@ -90,7 +90,7 @@ Implement iterative refinement with critic/refiner patterns. Agents that improve
 
 **Key concepts**: LoopAgent, critic patterns, iterative improvement
 
-**[View Tutorial →](https://raphaelmansuy.github.io/adk_training/docs/tutorial/07_loop_agents)**
+**[View Tutorial →](https://raphaelmansuy.github.io/adk_training/docs/loop_agents)**
 
 ## 🔴 Production Foundations (Tutorials 8-12) - 100% Complete
 
@@ -103,7 +103,7 @@ Master conversation state, session management, and cross-invocation memory.
 
 **Key concepts**: Session state, user state, app state, memory patterns
 
-**[View Tutorial →](https://raphaelmansuy.github.io/adk_training/docs/tutorial/08_state_memory)**
+**[View Tutorial →](https://raphaelmansuy.github.io/adk_training/docs/state_memory)**
 
 ### Tutorial 09: Callbacks & Guardrails ✅
 Implement quality controls, safety checks, and custom callback handlers.
@@ -112,7 +112,7 @@ Implement quality controls, safety checks, and custom callback handlers.
 
 **Key concepts**: Callbacks, guardrails, validation, safety patterns
 
-**[View Tutorial →](https://raphaelmansuy.github.io/adk_training/docs/tutorial/09_callbacks_guardrails)**
+**[View Tutorial →](https://raphaelmansuy.github.io/adk_training/docs/callbacks_guardrails)**
 
 ### Tutorial 10: Evaluation & Testing ✅
 Build comprehensive test suites for your agents. Automated testing frameworks and evaluation metrics.
@@ -121,7 +121,7 @@ Build comprehensive test suites for your agents. Automated testing frameworks an
 
 **Key concepts**: Unit tests, integration tests, evaluation sets, metrics
 
-**[View Tutorial →](https://raphaelmansuy.github.io/adk_training/docs/tutorial/10_evaluation_testing)**
+**[View Tutorial →](https://raphaelmansuy.github.io/adk_training/docs/evaluation_testing)**
 
 ### Tutorial 11: Built-in Tools & Grounding ✅
 Leverage ADK's extensive built-in tool ecosystem including Google Search, web scraping, and data processing.
@@ -130,7 +130,7 @@ Leverage ADK's extensive built-in tool ecosystem including Google Search, web sc
 
 **Key concepts**: Built-in tools, grounding, fact verification, tool selection
 
-**[View Tutorial →](https://raphaelmansuy.github.io/adk_training/docs/tutorial/11_built_in_tools_grounding)**
+**[View Tutorial →](https://raphaelmansuy.github.io/adk_training/docs/built_in_tools_grounding)**
 
 ### Tutorial 12: Planners & Advanced Thinking ✅
 Implement sophisticated reasoning patterns including chain-of-thought and planning.
@@ -139,7 +139,7 @@ Implement sophisticated reasoning patterns including chain-of-thought and planni
 
 **Key concepts**: Planning agents, reasoning patterns, step-by-step execution
 
-**[View Tutorial →](https://raphaelmansuy.github.io/adk_training/docs/tutorial/12_planners_thinking)**
+**[View Tutorial →](https://raphaelmansuy.github.io/adk_training/docs/planners_thinking)**
 
 ## ⚡ Advanced Capabilities (Tutorials 13-21) - 90% Complete
 
@@ -152,7 +152,7 @@ Enable agents to write and execute code safely. Perfect for data analysis and au
 
 **Key concepts**: Code interpreter, sandboxed execution, security
 
-**[View Tutorial →](https://raphaelmansuy.github.io/adk_training/docs/tutorial/13_code_execution)**
+**[View Tutorial →](https://raphaelmansuy.github.io/adk_training/docs/code_execution)**
 
 ### Tutorial 14: Streaming & SSE ✅
 Real-time streaming responses with Server-Sent Events. Build responsive, interactive agents.
@@ -161,7 +161,7 @@ Real-time streaming responses with Server-Sent Events. Build responsive, interac
 
 **Key concepts**: SSE, streaming, real-time updates, async patterns
 
-**[View Tutorial →](https://raphaelmansuy.github.io/adk_training/docs/tutorial/14_streaming_sse)**
+**[View Tutorial →](https://raphaelmansuy.github.io/adk_training/docs/streaming_sse)**
 
 ### Tutorial 15: Live API Audio ✅
 Process audio input and output in real-time. Build voice-enabled agents.
@@ -170,7 +170,7 @@ Process audio input and output in real-time. Build voice-enabled agents.
 
 **Key concepts**: Audio processing, real-time transcription, voice synthesis
 
-**[View Tutorial →](https://raphaelmansuy.github.io/adk_training/docs/tutorial/15_live_api_audio)**
+**[View Tutorial →](https://raphaelmansuy.github.io/adk_training/docs/live_api_audio)**
 
 ### Tutorial 16: MCP Integration ✅
 Integrate Model Context Protocol (MCP) for standardized tool communication.
@@ -179,7 +179,7 @@ Integrate Model Context Protocol (MCP) for standardized tool communication.
 
 **Key concepts**: MCP protocol, standardized tools, tool ecosystems
 
-**[View Tutorial →](https://raphaelmansuy.github.io/adk_training/docs/tutorial/16_mcp_integration)**
+**[View Tutorial →](https://raphaelmansuy.github.io/adk_training/docs/mcp_integration)**
 
 ### Tutorial 17: Agent-to-Agent Communication ✅
 Connect agents across systems using the A2A (Agent-to-Agent) protocol.
@@ -188,7 +188,7 @@ Connect agents across systems using the A2A (Agent-to-Agent) protocol.
 
 **Key concepts**: A2A protocol, remote agents, distributed systems
 
-**[View Tutorial →](https://raphaelmansuy.github.io/adk_training/docs/tutorial/17_agent_to_agent)**
+**[View Tutorial →](https://raphaelmansuy.github.io/adk_training/docs/agent_to_agent)**
 
 ### Tutorial 18: Events & Observability ✅
 Advanced monitoring, event tracking, and production observability.
@@ -197,7 +197,7 @@ Advanced monitoring, event tracking, and production observability.
 
 **Key concepts**: Event handlers, tracing, metrics, debugging
 
-**[View Tutorial →](https://raphaelmansuy.github.io/adk_training/docs/tutorial/18_events_observability)**
+**[View Tutorial →](https://raphaelmansuy.github.io/adk_training/docs/events_observability)**
 
 ### Tutorial 19: Artifacts & File Management ✅
 Handle file uploads, downloads, and artifact generation.
@@ -206,7 +206,7 @@ Handle file uploads, downloads, and artifact generation.
 
 **Key concepts**: File management, artifact creation, storage
 
-**[View Tutorial →](https://raphaelmansuy.github.io/adk_training/docs/tutorial/19_artifacts_files)**
+**[View Tutorial →](https://raphaelmansuy.github.io/adk_training/docs/artifacts_files)**
 
 ### Tutorial 20: YAML Configuration ✅
 Configuration-driven agent development without writing code.
@@ -215,7 +215,7 @@ Configuration-driven agent development without writing code.
 
 **Key concepts**: Declarative configuration, YAML agents, no-code patterns
 
-**[View Tutorial →](https://raphaelmansuy.github.io/adk_training/docs/tutorial/20_yaml_configuration)**
+**[View Tutorial →](https://raphaelmansuy.github.io/adk_training/docs/yaml_configuration)**
 
 ### Tutorial 21: Multimodal Images ✅
 Process and generate images. Build vision-enabled agents.
@@ -224,7 +224,7 @@ Process and generate images. Build vision-enabled agents.
 
 **Key concepts**: Vision models, image processing, multimodal inputs
 
-**[View Tutorial →](https://raphaelmansuy.github.io/adk_training/docs/tutorial/21_multimodal_image)**
+**[View Tutorial →](https://raphaelmansuy.github.io/adk_training/docs/multimodal_image)**
 
 ## 🎨 UI Integration (Tutorials 29-30) - 100% Complete
 
@@ -237,7 +237,7 @@ Fundamentals of connecting ADK agents to web interfaces.
 
 **Key concepts**: Frontend integration, API design, CORS
 
-**[View Tutorial →](https://raphaelmansuy.github.io/adk_training/docs/tutorial/29_ui_integration_intro)**
+**[View Tutorial →](https://raphaelmansuy.github.io/adk_training/docs/ui_integration_intro)**
 
 ### Tutorial 30: Next.js & CopilotKit Integration ✅
 Production-ready React chat interface with streaming, tool confirmations, and beautiful UI.
@@ -246,7 +246,7 @@ Production-ready React chat interface with streaming, tool confirmations, and be
 
 **Key concepts**: CopilotKit, React components, streaming UI, tool confirmations
 
-**[View Tutorial →](https://raphaelmansuy.github.io/adk_training/docs/tutorial/30_nextjs_adk_integration)**
+**[View Tutorial →](https://raphaelmansuy.github.io/adk_training/docs/nextjs_adk_integration)**
 
 ## 📋 What's Coming Next (34% Remaining)
 
