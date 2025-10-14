@@ -15,20 +15,51 @@ This implementation showcases:
 
 ```
 tutorial21/
-├── Makefile                    # Standard build commands
+├── Makefile                    # User-friendly build automation with help system
 ├── requirements.txt            # Python dependencies
 ├── pyproject.toml             # Package configuration
 ├── .env.example               # Environment variables template
 ├── vision_catalog_agent/      # Main agent package
 │   ├── __init__.py
-│   └── agent.py              # Vision catalog agent implementation
+│   └── agent.py              # Vision catalog agent (5 tools)
 ├── _sample_images/            # Sample product images (_ prefix avoids ADK discovery)
-└── tests/                     # Comprehensive test suite
-    ├── test_agent.py
-    ├── test_imports.py
-    ├── test_structure.py
-    └── test_multimodal.py
+├── download_images.py         # Download sample images from Unsplash
+├── analyze_samples.py         # Batch analyze all sample images
+├── generate_mockups.py        # Generate synthetic product mockups ⭐
+├── demo.py                    # Interactive demo script
+└── tests/                     # Comprehensive test suite (70 tests)
+    ├── test_agent.py          # Agent configuration tests
+    ├── test_imports.py        # Import validation
+    ├── test_structure.py      # Project structure validation
+    └── test_multimodal.py     # Multimodal functionality tests
 ```
+
+### Automation Scripts
+
+**download_images.py**: Downloads sample product images from Unsplash
+- Gets high-quality product photos (laptop, headphones, smartwatch)
+- Saves to `_sample_images/` directory
+- Free to use under Unsplash License
+- Run via: `make download-images` or `python download_images.py`
+
+**analyze_samples.py**: Batch analyzes all sample images
+- Loads each image with proper multimodal content handling
+- Analyzes with Gemini 2.0 Flash Exp vision model
+- Generates professional catalog entries
+- Displays formatted results with product details
+- Run via: `make analyze` or `python analyze_samples.py`
+
+**generate_mockups.py**: Generates synthetic product mockups ⭐ NEW
+- Uses Gemini 2.5 Flash Image for text-to-image
+- Creates 3 products: desk lamp, leather wallet, gaming mouse
+- Different aspect ratios for each (1:1, 4:3, 16:9)
+- Automatically analyzes generated images
+- End-to-end workflow demonstration
+- Run via: `make generate` or `python generate_mockups.py`
+
+**demo.py**: Interactive demo script (legacy)
+- Command-line demonstration of agent capabilities
+- Note: Prefer `make demo` for comprehensive examples
 
 ## Features
 
@@ -65,43 +96,64 @@ tutorial21/
 
 ## Quick Start
 
-### 1. Setup
+### First Time Setup
 
 ```bash
-# Install dependencies
+# 1. See all available commands
+make                # or: make help
+
+# 2. Install dependencies
 make setup
 
-# Configure environment
-cp .env.example .env
-# Edit .env and add your GOOGLE_API_KEY
-```
+# 3. Set your API key (choose one method)
+export GOOGLE_API_KEY=your_api_key_here
 
-### 2. Run Tests
+# 4. Download sample images
+make download-images
 
-```bash
-# Run all tests
-make test
-
-# Run with coverage
-make coverage
-```
-
-### 3. Start Development
-
-```bash
-# Start ADK web interface
+# 5. Start the agent
 make dev
-
-# The agent will be available at http://localhost:8000
-# Select "vision_catalog_agent" from the dropdown
 ```
 
-### 4. View Demo Instructions
+The Makefile includes a comprehensive help system. Just run `make` to see all available commands!
+
+### Available Commands
 
 ```bash
-# See example prompts
-make demo
+make                  # Show help (default)
+make setup            # Install dependencies
+make download-images  # Get sample product images from Unsplash
+make dev              # Start ADK web interface (http://localhost:8000)
+make demo             # Show comprehensive usage examples
+
+# Image Analysis
+make analyze          # Batch analyze all sample images
+make generate         # Generate synthetic product mockups ⭐
+
+# Development & Testing
+make test             # Run all tests
+make coverage         # Run tests with coverage report
+make lint             # Run code linters
+make clean            # Clean up generated files
 ```
+
+### Environment Validation
+
+The Makefile automatically checks for authentication before running commands that need it. If not configured, you'll see helpful error messages with setup instructions.
+
+**Authentication Methods:**
+
+1. **API Key (Recommended for development)**:
+   ```bash
+   export GOOGLE_API_KEY=your_api_key_here
+   # Get a free key at: https://aistudio.google.com/app/apikey
+   ```
+
+2. **Service Account (For production)**:
+   ```bash
+   export GOOGLE_APPLICATION_CREDENTIALS=/path/to/service-account.json
+   export GOOGLE_CLOUD_PROJECT=your_project_id
+   ```
 
 ## Usage Examples
 
@@ -347,48 +399,208 @@ The agent will:
    - Routes requests to appropriate tools
    - Manages multi-image operations
 
-### Tools
+### Tools (5 Available)
 
-- `list_sample_images`: Discover available sample images
-- `generate_product_mockup`: Generate synthetic product images ⭐ NEW
-- `analyze_uploaded_image`: Analyze images from web UI
-- `analyze_product_image`: Full analysis pipeline for files
-- `compare_product_images`: Multi-image comparison
-- `generate_catalog_entry`: Artifact creation
+The `vision_catalog_agent` provides 5 specialized tools:
+
+1. **`list_sample_images()`**: Discover available sample images
+   - Lists images in `_sample_images/` directory
+   - Shows file names and paths
+   - Helps users explore available samples
+   - Example: "What sample images do you have?"
+
+2. **`generate_product_mockup()`**: Generate synthetic product images ⭐ NEW
+   - Uses Gemini 2.5 Flash Image model
+   - Creates photorealistic product photography
+   - Configurable aspect ratios (1:1, 16:9, 4:3, 3:2, etc.)
+   - Customizable styles (photorealistic, studio, lifestyle)
+   - Saves to `_sample_images/` directory
+   - Returns image path for further analysis
+   - Example: "Generate a mockup of a minimalist desk lamp"
+
+3. **`analyze_uploaded_image()`**: Analyze images from web UI
+   - Provides guidance for drag-and-drop uploads
+   - Instructs users on web interface usage
+   - Best method for interactive analysis
+   - No file path needed
+   - Example: [Upload image] "Analyze this product"
+
+4. **`analyze_product_image(path: str)`**: Full analysis pipeline for files
+   - Takes file path as input
+   - Loads image with multimodal content handling
+   - Analyzes with Gemini 2.0 Flash Exp vision
+   - Generates professional catalog entry
+   - Saves result as artifact
+   - Returns detailed product information
+   - Example: "Analyze _sample_images/laptop.jpg"
+
+5. **`compare_product_images(paths: List[str])`**: Multi-image comparison
+   - Compares multiple product images
+   - Identifies similarities and differences
+   - Analyzes visual features across products
+   - Provides comparative insights
+   - Useful for product line analysis
+   - Example: "Compare laptop and headphones images"
+
+### Sub-Agents
+
+The coordinator uses specialized sub-agents for different tasks:
+
+- **Vision Analyzer Agent**: Analyzes images and extracts visual information
+  - Model: `gemini-2.0-flash-exp`
+  - Temperature: 0.3 (factual, precise analysis)
+  - Focuses on objective visual features
+
+- **Catalog Generator Agent**: Creates professional catalog entries
+  - Model: `gemini-2.0-flash-exp`
+  - Temperature: 0.6 (creative, engaging content)
+  - Generates marketing-ready descriptions
+  - Saves results as artifacts
 
 ## Testing
 
-Comprehensive test suite with 50+ tests:
+Comprehensive test suite with **70 tests** and **63% coverage**:
 
 ```bash
-# Run all tests
+# Run all tests (with environment validation)
+make test
+
+# Run with detailed coverage report
+make coverage
+
+# Manual test execution
 pytest tests/ -v
 
 # Run specific test file
 pytest tests/test_multimodal.py -v
 
-# Run with coverage
-pytest tests/ --cov=vision_catalog_agent --cov-report=html
+# Run with coverage (manual)
+pytest tests/ --cov=vision_catalog_agent --cov-report=html --cov-report=term
 ```
 
 ### Test Categories
 
-1. **Import Tests**: Verify all imports work
-2. **Agent Configuration**: Check agent setup
-3. **Structure Tests**: Validate project structure
-4. **Multimodal Tests**: Test image processing
+1. **Import Tests** (`test_imports.py`): 
+   - Verify all imports work
+   - Validate tool function imports
+   - Check agent availability
+
+2. **Agent Configuration** (`test_agent.py`):
+   - Check agent setup and properties
+   - Validate tool count (5 tools)
+   - Test tool signatures and callability
+   - Verify model configuration
+
+3. **Structure Tests** (`test_structure.py`):
+   - Validate project structure
+   - Check required files exist
+   - Verify package installation
+
+4. **Multimodal Tests** (`test_multimodal.py`):
+   - Test image processing utilities
+   - Validate multimodal content handling
+   - Check image format support
+
+### Test Results
+
+```bash
+$ make test
+🧪 Running tests...
+pytest tests/ -v --tb=short
+
+======================== test session starts =========================
+collected 70 items
+
+tests/test_agent.py::TestAgentConfig::test_agent_exists PASSED    [  1%]
+tests/test_agent.py::TestAgentConfig::test_agent_type PASSED      [  2%]
+...
+tests/test_multimodal.py::TestMultimodal::test_all PASSED         [100%]
+
+========================= 70 passed in 2.45s =========================
+```
+
+### Coverage Report
+
+Run `make coverage` to generate detailed HTML coverage report:
+
+```bash
+$ make coverage
+🧪 Running tests with coverage...
+
+Coverage: 63%
+✅ Coverage report generated!
+📊 Open htmlcov/index.html to view detailed report
+```
+
+## Makefile Features
+
+The tutorial includes a comprehensive Makefile with:
+
+### 🚀 Help System
+
+Run `make` or `make help` to see all available commands organized into:
+
+- **Quick Start Commands**: Setup, download samples, start agent
+- **Image Analysis Commands**: Batch analyze, generate synthetic mockups
+- **Advanced Commands**: Testing, coverage, linting, cleanup
+
+### ✅ Environment Validation
+
+The Makefile automatically validates authentication before running commands:
+
+- Checks for `GOOGLE_API_KEY` or `GOOGLE_APPLICATION_CREDENTIALS`
+- Shows clear error messages with setup instructions
+- Supports both Gemini API and Vertex AI authentication
+- Prevents common configuration errors
+
+### 📊 Visual Output
+
+All commands provide clear, emoji-enhanced feedback:
+
+- Progress indicators during operations
+- Success confirmations with next steps
+- Detailed workflow descriptions
+- Example prompts for interactive commands
+
+### 🎯 Example Workflows
+
+**First-Time User Path:**
+```bash
+make                      # See all commands
+make setup                # Install dependencies
+export GOOGLE_API_KEY=... # Set authentication
+make download-images      # Get sample images
+make dev                  # Start interactive agent
+```
+
+**Development Workflow:**
+```bash
+make generate    # Generate synthetic mockups
+make analyze     # Analyze all samples
+make test        # Run tests
+make coverage    # Check coverage
+```
+
+**Production Workflow:**
+```bash
+make lint        # Validate code
+make test        # Run full test suite
+make clean       # Clean up artifacts
+```
 
 ## Configuration
 
 ### Environment Variables
 
 ```bash
-# Required
+# Required (choose one)
 GOOGLE_API_KEY=your_api_key_here
 
-# Optional: Vertex AI
-GOOGLE_GENAI_USE_VERTEXAI=1
+# OR for Vertex AI
+GOOGLE_APPLICATION_CREDENTIALS=/path/to/service-account.json
 GOOGLE_CLOUD_PROJECT=your-project-id
+
+# Optional: Vertex AI region
 GOOGLE_CLOUD_LOCATION=us-central1
 ```
 
