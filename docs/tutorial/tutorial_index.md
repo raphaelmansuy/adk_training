@@ -7,8 +7,8 @@ to production deployment.
 
 ## 📊 Progress Overview
 
-- **Tutorial Implementation**: 23/34 completed (68%)
-- **Available Tutorials**: 23/34 ready to use
+- **Tutorial Implementation**: 25/34 completed (74%)
+- **Available Tutorials**: 25/34 ready to use
 - **Total Roadmap**: 34 comprehensive tutorials planned
 
 ## 🟢 Foundation Track (Beginner Friendly)
@@ -63,6 +63,13 @@ production considerations.
 Deploy production-grade AI agents with enterprise features and
 scalability.
 
+### ✅ Production Completed Tutorials
+
+| Tutorial                                                         | Difficulty | Time      | Description                            |
+| ---------------------------------------------------------------- | ---------- | --------- | -------------------------------------- |
+| [**27: Third-Party Tools**](./27_third_party_tools.md)           | Advanced   | 2 hours   | Integrating external tool ecosystems   |
+| [**28: Using Other LLMs**](./28_using_other_llms.md)             | Advanced   | 2 hours   | Beyond Gemini: other model integration |
+
 ### 📝 Production Draft Tutorials
 
 | Tutorial                                                         | Difficulty | Est. Time | Description                            |
@@ -71,8 +78,6 @@ scalability.
 | [**24: Advanced Observability**](./24_advanced_observability.md) | Advanced   | 2.5 hours | Production monitoring and analytics    |
 | [**25: Best Practices**](./25_best_practices.md)                 | Advanced   | 2 hours   | Production optimization and patterns   |
 | [**26: Google AgentSpace**](./26_google_agentspace.md)           | Advanced   | 2.5 hours | Google's managed agent platform        |
-| [**27: Third-Party Tools**](./27_third_party_tools.md)           | Advanced   | 2 hours   | Integrating external tool ecosystems   |
-| [**28: Using Other LLMs**](./28_using_other_llms.md)             | Advanced   | 2 hours   | Beyond Gemini: other model integration |
 
 ## 🎨 UI Integration (Frontend Development)
 
@@ -131,8 +136,8 @@ Enterprise-ready agent development:
 
 ## 📋 Tutorial Status Legend
 
-- ✅ **Completed**: Fully implemented with working code examples (23/34)
-- 📝 **Draft**: Content written, code examples in development (11/34)
+- ✅ **Completed**: Fully implemented with working code examples (25/34)
+- 📝 **Draft**: Content written, code examples in development (9/34)
 
 ## 🔍 Quick Navigation
 
@@ -157,4 +162,4 @@ and join the community!
 
 ---
 
-> Last updated: October 14, 2025 | Total: 34 | Completed: 23 | Draft: 11
+> Last updated: October 14, 2025 | Total: 34 | Completed: 25 | Draft: 9
