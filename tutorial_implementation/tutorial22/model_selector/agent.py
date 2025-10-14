@@ -86,9 +86,12 @@ class ModelSelector:
                 latency = time.time() - start
                 latencies.append(latency)
 
-                # Estimate token count (rough)
+                # Use actual token count from response metadata if available, else estimate
                 text = response.text if hasattr(response, 'text') else ""
-                token_count = len(text.split())
+                if hasattr(response, "usage_metadata") and response.usage_metadata and "total_tokens" in response.usage_metadata:
+                    token_count = response.usage_metadata["total_tokens"]
+                else:
+                    token_count = len(text.split())
                 token_counts.append(token_count)
 
                 successes += 1
