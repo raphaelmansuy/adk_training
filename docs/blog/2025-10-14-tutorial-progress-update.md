@@ -1,7 +1,6 @@
 ---
 slug: tutorial-progress-october-2025
 title: "Google ADK Training Hub: 23 Tutorials Completed - Your Path to Production AI Agents"
-authors: [raphaelmansuy]
 tags: [progress-update, tutorials, adk, milestone]
 ---
 
