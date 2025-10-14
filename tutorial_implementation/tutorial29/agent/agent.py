@@ -5,9 +5,13 @@ Based on the Quick Start section from Tutorial 29.
 """
 
 import os
+import json
+import uuid
 from dotenv import load_dotenv
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from starlette.middleware.base import BaseHTTPMiddleware
+from starlette.requests import Request
 import uvicorn
 
 # AG-UI ADK integration imports
@@ -63,6 +67,67 @@ root_agent = adk_agent
 
 
 # ============================================================================
+# Middleware for CopilotKit Compatibility
+# ============================================================================
+
+class MessageIDMiddleware(BaseHTTPMiddleware):
+    """
+    Middleware to inject message IDs for CopilotKit compatibility.
+    
+    CopilotKit sends messages without IDs, but AG-UI protocol requires them.
+    This middleware adds UUIDs to any messages missing the 'id' field.
+    """
+    
+    async def dispatch(self, request: Request, call_next):
+        """Process requests and inject message IDs where needed."""
+        # Only process POST requests to /api/copilotkit
+        if request.method == "POST" and request.url.path == "/api/copilotkit":
+            # Read the request body
+            body = await request.body()
+            
+            try:
+                # Parse JSON
+                data = json.loads(body)
+                
+                print(f"🔍 Middleware: Received request with keys: {list(data.keys())}")
+                
+                # Inject IDs into messages if missing
+                if "messages" in data and isinstance(data["messages"], list):
+                    modified = False
+                    for i, msg in enumerate(data["messages"]):
+                        if isinstance(msg, dict):
+                            if "id" not in msg:
+                                # Generate unique ID
+                                msg["id"] = f"msg-{uuid.uuid4()}"
+                                modified = True
+                                print(f"✅ Middleware: Added ID to message {i}: {msg.get('role', 'unknown')}")
+                    
+                    # Create new request with modified body if changes were made
+                    if modified:
+                        modified_body = json.dumps(data).encode()
+                        print("📝 Middleware: Modified body, injected IDs into messages")
+                        
+                        # Replace the request body
+                        async def receive():
+                            return {"type": "http.request", "body": modified_body}
+                        
+                        request._receive = receive
+                    else:
+                        print("ℹ️  Middleware: No modifications needed")
+                else:
+                    print("⚠️  Middleware: No 'messages' field found in request")
+            
+            except json.JSONDecodeError as e:
+                print(f"❌ Middleware: JSON decode error: {e}")
+            except Exception as e:
+                print(f"❌ Middleware: Unexpected error: {e}")
+        
+        # Continue with the request
+        response = await call_next(request)
+        return response
+
+
+# ============================================================================
 # FastAPI Application
 # ============================================================================
 
@@ -85,6 +150,9 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+# Add middleware to inject message IDs for CopilotKit compatibility
+app.add_middleware(MessageIDMiddleware)
 
 # Add ADK endpoint for CopilotKit
 add_adk_fastapi_endpoint(app, agent, path="/api/copilotkit")
