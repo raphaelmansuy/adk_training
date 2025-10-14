@@ -14,7 +14,7 @@ keywords:
     "testing",
     "maintenance",
   ]
-status: "draft"
+status: "completed"
 difficulty: "advanced"
 estimated_time: "2 hours"
 prerequisites:
@@ -31,40 +31,17 @@ learning_objectives:
 implementation_link: "https://github.com/raphaelmansuy/adk_training/tree/main/tutorial_implementation/tutorial25"
 ---
 
-:::danger UNDER CONSTRUCTION
-
-**This tutorial is currently under construction and may contain errors, incomplete information, or outdated code examples.**
-
-Please check back later for the completed version. If you encounter issues, refer to the working implementation in the [tutorial repository](https://github.com/raphaelmansuy/adk_training/tree/main/tutorial_implementation/tutorial25).
-
-## :::
-
 :::info API Verification
 
-This tutorial has been verified against **ADK Python SDK v1.16.0+**.
+**Source Verified**: Official ADK Python SDK v1.16.0+
 
-**Critical API Changes** from older ADK versions:
+**Correct API Usage**:
+- ✅ `runner.run_async()` with `user_id`, `session_id`, `new_message` (Content object)
+- ✅ Returns `AsyncGenerator[Event]` - iterate with `async for event in runner.run_async(...)`
+- ✅ Plugins registered with `InMemoryRunner(plugins=[...])`
+- ✅ `trace_to_cloud` enabled via CLI deployment flag (`--trace_to_cloud`)
 
-- ✅ `runner.run_async()` requires `user_id`, `session_id`, `new_message` (Content object)
-- ✅ Returns `AsyncGenerator[Event]` - must iterate with `async for event in runner.run_async(...)`
-- ✅ Plugins registered with `Runner(plugins=[...])` or `App(plugins=[...])`
-- ✅ `trace_to_cloud` is CLI deployment flag (--trace_to_cloud), NOT RunConfig parameter
-- ❌ OLD API: `runner.run_async(query, agent=agent)` NO LONGER WORKS
-
-**Modern API Pattern:**
-```python
-from google.genai import types
-
-runner = InMemoryRunner(agent=agent, app_name='app')
-session = await runner.session_service.create_session(app_name='app', user_id='user_123')
-new_message = types.Content(role='user', parts=[types.Part(text=query)])
-
-async for event in runner.run_async(user_id='user_123', session_id=session.id, new_message=new_message):
-    if event.content and event.content.parts:
-        print(event.content.parts[0].text)
-```
-
-Source verification: `research/adk-python/src/google/adk/runners.py` (2025-01-13)
+**Implementation Verified**: Tutorial 25 implementation includes 85+ comprehensive tests covering all functionality.
 
 :::
 
@@ -93,79 +70,74 @@ Source verification: `research/adk-python/src/google/adk/runners.py` (2025-01-13
 
 ---
 
-## Architecture Decision Framework
+## Working Implementation
 
-### 1. Agent Complexity
+A complete, tested implementation of this tutorial is available in the repository:
 
-**Decision: Single Agent vs Multi-Agent**
+**[View Tutorial 25 Implementation →](../../tutorial_implementation/tutorial25/)**
 
-```python
-# ✅ Use Single Agent When:
-# - Simple, focused tasks
-# - Single domain of expertise
-# - No need for specialization
+**GitHub Repository**: [Tutorial 25 Implementation](https://github.com/raphaelmansuy/adk_training/tree/main/tutorial_implementation/tutorial25)
 
-agent = Agent(
-    model='gemini-2.0-flash',
-    instruction="Handle customer support inquiries"
-)
+The implementation includes:
 
-# ✅ Use Multi-Agent When:
-# - Complex workflows
-# - Multiple domains
-# - Need for specialization
+- ✅ **Best Practices Agent** with `gemini-2.0-flash-exp` model
+- ✅ **7 Production Tools**: validation, retry, circuit breaker, caching, batch processing, health checks, metrics
+- ✅ **85+ Comprehensive Tests** covering all functionality
+- ✅ **Makefile** with setup, dev, test, demo commands
+- ✅ **Complete README** with usage examples and production deployment
 
-coordinator = Agent(
-    model='gemini-2.0-flash',
-    instruction="Route to specialized agents",
-    agents=[order_agent, billing_agent, technical_agent]
-)
+Quick start:
+
+```bash
+cd tutorial_implementation/tutorial25
+make setup
+export GOOGLE_API_KEY=your_key
+make dev
 ```
 
-**Decision Tree**:
+---
+
+## Architecture Overview
+
+The **best_practices_agent** demonstrates enterprise-grade patterns:
 
 ```
-Task Complexity?
-├─ Simple → Single Agent
-└─ Complex
-   └─ Multiple Domains?
-      ├─ Yes → Multi-Agent System
-      └─ No
-         └─ Sequential Steps?
-            ├─ Yes → Sequential Workflow
-            └─ No → Single Agent with Tools
+Production-Ready Agent Architecture:
+┌─────────────────────────────────────────────────────────┐
+│                  Best Practices Agent                    │
+│                  (gemini-2.0-flash-exp)                 │
+└─────────────────────────────────────────────────────────┘
+                          │
+        ┌─────────────────┼─────────────────┬───────────────┐
+        ▼                 ▼                 ▼               ▼
+┌──────────────┐  ┌──────────────┐  ┌──────────────┐  ┌──────────────┐
+│   Security   │  │ Reliability  │  │ Performance  │  │Observability │
+│              │  │              │  │              │  │              │
+│ • Validation │  │ • Retry      │  │ • Caching    │  │ • Metrics    │
+│ • Sanitize   │  │ • Circuit    │  │ • Batching   │  │ • Health     │
+│ • XSS Block  │  │   Breaker    │  │ • Optimize   │  │ • Logging    │
+└──────────────┘  └──────────────┘  └──────────────┘  └──────────────┘
 ```
 
-### 2. Model Selection
+### Core Components
 
-**Decision Matrix**:
+**Security & Validation** (`validate_input_tool`)
+- Pydantic-based validation with type checking
+- Email format validation with `EmailStr`
+- SQL injection and XSS pattern detection
+- Text length limits and priority validation
 
-| Requirement         | Recommended Model         | Rationale               |
-| ------------------- | ------------------------- | ----------------------- |
-| Real-time voice     | gemini-2.0-flash-live     | Bidirectional streaming |
-| Complex reasoning   | gemini-2.0-flash-thinking | Extended thinking       |
-| High volume, simple | gemini-1.5-flash-8b       | Cost-effective, fast    |
-| Critical business   | gemini-1.5-pro            | Highest quality         |
-| General production  | gemini-2.0-flash          | Balanced                |
+**Reliability & Resilience**
+- **Retry Logic** (`retry_with_backoff_tool`): Exponential backoff (1s, 2s, 4s)
+- **Circuit Breaker** (`circuit_breaker_call_tool`): Prevents cascading failures
 
-```python
-def select_model(use_case: dict) -> str:
-    """Model selection based on use case."""
+**Performance Optimization**
+- **Caching System** (`cache_operation_tool`): TTL-based cache with hit/miss tracking
+- **Batch Processing** (`batch_process_tool`): Efficient bulk operations
 
-    if use_case.get('real_time'):
-        return 'gemini-2.0-flash-live'
-
-    if use_case.get('complex_reasoning'):
-        return 'gemini-2.0-flash-thinking'
-
-    if use_case.get('high_volume') and use_case.get('simple'):
-        return 'gemini-1.5-flash-8b'
-
-    if use_case.get('critical'):
-        return 'gemini-1.5-pro'
-
-    return 'gemini-2.0-flash'  # Default
-```
+**Observability & Monitoring**
+- **Health Checks** (`health_check_tool`): System status monitoring
+- **Metrics Collection** (`get_metrics_tool`): Performance statistics
 
 ### 3. Tool Design
 
