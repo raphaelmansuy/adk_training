@@ -1,0 +1,20 @@
+[build-system]
+requires = ["setuptools>=64", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "tutorial27"
+version = "0.1.0"
+description = "Tutorial 27: Third-Party Tools Integration - LangChain & CrewAI Tools"
+requires-python = ">=3.9"
+dependencies = [
+    "google-adk>=1.15.1",
+    "langchain>=0.1.0",
+    "langchain-community>=0.0.10",
+    "wikipedia>=1.4.0",
+    "pytest>=7.0.0",
+    "pytest-sugar>=0.9.0",
+]
+
+[tool.setuptools]
+packages = ["third_party_agent"]
