@@ -192,8 +192,8 @@ simple agent interactions:
 **Managing Emergence:**
 
 ```python
-# Circuit breaker pattern implemented as a resilient tool
-def resilient_processor(task: str, context: InvocationContext, failure_threshold: int = 3) -> Dict[str, Any]:
+**Note:** `InvocationContext` is not imported directly from ADK modules. 
+It is passed automatically to agent invocations and tool functions by the ADK runtime.
     """
     Process tasks with circuit breaker resilience pattern.
     
@@ -230,8 +230,30 @@ def resilient_processor(task: str, context: InvocationContext, failure_threshold
         return {
             'status': 'error',
             'error': str(e),
-            'report': f'Failed to process: {task}. Failure count: {failure_count + 1}'
+            'report': f'Failed to process: {task}. Count: {failure_count + 1}'
         }
+
+# Helper function for task processing (implementation depends on use case)
+def process_task(task: str) -> Dict[str, Any]:
+    """
+    Example task processing function.
+    Replace with your actual task processing logic.
+    
+    Args:
+        task: The task description to process
+        
+    Returns:
+        Dict containing processing results
+    """
+    # Simulate task processing - replace with actual implementation
+    if "error" in task.lower():
+        raise ValueError("Simulated processing error")
+    
+    return {
+        'task': task,
+        'processed_at': '2025-10-14T10:00:00Z',
+        'result': f'Processed: {task}'
+    }
 
 # Register as ADK tool
 resilient_tool = FunctionTool(resilient_processor)
@@ -244,12 +266,18 @@ multi-agent success. **Note: The following classes are conceptual implementation
 showing design patterns. ADK does not provide built-in context management utilities 
 - these must be implemented manually or through agent instructions.**
 
+**⚠️ These are design patterns only. The implementations below are simplified 
+examples. In production, you would need to handle persistence, error cases, 
+and performance optimization.**
+
 ### Context Compression & Summarization
 
 As context grows, compression becomes essential:
 
 ```python
 class ContextCompressor:
+    """Conceptual context compression utility."""
+    
     @staticmethod
     def compress_context(full_context: Dict, max_tokens: int = 2000) -> Dict:
         """Compress context while preserving critical information."""
@@ -295,6 +323,8 @@ Dynamic routing based on context characteristics:
 
 ```python
 class ContextRouter:
+    """Conceptual agent routing utility."""
+    
     def __init__(self, agents: Dict[str, Agent]):
         self.agents = agents
         self.routing_rules = self._build_routing_rules()
@@ -336,6 +366,37 @@ class ContextRouter:
             'urgency': 1.0 if context.get('urgent', False) else 0.0
         }
         return sum(factors.values()) / len(factors)
+    
+    def _build_routing_rules(self) -> Dict:
+        """Build routing rules - implement based on your needs."""
+        # Conceptual implementation
+        return {
+            'complexity_threshold': 0.7,
+            'expertise_matching': True,
+            'load_balancing': False
+        }
+    
+    def _extract_expertise_needs(self, task: Dict) -> List[str]:
+        """Extract required expertise from task - implement based on your domain."""
+        # Conceptual implementation
+        return task.get('required_skills', [])
+    
+    def _calculate_match_score(self, agent: Agent, complexity_score: float, 
+                              required_expertise: List[str], context: Dict) -> float:
+        """Calculate how well agent matches task - implement your scoring logic."""
+        # Conceptual implementation - replace with actual scoring
+        base_score = 0.5  # Neutral starting score
+        
+        # Complexity matching
+        if complexity_score > 0.7 and hasattr(agent, 'handles_complex_tasks'):
+            base_score += 0.2
+        
+        # Expertise matching (simplified)
+        agent_expertise = getattr(agent, 'expertise', [])
+        expertise_matches = len(set(required_expertise) & set(agent_expertise))
+        base_score += min(expertise_matches * 0.1, 0.3)
+        
+        return min(base_score, 1.0)  # Cap at 1.0
 ```
 
 ### Context Inheritance & Hierarchical Management
@@ -344,6 +405,8 @@ Managing context across agent hierarchies:
 
 ```python
 class HierarchicalContextManager:
+    """Conceptual hierarchical context management utility."""
+    
     def __init__(self):
         self.context_layers = {
             'global': {},      # System-wide context
@@ -390,6 +453,42 @@ class HierarchicalContextManager:
             transformed.update(self._get_task_capabilities(agent_id, task_id))
         
         return transformed
+    
+    def _define_inheritance_rules(self) -> Dict:
+        """Define inheritance rules - implement based on your hierarchy."""
+        # Conceptual implementation
+        return {
+            'task': {'filter_agent_relevant': True},
+            'agent': {'add_task_capabilities': True}
+        }
+    
+    def _filter_agent_relevant(self, context: Dict, agent_id: str) -> Dict:
+        """Filter context to only include agent-relevant information."""
+        # Conceptual implementation - replace with actual filtering logic
+        filtered = context.copy()
+        # Example: Remove sensitive data for certain agents
+        if agent_id == 'external_agent':
+            filtered.pop('internal_notes', None)
+        return filtered
+    
+    def _get_task_capabilities(self, agent_id: str, task_id: str) -> Dict:
+        """Get task-specific capabilities for agent."""
+        # Conceptual implementation - replace with actual capability mapping
+        return {
+            'task_capabilities': ['analyze', 'summarize'],
+            'task_priority': 'high'
+        }
+    
+    def _merge_contexts(self, base: Dict, overlay: Dict) -> Dict:
+        """Merge contexts with conflict resolution."""
+        # Conceptual implementation - deep merge with overlay taking precedence
+        merged = base.copy()
+        for key, value in overlay.items():
+            if isinstance(value, dict) and key in merged and isinstance(merged[key], dict):
+                merged[key] = self._merge_contexts(merged[key], value)
+            else:
+                merged[key] = value
+        return merged
 ```
 
 ### Context Quality Metrics & Validation
@@ -445,7 +544,7 @@ context between agents:
 
 ```python
 from google.adk.agents import Agent, SequentialAgent
-from google.adk.tools import FunctionTool
+from google.adk.tools import FunctionTool, google_search
 
 # Orchestrator agent
 orchestrator = Agent(
@@ -477,6 +576,26 @@ specialist = Agent(
     """,
     tools=[support_database_tool]
 )
+
+# Example support database tool (you would implement this)
+def support_database_tool(query: str) -> Dict[str, Any]:
+    """
+    Search support database for relevant information.
+    
+    Args:
+        query: The search query
+        
+    Returns:
+        Dict with status, report, and data fields
+    """
+    # Implementation would search your support database
+    return {
+        'status': 'success',
+        'report': f'Search results for: {query}',
+        'data': {'results': []}  # Replace with actual search results
+    }
+
+support_tool = FunctionTool(support_database_tool)
 ```
 
 ### 2. Clear Boundaries
@@ -536,13 +655,21 @@ While ADK doesn't provide high-level context management utilities, it offers sev
 
 ### Event Logging & Observability
 
-ADK automatically logs execution events for debugging multi-agent interactions:
+ADK automatically logs execution events for debugging multi-agent interactions.
+Events are available through the agent invocation response, not direct context methods:
 
 ```python
-# Access execution events (available in ADK context)
-agent_events = invocation_context.get_events()  # View execution timeline
-state_snapshots = invocation_context.get_state_history()  # Debug state flow
-error_traces = invocation_context.get_error_chain()  # Trace failures across agents
+# After agent invocation, events are available in the response
+result = agent.invoke(query, context)
+
+# Access execution events from the result
+execution_events = result.get('events', [])  # View execution timeline
+state_snapshots = result.get('state_history', [])  # Debug state flow
+error_traces = result.get('error_chain', [])  # Trace failures across agents
+
+# Example: Log events for debugging
+for event in execution_events:
+    print(f"Event: {event['type']} at {event['timestamp']}: {event['message']}")
 ```
 
 ### Automatic Error Propagation
@@ -554,13 +681,10 @@ ADK handles error propagation between agents in workflows:
 
 ### Tool Result Caching
 
-ADK can cache tool results to improve performance:
-
-```python
-# ADK automatically caches tool results within an invocation
-# Repeated calls to the same tool with same parameters return cached results
-# Reduces API calls and improves performance in iterative workflows
-```
+ADK may cache tool results within an invocation context to improve performance.
+While caching behavior is not guaranteed across all tool types, identical tool calls
+with the same parameters within the same invocation may return cached results,
+potentially reducing API calls and improving performance in iterative workflows.
 
 ### State Isolation & Scoping
 
@@ -773,6 +897,30 @@ class AgentMarketplace:
         agent_caps = set(agent_info['capabilities'])
         required_caps = set(requirements.get('capabilities', []))
         return required_caps.issubset(agent_caps)
+    
+    def _calculate_agent_score(self, agent_info: Dict, task_requirements: Dict) -> float:
+        """Calculate agent suitability score for task."""
+        # Conceptual scoring implementation
+        base_score = 0.5
+        
+        # Performance history factor
+        performance = agent_info.get('performance_score', 0.5)
+        base_score += (performance - 0.5) * 0.3
+        
+        # Task count factor (prefer experienced agents, but not overloaded)
+        task_count = agent_info.get('task_count', 0)
+        if task_count < 10:
+            base_score += 0.1  # Bonus for newer agents
+        elif task_count > 100:
+            base_score -= 0.1  # Penalty for overworked agents
+        
+        # Capability matching
+        agent_caps = set(agent_info['capabilities'])
+        required_caps = set(task_requirements.get('capabilities', []))
+        match_ratio = len(required_caps & agent_caps) / len(required_caps) if required_caps else 1.0
+        base_score += match_ratio * 0.2
+        
+        return min(max(base_score, 0.0), 1.0)  # Clamp to [0.0, 1.0]
 
 # Create A2A server for marketplace
 marketplace_app = to_a2a(root_agent)
@@ -876,7 +1024,7 @@ While ADK provides powerful multi-agent capabilities, be aware of these platform
 
 ### State Size & Performance Limits
 
-- **State objects** should remain under 100KB to avoid performance degradation
+- **State objects** should remain reasonably sized to avoid performance degradation
 - **Large state** can increase serialization time between agents
 - **Memory usage** scales with the number of concurrent invocations
 
