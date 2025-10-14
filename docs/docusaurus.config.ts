@@ -75,6 +75,32 @@ const config: Config = {
 
   // Structured data for rich snippets
   headTags: [
+    // Performance optimizations for Core Web Vitals
+    {
+      tagName: 'link',
+      attributes: {
+        rel: 'preconnect',
+        href: 'https://fonts.googleapis.com',
+      },
+    },
+    {
+      tagName: 'link',
+      attributes: {
+        rel: 'preconnect',
+        href: 'https://fonts.gstatic.com',
+        crossorigin: 'anonymous',
+      },
+    },
+    // Preload critical resources
+    {
+      tagName: 'link',
+      attributes: {
+        rel: 'preload',
+        href: '/img/ADK-512-color.svg',
+        as: 'image',
+        type: 'image/svg+xml',
+      },
+    },
     // Organization schema
     {
       tagName: 'script',
