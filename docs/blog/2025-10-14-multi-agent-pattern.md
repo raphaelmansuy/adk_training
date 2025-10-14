@@ -193,19 +193,20 @@ simple agent interactions:
 
 ```python
 # Circuit breaker pattern implemented as a resilient tool
-def resilient_processor(task: str, failure_threshold: int = 3) -> Dict[str, Any]:
+def resilient_processor(task: str, context: InvocationContext, failure_threshold: int = 3) -> Dict[str, Any]:
     """
     Process tasks with circuit breaker resilience pattern.
     
     Args:
         task: The task to process
+        context: ADK InvocationContext for state management
         failure_threshold: Maximum failures before circuit opens
         
     Returns:
         Dict with status, report, and data fields
     """
-    # Track failures in session state (would be managed by ADK)
-    failure_count = get_session_state('failure_count', 0)
+    # Access state through ADK's InvocationContext
+    failure_count = context.state.get('failure_count', 0)
     
     if failure_count >= failure_threshold:
         return {
@@ -216,8 +217,8 @@ def resilient_processor(task: str, failure_threshold: int = 3) -> Dict[str, Any]
     
     try:
         result = process_task(task)
-        # Reset failure count on success
-        set_session_state('failure_count', 0)
+        # Update state through context
+        context.state['failure_count'] = 0
         return {
             'status': 'success',
             'report': f'Successfully processed: {task}',
@@ -225,7 +226,7 @@ def resilient_processor(task: str, failure_threshold: int = 3) -> Dict[str, Any]
         }
     except Exception as e:
         # Increment failure count
-        set_session_state('failure_count', failure_count + 1)
+        context.state['failure_count'] = failure_count + 1
         return {
             'status': 'error',
             'error': str(e),
@@ -239,7 +240,9 @@ resilient_tool = FunctionTool(resilient_processor)
 ## Advanced Context Engineering
 
 Beyond basic state passing, sophisticated context management is crucial for
-multi-agent success:
+multi-agent success. **Note: The following classes are conceptual implementations 
+showing design patterns. ADK does not provide built-in context management utilities 
+- these must be implemented manually or through agent instructions.**
 
 ### Context Compression & Summarization
 
@@ -321,6 +324,9 @@ class ContextRouter:
     
     def _assess_complexity(self, context: Dict) -> float:
         """Rate context complexity from 0.0 to 1.0."""
+        if not context or not isinstance(context, dict):
+            return 0.0  # Default to minimum complexity for invalid context
+        
         factors = {
             'stakeholder_count': min(len(context.get('stakeholders', [])),
                                     10) / 10,
@@ -524,6 +530,45 @@ def specialist_tool(query: str) -> Dict[str, Any]:
 support_tool = FunctionTool(specialist_tool)
 ```
 
+## ADK's Built-in Coordination Features
+
+While ADK doesn't provide high-level context management utilities, it offers several built-in coordination features that make multi-agent systems more robust:
+
+### Event Logging & Observability
+
+ADK automatically logs execution events for debugging multi-agent interactions:
+
+```python
+# Access execution events (available in ADK context)
+agent_events = invocation_context.get_events()  # View execution timeline
+state_snapshots = invocation_context.get_state_history()  # Debug state flow
+error_traces = invocation_context.get_error_chain()  # Trace failures across agents
+```
+
+### Automatic Error Propagation
+
+ADK handles error propagation between agents in workflows:
+- Errors in SequentialAgent stop execution and propagate up
+- ParallelAgent continues with successful branches when others fail
+- RemoteA2aAgent automatically handles network errors and timeouts
+
+### Tool Result Caching
+
+ADK can cache tool results to improve performance:
+
+```python
+# ADK automatically caches tool results within an invocation
+# Repeated calls to the same tool with same parameters return cached results
+# Reduces API calls and improves performance in iterative workflows
+```
+
+### State Isolation & Scoping
+
+ADK provides automatic state management:
+- Each agent gets its own state scope through `InvocationContext`
+- State flows between agents via `output_key` and interpolation
+- Automatic cleanup prevents state pollution between invocations
+
 ## Decision Framework: Single vs Multi-Agent
 
 Use this framework to determine when multi-agent architecture is appropriate:
@@ -562,6 +607,35 @@ START: New AI System Design
     ├── YES → Include human-in-the-loop patterns
     └── NO → Full autonomous operation possible
 ```
+
+### ADK-Specific Decision Factors
+
+When evaluating multi-agent architectures in ADK, consider these platform-specific constraints:
+
+**API Rate Limits & Costs:**
+- Each agent invocation consumes API quota
+- Parallel agents multiply costs (3 agents = 3x API calls)
+- Consider token costs: ~$0.001-0.005 per 1K tokens
+- Rate limits may constrain parallel execution
+
+**Development Complexity:**
+- Agent state management requires careful design
+- Testing multi-agent interactions is non-trivial
+- Debugging requires understanding ADK event logs
+- Onboarding team members to ADK patterns takes time
+
+**Operational Overhead:**
+- Monitoring multiple agent health endpoints
+- Managing agent versioning and deployment
+- Handling A2A communication reliability
+- Scaling agents independently vs. monolithic scaling
+
+**Break-even Analysis (ADK-Specific):**
+Multi-agent becomes cost-effective when:
+- Daily API usage > 10K tokens (amortizes orchestration overhead)
+- System complexity prevents single-agent solutions
+- Team has ADK expertise and testing infrastructure
+- Expected maintenance period > 6 months
 
 ### Quantitative Decision Factors
 
@@ -658,7 +732,7 @@ ADK's agent discovery:
 
 ```python
 from google.adk.agents import RemoteA2aAgent
-from google.adk.a2a import to_a2a
+from google.adk.a2a.utils.agent_to_a2a import to_a2a
 import uvicorn
 
 class AgentMarketplace:
@@ -795,6 +869,126 @@ hitl_agent = Agent(
 1. **Specialization Tuning**: Optimize each agent for its specific domain
 2. **Load Balancing**: Distribute work based on agent capacity
 3. **Resource Pooling**: Share expensive resources across agents
+
+## ADK Limitations & Trade-offs
+
+While ADK provides powerful multi-agent capabilities, be aware of these platform limitations:
+
+### State Size & Performance Limits
+
+- **State objects** should remain under 100KB to avoid performance degradation
+- **Large state** can increase serialization time between agents
+- **Memory usage** scales with the number of concurrent invocations
+
+### API Constraints
+
+- **Rate limiting** affects parallel agent execution (typically 60 requests/minute)
+- **Token costs** multiply with each agent (consider batching strategies)
+- **Network latency** adds overhead for RemoteA2aAgent calls
+
+### Debugging Complexity
+
+- **Event logs** are your primary debugging tool for multi-agent flows
+- **State inspection** requires understanding ADK's InvocationContext
+- **Error propagation** can make root cause analysis challenging
+
+### Scaling Considerations
+
+- **Horizontal scaling** requires careful agent deployment management
+- **A2A communication** adds network reliability concerns
+- **Coordination overhead** increases with agent count
+
+## Testing Multi-Agent Systems in ADK
+
+Multi-agent systems require comprehensive testing strategies:
+
+### Unit Testing Individual Agents
+
+```python
+def test_research_agent():
+    """Test individual agent behavior."""
+    agent = ResearchAgent()
+    context = InvocationContext()
+    
+    result = agent.invoke("test query", context)
+    
+    assert result['status'] == 'success'
+    assert 'research_findings' in context.state
+```
+
+### Integration Testing Agent Communication
+
+```python
+def test_sequential_workflow():
+    """Test agent-to-agent state passing."""
+    workflow = SequentialAgent(sub_agents=[agent1, agent2])
+    context = InvocationContext()
+    
+    result = workflow.invoke("test task", context)
+    
+    # Verify state flow between agents
+    assert context.state.get('agent1_output') is not None
+    assert context.state.get('agent2_input') == context.state.get('agent1_output')
+```
+
+### End-to-End Testing
+
+```python
+def test_complete_system():
+    """Test full multi-agent orchestration."""
+    system = ContentPublishingSystem()
+    
+    result = system.invoke("Publish article about AI", InvocationContext())
+    
+    assert result['status'] == 'success'
+    assert 'final_article' in result
+```
+
+### Mocking Strategies for Testing
+
+```python
+class MockRemoteAgent:
+    """Mock remote agents for testing."""
+    def invoke(self, query: str, context: InvocationContext) -> Dict:
+        return {
+            'status': 'success',
+            'report': f'Mocked response for: {query}',
+            'data': {'mocked': True}
+        }
+```
+
+## Production Deployment Considerations
+
+### Agent Health Monitoring
+
+```python
+def monitor_agent_health(agent_url: str) -> bool:
+    """Monitor remote agent availability."""
+    try:
+        response = requests.get(f"{agent_url}/.well-known/agent-card.json", 
+                              timeout=5)
+        return response.status_code == 200
+    except:
+        return False
+```
+
+### Version Management
+
+- **Semantic versioning** for agent APIs
+- **Backward compatibility** testing
+- **Gradual rollout** strategies
+
+### Scaling Strategies
+
+- **Load balancing** across multiple agent instances
+- **Circuit breakers** for failing agents
+- **Auto-scaling** based on queue depth
+
+### Cost Optimization
+
+- **Caching layers** for expensive operations
+- **Batch processing** to reduce API calls
+- **Resource pooling** for shared expensive resources
 
 ## Conclusion
 
