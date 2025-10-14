@@ -56,6 +56,51 @@ tutorial26/
 └── README.md                  # This documentation
 ```
 
+### Agent Architecture
+
+Enterprise Lead Qualifier Agent
+═════════════════════════════════
+
+┌─────────────────────────────────────────────────────────────┐
+│                    ADK Agent Framework                      │
+│  ┌──────────────────────────────────────────────────────┐   │
+│  │                root_agent                            │   │
+│  │  ┌─────────────────────────────────────────────────┐ │   │
+│  │  │   Agent Configuration                           │ │   │
+│  │  │   • Model: gemini-2.0-flash                     │ │   │
+│  │  │   • Instructions: Lead qualification logic      │ │   │
+│  │  │   • Tools: [check_company_size, score_lead,     │ │   │
+│  │  │            get_competitive_intel]               │ │   │
+│  │  └─────────────────────────────────────────────────┘ │   │
+│  │                                                          │    │
+│  │  Tool Orchestration:                                     │    │
+│  │  ┌─────────────┐  ┌─────────────┐  ┌─────────────┐       │    │
+│  │  │Company Lookup│  │Lead Scoring │  │Competitive  │      │    │
+│  │  │             │  │             │  │Intelligence │      │    │
+│  │  │• CRM APIs   │  │• Algorithm  │  │• Market Data│      │    │
+│  │  │• Clearbit   │  │• 0-100 pts  │  │• News APIs  │      │    │
+│  │  │• ZoomInfo   │  │• Thresholds │  │• Social     │      │    │
+│  │  └─────────────┘  └─────────────┘  └─────────────┘      │    │
+│  └─────────────────────────────────────────────────────────┘    │
+└─────────────────────────────────────────────────────────────┘
+                              │
+                              ▼
+                 ┌─────────────────────────────┐
+                 │       Final Response        │
+                 │  • Company Profile          │
+                 │  • Lead Score & Level       │
+                 │  • Qualification Factors    │
+                 │  • Recommendation           │
+                 │  • Competitive Insights     │
+                 └─────────────────────────────┘
+
+**Data Flow:**
+1. **User Query** → Agent receives qualification request
+2. **Tool Selection** → Agent chooses appropriate tools based on query
+3. **Data Gathering** → Tools fetch company data, calculate scores, gather intel
+4. **Synthesis** → Agent combines tool outputs into comprehensive recommendation
+5. **Response** → Structured qualification report with actionable insights
+
 ## What This Tutorial Implements
 
 ### Enterprise Lead Qualifier Agent
@@ -76,6 +121,33 @@ A production-ready agent that demonstrates enterprise deployment patterns:
 - **70-100**: HIGHLY QUALIFIED → Schedule demo immediately
 - **40-69**: QUALIFIED → Nurture with targeted content
 - **0-39**: UNQUALIFIED → Add to newsletter for future follow-up
+
+### Lead Qualification Workflow
+
+User Request: "Qualify TechCorp as a sales lead"
+           ↓
+    ┌─────────────────┐
+    │ Company Lookup  │ → Check company size, revenue, industry
+    │ (check_company_size)
+    └─────────────────┘
+           ↓
+    ┌─────────────────┐
+    │  Lead Scoring   │ → Apply scoring algorithm (0-100)
+    │ (score_lead)    │    • Company size >100: +30 pts
+    └─────────────────┘    • Target industry: +30 pts
+           ↓              • Enterprise budget: +40 pts
+    ┌─────────────────┐
+    │ Qualification   │ → Route based on score
+    │   Decision      │    • 70-100: Schedule demo
+    │                 │    • 40-69: Nurture content
+    └─────────────────┘    • 0-39: Newsletter signup
+           ↓
+   ┌──────────────────────┐
+   │ Competitive Analysis │ → Optional: Compare vs competitors
+   │ (get_competitive_intel)
+   └──────────────────────┘
+           ↓
+     Final Recommendation
 
 ### Tool Functions
 
@@ -231,23 +303,30 @@ make test
 ```bash
 # Deploy to Vertex AI Agent Engine
 adk deploy agent_engine \
-  --agent-path ./enterprise_agent \
   --project your-gcp-project \
   --region us-central1 \
-  --display-name "Enterprise Lead Qualifier"
+  --staging_bucket gs://your-staging-bucket \
+  --display_name "Enterprise Lead Qualifier" \
+  ./enterprise_agent
 ```
 
 ### Option 2: Deploy via Python API
 
 ```python
-from google.adk.deployment import deploy_to_agent_engine
+from vertexai import agent_engines
 
-deploy_to_agent_engine(
+# Wrap the agent in an AdkApp object
+app = agent_engines.AdkApp(
     agent=root_agent,
+    enable_tracing=True
+)
+
+# Deploy to Agent Engine
+remote_app = agent_engines.create(
+    app=app,
     project='your-gcp-project',
     region='us-central1',
-    permissions=['sales-team@company.com'],
-    connectors=['salesforce-crm']
+    display_name='Enterprise Lead Qualifier'
 )
 ```
 
@@ -272,39 +351,7 @@ gcloud ai agent-builder agents create \
 
 ### Production Settings
 
-Create `agentspace.yaml` for production configuration:
-
-```yaml
-name: lead-qualifier-prod
-version: 1.0.0
-
-scaling:
-  min_instances: 1
-  max_instances: 10
-  target_concurrency: 5
-
-monitoring:
-  alerts:
-    - metric: error_rate
-      threshold: 5%
-      notification: ops-team@company.com
-    - metric: latency_p95
-      threshold: 2s
-      notification: ops-team@company.com
-
-governance:
-  data_residency: us
-  compliance: [SOC2, GDPR]
-  audit_logging: true
-
-connectors:
-  - type: salesforce
-    dataset: crm_data
-    permissions: read
-  - type: bigquery
-    dataset: company_intel
-    permissions: read
-```
+For production deployments, configure your agents through the Gemini Enterprise console or use the ADK deployment APIs for automated configuration.
 
 ### Data Connectors
 
@@ -494,3 +541,44 @@ This implementation follows the established tutorial pattern:
 ---
 
 _Built with ❤️ for the ADK community_
+
+### Lead Scoring Algorithm
+
+Lead Score Calculation (0-100 points)
+═══════════════════════════════════════
+
+Input Parameters: company_size, industry, budget_tier
+                   ↓         ↓           ↓
+          ┌────────┴─────────┴───────────┴─────────┐
+          │                                        │
+          │  Scoring Criteria:                      │
+          │                                        │
+          │  Company Size > 100 employees     +30  │
+          │  ├─ Yes: +30 points                    │
+          │  └─ No:  +0 points                     │
+          │                                        │
+          │  Target Industry (Tech/Finance/Health) │
+          │  ├─ Yes: +30 points                    │
+          │  └─ No:  +0 points                     │
+          │                                        │
+          │  Budget Tier                           │
+          │  ├─ Enterprise: +40 points             │
+          │  ├─ Business:  +20 points              │
+          │  └─ Startup:   +0 points               │
+          │                                        │
+          └────────────────────────────────────────┘
+                         ↓
+                Total Score (0-100)
+                         ↓
+          ┌─────────────────────────────┐
+          │     Qualification Level      │
+          │                             │
+          │  70-100: HIGHLY QUALIFIED   │
+          │  40-69:  QUALIFIED          │
+          │  0-39:   UNQUALIFIED        │
+          └─────────────────────────────┘
+
+**Example Calculation:**
+- TechCorp: 250 employees (Technology) + Enterprise budget
+- Score: 30 (size) + 30 (industry) + 40 (budget) = **100/100**
+- Result: **HIGHLY QUALIFIED** → Schedule demo immediately
