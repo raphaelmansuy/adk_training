@@ -1,8 +1,8 @@
 # Google ADK Training Hub
 
-**Build production-ready AI agents that solve real problems.**
+**Build production-ready AI agents tutorials that solve real problems.**
 
-You're here because AI agents are transforming software development, and you want practical skills you can use at work tomorrow. This training hub gives you exactly that—no fluff, just working code and proven patterns from 23 completed tutorials.
+You're here because AI agents are transforming software development, and you want practical skills you can use at work tomorrow. This training hub gives you exactly that—no fluff, just working code and proven patterns from 25 completed tutorials.
 
 ## What You'll Gain
 
@@ -13,12 +13,12 @@ You're here because AI agents are transforming software development, and you wan
 - Deploy to production with confidence
 
 **Practically:**
-- 23 working implementations you can run today
+- 25 working implementations you can run today
 - Copy-paste code patterns for common scenarios
 - Testing frameworks you can adapt to your projects
 - Integration examples for Next.js, React, and more
 
-**Completion Status: 23/34 tutorials ready to use (68%)**
+**Completion Status: 25/34 tutorials ready to use (74%)**
 
 > Built by developers, for developers. Every tutorial has working code, not just theory.
 
@@ -73,15 +73,15 @@ Think of it as the missing framework between "ChatGPT API call" and "production 
 │   ├── 24_advanced_observability.md # 📝 DRAFT - Advanced monitoring
 │   ├── 25_best_practices.md       # 📝 DRAFT - Best practices
 │   ├── 26_google_agentspace.md    # 📝 DRAFT - AgentSpace platform
-│   ├── 27_third_party_tools.md    # 📝 DRAFT - Third-party integrations
-│   ├── 28_using_other_llms.md     # 📝 DRAFT - Multi-provider LLMs
+│   ├── 27_third_party_tools.md    # ✅ COMPLETED - Third-party integrations
+│   ├── 28_using_other_llms.md     # ✅ COMPLETED - Multi-provider LLMs
 │   ├── 29_ui_integration_intro.md # 📝 DRAFT - UI integration overview
 │   ├── 30_nextjs_adk_integration.md # 📝 DRAFT - Next.js integration
 │   ├── 31_react_vite_adk_integration.md # 📝 DRAFT - React/Vite integration
 │   ├── 32_streamlit_adk_integration.md # 📝 DRAFT - Streamlit integration
 │   ├── 33_slack_adk_integration.md # 📝 DRAFT - Slack integration
 │   └── 34_pubsub_adk_integration.md # 📝 DRAFT - PubSub integration
-├── tutorial_implementation/       # ✅ 18 working implementations
+├── tutorial_implementation/       # ✅ 25 working implementations
 │   ├── tutorial01/                # Hello World Agent
 │   ├── tutorial02/                # Function Tools
 │   ├── tutorial03/                # OpenAPI Tools
@@ -162,7 +162,7 @@ Start with [Tutorial 01](docs/tutorial/01_hello_world_agent.md) (30 min) to unde
 
 **For:** Senior engineers and architects
 
-Complete all 23 tutorials, focusing on:
+Complete all 25 tutorials, focusing on:
 - Multi-agent orchestration patterns
 - Production observability and testing
 - Enterprise deployment strategies
@@ -170,7 +170,7 @@ Complete all 23 tutorials, focusing on:
 
 **You'll gain:** Deep expertise in agent architecture and the patterns to make critical design decisions.
 
-## 📚 All Tutorials (23 Ready, 11 Coming Soon)
+## 📚 All Tutorials (25 Ready, 9 Coming Soon)
 
 See the complete tutorial list in the [Project Structure](#🏗️-project-structure) section above, or browse the [interactive documentation](https://raphaelmansuy.github.io/adk_training/).
 
@@ -204,8 +204,8 @@ See the complete tutorial list in the [Project Structure](#🏗️-project-struc
 | 24       | Advanced Observability       | 📝 Draft     | Advanced     | 1hr   |
 | 25       | Best Practices               | 📝 Draft     | Advanced     | 1.5hr |
 | 26       | Google AgentSpace            | 📝 Draft     | Advanced     | 2hr   |
-| 27       | Third-Party Framework Tools  | 📝 Draft     | Advanced     | 1.5hr |
-| 28       | Using Other LLMs             | 📝 Draft     | Advanced     | 2hr   |
+| 27       | Third-Party Framework Tools  | ✅ Completed | Advanced     | 1.5hr |
+| 28       | Using Other LLMs             | ✅ Completed | Advanced     | 2hr   |
 | 29       | UI Integration Intro         | ✅ Completed | Intermediate | 1.5hr |
 | 30       | Next.js ADK Integration      | ✅ Completed | Advanced     | 2hr   |
 | 31       | React Vite ADK Integration   | 📝 Draft     | Advanced     | 1.5hr |
@@ -215,7 +215,7 @@ See the complete tutorial list in the [Project Structure](#🏗️-project-struc
 
 ## 📊 Project Completion Status
 
-### ✅ Completed Tutorials (23/34)
+### ✅ Completed Tutorials (25/34)
 
 The following tutorials have been fully implemented with working code, comprehensive tests, and verified functionality:
 
@@ -254,7 +254,9 @@ The following tutorials have been fully implemented with working code, comprehen
 
 **UI Integration:**
 
-- **Tutorial 29**: UI Integration Intro - Frontend integration patterns and best practices
+- **Tutorial 27**: Third-Party Framework Tools - LangChain, CrewAI integration
+- **Tutorial 28**: Using Other LLMs - Multi-provider LLM support
+- **Tutorial 29**: UI Integration Intro - Frontend integration patterns
 - **Tutorial 30**: Next.js ADK Integration - React web applications with CopilotKit
 
 **All completed tutorials include:**
@@ -266,14 +268,13 @@ The following tutorials have been fully implemented with working code, comprehen
 - ✅ Documentation and usage examples
 - ✅ Integration with ADK web interface
 
-### 📝 Draft Tutorials (11/34)
+### 📝 Draft Tutorials (9/34)
 
 The following tutorials have detailed documentation but require implementation:
 
-**Advanced Features (Tutorials 22-28):**
+**Advanced Features (Tutorials 22-26):**
 
 - Model optimization, enterprise deployment, best practices
-- Third-party integrations and multi-provider LLM support
 - Google AgentSpace platform integration
 
 **UI Integration (Tutorials 31-34):**
