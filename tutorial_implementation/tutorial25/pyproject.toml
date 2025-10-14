@@ -1,0 +1,35 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "best_practices_agent"
+version = "0.1.0"
+description = "ADK Tutorial 25: Best Practices - Production-ready agent demonstrating security, performance, testing, and maintenance strategies"
+authors = [
+    {name = "ADK Training", email = "training@example.com"},
+]
+dependencies = [
+    "google-genai>=1.15.0",
+    "google-adk>=1.16.0",
+    "pydantic>=2.0.0",
+]
+requires-python = ">=3.9"
+readme = "README.md"
+
+[project.scripts]
+best_practices_agent = "best_practices_agent.agent:main"
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["best_practices_agent*"]
+
+[tool.setuptools.package-dir]
+"" = "."
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = ["test_*.py"]
+python_classes = ["Test*"]
+python_functions = ["test_*"]
+addopts = "-v --tb=short"

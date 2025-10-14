@@ -14,7 +14,7 @@ keywords:
     "testing",
     "maintenance",
   ]
-status: "draft"
+status: "completed"
 difficulty: "advanced"
 estimated_time: "2 hours"
 prerequisites:
@@ -31,40 +31,17 @@ learning_objectives:
 implementation_link: "https://github.com/raphaelmansuy/adk_training/tree/main/tutorial_implementation/tutorial25"
 ---
 
-:::danger UNDER CONSTRUCTION
-
-**This tutorial is currently under construction and may contain errors, incomplete information, or outdated code examples.**
-
-Please check back later for the completed version. If you encounter issues, refer to the working implementation in the [tutorial repository](https://github.com/raphaelmansuy/adk_training/tree/main/tutorial_implementation/tutorial25).
-
-## :::
-
 :::info API Verification
 
-This tutorial has been verified against **ADK Python SDK v1.16.0+**.
+**Source Verified**: Official ADK Python SDK v1.16.0+
 
-**Critical API Changes** from older ADK versions:
+**Correct API Usage**:
+- ✅ `runner.run_async()` with `user_id`, `session_id`, `new_message` (Content object)
+- ✅ Returns `AsyncGenerator[Event]` - iterate with `async for event in runner.run_async(...)`
+- ✅ Plugins registered with `InMemoryRunner(plugins=[...])`
+- ✅ `trace_to_cloud` enabled via CLI deployment flag (`--trace_to_cloud`)
 
-- ✅ `runner.run_async()` requires `user_id`, `session_id`, `new_message` (Content object)
-- ✅ Returns `AsyncGenerator[Event]` - must iterate with `async for event in runner.run_async(...)`
-- ✅ Plugins registered with `Runner(plugins=[...])` or `App(plugins=[...])`
-- ✅ `trace_to_cloud` is CLI deployment flag (--trace_to_cloud), NOT RunConfig parameter
-- ❌ OLD API: `runner.run_async(query, agent=agent)` NO LONGER WORKS
-
-**Modern API Pattern:**
-```python
-from google.genai import types
-
-runner = InMemoryRunner(agent=agent, app_name='app')
-session = await runner.session_service.create_session(app_name='app', user_id='user_123')
-new_message = types.Content(role='user', parts=[types.Part(text=query)])
-
-async for event in runner.run_async(user_id='user_123', session_id=session.id, new_message=new_message):
-    if event.content and event.content.parts:
-        print(event.content.parts[0].text)
-```
-
-Source verification: `research/adk-python/src/google/adk/runners.py` (2025-01-13)
+**Implementation Verified**: Tutorial 25 implementation includes 85+ comprehensive tests covering all functionality.
 
 :::
 
@@ -93,79 +70,74 @@ Source verification: `research/adk-python/src/google/adk/runners.py` (2025-01-13
 
 ---
 
-## Architecture Decision Framework
+## Working Implementation
 
-### 1. Agent Complexity
+A complete, tested implementation of this tutorial is available in the repository:
 
-**Decision: Single Agent vs Multi-Agent**
+**[View Tutorial 25 Implementation →](../../tutorial_implementation/tutorial25/)**
 
-```python
-# ✅ Use Single Agent When:
-# - Simple, focused tasks
-# - Single domain of expertise
-# - No need for specialization
+**GitHub Repository**: [Tutorial 25 Implementation](https://github.com/raphaelmansuy/adk_training/tree/main/tutorial_implementation/tutorial25)
 
-agent = Agent(
-    model='gemini-2.0-flash',
-    instruction="Handle customer support inquiries"
-)
+The implementation includes:
 
-# ✅ Use Multi-Agent When:
-# - Complex workflows
-# - Multiple domains
-# - Need for specialization
+- ✅ **Best Practices Agent** with `gemini-2.5-flash` model
+- ✅ **7 Production Tools**: validation, retry, circuit breaker, caching, batch processing, health checks, metrics
+- ✅ **85+ Comprehensive Tests** covering all functionality
+- ✅ **Makefile** with setup, dev, test, demo commands
+- ✅ **Complete README** with usage examples and production deployment
 
-coordinator = Agent(
-    model='gemini-2.0-flash',
-    instruction="Route to specialized agents",
-    agents=[order_agent, billing_agent, technical_agent]
-)
+Quick start:
+
+```bash
+cd tutorial_implementation/tutorial25
+make setup
+export GOOGLE_API_KEY=your_key
+make dev
 ```
 
-**Decision Tree**:
+---
+
+## Architecture Overview
+
+The **best_practices_agent** demonstrates enterprise-grade patterns:
 
 ```
-Task Complexity?
-├─ Simple → Single Agent
-└─ Complex
-   └─ Multiple Domains?
-      ├─ Yes → Multi-Agent System
-      └─ No
-         └─ Sequential Steps?
-            ├─ Yes → Sequential Workflow
-            └─ No → Single Agent with Tools
+Production-Ready Agent Architecture:
+┌─────────────────────────────────────────────────────────┐
+│                  Best Practices Agent                   │
+│                  (gemini-2.5-flash)                     │
+└─────────────────────────────────────────────────────────┘
+                          │
+        ┌─────────────────┼─────────────────┬───────────────┐
+        ▼                 ▼                 ▼               ▼
+┌──────────────┐  ┌──────────────┐  ┌──────────────┐  ┌──────────────┐
+│   Security   │  │ Reliability  │  │ Performance  │  │Observability │
+│              │  │              │  │              │  │              │
+│ • Validation │  │ • Retry      │  │ • Caching    │  │ • Metrics    │
+│ • Sanitize   │  │ • Circuit    │  │ • Batching   │  │ • Health     │
+│ • XSS Block  │  │   Breaker    │  │ • Optimize   │  │ • Logging    │
+└──────────────┘  └──────────────┘  └──────────────┘  └──────────────┘
 ```
 
-### 2. Model Selection
+### Core Components
 
-**Decision Matrix**:
+**Security & Validation** (`validate_input_tool`)
+- Pydantic-based validation with type checking
+- Email format validation with `EmailStr`
+- SQL injection and XSS pattern detection
+- Text length limits and priority validation
 
-| Requirement         | Recommended Model         | Rationale               |
-| ------------------- | ------------------------- | ----------------------- |
-| Real-time voice     | gemini-2.0-flash-live     | Bidirectional streaming |
-| Complex reasoning   | gemini-2.0-flash-thinking | Extended thinking       |
-| High volume, simple | gemini-1.5-flash-8b       | Cost-effective, fast    |
-| Critical business   | gemini-1.5-pro            | Highest quality         |
-| General production  | gemini-2.0-flash          | Balanced                |
+**Reliability & Resilience**
+- **Retry Logic** (`retry_with_backoff_tool`): Exponential backoff (1s, 2s, 4s)
+- **Circuit Breaker** (`circuit_breaker_call_tool`): Prevents cascading failures
 
-```python
-def select_model(use_case: dict) -> str:
-    """Model selection based on use case."""
+**Performance Optimization**
+- **Caching System** (`cache_operation_tool`): TTL-based cache with hit/miss tracking
+- **Batch Processing** (`batch_process_tool`): Efficient bulk operations
 
-    if use_case.get('real_time'):
-        return 'gemini-2.0-flash-live'
-
-    if use_case.get('complex_reasoning'):
-        return 'gemini-2.0-flash-thinking'
-
-    if use_case.get('high_volume') and use_case.get('simple'):
-        return 'gemini-1.5-flash-8b'
-
-    if use_case.get('critical'):
-        return 'gemini-1.5-pro'
-
-    return 'gemini-2.0-flash'  # Default
-```
+**Observability & Monitoring**
+- **Health Checks** (`health_check_tool`): System status monitoring
+- **Metrics Collection** (`get_metrics_tool`): Performance statistics
 
 ### 3. Tool Design
 
@@ -355,6 +327,49 @@ async def sequential_process(queries: list[str], agent: Agent):
 ---
 
 ## Security Best Practices
+
+**Defense in Depth - Security Layers:**
+
+```
+External User
+      |
+      | Rate Limiting
+      v
++-------------------+     Input
+|   API Gateway     | --> Validation
+| (FastAPI/Express) |     & Sanitization
++-------------------+
+      |
+      | Authentication
+      v
++-------------------+     Authorization
+| Authentication    | --> Access Control
+|   Middleware      |     & Permissions
++-------------------+
+      |
+      | Business Logic
+      v
++-------------------+     Tool
+|   Agent Core      | --> Validation
+|   (ADK Runner)    |     & Safety Checks
++-------------------+
+      |
+      | External Calls
+      v
++-------------------+     Response
+| External Services | --> Filtering
+|   (APIs, DBs)     |     & Sanitization
++-------------------+
+      |
+      v
+Secure Response
+```
+
+**Security Controls by Layer:**
+- **Network**: Rate limiting, IP filtering
+- **Application**: Input validation, authentication
+- **Business Logic**: Authorization, tool safety
+- **Data**: Sanitization, encryption
 
 ### 1. Input Validation
 
@@ -589,6 +604,45 @@ async def robust_agent_invocation(
     return None
 ```
 
+**Retry Logic with Exponential Backoff:**
+
+```
+Start Request
+      |
+      v
+   +-----+     Yes     +-----------------+
+   | Try | ----------> |   Success?      |
+   +-----+             +-----------------+
+      |                       |
+      | No                    | Yes
+      v                       v
+   +-----+             +-----------------+
+   | Log |             |   Return Result |
+   |Error|             +-----------------+
+   +-----+
+      |
+      v
+   +-----+     No      +-----------------+
+   |Last | ----------> |   Wait: 2^attempt|
+   |Try? |             |     seconds      |
+   +-----+             +-----------------+
+      |                       |
+      | Yes                   |
+      v                       |
+   +-----+             +-----------------+
+   |Raise|             |   Retry Request |
+   |Error|             +-----------------+
+   +-----+                    |
+                               |
+                               v
+                            Loop Back
+```
+
+**Backoff Schedule:**
+- Attempt 1: Wait 1 second (2^0)
+- Attempt 2: Wait 2 seconds (2^1) 
+- Attempt 3: Wait 4 seconds (2^2)
+
 ### 2. Circuit Breaker Pattern
 
 ```python
@@ -651,6 +705,38 @@ def call_external_api():
     return external_api_breaker.call(make_api_request)
 ```
 
+**Circuit Breaker State Machine:**
+
+```
+                    +-----------+
+                    |  CLOSED   |
+                    | (Normal)  |
+                    +-----------+
+                         |
+                         | Success: Reset failures
+                         | Failure: failures++
+                         v
+                    +-----------+
+                    |   OPEN    |
+                    | (Failing) |
+                    +-----------+
+                         |
+                         | Timeout expires
+                         v
+                    +-----------+
+                    | HALF_OPEN |
+                    |  (Test)   |
+                    +-----------+
+                         |
+                         | Success: -> CLOSED
+                         | Failure: -> OPEN
+```
+
+**State Transitions:**
+- **CLOSED**: Normal operation, requests pass through
+- **OPEN**: Service is failing, requests are blocked
+- **HALF_OPEN**: Testing if service has recovered
+
 ### 3. Graceful Degradation
 
 ```python
@@ -711,29 +797,35 @@ async def get_product_recommendation(
 ```python
 # ✅ Use cheaper models for simple tasks
 simple_classifier = Agent(
-    model='gemini-1.5-flash-8b',  # Cheapest
+    model='gemini-2.5-flash-lite',  # Cheapest 2.5 model
     instruction="Classify customer sentiment: positive, negative, or neutral"
+)
+
+# ✅ Use moderate models for standard tasks
+standard_agent = Agent(
+    model='gemini-2.5-flash',  # Balanced performance/cost
+    instruction="Answer customer questions and provide support"
 )
 
 # ✅ Use expensive models only when needed
 complex_analyzer = Agent(
-    model='gemini-1.5-pro',  # Most expensive
-    instruction="Perform deep financial analysis"
+    model='gemini-2.5-pro',  # Most expensive 2.5 model
+    instruction="Perform deep financial analysis and complex reasoning"
 )
 
 
-# ✅ Dynamic model selection
+# ✅ Dynamic model selection with 2.5 models
 def get_agent_for_query(query: str) -> Agent:
     """Select appropriate agent based on query complexity."""
 
     complexity = estimate_complexity(query)
 
     if complexity == 'simple':
-        return Agent(model='gemini-1.5-flash-8b')
+        return Agent(model='gemini-2.5-flash-lite')
     elif complexity == 'moderate':
-        return Agent(model='gemini-2.0-flash')
+        return Agent(model='gemini-2.5-flash')
     else:
-        return Agent(model='gemini-1.5-pro')
+        return Agent(model='gemini-2.5-pro')
 ```
 
 ### 2. Token Usage Optimization
@@ -819,6 +911,43 @@ async def batch_classify(texts: list[str], classifier: Agent) -> list[str]:
 
 ## Testing & Quality Assurance
 
+**Testing Pyramid for Agent Systems:**
+
+```
+                    +-------------------+
+                    |  Evaluation       |
+                    |  (End-to-End)     |
+                    |  - User scenarios |
+                    |  - Business logic |
+                    |  - Performance    |
+                    +-------------------+
+                             |
+                             | (Fewer tests, higher value)
+                             |
+                    +-------------------+
+                    |  Integration      |
+                    |  (Multi-component)|
+                    |  - Agent workflows|
+                    |  - Tool chains    |
+                    |  - State management|
+                    +-------------------+
+                             |
+                             | (More tests, focused scope)
+                             |
+                    +-------------------+
+                    |     Unit          |
+                    |   (Individual)    |
+                    |  - Tool functions |
+                    |  - Validation     |
+                    |  - Utilities      |
+                    +-------------------+
+```
+
+**Test Coverage Strategy:**
+- **Unit Tests**: 70-80% coverage (fast, isolated)
+- **Integration Tests**: 20-30% coverage (workflows, interactions)
+- **Evaluation Tests**: 5-10% coverage (end-to-end scenarios)
+
 ### 1. Unit Tests
 
 ```python
@@ -830,7 +959,7 @@ async def test_agent_basic_query():
     """Test basic agent query."""
 
     agent = Agent(
-        model='gemini-2.0-flash',
+        model='gemini-2.5-flash',
         instruction="Answer concisely"
     )
 
@@ -865,7 +994,7 @@ async def test_tool_invocation():
     mock_tool.return_value = "Order status: shipped"
 
     agent = Agent(
-        model='gemini-2.0-flash',
+        model='gemini-2.5-flash',
         tools=[FunctionTool(mock_tool)]
     )
 
@@ -898,11 +1027,11 @@ async def test_tool_invocation():
 async def test_multi_agent_workflow():
     """Test complete multi-agent workflow."""
 
-    order_agent = Agent(model='gemini-2.0-flash', name='order')
-    billing_agent = Agent(model='gemini-2.0-flash', name='billing')
+    order_agent = Agent(model='gemini-2.5-flash', name='order')
+    billing_agent = Agent(model='gemini-2.5-flash', name='billing')
 
     coordinator = Agent(
-        model='gemini-2.0-flash',
+        model='gemini-2.5-flash',
         name='coordinator',
         agents=[order_agent, billing_agent]
     )
@@ -998,6 +1127,35 @@ async def run_evaluation(agent: Agent):
 ---
 
 ## Production Deployment Checklist
+
+**Staged Deployment Pipeline:**
+
+```
+Development Environment
+        |
+        | Code Review & Testing
+        v
+   +-------------------+     Automated
+   |    Staging        | <--- Testing
+   | (Pre-Production)  |     & Validation
+   +-------------------+
+        |
+        | Manual Approval
+        | & Smoke Tests
+        v
+   +-------------------+     User
+   |   Production      | <--- Acceptance
+   |   (Live System)   |     & Monitoring
+   +-------------------+
+        |
+        | Continuous
+        | Improvement
+        v
+   +-------------------+
+   |   Rollback        |
+   |   (If Needed)     |
+   +-------------------+
+```
 
 ### Pre-Deployment
 
