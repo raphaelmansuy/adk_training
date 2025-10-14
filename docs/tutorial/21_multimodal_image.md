@@ -31,17 +31,31 @@ implementation_link: "https://github.com/raphaelmansuy/adk_training/tree/main/tu
 **A complete, tested implementation of this tutorial is available!**
 
 - 📂 [View Implementation](./../../tutorial_implementation/tutorial21)
-- ✅ All 62 tests passing
-- 📚 Comprehensive README and demo scripts
-- 🎯 Production-ready code with 73% coverage
+- ✅ **70 tests passing** (63% coverage)
+- 🎨 **5 tools** including synthetic image generation ⭐
+- 📚 User-friendly Makefile with comprehensive help system
+- 🚀 4 automation scripts (download, analyze, generate, demo)
+- 📖 Complete README synchronized with implementation
 
 See the implementation directory for:
-- Complete vision catalog agent with image processing
-- Multi-agent workflow (vision analyzer + catalog generator)
-- Image loading utilities and optimization
-- Comprehensive test suite
-- Interactive demo script
-- Sample images for testing
+- **Complete vision catalog agent** with 5 specialized tools
+- **Synthetic image generation** using Gemini 2.5 Flash Image ⭐ NEW
+- **Multi-agent workflow** (vision analyzer + catalog generator)
+- **Automation scripts** for batch processing and generation
+- **Image loading utilities** and optimization
+- **Comprehensive test suite** (70 tests)
+- **Interactive demos** and sample images
+- **User-friendly Makefile** with help system
+
+**Quick Start:**
+```bash
+cd tutorial_implementation/tutorial21
+make                    # Show all available commands
+make setup              # Install dependencies
+make download-images    # Get sample images
+make generate           # Generate synthetic mockups ⭐
+make dev                # Start interactive agent
+```
 
 :::
 
@@ -60,10 +74,12 @@ See the implementation directory for:
 
 - Processing images with Gemini vision models
 - Using `types.Part` for multimodal content
-- Image generation with Vertex AI Imagen
+- **Synthetic image generation with Gemini 2.5 Flash Image** ⭐ NEW
 - Handling `inline_data` vs `file_data`
-- Building vision-based agents
+- Building vision-based agents with 5 specialized tools
 - Working with multiple image inputs
+- Creating automation scripts for batch processing
+- User-friendly Makefile with help system
 - Best practices for multimodal applications
 
 **Time to Complete**: 50-65 minutes
@@ -745,13 +761,223 @@ Total Products Analyzed: 3
 
 ---
 
-## 4. Image Generation with Imagen
+## 4. Synthetic Image Generation with Gemini 2.5 Flash Image ⭐ NEW
+
+### Overview
+
+**Gemini 2.5 Flash Image** is a text-to-image model that generates photorealistic product images from text descriptions. Perfect for:
+
+- 🎨 **Rapid Prototyping**: Test catalog designs before photography
+- 💡 **Concept Visualization**: Show clients product concepts
+- 🔄 **Variations**: Generate multiple style/color variations quickly
+- 📐 **Layout Testing**: Create mockups for different aspect ratios
+- 💰 **Cost Savings**: No studio equipment or photographers needed
+
+### Basic Synthetic Generation
+
+```python
+"""
+Generate synthetic product images using Gemini 2.5 Flash Image.
+"""
+
+import os
+from google import genai
+from google.genai import types as genai_types
+from PIL import Image
+from io import BytesIO
+
+
+async def generate_product_mockup(
+    product_description: str,
+    style: str = "photorealistic product photography",
+    aspect_ratio: str = "1:1"
+) -> str:
+    """
+    Generate synthetic product image.
+    
+    Args:
+        product_description: Detailed product description
+        style: Photography style (photorealistic, studio, lifestyle)
+        aspect_ratio: Image aspect ratio (1:1, 16:9, 4:3, 3:2, etc.)
+        
+    Returns:
+        Path to generated image
+    """
+    
+    # Create detailed professional prompt
+    detailed_prompt = f"""
+A {style} of {product_description}.
+
+The image should be:
+- High-resolution and professional quality
+- Well-lit with studio lighting
+- Sharp focus on the product
+- Clean composition
+- Suitable for e-commerce or marketing materials
+    """.strip()
+    
+    # Initialize client
+    client = genai.Client(api_key=os.environ.get('GOOGLE_API_KEY'))
+    
+    # Generate image
+    response = client.models.generate_content(
+        model='gemini-2.5-flash-image',
+        contents=[detailed_prompt],
+        config=genai_types.GenerateContentConfig(
+            response_modalities=['Image'],
+            image_config=genai_types.ImageConfig(
+                aspect_ratio=aspect_ratio
+            )
+        )
+    )
+    
+    # Extract and save image
+    for part in response.candidates[0].content.parts:
+        if part.inline_data:
+            image = Image.open(BytesIO(part.inline_data.data))
+            image_path = f"generated_{product_description[:20]}.jpg"
+            image.save(image_path, 'JPEG', quality=95)
+            
+            return image_path
+    
+    raise ValueError("No image generated")
+
+
+# Example usage
+async def demo_synthetic_generation():
+    """Demo synthetic image generation."""
+    
+    # Generate desk lamp mockup
+    lamp_path = await generate_product_mockup(
+        product_description="minimalist desk lamp with brushed aluminum finish and LED light",
+        style="photorealistic product photography",
+        aspect_ratio="1:1"
+    )
+    
+    print(f"Generated lamp mockup: {lamp_path}")
+    
+    # Generate leather wallet mockup
+    wallet_path = await generate_product_mockup(
+        product_description="premium leather wallet with gold stitching and card slots",
+        style="photorealistic product photography on marble surface",
+        aspect_ratio="4:3"
+    )
+    
+    print(f"Generated wallet mockup: {wallet_path}")
+    
+    # Generate gaming mouse mockup
+    mouse_path = await generate_product_mockup(
+        product_description="wireless gaming mouse with RGB lighting and ergonomic design",
+        style="photorealistic product photography with dramatic lighting",
+        aspect_ratio="16:9"
+    )
+    
+    print(f"Generated mouse mockup: {mouse_path}")
+
+
+if __name__ == '__main__':
+    import asyncio
+    asyncio.run(demo_synthetic_generation())
+```
+
+### Supported Aspect Ratios
+
+Gemini 2.5 Flash Image supports various aspect ratios:
+
+- **1:1** (1024x1024) - Perfect for social media, product catalogs
+- **16:9** (1344x768) - Wide product shots, lifestyle photography
+- **4:3** (1184x864) - Standard product photos
+- **3:2** (1248x832) - Professional photography format
+- **9:16** (768x1344) - Vertical/mobile-first layouts
+
+### Style Options
+
+Customize the photography style in your prompt:
+
+- **Photorealistic product photography** (default)
+- **Studio lighting with white background**
+- **Lifestyle/contextual photography**
+- **Artistic/creative product shots**
+- **Minimalist composition**
+- **Dramatic lighting**
+
+### Integration with Vision Analysis
+
+Combine synthetic generation with vision analysis:
+
+```python
+async def generate_and_analyze_product():
+    """Generate synthetic image and analyze it."""
+    
+    # Step 1: Generate synthetic mockup
+    image_path = await generate_product_mockup(
+        product_description="modern wireless earbuds with charging case",
+        aspect_ratio="1:1"
+    )
+    
+    # Step 2: Load generated image
+    image_part = load_image_from_file(image_path)
+    
+    # Step 3: Analyze with vision model
+    vision_agent = Agent(
+        model='gemini-2.0-flash-exp',
+        name='vision_analyzer'
+    )
+    
+    runner = Runner()
+    analysis = await runner.run_async(
+        [
+            types.Part.from_text("Analyze this product mockup and create a catalog entry:"),
+            image_part
+        ],
+        agent=vision_agent
+    )
+    
+    print(f"Generated image: {image_path}")
+    print(f"Analysis: {analysis.content.parts[0].text}")
+```
+
+### Use Cases
+
+**E-commerce Prototyping:**
+```python
+# Generate product variations
+for color in ['black', 'white', 'silver']:
+    await generate_product_mockup(
+        f"smartphone in {color} color, modern design",
+        aspect_ratio="1:1"
+    )
+```
+
+**Marketing Materials:**
+```python
+# Create lifestyle shots
+await generate_product_mockup(
+    "coffee mug on wooden desk with morning sunlight",
+    style="lifestyle photography with warm tones",
+    aspect_ratio="16:9"
+)
+```
+
+**Concept Testing:**
+```python
+# Test different designs
+for design in ['minimalist', 'luxury', 'sporty']:
+    await generate_product_mockup(
+        f"water bottle, {design} design aesthetic",
+        aspect_ratio="3:2"
+    )
+```
+
+---
+
+## 5. Image Generation with Vertex AI Imagen (Alternative)
 
 ### Basic Image Generation
 
 ```python
 """
-Generate images using Vertex AI Imagen.
+Generate images using Vertex AI Imagen (alternative to Gemini 2.5 Flash Image).
 """
 
 from google.cloud import aiplatform
@@ -832,7 +1058,7 @@ Always provide helpful descriptions for best results.
 
 ---
 
-## 5. Best Practices
+## 6. Best Practices
 
 ### ✅ DO: Optimize Image Sizes
 
@@ -907,17 +1133,28 @@ query = [image_part, types.Part.from_text("What is this?")]
 
 ## Summary
 
-You've mastered multimodal and image generation:
+You've mastered multimodal capabilities and synthetic image generation:
 
 **Key Takeaways**:
 
 - ✅ `types.Part` for multimodal content (text + images)
 - ✅ `inline_data` for embedded images, `file_data` for references
 - ✅ Gemini 2.0 Flash supports vision understanding
-- ✅ Vertex AI Imagen for image generation
+- ✅ **Gemini 2.5 Flash Image for synthetic generation** ⭐ NEW
+- ✅ Vertex AI Imagen for alternative image generation
 - ✅ Multiple image analysis for comparisons
-- ✅ Vision-based product catalog applications
+- ✅ Vision-based product catalog applications (5 tools)
+- ✅ Automation scripts for batch processing
+- ✅ User-friendly Makefile with help system
 - ✅ Image optimization for API efficiency
+
+**Implementation Highlights**:
+
+- 🎨 **5 Specialized Tools**: list, generate, upload, analyze, compare
+- 📸 **4 Automation Scripts**: download, analyze, generate, demo
+- 🧪 **70 Tests** with 63% coverage
+- 📚 **User-Friendly Makefile**: Comprehensive help system
+- ⭐ **Synthetic Generation**: Gemini 2.5 Flash Image integration
 
 **Production Checklist**:
 
@@ -925,10 +1162,13 @@ You've mastered multimodal and image generation:
 - [ ] Error handling for invalid images
 - [ ] MIME type validation
 - [ ] Vision model tested on representative images
+- [ ] **Synthetic generation tested with various prompts** ⭐
 - [ ] Generated images reviewed for quality
 - [ ] Cost monitoring for image operations
 - [ ] Image storage strategy defined
 - [ ] Compliance with image generation policies
+- [ ] **Makefile help system documented**
+- [ ] **Automation scripts for batch operations**
 
 **Next Steps**:
 
@@ -950,10 +1190,24 @@ You've mastered multimodal and image generation:
 :::info Implementation Available
 
 Check out the [complete implementation](./../../tutorial_implementation/tutorial21) with:
-- Vision catalog agent (62 passing tests)
-- Image processing utilities
-- Multi-agent workflow
-- Interactive demo
-- Comprehensive documentation
+
+- **Vision catalog agent** with 5 specialized tools
+- **70 passing tests** (63% coverage)
+- **Synthetic image generation** using Gemini 2.5 Flash Image ⭐
+- **4 automation scripts** (download, analyze, generate, demo)
+- **User-friendly Makefile** with comprehensive help system
+- **Image processing utilities** and optimization
+- **Multi-agent workflow** (vision + catalog)
+- **Interactive demos** and sample images
+- **Comprehensive documentation**
+
+**Quick Start:**
+```bash
+cd tutorial_implementation/tutorial21
+make                # Show all commands
+make setup          # Install dependencies
+make generate       # Generate synthetic mockups ⭐
+make dev            # Start interactive agent
+```
 
 :::
