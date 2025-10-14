@@ -14,7 +14,7 @@ keywords:
     "llm providers",
     "model configuration",
   ]
-status: "draft"
+status: "completed"
 difficulty: "advanced"
 estimated_time: "1.5 hours"
 prerequisites:
@@ -31,50 +31,9 @@ learning_objectives:
 implementation_link: "https://github.com/raphaelmansuy/adk_training/tree/main/tutorial_implementation/tutorial28"
 ---
 
-:::danger UNDER CONSTRUCTION
-
-**This tutorial is currently under construction and may contain errors, incomplete information, or outdated code examples.**
-
-Please check back later for the completed version. If you encounter issues, refer to the working implementation in the [tutorial repository](https://github.com/raphaelmansuy/adk_training/tree/main/tutorial_implementation/tutorial28).
-
-## :::
-
-:::info Verify Runner API Usage
-
-**CRITICAL**: ADK v1.16+ changed the Runner API. All examples in this tutorial use the correct pattern.
-
-**Correct Runner API** (verified in source code):
-- ✅ CORRECT: `from google.adk.runners import InMemoryRunner`
-- ✅ CORRECT: `runner = InMemoryRunner(agent=agent, app_name='app')`
-- ✅ CORRECT: Create session, then use async iteration with `async for event in runner.run_async(...)`
-
-**Common Mistakes to Avoid**:
-- ❌ WRONG: `from google.adk.agents import Runner` - this class doesn't exist in v1.16+
-- ❌ WRONG: `runner = Runner()` - use InMemoryRunner instead
-- ❌ WRONG: `result = await runner.run_async(query, agent=agent)` - use async iteration
-
-**Required Pattern**:
-```python
-from google.adk.runners import InMemoryRunner
-from google.genai import types
-
-runner = InMemoryRunner(agent=agent, app_name='app')
-session = await runner.session_service.create_session(
-    app_name='app', user_id='user_id'
-)
-new_message = types.Content(role='user', parts=[types.Part(text=query)])
-async for event in runner.run_async(
-    user_id='user_id', session_id=session.id, new_message=new_message
-):
-    if event.content and event.content.parts:
-        print(event.content.parts[0].text)
-```
-
-**Source**: `/research/adk-python/src/google/adk/runners.py`
-
-:::
 
 # Tutorial 28: Using Other LLMs with LiteLLM
+
 
 **Goal**: Use OpenAI, Claude, Ollama, and other LLMs in your ADK agents via LiteLLM
 
@@ -86,16 +45,16 @@ async for event in runner.run_async(
 
 **What You'll Learn**:
 
-- Using OpenAI models (GPT-4o, GPT-4o-mini) with ADK
-- Using Anthropic Claude models (3.7 Sonnet, Opus, Haiku) with ADK
-- Running local models with Ollama (Llama3.3, Mistral, Phi4)
-- Azure OpenAI integration
-- Claude via Vertex AI
+- Using OpenAI models (GPT-4o-mini) with ADK
+- Using Anthropic Claude models (3.7 Sonnet) with ADK
+- Running local models with Ollama (Granite 4) for privacy
 - Multi-provider comparison and cost optimization
 - When NOT to use LiteLLM
 - Best practices for cross-provider development
 
-**Source**: `google/adk/models/lite_llm.py`, `contributing/samples/hello_world_litellm/`, `contributing/samples/hello_world_ollama/`
+**Source**: `google/adk/models/lite_llm.py`,
+`contributing/samples/hello_world_litellm/`,
+`contributing/samples/hello_world_ollama/`
 
 ---
 
@@ -134,7 +93,7 @@ pip install google-adk[litellm]
 pip install litellm openai
 ```
 
-**2. Get API key** from https://platform.openai.com/api-keys
+**2. Get API key** from [OpenAI Platform](https://platform.openai.com/api-keys)
 
 **3. Set environment variable**:
 
@@ -255,9 +214,10 @@ complex_agent = Agent(
 
 ## 2. Anthropic Claude Integration
 
-**Anthropic's Claude** excels at long-form content, analysis, and following complex instructions.
+**Anthropic's Claude** excels at long-form content, analysis, and
+following complex instructions.
 
-### Setup
+### Claude Setup
 
 **1. Install dependencies**:
 
@@ -265,7 +225,7 @@ complex_agent = Agent(
 pip install google-adk[litellm] anthropic
 ```
 
-**2. Get API key** from https://console.anthropic.com/
+**2. Get API key** from [Anthropic Console](https://console.anthropic.com/)
 
 **3. Set environment variable**:
 
@@ -423,7 +383,7 @@ throughout.
 - ❌ Slower inference on CPU
 - ❌ Limited context window (typically 4K-32K vs. 200K for cloud models)
 
-### Setup
+### Ollama Setup
 
 **1. Install Ollama**:
 
@@ -448,7 +408,10 @@ ollama serve
 **3. Pull a model**:
 
 ```bash
-# Llama 3.3 (70B parameters, high quality)
+# Granite 4 (IBM, strong reasoning, 8B parameters)
+ollama pull granite4:latest
+
+# Llama 3.3 (Meta, high quality, 70B parameters)
 ollama pull llama3.3
 
 # Mistral (7B parameters, fast)
@@ -456,9 +419,6 @@ ollama pull mistral
 
 # Phi-4 (14B parameters, Microsoft, good coding)
 ollama pull phi4
-
-# CodeLlama (7B, specialized for code)
-ollama pull codellama
 ```
 
 **4. Install Python dependencies**:
@@ -490,12 +450,12 @@ model = LiteLlm(model='ollama_chat/llama3.3')  # ✅ CORRECT
 
 ADK agents require the **chat API** for proper function calling and multi-turn conversations.
 
-### Example: Llama 3.3 Local Agent
+### Example: Granite 4 Local Agent
 
 ```python
 """
-ADK agent using local Llama 3.3 via Ollama.
-Source: contributing/samples/hello_world_ollama/agent.py
+ADK agent using local Granite 4 via Ollama.
+Source: tutorial_implementation/tutorial28/multi_llm_agent/agent.py
 """
 import asyncio
 import os
@@ -521,18 +481,18 @@ def get_weather(city: str) -> dict:
 
 
 async def main():
-    """Agent using local Llama 3.3 model."""
+    """Agent using local Granite 4 model."""
 
     # Create LiteLLM model - format: "ollama_chat/model-name"
     # ⚠️ IMPORTANT: Use ollama_chat, NOT ollama!
-    llama_model = LiteLlm(model='ollama_chat/llama3.3')
+    granite_model = LiteLlm(model='ollama_chat/granite4:latest')
 
     # Create agent with local model
     agent = Agent(
-        model=llama_model,
+        model=granite_model,
         name='local_agent',
-        description='Agent running locally with Llama 3.3',
-        instruction='You are a helpful local assistant. You run entirely on-device.',
+        description='Agent running locally with Granite 4',
+        instruction='You are a helpful local assistant powered by IBM Granite 4. All processing happens on-device.',
         tools=[FunctionTool(get_weather)]
     )
 
@@ -584,15 +544,30 @@ of 72°F and 45% humidity. It's a beautiful day!
 ============================================================
 ```
 
+**Output**:
+
+```
+============================================================
+LOCAL OLLAMA AGENT (Privacy-First)
+============================================================
+
+The weather in San Francisco is currently sunny with a temperature
+of 72°F and 45% humidity. It's a beautiful day!
+
+[All processing done locally - no data sent to cloud]
+
+============================================================
+```
+
 ### Popular Ollama Models
 
 | Model                   | Size   | Best For                        | GPU RAM |
 | ----------------------- | ------ | ------------------------------- | ------- |
+| `ollama_chat/granite4:latest` | 8B    | IBM Granite, strong reasoning   | 12GB    |
 | `ollama_chat/llama3.3`  | 70B    | General tasks, strong reasoning | 40GB+   |
 | `ollama_chat/llama3.2`  | 3B     | Fast, low resource              | 4GB     |
 | `ollama_chat/mistral`   | 7B     | Balanced speed/quality          | 8GB     |
 | `ollama_chat/phi4`      | 14B    | Coding, STEM                    | 16GB    |
-| `ollama_chat/codellama` | 7B-34B | Code generation                 | 8-32GB  |
 | `ollama_chat/gemma2`    | 9B     | Google, instruction following   | 12GB    |
 | `ollama_chat/qwen2.5`   | 7B-72B | Multilingual                    | 8-40GB  |
 
@@ -625,7 +600,7 @@ model = LiteLlm(
 
 **Azure OpenAI** is for enterprises with **Azure contracts** or **compliance requirements**.
 
-### Setup
+### Azure Setup
 
 **1. Create Azure OpenAI resource** in Azure Portal
 
@@ -719,7 +694,7 @@ if __name__ == '__main__':
 
 **Claude on Vertex AI** combines Anthropic's models with Google Cloud infrastructure.
 
-### Setup
+### Vertex AI Setup
 
 **1. Enable Vertex AI API** in Google Cloud Console
 
@@ -990,7 +965,7 @@ that scientists are still trying to fully understand.
 | **OpenAI**    | gpt-4o            | $2.50      | $10.00      | $12.50                 |
 | **Anthropic** | claude-3-5-haiku  | $0.80      | $4.00       | $4.80                  |
 | **Anthropic** | claude-3-7-sonnet | $3.00      | $15.00      | $18.00                 |
-| **Ollama**    | llama3.3 (local)  | $0         | $0          | **$0** 🎉 Free         |
+| **Ollama**    | granite4:latest (local)  | $0         | $0          | **$0** 🎉 Free         |
 
 ### Strategy 1: Tiered Model Selection
 
@@ -1250,9 +1225,9 @@ You've learned how to use OpenAI, Claude, Ollama, and other LLMs in ADK agents v
 **Key Takeaways**:
 
 - ✅ **LiteLLM** enables 100+ LLM providers in ADK
-- ✅ **OpenAI**: `LiteLlm(model='openai/gpt-4o')` - requires `OPENAI_API_KEY`
+- ✅ **OpenAI**: `LiteLlm(model='openai/gpt-4o-mini')` - requires `OPENAI_API_KEY`
 - ✅ **Claude**: `LiteLlm(model='anthropic/claude-3-7-sonnet-20250219')` - requires `ANTHROPIC_API_KEY`
-- ✅ **Ollama**: `LiteLlm(model='ollama_chat/llama3.3')` - ⚠️ Use `ollama_chat`, NOT `ollama`!
+- ✅ **Ollama**: `LiteLlm(model='ollama_chat/granite4:latest')` - ⚠️ Use `ollama_chat`, NOT `ollama`!
 - ✅ **Azure OpenAI**: `LiteLlm(model='azure/deployment-name')` - enterprise option
 - ✅ **DON'T** use LiteLLM for Gemini - use native `GoogleGenAI` instead
 - ✅ **Local models** (Ollama) great for privacy, cost, offline use
@@ -1264,7 +1239,7 @@ You've learned how to use OpenAI, Claude, Ollama, and other LLMs in ADK agents v
 | --------- | --------------------- | --------------------------------------- |
 | OpenAI    | `openai/[model]`      | `openai/gpt-4o`                         |
 | Anthropic | `anthropic/[model]`   | `anthropic/claude-3-7-sonnet-20250219`  |
-| Ollama    | `ollama_chat/[model]` | `ollama_chat/llama3.3` ⚠️ NOT `ollama/` |
+| Ollama    | `ollama_chat/[model]` | `ollama_chat/granite4:latest` ⚠️ NOT `ollama/` |
 | Azure     | `azure/[deployment]`  | `azure/gpt-4o-deployment`               |
 | Vertex AI | `vertex_ai/[model]`   | `vertex_ai/claude-3-7-sonnet@20250219`  |
 
@@ -1274,7 +1249,7 @@ You've learned how to use OpenAI, Claude, Ollama, and other LLMs in ADK agents v
 | ------------------------- | --------------------------------- |
 | Simple tasks, high volume | gemini-2.5-flash or gpt-4o-mini   |
 | Complex reasoning         | claude-3-7-sonnet or gpt-4o       |
-| Privacy/compliance        | ollama_chat/llama3.3 (local)      |
+| Privacy/compliance        | ollama_chat/granite4:latest (local) |
 | Enterprise Azure          | azure/gpt-4o-deployment           |
 | Cost optimization         | gemini-2.5-flash (cheapest cloud) |
 | Offline/air-gapped        | ollama_chat models                |

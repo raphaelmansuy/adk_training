@@ -39,7 +39,7 @@ import * as path from 'path';
  */
 
 const config: Config = {
-  title: 'ADK Training Hub',
+  title: 'Google ADK Training Hub',
   tagline: 'Master Google Agent Development Kit from First Principles',
   favicon: 'img/favicon.ico',
 
@@ -75,6 +75,32 @@ const config: Config = {
 
   // Structured data for rich snippets
   headTags: [
+    // Performance optimizations for Core Web Vitals
+    {
+      tagName: 'link',
+      attributes: {
+        rel: 'preconnect',
+        href: 'https://fonts.googleapis.com',
+      },
+    },
+    {
+      tagName: 'link',
+      attributes: {
+        rel: 'preconnect',
+        href: 'https://fonts.gstatic.com',
+        crossorigin: 'anonymous',
+      },
+    },
+    // Preload critical resources
+    {
+      tagName: 'link',
+      attributes: {
+        rel: 'preload',
+        href: '/img/ADK-512-color.svg',
+        as: 'image',
+        type: 'image/svg+xml',
+      },
+    },
     // Organization schema
     {
       tagName: 'script',
@@ -84,7 +110,7 @@ const config: Config = {
       innerHTML: JSON.stringify({
         '@context': 'https://schema.org',
         '@type': 'Organization',
-        name: 'ADK Training Hub',
+        name: 'Google ADK Training Hub',
         url: 'https://raphaelmansuy.github.io/adk_training/',
         logo: 'https://raphaelmansuy.github.io/adk_training/img/ADK-512-color.svg',
         description: 'Comprehensive training for Google Agent Development Kit with 34 tutorials, mental models, and production-ready examples.',
@@ -109,13 +135,62 @@ const config: Config = {
       innerHTML: JSON.stringify({
         '@context': 'https://schema.org',
         '@type': 'WebSite',
-        name: 'ADK Training Hub',
+        name: 'Google ADK Training Hub',
         url: 'https://raphaelmansuy.github.io/adk_training/',
         description: 'Master Google Agent Development Kit from first principles to production deployment.',
         potentialAction: {
           '@type': 'SearchAction',
           target: 'https://raphaelmansuy.github.io/adk_training/search?q={search_term_string}',
           'query-input': 'required name=search_term_string',
+        },
+      }),
+    },
+
+    // Course schema
+    {
+      tagName: 'script',
+      attributes: {
+        type: 'application/ld+json',
+      },
+      innerHTML: JSON.stringify({
+        '@context': 'https://schema.org',
+        '@type': 'Course',
+        name: 'Google ADK Training Hub - Build Production AI Agents',
+        description: 'Complete hands-on training for Google Agent Development Kit with 34 free tutorials, production deployment patterns, multi-agent systems, and full-stack integration examples.',
+        provider: {
+          '@type': 'Organization',
+          name: 'Google ADK Training Hub',
+          url: 'https://raphaelmansuy.github.io/adk_training/',
+        },
+        courseMode: 'online',
+        educationalLevel: 'beginner to advanced',
+        teaches: [
+          'Google Agent Development Kit (ADK)',
+          'Multi-Agent Systems Architecture',
+          'Agent Orchestration Patterns',
+          'Production Agent Deployment',
+          'Google Gemini Integration',
+          'A2A Protocol Implementation',
+          'MCP Tools Integration',
+          'Agent Testing and Evaluation',
+          'Cloud Run Deployment',
+          'Vertex AI Agent Engine',
+        ],
+        hasCourseInstance: {
+          '@type': 'CourseInstance',
+          courseMode: 'online',
+          courseWorkload: 'PT34H',
+          instructor: {
+            '@type': 'Person',
+            name: 'Raphael Mansuy',
+          },
+        },
+        offers: {
+          '@type': 'Offer',
+          price: '0',
+          priceCurrency: 'USD',
+          availability: 'https://schema.org/InStock',
+          category: 'Free',
         },
       }),
     },
@@ -273,40 +348,51 @@ const config: Config = {
   themeConfig: {
     // Enhanced metadata for better SEO
     metadata: [
-      // Basic SEO meta tags
-      { name: 'keywords', content: 'Google ADK, Agent Development Kit, AI agents, machine learning, Google Gemini, tutorial, programming, Python, JavaScript' },
+      // Basic SEO meta tags with competitor-informed long-tail keywords
+      { name: 'keywords', content: 'Google ADK tutorial, Agent Development Kit Python, build AI agents, multi-agent systems, agent orchestration, Google Gemini agents, ADK training, production AI agents, deploy agents cloud run, agent architecture patterns, A2A protocol, MCP tools, sequential workflows, parallel agents, agent deployment, Vertex AI agents, agent testing, agent evaluation, React agent integration, Next.js AI agents, Streamlit agents, agent state management, tool integration, OpenAPI agents, function calling agents, agent workflows, ADK examples, ADK code samples, learn Google ADK, ADK documentation' },
       { name: 'author', content: 'Raphael Mansuy' },
       { name: 'robots', content: 'index, follow' },
       { name: 'language', content: 'English' },
-      { name: 'revisit-after', content: '7 days' },
+      { name: 'revisit-after', content: '3 days' },
 
-      // Open Graph meta tags
+      // Open Graph meta tags for better social sharing
       { property: 'og:type', content: 'website' },
-      { property: 'og:site_name', content: 'ADK Training Hub' },
+      { property: 'og:site_name', content: 'Google ADK Training Hub' },
       { property: 'og:locale', content: 'en_US' },
+      { property: 'og:title', content: 'Google ADK Training Hub - Master AI Agent Development' },
+      { property: 'og:description', content: 'Complete hands-on training for Google Agent Development Kit with 34 free tutorials, production deployment patterns, multi-agent systems, and full-stack integration examples.' },
+      { property: 'og:image', content: 'https://raphaelmansuy.github.io/adk_training/img/docusaurus-social-card.jpg' },
+      { property: 'og:image:width', content: '1200' },
+      { property: 'og:image:height', content: '630' },
+      { property: 'og:image:alt', content: 'Google ADK Training Hub - Learn to build production AI agents with Google\'s Agent Development Kit' },
+      { property: 'og:url', content: 'https://raphaelmansuy.github.io/adk_training/' },
 
-      // Twitter Card meta tags
+      // Twitter Card meta tags for optimal Twitter sharing
       { name: 'twitter:card', content: 'summary_large_image' },
       { name: 'twitter:site', content: '@raphaelmansuy' },
       { name: 'twitter:creator', content: '@raphaelmansuy' },
+      { name: 'twitter:title', content: 'Google ADK Training Hub - Master AI Agent Development' },
+      { name: 'twitter:description', content: 'Complete hands-on training for Google Agent Development Kit with 34 free tutorials, production deployment patterns, multi-agent systems, and full-stack integration examples.' },
+      { name: 'twitter:image', content: 'https://raphaelmansuy.github.io/adk_training/img/docusaurus-social-card.jpg' },
+      { name: 'twitter:image:alt', content: 'Google ADK Training Hub - Learn to build production AI agents with Google\'s Agent Development Kit' },
 
       // LinkedIn meta tags
       { property: 'og:type', content: 'website' },
-      { property: 'og:site_name', content: 'ADK Training Hub' },
+      { property: 'og:site_name', content: 'Google ADK Training Hub' },
 
       // Google Search Console verification
       { name: 'google-site-verification', content: 'YOUR_VERIFICATION_CODE' }, // Replace with your actual verification code
     ],
 
     // Replace with your project's social card
-    image: 'img/docusaurus-social-card.jpg',
+    image: 'https://raphaelmansuy.github.io/adk_training/img/docusaurus-social-card.jpg',
     colorMode: {
       respectPrefersColorScheme: true,
     },
     navbar: {
-      title: 'ADK Training Hub',
+      title: 'Google ADK Training Hub',
       logo: {
-        alt: 'ADK Training Hub Logo',
+        alt: 'Google ADK Training Hub Logo',
         src: 'img/ADK-512-color.svg',
       },
       items: [

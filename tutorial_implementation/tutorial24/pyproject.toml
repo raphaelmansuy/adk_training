@@ -1,0 +1,34 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "observability_agent"
+version = "0.1.0"
+description = "ADK Tutorial 24: Advanced Observability - Enterprise monitoring with custom plugins"
+authors = [
+    {name = "ADK Training", email = "training@example.com"},
+]
+dependencies = [
+    "google-genai>=1.15.0",
+    "google-adk>=1.16.0",
+]
+requires-python = ">=3.9"
+readme = "README.md"
+
+[project.scripts]
+observability_agent = "observability_agent.agent:main"
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["observability_agent*"]
+
+[tool.setuptools.package-dir]
+"" = "."
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = ["test_*.py"]
+python_classes = ["Test*"]
+python_functions = ["test_*"]
+addopts = "-v --tb=short"
