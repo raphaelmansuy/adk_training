@@ -13,8 +13,9 @@ Key Concepts:
 
 from google.adk.agents import Agent
 from google.adk.tools.langchain_tool import LangchainTool
-from langchain_community.tools import WikipediaQueryRun
+from langchain_community.tools import WikipediaQueryRun, DuckDuckGoSearchRun
 from langchain_community.utilities import WikipediaAPIWrapper
+from crewai_tools import DirectoryReadTool, FileReadTool
 
 
 def create_wikipedia_tool():
@@ -41,29 +42,132 @@ def create_wikipedia_tool():
     return wiki_tool
 
 
-# Create the root agent with Wikipedia tool
+def create_web_search_tool():
+    """
+    Create a web search tool using DuckDuckGo via LangChain.
+    
+    This tool allows the agent to search the web for current information.
+    No API key required - uses DuckDuckGo's public search.
+    
+    Returns:
+        LangchainTool: Wrapped web search tool ready for ADK agent
+    """
+    # Create web search tool with LangChain
+    web_search = DuckDuckGoSearchRun()
+    
+    # Wrap for ADK using LangchainTool
+    search_tool = LangchainTool(tool=web_search)
+    
+    return search_tool
+
+
+def create_directory_read_tool():
+    """
+    Create a directory reading tool using CrewAI.
+    
+    This tool allows the agent to explore directory structures.
+    Useful for understanding project layouts and file organization.
+    
+    Returns:
+        function: ADK-compatible tool function
+    """
+    tool = DirectoryReadTool()
+    
+    def directory_read(directory_path: str) -> dict:
+        """
+        Read the contents of a directory.
+        
+        Args:
+            directory_path: Path to the directory to read
+            
+        Returns:
+            Dict with status, report, and directory contents
+        """
+        try:
+            result = tool.run(directory_path=directory_path)
+            return {
+                'status': 'success',
+                'report': f'Successfully read directory: {directory_path}',
+                'data': result
+            }
+        except Exception as e:
+            return {
+                'status': 'error',
+                'error': str(e),
+                'report': f'Failed to read directory: {directory_path}'
+            }
+    
+    return directory_read
+
+
+def create_file_read_tool():
+    """
+    Create a file reading tool using CrewAI.
+    
+    This tool allows the agent to read file contents.
+    Useful for analyzing code, documents, and configuration files.
+    
+    Returns:
+        function: ADK-compatible tool function
+    """
+    tool = FileReadTool()
+    
+    def file_read(file_path: str) -> dict:
+        """
+        Read the contents of a file.
+        
+        Args:
+            file_path: Path to the file to read
+            
+        Returns:
+            Dict with status, report, and file contents
+        """
+        try:
+            result = tool.run(file_path=file_path)
+            return {
+                'status': 'success',
+                'report': f'Successfully read file: {file_path}',
+                'data': result
+            }
+        except Exception as e:
+            return {
+                'status': 'error',
+                'error': str(e),
+                'report': f'Failed to read file: {file_path}'
+            }
+    
+    return file_read
+
+
+# Create the root agent with multiple third-party tools
 root_agent = Agent(
     name="third_party_agent",
     model="gemini-2.0-flash",
     description="""
-    A research assistant that can search Wikipedia for factual information.
-    Demonstrates integration of third-party tools (LangChain) into ADK agents.
+    A comprehensive research and file analysis assistant with access to Wikipedia, web search, and file system tools.
+    Demonstrates integration of multiple third-party tools (LangChain and CrewAI) into ADK agents.
     
     Key features:
-    - LangChain Wikipedia tool integration
-    - No API keys required
-    - Access to comprehensive encyclopedia knowledge
-    - Structured, factual responses
+    - LangChain Wikipedia tool for encyclopedia knowledge
+    - LangChain DuckDuckGo web search for current information
+    - CrewAI DirectoryReadTool for exploring file structures
+    - CrewAI FileReadTool for analyzing file contents
+    - No API keys required for any tool
+    - Access to both historical facts, recent developments, and local files
+    - Structured, factual responses from multiple sources
     """,
     instruction="""
-You are a knowledgeable research assistant with access to Wikipedia.
+You are a knowledgeable research and file analysis assistant with access to multiple tools.
 
 When users ask questions:
-1. Use the Wikipedia tool to search for relevant information
-2. Provide factual, well-sourced answers
-3. Cite the specific topics you found
-4. If information is not available, be honest about limitations
-5. Suggest related topics when relevant
+1. Use Wikipedia for historical facts, biographies, and established knowledge
+2. Use web search for current events, recent developments, and breaking news
+3. Use directory reading to explore project structures and file organization
+4. Use file reading to analyze specific files, code, or documents
+5. Cross-reference information when possible for comprehensive answers
+6. Provide factual, well-sourced answers with source attribution
+7. If information conflicts, note the discrepancy and suggest verification
+8. Be honest about limitations of each tool
 
 Always be:
 - Accurate and factual
@@ -71,12 +175,19 @@ Always be:
 - Helpful in directing users to more information
 
 Example queries you can help with:
-- "What is quantum computing?"
-- "Tell me about the history of artificial intelligence"
-- "Who was Ada Lovelace?"
-- "What are the main principles of relativity?"
+- "What is quantum computing?" (Wikipedia)
+- "Latest AI developments this year" (Web search)
+- "Tell me about Ada Lovelace" (Wikipedia)
+- "Current news about space exploration" (Web search)
+- "Show me the project structure" (Directory read)
+- "Read the README file" (File read)
     """.strip(),
-    tools=[create_wikipedia_tool()],
+    tools=[
+        create_wikipedia_tool(),
+        create_web_search_tool(),
+        create_directory_read_tool(),
+        create_file_read_tool()
+    ],
     output_key="research_response"
 )
 
@@ -90,7 +201,10 @@ if __name__ == "__main__":
     print(f"Tools: {len(root_agent.tools)} tool(s) registered")
     print("\nAgent created successfully!")
     print("\nTry queries like:")
-    print("  - 'What is quantum computing?'")
-    print("  - 'Tell me about Ada Lovelace'")
-    print("  - 'Explain the theory of relativity'")
+    print("  - 'What is quantum computing?' (Wikipedia)")
+    print("  - 'Latest AI developments this year' (Web search)")
+    print("  - 'Tell me about Ada Lovelace' (Wikipedia)")
+    print("  - 'Current news about space exploration' (Web search)")
+    print("  - 'Show me the project structure' (Directory read)")
+    print("  - 'Read the README file' (File read)")
     print("\nRun 'make dev' to start the agent in web interface")

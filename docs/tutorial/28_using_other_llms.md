@@ -14,7 +14,7 @@ keywords:
     "llm providers",
     "model configuration",
   ]
-status: "draft"
+status: "completed"
 difficulty: "advanced"
 estimated_time: "1.5 hours"
 prerequisites:
@@ -31,29 +31,20 @@ learning_objectives:
 implementation_link: "https://github.com/raphaelmansuy/adk_training/tree/main/tutorial_implementation/tutorial28"
 ---
 
-:::danger UNDER CONSTRUCTION
+:::info Runner API Usage
 
-**This tutorial is currently under construction and may contain errors, incomplete information, or outdated code examples.**
-
-Please check back later for the completed version. If you encounter issues, refer to the working implementation in the [tutorial repository](https://github.com/raphaelmansuy/adk_training/tree/main/tutorial_implementation/tutorial28).
-
-## :::
-
-:::info Verify Runner API Usage
-
-**CRITICAL**: ADK v1.16+ changed the Runner API. All examples in this tutorial use the correct pattern.
+**CRITICAL**: ADK v1.16+ changed the Runner API. All examples in this
+tutorial use the correct pattern.
 
 **Correct Runner API** (verified in source code):
+
 - ✅ CORRECT: `from google.adk.runners import InMemoryRunner`
 - ✅ CORRECT: `runner = InMemoryRunner(agent=agent, app_name='app')`
-- ✅ CORRECT: Create session, then use async iteration with `async for event in runner.run_async(...)`
-
-**Common Mistakes to Avoid**:
-- ❌ WRONG: `from google.adk.agents import Runner` - this class doesn't exist in v1.16+
-- ❌ WRONG: `runner = Runner()` - use InMemoryRunner instead
-- ❌ WRONG: `result = await runner.run_async(query, agent=agent)` - use async iteration
+- ✅ CORRECT: Create session, then use async iteration with
+  `async for event in runner.run_async(...)`
 
 **Required Pattern**:
+
 ```python
 from google.adk.runners import InMemoryRunner
 from google.genai import types
@@ -74,7 +65,9 @@ async for event in runner.run_async(
 
 :::
 
-# Tutorial 28: Using Other LLMs with LiteLLM
+:::
+
+## Overview
 
 **Goal**: Use OpenAI, Claude, Ollama, and other LLMs in your ADK agents via LiteLLM
 
@@ -95,7 +88,9 @@ async for event in runner.run_async(
 - When NOT to use LiteLLM
 - Best practices for cross-provider development
 
-**Source**: `google/adk/models/lite_llm.py`, `contributing/samples/hello_world_litellm/`, `contributing/samples/hello_world_ollama/`
+**Source**: `google/adk/models/lite_llm.py`,
+`contributing/samples/hello_world_litellm/`,
+`contributing/samples/hello_world_ollama/`
 
 ---
 
@@ -134,7 +129,7 @@ pip install google-adk[litellm]
 pip install litellm openai
 ```
 
-**2. Get API key** from https://platform.openai.com/api-keys
+**2. Get API key** from [OpenAI Platform](https://platform.openai.com/api-keys)
 
 **3. Set environment variable**:
 
@@ -255,9 +250,10 @@ complex_agent = Agent(
 
 ## 2. Anthropic Claude Integration
 
-**Anthropic's Claude** excels at long-form content, analysis, and following complex instructions.
+**Anthropic's Claude** excels at long-form content, analysis, and
+following complex instructions.
 
-### Setup
+### Claude Setup
 
 **1. Install dependencies**:
 
@@ -265,7 +261,7 @@ complex_agent = Agent(
 pip install google-adk[litellm] anthropic
 ```
 
-**2. Get API key** from https://console.anthropic.com/
+**2. Get API key** from [Anthropic Console](https://console.anthropic.com/)
 
 **3. Set environment variable**:
 
@@ -423,7 +419,7 @@ throughout.
 - ❌ Slower inference on CPU
 - ❌ Limited context window (typically 4K-32K vs. 200K for cloud models)
 
-### Setup
+### Ollama Setup
 
 **1. Install Ollama**:
 
@@ -625,7 +621,7 @@ model = LiteLlm(
 
 **Azure OpenAI** is for enterprises with **Azure contracts** or **compliance requirements**.
 
-### Setup
+### Azure Setup
 
 **1. Create Azure OpenAI resource** in Azure Portal
 
@@ -719,7 +715,7 @@ if __name__ == '__main__':
 
 **Claude on Vertex AI** combines Anthropic's models with Google Cloud infrastructure.
 
-### Setup
+### Vertex AI Setup
 
 **1. Enable Vertex AI API** in Google Cloud Console
 

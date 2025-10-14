@@ -5,7 +5,7 @@ Tests the agent configuration, tool registration, and LangChain integration.
 """
 
 import pytest
-from third_party_agent.agent import root_agent, create_wikipedia_tool
+from third_party_agent.agent import root_agent
 
 
 class TestAgentConfiguration:
@@ -20,49 +20,58 @@ class TestAgentConfiguration:
     def test_agent_description(self):
         """Test that agent has proper description."""
         description = root_agent.description
-        assert "research assistant" in description.lower()
+        assert "comprehensive research" in description.lower()
         assert "wikipedia" in description.lower()
+        assert "web search" in description.lower()
+        assert "file system" in description.lower()
+        assert "crewai" in description.lower()
         assert "third-party" in description.lower()
 
     def test_agent_instruction(self):
         """Test that agent has comprehensive instructions."""
         instruction = root_agent.instruction
         assert "wikipedia" in instruction.lower()
+        assert "web search" in instruction.lower()
+        assert "directory reading" in instruction.lower()
+        assert "file reading" in instruction.lower()
         assert "research" in instruction.lower()
         assert "factual" in instruction.lower()
 
     def test_agent_tools_registration(self):
         """Test that tools are registered correctly."""
         tools = root_agent.tools
-        assert len(tools) == 1, "Should have 1 tool (Wikipedia)"
+        assert len(tools) == 4, "Should have 4 tools (Wikipedia, Web Search, Directory Read, File Read)"
         
     def test_agent_output_key(self):
         """Test that output_key is configured."""
         assert root_agent.output_key == "research_response"
 
 
-class TestWikipediaTool:
-    """Test Wikipedia tool creation and configuration."""
+class TestWebSearchTool:
+    """Test Web Search tool creation and configuration."""
 
-    def test_create_wikipedia_tool(self):
-        """Test that Wikipedia tool can be created."""
-        wiki_tool = create_wikipedia_tool()
-        assert wiki_tool is not None
+    def test_create_web_search_tool(self):
+        """Test that Web Search tool can be created."""
+        from third_party_agent.agent import create_web_search_tool
+        search_tool = create_web_search_tool()
+        assert search_tool is not None
         
-    def test_wikipedia_tool_type(self):
-        """Test that Wikipedia tool has correct type."""
+    def test_web_search_tool_type(self):
+        """Test that Web Search tool has correct type."""
+        from third_party_agent.agent import create_web_search_tool
         from google.adk.tools.langchain_tool import LangchainTool
-        wiki_tool = create_wikipedia_tool()
+        search_tool = create_web_search_tool()
         # Tool should be a LangchainTool wrapper
-        assert isinstance(wiki_tool, LangchainTool)
+        assert isinstance(search_tool, LangchainTool)
 
-    def test_wikipedia_tool_configuration(self):
-        """Test that Wikipedia tool is properly configured."""
-        wiki_tool = create_wikipedia_tool()
+    def test_web_search_tool_configuration(self):
+        """Test that Web Search tool is properly configured."""
+        from third_party_agent.agent import create_web_search_tool
+        search_tool = create_web_search_tool()
         # Verify the tool has required ADK tool attributes
-        assert hasattr(wiki_tool, 'name')
-        assert hasattr(wiki_tool, 'description')
-        assert hasattr(wiki_tool, 'func')
+        assert hasattr(search_tool, 'name')
+        assert hasattr(search_tool, 'description')
+        assert hasattr(search_tool, 'func')
 
 
 class TestImports:
@@ -80,9 +89,10 @@ class TestImports:
 
     def test_langchain_community_imports(self):
         """Test LangChain community imports."""
-        from langchain_community.tools import WikipediaQueryRun
+        from langchain_community.tools import WikipediaQueryRun, DuckDuckGoSearchRun
         from langchain_community.utilities import WikipediaAPIWrapper
         assert WikipediaQueryRun is not None
+        assert DuckDuckGoSearchRun is not None
         assert WikipediaAPIWrapper is not None
 
     def test_wikipedia_import(self):
@@ -101,12 +111,19 @@ class TestAgentIntegration:
         assert imported_agent.name == "third_party_agent"
 
     def test_agent_has_wikipedia_capability(self):
-        """Test that agent description mentions Wikipedia."""
+        """Test that agent description mentions all tools."""
         assert "wikipedia" in root_agent.description.lower()
+        assert "web search" in root_agent.description.lower()
+        assert "directoryreadtool" in root_agent.description.lower()
+        assert "filereadtool" in root_agent.description.lower()
         assert "wikipedia" in root_agent.instruction.lower()
+        assert "web search" in root_agent.instruction.lower()
+        assert "directory reading" in root_agent.instruction.lower()
+        assert "file reading" in root_agent.instruction.lower()
 
     def test_tool_callable(self):
         """Test that the Wikipedia tool has execution capabilities."""
+        from third_party_agent.agent import create_wikipedia_tool
         wiki_tool = create_wikipedia_tool()
         # Tool should have async execution method
         assert hasattr(wiki_tool, 'run_async')
@@ -130,29 +147,39 @@ class TestProjectStructure:
     def test_imports_work(self):
         """Test that all imports work correctly."""
         from third_party_agent import root_agent
-        from third_party_agent.agent import create_wikipedia_tool
+        from third_party_agent.agent import create_wikipedia_tool, create_web_search_tool, create_directory_read_tool, create_file_read_tool
         assert root_agent is not None
         assert create_wikipedia_tool is not None
+        assert create_web_search_tool is not None
+        assert create_directory_read_tool is not None
+        assert create_file_read_tool is not None
 
 
-class TestLangChainIntegration:
-    """Test LangChain-specific integration."""
+class TestWikipediaTool:
+    """Test Wikipedia tool creation and configuration."""
 
-    def test_langchain_wrapper_usage(self):
-        """Test that LangchainTool wrapper is used correctly."""
+    def test_create_wikipedia_tool(self):
+        """Test that Wikipedia tool can be created."""
+        from third_party_agent.agent import create_wikipedia_tool
+        wiki_tool = create_wikipedia_tool()
+        assert wiki_tool is not None
+        
+    def test_wikipedia_tool_type(self):
+        """Test that Wikipedia tool has correct type."""
+        from third_party_agent.agent import create_wikipedia_tool
         from google.adk.tools.langchain_tool import LangchainTool
         wiki_tool = create_wikipedia_tool()
+        # Tool should be a LangchainTool wrapper
         assert isinstance(wiki_tool, LangchainTool)
 
-    def test_wikipedia_api_wrapper_config(self):
-        """Test Wikipedia API wrapper configuration."""
-        from langchain_community.utilities import WikipediaAPIWrapper
-        # Create wrapper with same config as agent
-        wrapper = WikipediaAPIWrapper(
-            top_k_results=3,
-            doc_content_chars_max=4000
-        )
-        assert wrapper is not None
+    def test_wikipedia_tool_configuration(self):
+        """Test that Wikipedia tool is properly configured."""
+        from third_party_agent.agent import create_wikipedia_tool
+        wiki_tool = create_wikipedia_tool()
+        # Verify the tool has required ADK tool attributes
+        assert hasattr(wiki_tool, 'name')
+        assert hasattr(wiki_tool, 'description')
+        assert hasattr(wiki_tool, 'func')
 
 
 class TestDocumentation:
@@ -166,8 +193,11 @@ class TestDocumentation:
 
     def test_function_docstrings(self):
         """Test that functions have docstrings."""
+        from third_party_agent.agent import create_wikipedia_tool, create_web_search_tool
         assert create_wikipedia_tool.__doc__ is not None
         assert "Wikipedia" in create_wikipedia_tool.__doc__
+        assert create_web_search_tool.__doc__ is not None
+        assert "web search" in create_web_search_tool.__doc__.lower()
 
     def test_agent_has_description(self):
         """Test that agent has description field."""
