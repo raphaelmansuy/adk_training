@@ -13,7 +13,7 @@ keywords:
     "configuration management",
     "environment setup",
   ]
-status: "complete"
+status: "completed"
 difficulty: "intermediate"
 estimated_time: "45 minutes"
 prerequisites: ["Tutorial 01: Hello World Agent", "YAML syntax knowledge"]

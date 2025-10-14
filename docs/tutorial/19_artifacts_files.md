@@ -14,7 +14,7 @@ keywords:
     "document processing",
     "file management",
   ]
-status: "draft"
+status: "completed"
 difficulty: "advanced"
 estimated_time: "1.5 hours"
 prerequisites: ["Tutorial 01: Hello World Agent", "Tutorial 02: Function Tools"]

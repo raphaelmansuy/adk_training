@@ -1,5 +1,6 @@
 ---
 id: ui_integration_intro
+status: "completed"
 ---
 
 # Tutorial 29: Introduction to UI Integration & AG-UI Protocol
