@@ -10,7 +10,7 @@ function App() {
   const [messages, setMessages] = useState<Message[]>([
     {
       role: "assistant",
-      content: "Hi! I'm an AI assistant powered by Google ADK. Ask me anything about ADK, AI, or UI integration!",
+      content: "Hi! I'm powered by Google ADK with Gemini 2.0 Flash. Ask me anything!",
     },
   ]);
   const [input, setInput] = useState("");
@@ -112,119 +112,197 @@ function App() {
   };
 
   return (
-    <div style={{ height: "100vh", display: "flex", flexDirection: "column" }}>
+    <div className="flex flex-col h-screen bg-gray-50">
       {/* Header */}
-      <div
-        style={{
-          padding: "2rem",
-          borderBottom: "1px solid #e5e7eb",
-          backgroundColor: "#f9fafb",
-        }}
-      >
-        <h1 style={{ margin: "0 0 0.5rem 0", fontSize: "1.875rem", fontWeight: "bold" }}>
-          🚀 ADK + AG-UI Quickstart
-        </h1>
-        <p style={{ margin: 0, color: "#6b7280" }}>
-          Direct REST API integration with Google ADK
-        </p>
-      </div>
-
-      {/* Chat Messages */}
-      <div
-        style={{
-          flex: 1,
-          overflowY: "auto",
-          padding: "1rem 2rem",
-          backgroundColor: "#f9fafb",
-        }}
-      >
-        <div style={{ maxWidth: "48rem", margin: "0 auto" }}>
-          {messages.map((message, index) => (
-            <div
-              key={index}
-              style={{
-                marginBottom: "1rem",
-                display: "flex",
-                justifyContent: message.role === "user" ? "flex-end" : "flex-start",
-              }}
-            >
-              <div
-                style={{
-                  maxWidth: "70%",
-                  padding: "0.75rem 1rem",
-                  borderRadius: "0.5rem",
-                  backgroundColor: message.role === "user" ? "#3b82f6" : "#ffffff",
-                  color: message.role === "user" ? "#ffffff" : "#1f2937",
-                  boxShadow: "0 1px 2px rgba(0, 0, 0, 0.1)",
-                }}
+      <header className="bg-white border-b border-gray-200 shadow-sm" role="banner">
+        <div className="max-w-4xl mx-auto px-6 py-4">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <div 
+                className="w-10 h-10 bg-gradient-to-br from-indigo-600 to-purple-600 rounded-xl flex items-center justify-center text-2xl shadow-lg"
+                aria-hidden="true"
               >
-                {message.content}
+                🚀
+              </div>
+              <div>
+                <h1 className="text-xl font-bold text-gray-900">ADK Quickstart</h1>
+                <p className="text-sm text-gray-600">Gemini 2.0 Flash</p>
               </div>
             </div>
-          ))}
-          {isLoading && (
-            <div style={{ display: "flex", justifyContent: "flex-start" }}>
-              <div
-                style={{
-                  padding: "0.75rem 1rem",
-                  borderRadius: "0.5rem",
-                  backgroundColor: "#ffffff",
-                  boxShadow: "0 1px 2px rgba(0, 0, 0, 0.1)",
-                }}
+            <div className="flex items-center gap-2" role="status" aria-live="polite">
+              <div 
+                className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse"
+                aria-hidden="true"
+              ></div>
+              <span className="text-sm font-medium text-emerald-700">Connected</span>
+            </div>
+          </div>
+        </div>
+      </header>
+
+      {/* Chat Messages */}
+      <main 
+        className="flex-1 overflow-y-auto" 
+        role="main"
+        aria-label="Chat conversation"
+      >
+        <div className="max-w-4xl mx-auto px-6 py-8">
+          {messages.length === 1 && (
+            <div 
+              className="text-center py-12"
+              role="status"
+              aria-label="Welcome message"
+            >
+              <div className="text-6xl mb-4" aria-hidden="true">💬</div>
+              <p className="text-lg font-semibold text-gray-700 mb-2">
+                Start a conversation
+              </p>
+              <p className="text-sm text-gray-600">
+                Try: "What is Google ADK?" or "Explain AI agents"
+              </p>
+            </div>
+          )}
+          
+          <div 
+            role="log" 
+            aria-live="polite" 
+            aria-atomic="false"
+            aria-label="Chat messages"
+          >
+            {messages.map((message, index) => (
+              <article
+                key={index}
+                className={`flex gap-3 mb-6 items-start animate-in slide-in-from-bottom-2 duration-300 ${
+                  message.role === "user" ? "justify-end" : "justify-start"
+                }`}
+                role="article"
+                aria-label={`${message.role === "user" ? "Your message" : "Assistant message"}`}
               >
-                Thinking...
+                {message.role === "assistant" && (
+                  <div 
+                    className="w-8 h-8 rounded-lg bg-gradient-to-br from-indigo-600 to-purple-600 flex items-center justify-center flex-shrink-0 text-lg shadow-md"
+                    aria-hidden="true"
+                  >
+                    🤖
+                  </div>
+                )}
+                
+                <div
+                  className={`max-w-[75%] px-4 py-3 rounded-2xl leading-relaxed break-words ${
+                    message.role === "user"
+                      ? "bg-blue-600 text-white shadow-lg shadow-blue-600/30 rounded-br-sm"
+                      : "bg-white text-gray-900 shadow-md border border-gray-100 rounded-bl-sm"
+                  }`}
+                  role="region"
+                  aria-label={message.role === "user" ? "Your message" : "Assistant response"}
+                >
+                  {message.content}
+                </div>
+                
+                {message.role === "user" && (
+                  <div 
+                    className="w-8 h-8 rounded-lg bg-blue-600 flex items-center justify-center flex-shrink-0 text-lg text-white shadow-md"
+                    aria-hidden="true"
+                  >
+                    👤
+                  </div>
+                )}
+              </article>
+            ))}
+          </div>
+          
+          {isLoading && (
+            <div 
+              className="flex gap-3 items-start animate-in slide-in-from-bottom-2 duration-300"
+              role="status"
+              aria-live="polite"
+              aria-label="Assistant is typing"
+            >
+              <div 
+                className="w-8 h-8 rounded-lg bg-gradient-to-br from-indigo-600 to-purple-600 flex items-center justify-center flex-shrink-0 text-lg shadow-md"
+                aria-hidden="true"
+              >
+                🤖
+              </div>
+              <div className="px-4 py-3 rounded-2xl rounded-bl-sm bg-white shadow-md border border-gray-100">
+                <div className="flex gap-1" aria-label="Loading">
+                  <div className="w-2 h-2 rounded-full bg-gray-500 animate-bounce" style={{ animationDelay: "0s" }}></div>
+                  <div className="w-2 h-2 rounded-full bg-gray-500 animate-bounce" style={{ animationDelay: "0.2s" }}></div>
+                  <div className="w-2 h-2 rounded-full bg-gray-500 animate-bounce" style={{ animationDelay: "0.4s" }}></div>
+                </div>
               </div>
             </div>
           )}
-          <div ref={messagesEndRef} />
+          <div ref={messagesEndRef} aria-hidden="true" />
         </div>
-      </div>
+      </main>
 
       {/* Input Form */}
-      <div
-        style={{
-          borderTop: "1px solid #e5e7eb",
-          padding: "1rem 2rem",
-          backgroundColor: "#ffffff",
-        }}
-      >
-        <form
-          onSubmit={sendMessage}
-          style={{ maxWidth: "48rem", margin: "0 auto", display: "flex", gap: "0.5rem" }}
-        >
-          <input
-            type="text"
-            value={input}
-            onChange={(e) => setInput(e.target.value)}
-            placeholder="Type a message..."
-            disabled={isLoading}
-            style={{
-              flex: 1,
-              padding: "0.75rem 1rem",
-              border: "1px solid #d1d5db",
-              borderRadius: "0.5rem",
-              fontSize: "1rem",
-              outline: "none",
-            }}
-          />
-          <button
-            type="submit"
-            disabled={isLoading || !input.trim()}
-            style={{
-              padding: "0.75rem 2rem",
-              backgroundColor: isLoading || !input.trim() ? "#9ca3af" : "#3b82f6",
-              color: "#ffffff",
-              border: "none",
-              borderRadius: "0.5rem",
-              fontSize: "1rem",
-              fontWeight: "600",
-              cursor: isLoading || !input.trim() ? "not-allowed" : "pointer",
-            }}
+      <footer className="bg-white border-t border-gray-200 shadow-lg" role="contentinfo">
+        <div className="max-w-4xl mx-auto px-6 py-4">
+          <form 
+            onSubmit={sendMessage} 
+            className="flex gap-3"
+            aria-label="Message input form"
           >
-            {isLoading ? "Sending..." : "Send"}
-          </button>
-        </form>
-      </div>
+            <div className="flex-1 relative">
+              <label htmlFor="message-input" className="sr-only">
+                Type your message
+              </label>
+              <input
+                id="message-input"
+                type="text"
+                value={input}
+                onChange={(e) => setInput(e.target.value)}
+                placeholder="Type your message..."
+                disabled={isLoading}
+                autoFocus
+                autoComplete="off"
+                aria-label="Message input"
+                aria-describedby="message-hint"
+                aria-invalid="false"
+                className="w-full px-5 py-3 pr-12 border-2 border-gray-300 rounded-full text-base outline-none transition-all bg-white text-gray-900 placeholder-gray-500 focus:border-blue-600 focus:ring-4 focus:ring-blue-600/20 disabled:bg-gray-100 disabled:text-gray-500 disabled:cursor-not-allowed"
+              />
+              {input.length > 0 && (
+                <div 
+                  className="absolute right-4 top-1/2 -translate-y-1/2 text-sm text-gray-500 pointer-events-none"
+                  aria-live="polite"
+                  aria-atomic="true"
+                >
+                  <span className="sr-only">Character count: </span>
+                  {input.length}
+                </div>
+              )}
+            </div>
+            <button
+              type="submit"
+              disabled={isLoading || !input.trim()}
+              aria-label={isLoading ? "Sending message" : "Send message"}
+              aria-busy={isLoading}
+              className="px-6 py-3 bg-blue-600 text-white rounded-full font-semibold transition-all flex items-center gap-2 shadow-lg shadow-blue-600/30 hover:bg-blue-700 hover:-translate-y-0.5 hover:shadow-xl hover:shadow-blue-600/40 focus:outline-none focus:ring-4 focus:ring-blue-600/20 disabled:bg-gray-300 disabled:text-gray-600 disabled:cursor-not-allowed disabled:shadow-none disabled:translate-y-0"
+            >
+              {isLoading ? (
+                <>
+                  <span>Sending</span>
+                  <span className="animate-spin" aria-hidden="true">⏳</span>
+                </>
+              ) : (
+                <>
+                  <span>Send</span>
+                  <span aria-hidden="true">🚀</span>
+                </>
+              )}
+            </button>
+          </form>
+          <p 
+            id="message-hint" 
+            className="text-center text-xs text-gray-500 mt-3"
+            role="contentinfo"
+          >
+            Powered by Google ADK • Tutorial 29 Quick Start
+          </p>
+        </div>
+      </footer>
     </div>
   );
 }
