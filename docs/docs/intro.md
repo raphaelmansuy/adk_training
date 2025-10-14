@@ -2,46 +2,96 @@
 sidebar_position: 1
 ---
 
-# Tutorial Intro
+# Build AI Agents That Actually Work
 
-Let's discover **Docusaurus in less than 5 minutes**.
+**Stop reading theory. Start shipping production AI agents.**
 
-## Getting Started
+You're here because AI agents are the future, and you need practical skills now. This training hub gives you **23 working implementations** you can run, modify, and learn from today.
 
-Get started by **creating a new site**.
+## What You Get
 
-Or **try Docusaurus immediately** with **[docusaurus.new](https://docusaurus.new)**.
+**Working code, not concepts:**
 
-### What you'll need
+- 23 complete tutorials with production-ready implementations
+- Copy-paste patterns for common agent scenarios
+- Testing frameworks you can adapt to your projects
+- Real deployment examples (Cloud Run, Vertex AI)
 
-- [Node.js](https://nodejs.org/en/download/) version 20.0 or above:
-  - When installing Node.js, you are recommended to check all checkboxes related to dependencies.
+**Professional skills that matter:**
 
-## Generate a new site
+- Ship AI features faster with proven patterns
+- Debug and test agents like traditional software
+- Architect multi-agent systems that scale
+- Integrate with Next.js, React, and enterprise tools
 
-Generate a new Docusaurus site using the **classic template**.
+**Status: 23/34 tutorials ready (68% complete)**
 
-The classic template will automatically be added to your project after you run the command:
-
-```bash
-npm init docusaurus@latest my-website classic
-```
-
-You can type this command into Command Prompt, Powershell, Terminal, or any other integrated terminal of your code editor.
-
-The command also installs all necessary dependencies you need to run Docusaurus.
-
-## Start your site
-
-Run the development server:
+## 🚀 Quick Start (5 Minutes)
 
 ```bash
-cd my-website
-npm run start
+# 1. Install
+pip install google-adk
+
+# 2. Get free API key from https://makersuite.google.com/app/apikey
+export GOOGLE_API_KEY=your_key
+
+# 3. Run your first agent
+git clone <repo-url>
+cd adk_training/tutorial_implementation/tutorial01
+make setup && adk web
 ```
 
-The `cd` command changes the directory you're working with. In order to work with your newly created Docusaurus site, you'll need to navigate the terminal there.
+**That's it.** Now learn why it works: [Tutorial 01 (30 min)](../tutorial/01_hello_world_agent.md)
 
-The `npm run start` command builds your website locally and serves it through a development server, ready for you to view at http://localhost:3000/.
+## � Choose Your Path
 
-Open `docs/intro.md` (this page) and edit some lines: the site **reloads automatically** and displays your changes.
+### � "I need results this week" (4-6 hours)
+
+**Tutorials 01-03 + 14** - Build an agent, add tools, connect APIs, add streaming.
+
+**You'll ship:** Working AI agent integrated with your APIs.
+
+### 🏗️ "I'm building an AI product" (2-3 days)
+
+**Tutorials 01-21** - Full foundation through advanced patterns.
+
+**You'll ship:** Production-grade multi-agent system with testing and monitoring.
+
+### � "I'm architecting enterprise AI" (3-5 days)
+
+**All 23 tutorials** - Complete expertise in agent architecture.
+
+**You'll gain:** Deep knowledge to make critical design decisions.
+
+## 📚 Key Resources
+
+Read first: [Mental Models Guide](../tutorial/overview.md) - Core concepts and patterns
+
+## � Key Resources
+
+**Documentation:**
+
+- [Tutorial Index](../tutorial/tutorial_index.md) - All 34 tutorials
+- [Mental Models](../tutorial/overview.md) - Core concepts
+- [ADK Cheat Sheet](../tutorial/adk-cheat-sheet.md) - Quick reference
+
+**External:**
+
+- [Official ADK Docs](https://google.github.io/adk-docs/) - Google's docs
+- [ADK Source Code](https://github.com/google/adk-python) - When docs aren't enough
+- [Get API Key](https://makersuite.google.com/app/apikey) - Free access
+
+## 🤝 Found This Useful?
+
+- ⭐ Star this repo to help others discover it
+- 🐛 Report issues if something's unclear
+- 💡 Share what you built with ADK
+- 📝 Contribute improvements
+
+## 👨‍💻 About
+
+Created by [Raphaël MANSUY](https://linkedin.com/in/raphaelmansuy), CTO who teaches AI at Oxford. Built from production experience, not theory.
+
+---
+
+**[Start Building →](../tutorial/01_hello_world_agent.md)**

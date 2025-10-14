@@ -70,6 +70,38 @@ html {
 
 body {
   font-feature-settings: 'rlig' 1, 'calt' 1;
+  /* Improve text rendering on mobile */
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Enhanced mobile responsiveness */
+@media (max-width: 768px) {
+  body {
+    font-size: 16px; /* Prevent zoom on iOS */
+  }
+  
+  /* Improve touch targets */
+  button, .button, a {
+    min-height: 44px; /* iOS recommended touch target size */
+    min-width: 44px;
+  }
+  
+  /* Better spacing on mobile */
+  .container {
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+}
+
+/* Prevent horizontal scroll on mobile */
+* {
+  box-sizing: border-box;
+}
+
+html, body {
+  overflow-x: hidden;
+  width: 100%;
 }
 
 /* Improved heading styles */

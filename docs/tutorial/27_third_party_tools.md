@@ -13,9 +13,9 @@ keywords:
     "sdks",
     "custom toolsets",
   ]
-status: "draft"
-difficulty: "advanced"
-estimated_time: "2 hours"
+status: "completed"
+difficulty: "intermediate"
+estimated_time: "1.5 hours"
 prerequisites:
   [
     "Tutorial 02: Function Tools",
@@ -30,88 +30,167 @@ learning_objectives:
 implementation_link: "https://github.com/raphaelmansuy/adk_training/tree/main/tutorial_implementation/tutorial27"
 ---
 
-:::danger UNDER CONSTRUCTION
-
-**This tutorial is currently under construction and may contain errors, incomplete information, or outdated code examples.**
-
-Please check back later for the completed version. If you encounter issues, refer to the working implementation in the [tutorial repository](https://github.com/raphaelmansuy/adk_training/tree/main/tutorial_implementation/tutorial27).
-
-## :::
-
-:::info API Verification
-
-This tutorial has been verified against **ADK Python SDK v1.16.0+**.
-
-**Critical API Information:**
-
-- ✅ Import: `from google.adk.tools.langchain_tool import LangchainTool`
-- ✅ Import: `from google.adk.tools.crewai_tool import CrewaiTool`
-- ✅ Runner: Use `InMemoryRunner` from `google.adk.runners`
-- ✅ run_async: Requires `user_id`, `session_id`, returns `AsyncGenerator[Event]`
-- ❌ WRONG: `from google.adk.tools.third_party` - this module path doesn't exist
-- ❌ WRONG: `Runner()` from `google.adk.agents` - use InMemoryRunner
-
-**Correct import pattern:**
-```python
-from google.adk.tools.langchain_tool import LangchainTool  # ✅ CORRECT
-from google.adk.tools.crewai_tool import CrewaiTool  # ✅ CORRECT
-from google.adk.runners import InMemoryRunner  # ✅ CORRECT
-```
-
-Source verification: `research/adk-python/src/google/adk/tools/` (2025-01-13)
-
-:::
-
 # Tutorial 27: Third-Party Framework Tools Integration
 
-**Goal**: Integrate tools from LangChain, CrewAI, and other AI frameworks into your ADK agents
+**Goal**: Integrate tools from LangChain and CrewAI frameworks into ADK agents
 
 **Prerequisites**:
 
 - Tutorial 01 (Hello World Agent)
 - Tutorial 02 (Function Tools)
-- Tutorial 06 (Agents & Orchestration)
-- Familiarity with Python package management
+- Basic Python package management
 
 **What You'll Learn**:
 
-- Integrating LangChain tools (100+ tools)
-- Integrating CrewAI tools (20+ tools)
-- Using AG-UI Protocol for framework-level integration
-- Choosing between tool-level and protocol-level integration
-- Best practices for cross-framework compatibility
-- Real-world multi-framework agent examples
+- ✅ How to use `LangchainTool` wrapper for LangChain tools
+- ✅ How to integrate CrewAI tools with custom function wrappers
+- ✅ Proper import paths (`google.adk.tools.langchain_tool`)
+- ✅ Multi-framework agent development (LangChain + CrewAI)
+- ✅ Tool selection and orchestration
+- ✅ No API keys required for basic functionality
 
-**Source**: https://google.github.io/adk-docs/tools/third-party-tools/
+**Source**: [ADK Third-Party Tools Documentation](https://google.github.io/adk-docs/tools/third-party-tools/)
+
+**Status**: ✅ **WORKING IMPLEMENTATION** - All tools demonstrated with no API keys required
 
 ---
 
 ## Why Integrate Third-Party Tools?
 
-**The Problem**: Building every tool from scratch is time-consuming.
+**The Problem**: Building every tool from scratch is time-consuming and limits functionality.
 
-**The Solution**: Leverage existing tool ecosystems from mature AI frameworks.
+**The Solution**: Leverage existing tool ecosystems from mature AI frameworks while maintaining ADK's agent orchestration capabilities.
 
 **What You Get**:
 
-- **LangChain**: 100+ tools (search, APIs, databases, etc.)
-- **CrewAI**: 20+ tools (web scraping, file operations, etc.)
-- **LangGraph**: State management and complex workflows
-- **Mastra**: Multi-agent orchestration
-- **Pydantic AI**: Type-safe tool definitions
-- **LlamaIndex**: Advanced RAG and data connectors
+- **LangChain**: 100+ tools (search, APIs, databases, etc.) via `LangchainTool` wrapper
+- **CrewAI**: 20+ tools (web scraping, file operations, etc.) via custom function wrappers
+- **Multi-framework agents**: Combine tools from different frameworks in single agents
+- **No API keys required**: Start with public APIs and tools that work immediately
+- **Extensible**: Add API-key-based tools as needed for enhanced functionality
 
 **Integration Approaches**:
 
-| Approach           | Level            | Use Case                                        |
-| ------------------ | ---------------- | ----------------------------------------------- |
-| **LangchainTool**  | Individual tools | "I need Tavily search in my ADK agent"          |
-| **CrewaiTool**     | Individual tools | "I need Serper search in my ADK agent"          |
-| **AG-UI Protocol** | Framework-level  | "I want LangGraph agents to talk to ADK agents" |
+| Approach           | Level            | Use Case                                        | Implementation |
+| ------------------ | ---------------- | ----------------------------------------------- | -------------- |
+| **LangchainTool**  | Individual tools | "I need Wikipedia search in my ADK agent"       | ✅ Working     |
+| **CrewAI Functions**| Individual tools | "I need file system tools in my ADK agent"      | ✅ Working     |
+| **AG-UI Protocol** | Framework-level  | "I want LangGraph agents to talk to ADK agents" | 📝 Future      |
 
 ---
 
-## 1. LangChain Tools Integration
+## Working Implementation Overview
+
+This tutorial includes a **complete, working implementation** that demonstrates:
+
+- **4 integrated tools** from 2 frameworks (LangChain + CrewAI)
+- **No API keys required** - works immediately after setup
+- **Comprehensive testing** - 25 tests covering all functionality
+- **Production-ready code** - proper error handling and documentation
+
+**Tools Demonstrated**:
+1. **Wikipedia Search** (LangChain) - Encyclopedia knowledge
+2. **Web Search** (LangChain) - Current information via DuckDuckGo
+3. **Directory Reading** (CrewAI) - File system exploration
+4. **File Reading** (CrewAI) - Content analysis
+
+**Quick Start**:
+```bash
+cd tutorial_implementation/tutorial27
+make setup
+export GOOGLE_API_KEY=your_key_here
+make dev
+# Select 'third_party_agent' from dropdown
+```
+
+**Example Queries**:
+- "What is quantum computing?" (Wikipedia)
+- "Latest AI developments this year" (Web search)
+- "Show me the project structure" (Directory read)
+- "Read the README file" (File read)
+
+---
+
+## 1. Working Implementation: Multi-Framework Agent
+
+This tutorial includes a **complete, working implementation** that demonstrates integration of **4 tools from 2 frameworks**:
+
+- **LangChain Tools**: Wikipedia search, DuckDuckGo web search
+- **CrewAI Tools**: Directory reading, File reading
+- **No API keys required** - all tools work immediately
+- **25 comprehensive tests** - full test coverage
+- **Production-ready code** - proper error handling and documentation
+
+### Quick Start
+
+```bash
+cd tutorial_implementation/tutorial27
+make setup
+export GOOGLE_API_KEY=your_key_here
+make dev
+# Select 'third_party_agent' from dropdown
+```
+
+### Agent Architecture
+
+```python
+from google.adk.agents import Agent
+from google.adk.tools.langchain_tool import LangchainTool
+from langchain_community.tools import WikipediaQueryRun, DuckDuckGoSearchRun
+from langchain_community.utilities import WikipediaAPIWrapper
+
+# Custom CrewAI tool wrappers (no CrewaiTool wrapper needed)
+def create_directory_read_tool():
+    tool = DirectoryReadTool()
+    def directory_read(directory_path: str) -> dict:
+        try:
+            result = tool.run(directory_path=directory_path)
+            return {
+                'status': 'success',
+                'report': f'Successfully read directory: {directory_path}',
+                'data': result
+            }
+        except Exception as e:
+            return {
+                'status': 'error',
+                'error': str(e),
+                'report': f'Failed to read directory: {directory_path}'
+            }
+    return directory_read
+
+# Create tools
+wiki_tool = LangchainTool(
+    tool=WikipediaQueryRun(
+        api_wrapper=WikipediaAPIWrapper(
+            top_k_results=3,
+            doc_content_chars_max=4000
+        )
+    )
+)
+
+web_search_tool = LangchainTool(tool=DuckDuckGoSearchRun())
+
+# Create agent with 4 tools from 2 frameworks
+root_agent = Agent(
+    name="third_party_agent",
+    model="gemini-2.0-flash",
+    description="Multi-framework agent with LangChain and CrewAI tools",
+    tools=[
+        wiki_tool,
+        web_search_tool,
+        create_directory_read_tool(),
+        create_file_read_tool()
+    ],
+    output_key="research_response"
+)
+```
+
+### Example Queries
+
+- **Wikipedia Research**: "What is quantum computing?"
+- **Web Search**: "Latest AI developments this year"
+- **Directory Exploration**: "Show me the project structure"
+- **File Analysis**: "Read the README file"
 
 **LangChain** has **100+ pre-built tools** for search, APIs, databases, and more.
 
@@ -548,26 +627,26 @@ agent = Agent(
 
 ```
 ┌─────────────────────────────────────────────────────────┐
-│                    USER INTERFACE                        │
+│                    USER INTERFACE                       │
 │            (Web app, CLI, IDE, etc.)                    │
 └────────────────────┬────────────────────────────────────┘
                      │ AG-UI Protocol (Events)
 ┌────────────────────┴────────────────────────────────────┐
-│                   AGENT LAYER                            │
-│                                                           │
-│  ┌──────────┐  ┌──────────┐  ┌──────────┐              │
-│  │   ADK    │  │ LangGraph│  │  CrewAI  │  ◄── Unified │
-│  │  Agent   │  │  Agent   │  │  Agent   │      Events  │
-│  └──────────┘  └──────────┘  └──────────┘              │
-│                                                           │
+│                   AGENT LAYER                           │
+│                                                         │
+│  ┌──────────┐  ┌──────────┐  ┌──────────┐               │
+│  │   ADK    │  │ LangGraph│  │  CrewAI  │  ◄── Unified  │
+│  │  Agent   │  │  Agent   │  │  Agent   │      Events   │
+│  └──────────┘  └──────────┘  └──────────┘               │
+│                                                         │
 └────────────────────┬────────────────────────────────────┘
                      │ A2A Protocol (Agent-to-Agent)
 ┌────────────────────┴────────────────────────────────────┐
-│               AGENT COLLABORATION                        │
+│               AGENT COLLABORATION                       │
 └────────────────────┬────────────────────────────────────┘
                      │ MCP (Model Context Protocol)
 ┌────────────────────┴────────────────────────────────────┐
-│                    TOOL LAYER                            │
+│                    TOOL LAYER                           │
 │    APIs · Databases · Filesystems · Services            │
 └─────────────────────────────────────────────────────────┘
 ```
