@@ -10,6 +10,8 @@ Published: October 9, 2025
 
 Welcome to the ADK Training Hub - your comprehensive guide to mastering Google Agent Development Kit (ADK) and building production-ready AI agents from first principles.
 
+<!-- truncate -->
+
 ## What is ADK Training Hub?
 
 This site serves as the definitive resource for developers, researchers, and organizations looking to master Google's Agent Development Kit. Whether you're just starting your journey into AI agent development or looking to scale production systems, this hub provides everything you need.

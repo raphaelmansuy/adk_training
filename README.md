@@ -1,31 +1,43 @@
 # Google ADK Training Hub
 
-A comprehensive training repository for Google Agent Development Kit (ADK), featuring 34 tutorials, mental models, research, and automated testing. The project teaches agent development from first principles to production deployment.
+**Build production-ready AI agents tutorials that solve real problems.**
 
-This project provides a complete learning journey through Google ADK, featuring:
+You're here because AI agents are transforming software development, and you want practical skills you can use at work tomorrow. This training hub gives you exactly that—no fluff, just working code and proven patterns from 25 completed tutorials.
 
-- **34 comprehensive tutorials** covering everything from basic agents to production deployment
-- **18 completed tutorials** with working implementations and automated testing
-- **16 draft tutorials** with detailed documentation ready for implementation
-- **Mental models framework** for understanding ADK patterns and Generative AI concepts
-- **Research and integration examples** for various UI frameworks and deployment scenarios
-- **Production-ready code examples** and best practices
+## What You'll Gain
 
-> **📊 Completion Status: 18/34 tutorials implemented (53%)**
+**Professionally:**
+- Ship AI features faster with reusable agent patterns
+- Architect multi-agent systems that scale
+- Debug and test AI agents like traditional software
+- Deploy to production with confidence
+
+**Practically:**
+- 25 working implementations you can run today
+- Copy-paste code patterns for common scenarios
+- Testing frameworks you can adapt to your projects
+- Integration examples for Next.js, React, and more
+
+**Completion Status: 25/34 tutorials ready to use (74%)**
+
+> Built by developers, for developers. Every tutorial has working code, not just theory.
 
 ## 📚 Documentation
 
-📚 **[View Interactive Documentation](https://raphaelmansuy.github.io/adk_training/)** - Complete tutorial series with working examples, mental models, and Mermaid diagrams
+**[View Interactive Documentation →](https://raphaelmansuy.github.io/adk_training/)**
 
-## 📚 What's ADK?
+## Why Google ADK?
 
-Google Agent Development Kit (ADK) is a powerful framework for building AI agents that combine:
+ADK solves the messy reality of production AI agents: how do you connect LLMs to your APIs, manage conversation state, orchestrate complex workflows, and actually deploy something reliable?
 
-- **Large Language Models** (Gemini, GPT-4, Claude, etc.)
-- **Tools and Capabilities** (APIs, databases, custom functions)
-- **State Management** (session context, long-term memory)
-- **Workflow Orchestration** (sequential, parallel, loop patterns)
-- **Production Deployment** (Cloud Run, Vertex AI, Kubernetes)
+**ADK gives you:**
+
+- **Tool integration** that just works (REST APIs, databases, custom functions)
+- **Workflow patterns** you can copy (sequential, parallel, error handling)
+- **State management** without the headache (sessions, memory, artifacts)
+- **Production deployment** to Google Cloud (Cloud Run, Vertex AI, GKE)
+
+Think of it as the missing framework between "ChatGPT API call" and "production AI system."
 
 ## 🏗️ Project Structure
 
@@ -61,15 +73,15 @@ Google Agent Development Kit (ADK) is a powerful framework for building AI agent
 │   ├── 24_advanced_observability.md # 📝 DRAFT - Advanced monitoring
 │   ├── 25_best_practices.md       # 📝 DRAFT - Best practices
 │   ├── 26_google_agentspace.md    # 📝 DRAFT - AgentSpace platform
-│   ├── 27_third_party_tools.md    # 📝 DRAFT - Third-party integrations
-│   ├── 28_using_other_llms.md     # 📝 DRAFT - Multi-provider LLMs
+│   ├── 27_third_party_tools.md    # ✅ COMPLETED - Third-party integrations
+│   ├── 28_using_other_llms.md     # ✅ COMPLETED - Multi-provider LLMs
 │   ├── 29_ui_integration_intro.md # 📝 DRAFT - UI integration overview
 │   ├── 30_nextjs_adk_integration.md # 📝 DRAFT - Next.js integration
 │   ├── 31_react_vite_adk_integration.md # 📝 DRAFT - React/Vite integration
 │   ├── 32_streamlit_adk_integration.md # 📝 DRAFT - Streamlit integration
 │   ├── 33_slack_adk_integration.md # 📝 DRAFT - Slack integration
 │   └── 34_pubsub_adk_integration.md # 📝 DRAFT - PubSub integration
-├── tutorial_implementation/       # ✅ 18 working implementations
+├── tutorial_implementation/       # ✅ 25 working implementations
 │   ├── tutorial01/                # Hello World Agent
 │   ├── tutorial02/                # Function Tools
 │   ├── tutorial03/                # OpenAPI Tools
@@ -99,107 +111,68 @@ Google Agent Development Kit (ADK) is a powerful framework for building AI agent
 └── how-to-build-ai-agent/         # Step-by-step agent building guide
 ```
 
-## 🚀 Quick Start
+## 🚀 Get Started (5 minutes)
 
-### Prerequisites
-
-- Python 3.9+
-- Google Cloud API key (for Gemini models)
-- Basic Python knowledge
-
-### Installation
+**Prerequisites:** Python 3.9+, Google Cloud API key ([get one free](https://makersuite.google.com/app/apikey))
 
 ```bash
-# Install Google ADK
+# 1. Install
 pip install google-adk
 
-# Set your API key
-export GOOGLE_API_KEY=your_google_api_key_here
-```
+# 2. Set your API key
+export GOOGLE_API_KEY=your_key_here
 
-### First Agent
-
-```bash
-# Clone this repository
+# 3. Clone and run your first agent
 git clone <repository-url>
-cd adk_training
-
-# Start with Tutorial 01
-# Follow the docs/tutorial/01_hello_world_agent.md guide
+cd adk_training/tutorial_implementation/tutorial01
+make setup && adk web
 ```
 
-## 📖 Learning Path
+**That's it.** You now have a working agent you can modify and learn from.
 
-### 1. Foundation (✅ COMPLETED - Tutorials 01-03)
+Start with [Tutorial 01](docs/tutorial/01_hello_world_agent.md) (30 min) to understand what you just built.
 
-Master the foundations of agent development.
+## 📖 Learning Paths (Choose Your Journey)
 
-- Read `overview.md` - Mental models for ADK mastery
-- **Tutorial 01: Hello World Agent** ✅ - Agent basics
-- **Tutorial 02: Function Tools** ✅ - Custom tools
-- **Tutorial 03: OpenAPI Tools** ✅ - REST API integration
+### 🎯 "I need results this week" (4-6 hours)
 
-### 2. Workflows (✅ COMPLETED - Tutorials 04-07)
+**For:** Developers who need to ship AI features quickly
 
-Build sophisticated multi-agent workflows.
+1. **Tutorials 01-03** - Foundation (2 hrs)
+   - Build your first agent, add custom tools, connect REST APIs
+2. **Tutorial 04** - Sequential workflows (1 hr)
+   - Chain agents together for complex tasks
+3. **Tutorial 14** - Streaming (1 hr)
+   - Add real-time responses to your UI
 
-- **Tutorial 04: Sequential Workflows** ✅ - Ordered pipelines
-- **Tutorial 05: Parallel Processing** ✅ - Concurrent tasks
-- **Tutorial 06: Multi-Agent Systems** ✅ - Complex orchestration
-- **Tutorial 07: Loop Agents** ✅ - Iterative refinement
+**You'll ship:** A working AI agent integrated with your APIs, streaming responses to users.
 
-### 3. Production (✅ COMPLETED - Tutorials 08-12)
+### 🏗️ "I'm building a serious AI product" (2-3 days)
 
-Master production-ready features.
+**For:** Teams architecting multi-agent systems
 
-- **Tutorial 08: State & Memory** ✅ - Session context & persistence
-- **Tutorial 09: Callbacks & Guardrails** ✅ - Control & quality assurance
-- **Tutorial 10: Evaluation & Testing** ✅ - Comprehensive testing framework
-- **Tutorial 11: Built-in Tools & Grounding** ✅ - Google search & grounding
-- **Tutorial 12: Planners & Thinking** ✅ - Advanced reasoning patterns
+1. **Foundation** (Tutorials 01-03) - Basics
+2. **Workflows** (Tutorials 04-07) - Orchestration patterns
+3. **Production** (Tutorials 08-12) - State, testing, guardrails
+4. **Advanced** (Tutorials 13-21) - Streaming, MCP, A2A, multimodal
 
-### 4. Advanced Features (Tutorials 13-28)
+**You'll ship:** A production-grade multi-agent system with proper testing, monitoring, and deployment.
 
-Advanced capabilities and integrations.
+### 🚀 "I'm architecting enterprise AI" (3-5 days)
 
-- **Tutorial 13: Code Execution** ✅ - Safe code execution environments
-- **Tutorial 14: Streaming & SSE** ✅ - Real-time responses
-- **Tutorial 15: Live API Audio** ✅ - Audio processing & voice
-- **Tutorial 16: MCP Integration** ✅ - Model Context Protocol
-- **Tutorial 17: Agent-to-Agent Communication** ✅ - Inter-agent messaging
-- **Tutorial 18: Events & Observability** ✅ - Monitoring & logging
-- **Tutorial 19: Artifacts & Files** 📝 - File handling & processing
-- **Tutorial 20: YAML Configuration** 📝 - Declarative configuration
-- **Tutorial 21: Multimodal Image** 📝 - Image analysis & vision
-- **Tutorial 22: Model Selection** 📝 - Model optimization & comparison
-- **Tutorial 23: Production Deployment** 📝 - Enterprise deployment
-- **Tutorial 24: Advanced Observability** 📝 - Performance monitoring
-- **Tutorial 25: Best Practices** 📝 - Production patterns
-- **Tutorial 26: Google AgentSpace** 📝 - AgentSpace platform
-- **Tutorial 27: Third-Party Tools** 📝 - External integrations
-- **Tutorial 28: Using Other LLMs** 📝 - Multi-provider support
+**For:** Senior engineers and architects
 
-### 5. UI Integration (📝 DRAFT - Tutorials 29-34)
+Complete all 25 tutorials, focusing on:
+- Multi-agent orchestration patterns
+- Production observability and testing
+- Enterprise deployment strategies
+- UI integration with Next.js/React
 
-User interface integration with modern frameworks.
+**You'll gain:** Deep expertise in agent architecture and the patterns to make critical design decisions.
 
-- **Tutorial 29: UI Integration Intro** 📝 - Integration patterns overview
-- **Tutorial 30: Next.js ADK Integration** 📝 - React web applications
-- **Tutorial 31: React Vite ADK Integration** 📝 - Modern React development
-- **Tutorial 32: Streamlit ADK Integration** 📝 - Python-based interfaces
-- **Tutorial 33: Slack ADK Integration** 📝 - Enterprise messaging
-- **Tutorial 34: PubSub ADK Integration** 📝 - Event-driven systems
+## 📚 All Tutorials (25 Ready, 9 Coming Soon)
 
-## 🔧 Key Features Covered
-
-- **Agent Types**: LLM Agents, Workflow Agents, Remote Agents
-- **Tools**: Function Tools, OpenAPI Tools, MCP Tools, Built-in Google Tools
-- **Workflows**: Sequential, Parallel, Loop patterns
-- **State Management**: Session state, Memory service, Artifacts
-- **Deployment**: Local development, Cloud Run, Vertex AI Agent Engine, GKE
-- **Integrations**: REST APIs, Databases, UI frameworks, Third-party tools
-- **Multi-Provider**: Gemini, OpenAI, Claude, Ollama, Azure OpenAI
-- **Production Features**: Callbacks, Guardrails, Evaluation, Observability
+See the complete tutorial list in the [Project Structure](#🏗️-project-structure) section above, or browse the [interactive documentation](https://raphaelmansuy.github.io/adk_training/).
 
 ## 🎓 Tutorials Overview
 
@@ -223,18 +196,18 @@ User interface integration with modern frameworks.
 | 16       | MCP Integration              | ✅ Completed | Advanced     | 1.5hr |
 | 17       | Agent-to-Agent Communication | ✅ Completed | Advanced     | 1hr   |
 | 18       | Events & Observability       | ✅ Completed | Advanced     | 1.5hr |
-| 19       | Artifacts & Files            | 📝 Draft     | Intermediate | 1hr   |
-| 20       | YAML Configuration           | 📝 Draft     | Intermediate | 1hr   |
-| 21       | Multimodal Image             | 📝 Draft     | Advanced     | 1hr   |
+| 19       | Artifacts & Files            | ✅ Completed | Intermediate | 1hr   |
+| 20       | YAML Configuration           | ✅ Completed | Intermediate | 1hr   |
+| 21       | Multimodal Image             | ✅ Completed | Advanced     | 1hr   |
 | 22       | Model Selection              | 📝 Draft     | Advanced     | 1.5hr |
 | 23       | Production Deployment        | 📝 Draft     | Advanced     | 1.5hr |
 | 24       | Advanced Observability       | 📝 Draft     | Advanced     | 1hr   |
 | 25       | Best Practices               | 📝 Draft     | Advanced     | 1.5hr |
 | 26       | Google AgentSpace            | 📝 Draft     | Advanced     | 2hr   |
-| 27       | Third-Party Framework Tools  | 📝 Draft     | Advanced     | 1.5hr |
-| 28       | Using Other LLMs             | 📝 Draft     | Advanced     | 2hr   |
-| 29       | UI Integration Intro         | 📝 Draft     | Intermediate | 1.5hr |
-| 30       | Next.js ADK Integration      | 📝 Draft     | Advanced     | 2hr   |
+| 27       | Third-Party Framework Tools  | ✅ Completed | Advanced     | 1.5hr |
+| 28       | Using Other LLMs             | ✅ Completed | Advanced     | 2hr   |
+| 29       | UI Integration Intro         | ✅ Completed | Intermediate | 1.5hr |
+| 30       | Next.js ADK Integration      | ✅ Completed | Advanced     | 2hr   |
 | 31       | React Vite ADK Integration   | 📝 Draft     | Advanced     | 1.5hr |
 | 32       | Streamlit ADK Integration    | 📝 Draft     | Advanced     | 2hr   |
 | 33       | Slack ADK Integration        | 📝 Draft     | Advanced     | 2hr   |
@@ -242,7 +215,7 @@ User interface integration with modern frameworks.
 
 ## 📊 Project Completion Status
 
-### ✅ Completed Tutorials (18/34)
+### ✅ Completed Tutorials (25/34)
 
 The following tutorials have been fully implemented with working code, comprehensive tests, and verified functionality:
 
@@ -275,6 +248,16 @@ The following tutorials have been fully implemented with working code, comprehen
 - **Tutorial 16**: MCP Integration - Model Context Protocol for standardized tool integration
 - **Tutorial 17**: Agent-to-Agent Communication - Distributed multi-agent systems with A2A protocol
 - **Tutorial 18**: Events & Observability - Advanced monitoring, logging, and event tracking
+- **Tutorial 19**: Artifacts & Files - File handling and artifact management systems
+- **Tutorial 20**: YAML Configuration - Configuration-driven agent development
+- **Tutorial 21**: Multimodal Image - Image processing and vision capabilities
+
+**UI Integration:**
+
+- **Tutorial 27**: Third-Party Framework Tools - LangChain, CrewAI integration
+- **Tutorial 28**: Using Other LLMs - Multi-provider LLM support
+- **Tutorial 29**: UI Integration Intro - Frontend integration patterns
+- **Tutorial 30**: Next.js ADK Integration - React web applications with CopilotKit
 
 **All completed tutorials include:**
 
@@ -285,19 +268,18 @@ The following tutorials have been fully implemented with working code, comprehen
 - ✅ Documentation and usage examples
 - ✅ Integration with ADK web interface
 
-### 📝 Draft Tutorials (16/34)
+### 📝 Draft Tutorials (9/34)
 
 The following tutorials have detailed documentation but require implementation:
 
-**Advanced Features (Tutorials 19-28):**
+**Advanced Features (Tutorials 22-26):**
 
-- File handling, configuration management, multimodal capabilities
 - Model optimization, enterprise deployment, best practices
-- Third-party integrations and multi-provider LLM support
+- Google AgentSpace platform integration
 
-**UI Integration (Tutorials 29-34):**
+**UI Integration (Tutorials 31-34):**
 
-- Framework integration patterns (Next.js, React, Streamlit)
+- React/Vite and Streamlit integration patterns
 - Enterprise messaging (Slack) and event-driven systems (PubSub)
 
 **Next Steps for Draft Tutorials:**
@@ -315,47 +297,33 @@ The following tutorials have detailed documentation but require implementation:
 - **Deployment CLI**: `adk deploy` - Multiple deployment options
 - **Code Generation**: Automated agent and tool scaffolding
 
-## 🤝 Contributing
+## 🤝 Found This Useful?
 
-This project welcomes contributions! Areas for contribution:
+If these tutorials helped you ship faster or learn something valuable:
 
-- Tutorial improvements and corrections
-- Additional integration examples
-- New research on emerging patterns
-- Documentation enhancements
-- Code examples and best practices
+- ⭐ **Star this repo** to help others discover it
+- 🐛 **Report issues** if something's broken or unclear
+- 💡 **Share your use case** - what did you build with ADK?
+- 📝 **Contribute** improvements or additional examples
 
-## 👨‍💻 About the Creator
+Your feedback makes this better for everyone.
 
-This project was created by **Raphaël MANSUY**, a Chief Technology Officer, Author, AI Strategist, and Data Engineering Expert based in Hong Kong SAR, China.
+## 👨‍💻 About
 
-With over 20 years of experience in AI and innovation across various sectors, Raphaël is dedicated to democratizing data management and artificial intelligence. As CTO and Co-Founder of Elitizon, a technology venture studio, he leads the development of AI strategies tailored to meet specific business goals.
+Created by **Raphaël MANSUY** ([LinkedIn](https://linkedin.com/in/raphaelmansuy)), CTO and AI educator who teaches at University of Oxford. Built from real-world experience deploying AI agents in production.
 
-Raphaël serves as a consultant for prominent organizations including Quantmetry (Capgemini Invent) and DECATHLON, providing insights on data governance, engineering, and analytics operating models. He is also the co-founder of QuantaLogic (PARIS), focusing on unlocking the potential of generative AI for businesses.
+Why I built this: Most AI agent tutorials show toy examples. I wanted practical patterns that work in production.
 
-A thought leader in the AI community, Raphaël conducts daily reviews of AI research and shares insights with his 31,000 LinkedIn followers. He holds a Master's degree in Database and Artificial Intelligence from Université de Bourgogne and various certifications in machine learning and data science.
+##  Resources
 
-Raphaël teaches AI courses at the University of Oxford's Lifelong Learning program, where he covers topics including Generative AI, Cloud computing, and MLOps.
+- **[Official ADK Docs](https://google.github.io/adk-docs/)** - Google's documentation
+- **[ADK Source Code](https://github.com/google/adk-python)** - When docs aren't enough
+- **[Get API Key](https://makersuite.google.com/app/apikey)** - Free Google AI Studio access
 
 ## 📄 License
 
-See individual component licenses:
-
-- `adk-python/LICENSE`
-- `adk-java/LICENSE`
-- `adk-web/LICENSE` (if applicable)
-
-## 📚 Resources
-
-- **Official ADK Documentation**: [https://google.github.io/adk-docs/](https://google.github.io/adk-docs/)
-- **ADK Python Repository**: [https://github.com/google/adk-python](https://github.com/google/adk-python)
-- **Google AI Studio**: [https://makersuite.google.com/app/apikey](https://makersuite.google.com/app/apikey)
-- **ADK Web Interface**: Run `adk web` after installation
-
-## 🎯 Mission
-
-To provide the most comprehensive and practical guide for mastering Google ADK and building production-ready AI agents, from concept to deployment.
+MIT for tutorial code. See component licenses in respective directories.
 
 ---
 
-**🚀 Ready to build amazing AI agents? Start with `overview.md` and Tutorial 01!**
+**Ready to ship AI agents? [Start here](docs/tutorial/01_hello_world_agent.md) →**
