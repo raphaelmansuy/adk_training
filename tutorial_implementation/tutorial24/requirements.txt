@@ -1,0 +1,5 @@
+google-genai>=1.15.0
+google-adk>=1.16.0
+pytest>=7.0.0
+pytest-cov>=4.0.0
+pytest-asyncio>=0.21.0
