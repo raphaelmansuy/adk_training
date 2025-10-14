@@ -1,0 +1,12 @@
+[build-system]
+requires = ["setuptools>=64", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "tutorial26"
+version = "0.1.0"
+description = "Tutorial 26: Gemini Enterprise - Enterprise Agent Platform"
+requires-python = ">=3.9"
+dependencies = [
+    "google-adk>=1.15.1",
+]
