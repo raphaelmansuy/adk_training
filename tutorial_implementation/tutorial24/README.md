@@ -27,6 +27,11 @@ export GOOGLE_API_KEY=your_api_key_here
 export GOOGLE_APPLICATION_CREDENTIALS=/path/to/service-account.json
 export GOOGLE_CLOUD_PROJECT=your-project-id
 export GOOGLE_CLOUD_LOCATION=us-central1
+
+# Method 3: Application Default Credentials (VertexAI)
+gcloud auth application-default login
+export GOOGLE_CLOUD_PROJECT=your-project-id
+export GOOGLE_CLOUD_LOCATION=us-central1
 ```
 
 ### 2. Run the Agent

@@ -1,7 +1,7 @@
 # Tutorial 24: Advanced Observability & Monitoring
 # Production monitoring agent with custom plugins
 
-.PHONY: help setup dev test clean demo
+.PHONY: help setup dev test clean demo deploy auth
 
 # Default target - show help
 help:
@@ -14,9 +14,11 @@ help:
 	@echo ""
 	@echo "Advanced Commands:"
 	@echo "  make test      - Run all tests"
+	@echo "  make deploy    - Deploy to Cloud Run with tracing"
+	@echo "  make auth      - Authenticate with Google Cloud"
 	@echo "  make clean     - Clean up generated files"
 	@echo ""
-	@echo "💡 First time? Run: make setup && make dev"
+	@echo "💡 First time? Run: make setup && make auth && make dev"
 
 # Install dependencies
 setup:
@@ -27,7 +29,7 @@ setup:
 
 # Start the observability agent
 dev: check-env
-	@echo "🤖 Starting Observability Agent..."
+	@echo "🤖 Starting Observability Agent with Cloud Tracing..."
 	@echo "📱 Open http://localhost:8000 in your browser"
 	@echo "🎯 Select 'observability_agent' from the dropdown"
 	@echo "📊 Try prompts like:"
@@ -35,7 +37,14 @@ dev: check-env
 	@echo "   • 'Explain machine learning'"
 	@echo "   • 'What are neural networks?'"
 	@echo "💡 Check console for real-time metrics and monitoring data"
-	adk web
+	@echo ""
+	@echo "🔍 View traces in Google Cloud Console:"
+	@echo "   https://console.cloud.google.com/traces?project=saas-app-001"
+	@echo ""
+	@echo "📋 View logs in Google Cloud Console:"
+	@echo "   https://console.cloud.google.com/logs/query?project=saas-app-001"
+	@echo "   Filter by: resource.type=\"cloud_run_revision\" OR resource.type=\"agent_engine\""
+	adk web --trace_to_cloud
 
 # Run a monitoring demo
 demo: check-env
@@ -62,6 +71,31 @@ demo: check-env
 	@echo ""
 	@echo "✅ Demo ready! Open http://localhost:8000"
 
+# Authenticate with Google Cloud
+auth:
+	@echo "🔐 Authenticating with Google Cloud..."
+	@echo "📋 This will open a browser for authentication"
+	@echo "🔑 Select your Google account and grant permissions"
+	@echo ""
+	gcloud auth application-default login
+	@echo ""
+	@echo "✅ Authentication complete!"
+	@echo "💡 Next steps:"
+	@echo "   1. Set your project: export GOOGLE_CLOUD_PROJECT=your-project-id"
+	@echo "   2. Set your region: export GOOGLE_CLOUD_LOCATION=us-central1"
+	@echo "   3. Run: make deploy"
+
+# Deploy to Cloud Run with tracing
+deploy: check-env
+	@echo "🚀 Deploying Observability Agent to Cloud Run with tracing..."
+	@echo "🔍 Traces will be available at:"
+	@echo "   https://console.cloud.google.com/traces?project=saas-app-001"
+	@echo ""
+	@echo "📋 Logs will be available at:"
+	@echo "   https://console.cloud.google.com/logs/query?project=saas-app-001"
+	@echo "   Filter by: resource.type=\"cloud_run_revision\""
+	adk deploy cloud_run --project saas-app-001 --region us-central1 --trace_to_cloud observability_agent
+
 # Run tests
 test: check-env
 	@echo "🧪 Running tests..."
@@ -79,7 +113,7 @@ clean:
 
 # Check environment (internal use)
 check-env:
-	@if [ -z "$$GOOGLE_API_KEY" ] && [ -z "$$GOOGLE_APPLICATION_CREDENTIALS" ]; then \
+	@if [ -z "$$GOOGLE_API_KEY" ] && [ -z "$$GOOGLE_APPLICATION_CREDENTIALS" ] && [ -z "$$GOOGLE_CLOUD_PROJECT" ]; then \
 		echo "❌ Error: Authentication not configured"; \
 		echo ""; \
 		echo "Choose one of the following authentication methods:"; \
@@ -91,7 +125,13 @@ check-env:
 		echo "🔐 Method 2 - Service Account (VertexAI):"; \
 		echo "   export GOOGLE_APPLICATION_CREDENTIALS=/path/to/service-account.json"; \
 		echo "   export GOOGLE_CLOUD_PROJECT=your_project_id"; \
+		echo "   export GOOGLE_CLOUD_LOCATION=us-central1"; \
 		echo "   Create credentials at: https://console.cloud.google.com/iam-admin/serviceaccounts"; \
+		echo ""; \
+		echo "🔑 Method 3 - Application Default Credentials (VertexAI):"; \
+		echo "   gcloud auth application-default login"; \
+		echo "   export GOOGLE_CLOUD_PROJECT=your_project_id"; \
+		echo "   export GOOGLE_CLOUD_LOCATION=us-central1"; \
 		echo ""; \
 		exit 1; \
 	fi
