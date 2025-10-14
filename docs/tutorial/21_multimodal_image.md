@@ -14,7 +14,7 @@ keywords:
     "document analysis",
     "gemini vision",
   ]
-status: "draft"
+status: "completed"
 difficulty: "advanced"
 estimated_time: "2 hours"
 prerequisites: ["Tutorial 01: Hello World Agent", "Gemini Pro Vision access"]

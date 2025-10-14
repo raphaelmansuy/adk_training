@@ -14,7 +14,7 @@ keywords:
     "collaboration",
     "orchestration",
   ]
-status: "draft"
+status: "completed"
 difficulty: "advanced"
 estimated_time: "2 hours"
 prerequisites:
