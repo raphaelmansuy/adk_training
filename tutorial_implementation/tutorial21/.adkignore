@@ -1,0 +1,9 @@
+# Exclude directories that are not agents
+# Directories starting with _ or . are automatically ignored by ADK
+tests/
+__pycache__/
+*.egg-info/
+.pytest_cache/
+htmlcov/
+dist/
+build/

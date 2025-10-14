@@ -1,0 +1,10 @@
+# Google ADK Core
+google-genai>=1.15.0
+
+# Image Processing
+Pillow>=10.0.0
+
+# Testing
+pytest>=8.0.0
+pytest-cov>=4.1.0
+pytest-asyncio>=0.23.0
