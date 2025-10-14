@@ -4,11 +4,27 @@ id: ui_integration_intro
 
 # Tutorial 29: Introduction to UI Integration & AG-UI Protocol
 
-:::danger UNDER CONSTRUCTION
+:::tip Working Implementation Available
 
-**This tutorial is currently under construction and may contain errors, incomplete information, or outdated code examples.**
+**A complete, tested implementation of the Quick Start example is available!**
 
-Please check back later for the completed version. If you encounter issues, refer to the working implementation in the [tutorial repository](https://github.com/raphaelmansuy/adk_training/tree/main/tutorial_implementation/tutorial29).
+👉 [View Implementation](./../../tutorial_implementation/tutorial29)
+
+The implementation includes:
+- ✅ Python ADK agent with AG-UI integration
+- ✅ FastAPI backend with CopilotKit endpoint
+- ✅ React + Vite frontend
+- ✅ Comprehensive test suite (26 tests passing)
+- ✅ Complete documentation and Makefile
+
+**Quick Start:**
+```bash
+cd tutorial_implementation/tutorial29
+make setup
+# Configure your API key in agent/.env
+make dev
+# Open http://localhost:5173
+```
 
 :::
 
