@@ -118,12 +118,7 @@ class ModelSelector:
             'gemini-1.5-pro': 0.0005
         }
 
-        model_key = model
-        if model_key not in cost_per_1k_tokens:
-            model_key = 'gemini-2.5-flash'
-
-        cost_estimate = (avg_tokens / 1000) * cost_per_1k_tokens[model_key]
-
+        cost_estimate = (avg_tokens / 1000) * cost_per_1k_tokens.get(model, cost_per_1k_tokens['gemini-2.5-flash'])
         # Quality score (based on success rate and latency)
         quality_score = success_rate * (1.0 / (1.0 + avg_latency))
 
