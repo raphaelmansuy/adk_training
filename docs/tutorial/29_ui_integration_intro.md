@@ -1175,7 +1175,7 @@ npm run dev
 
 ### Step 3: Test It
 
-1. Open <http://localhost:5173> in your browser
+1. Open [http://localhost:5173](http://localhost:5173) in your browser
 2. You'll see a chat interface
 3. Type: "What is Google ADK?"
 4. The agent responds using Gemini!
