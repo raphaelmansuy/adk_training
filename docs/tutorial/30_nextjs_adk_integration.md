@@ -14,7 +14,7 @@ keywords:
     "ui integration",
     "web interface",
   ]
-status: "draft"
+status: "completed"
 difficulty: "intermediate"
 estimated_time: "2 hours"
 prerequisites:

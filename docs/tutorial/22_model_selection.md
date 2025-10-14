@@ -14,7 +14,7 @@ keywords:
     "configuration",
     "ai models",
   ]
-status: "draft"
+status: "completed"
 difficulty: "intermediate"
 estimated_time: "1.5 hours"
 prerequisites:
