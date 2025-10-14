@@ -18,7 +18,7 @@ You're here because AI agents are transforming software development, and you wan
 - Testing frameworks you can adapt to your projects
 - Integration examples for Next.js, React, and more
 
-**Completion Status: 25/34 tutorials ready to use (74%)**
+**Completion Status: 29/34 tutorials ready to use (85%)**
 
 > Built by developers, for developers. Every tutorial has working code, not just theory.
 
@@ -81,7 +81,7 @@ Think of it as the missing framework between "ChatGPT API call" and "production 
 │   ├── 32_streamlit_adk_integration.md # 📝 DRAFT - Streamlit integration
 │   ├── 33_slack_adk_integration.md # 📝 DRAFT - Slack integration
 │   └── 34_pubsub_adk_integration.md # 📝 DRAFT - PubSub integration
-├── tutorial_implementation/       # ✅ 25 working implementations
+├── tutorial_implementation/       # ✅ 29 working implementations
 │   ├── tutorial01/                # Hello World Agent
 │   ├── tutorial02/                # Function Tools
 │   ├── tutorial03/                # OpenAPI Tools
@@ -162,7 +162,7 @@ Start with [Tutorial 01](docs/tutorial/01_hello_world_agent.md) (30 min) to unde
 
 **For:** Senior engineers and architects
 
-Complete all 25 tutorials, focusing on:
+Complete all 29 tutorials, focusing on:
 - Multi-agent orchestration patterns
 - Production observability and testing
 - Enterprise deployment strategies
@@ -170,7 +170,7 @@ Complete all 25 tutorials, focusing on:
 
 **You'll gain:** Deep expertise in agent architecture and the patterns to make critical design decisions.
 
-## 📚 All Tutorials (25 Ready, 9 Coming Soon)
+## 📚 All Tutorials (29 Ready, 5 Coming Soon)
 
 See the complete tutorial list in the [Project Structure](#🏗️-project-structure) section above, or browse the [interactive documentation](https://raphaelmansuy.github.io/adk_training/).
 
@@ -199,11 +199,11 @@ See the complete tutorial list in the [Project Structure](#🏗️-project-struc
 | 19       | Artifacts & Files            | ✅ Completed | Intermediate | 1hr   |
 | 20       | YAML Configuration           | ✅ Completed | Intermediate | 1hr   |
 | 21       | Multimodal Image             | ✅ Completed | Advanced     | 1hr   |
-| 22       | Model Selection              | 📝 Draft     | Advanced     | 1.5hr |
+| 22       | Model Selection              | ✅ Completed | Advanced     | 1.5hr |
 | 23       | Production Deployment        | 📝 Draft     | Advanced     | 1.5hr |
-| 24       | Advanced Observability       | 📝 Draft     | Advanced     | 1hr   |
-| 25       | Best Practices               | 📝 Draft     | Advanced     | 1.5hr |
-| 26       | Google AgentSpace            | 📝 Draft     | Advanced     | 2hr   |
+| 24       | Advanced Observability       | ✅ Completed | Advanced     | 1hr   |
+| 25       | Best Practices               | ✅ Completed | Advanced     | 1.5hr |
+| 26       | Google AgentSpace            | ✅ Completed | Advanced     | 2hr   |
 | 27       | Third-Party Framework Tools  | ✅ Completed | Advanced     | 1.5hr |
 | 28       | Using Other LLMs             | ✅ Completed | Advanced     | 2hr   |
 | 29       | UI Integration Intro         | ✅ Completed | Intermediate | 1.5hr |
@@ -215,7 +215,7 @@ See the complete tutorial list in the [Project Structure](#🏗️-project-struc
 
 ## 📊 Project Completion Status
 
-### ✅ Completed Tutorials (25/34)
+### ✅ Completed Tutorials (29/34)
 
 The following tutorials have been fully implemented with working code, comprehensive tests, and verified functionality:
 
@@ -251,6 +251,10 @@ The following tutorials have been fully implemented with working code, comprehen
 - **Tutorial 19**: Artifacts & Files - File handling and artifact management systems
 - **Tutorial 20**: YAML Configuration - Configuration-driven agent development
 - **Tutorial 21**: Multimodal Image - Image processing and vision capabilities
+- **Tutorial 22**: Model Selection - Model optimization and selection strategies
+- **Tutorial 24**: Advanced Observability - Enhanced monitoring patterns
+- **Tutorial 25**: Best Practices - Production-ready agent development patterns
+- **Tutorial 26**: Google AgentSpace - Enterprise agent platform deployment
 
 **UI Integration:**
 
@@ -268,7 +272,7 @@ The following tutorials have been fully implemented with working code, comprehen
 - ✅ Documentation and usage examples
 - ✅ Integration with ADK web interface
 
-### 📝 Draft Tutorials (9/34)
+### 📝 Draft Tutorials (5/34)
 
 The following tutorials have detailed documentation but require implementation:
 

@@ -183,7 +183,7 @@ function StatsSection() {
             <AnimatedCounter end={34} label="Tutorials Planned" />
           </div>
           <div className={styles.statItem}>
-            <AnimatedCounter end={23} label="Currently Available" />
+            <AnimatedCounter end={29} label="Currently Available" />
           </div>
           <div className={styles.statItem}>
             <AnimatedCounter end={68} label="Test Cases" />
@@ -274,7 +274,7 @@ function CommunitySection() {
         </p>
         <GitHubStats />
         <div className={styles.progressContainer}>
-          <ProgressIndicator completed={23} total={34} label="Tutorial Implementation Progress" />
+          <ProgressIndicator completed={29} total={34} label="Tutorial Implementation Progress" />
           <ProgressIndicator completed={68} total={100} label="Test Coverage Target" />
         </div>
       </div>
