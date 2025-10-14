@@ -1,6 +1,6 @@
 # Google ADK Training Hub
 
-**Build production-ready AI agents that solve real problems.**
+**Build production-ready AI agents tutorials that solve real problems.**
 
 You're here because AI agents are transforming software development, and you want practical skills you can use at work tomorrow. This training hub gives you exactly that—no fluff, just working code and proven patterns from 25 completed tutorials.
 
