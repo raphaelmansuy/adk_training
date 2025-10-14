@@ -8,7 +8,6 @@ import time
 from dataclasses import dataclass
 from typing import Dict, List, Any
 from google.adk.agents import Agent
-from google.adk.runners import Runner
 from google.adk.tools.tool_context import ToolContext
 from google.genai import types
 
@@ -113,9 +112,7 @@ class ModelSelector:
             'gemini-2.5-flash-lite': 0.00004,
             'gemini-2.5-pro': 0.0005,
             'gemini-2.0-flash': 0.0001,
-            'gemini-1.5-flash': 0.00008,
-            'gemini-1.5-flash-8b': 0.00004,
-            'gemini-1.5-pro': 0.0005
+            'gemini-2.0-flash-live': 0.00015,
         }
 
         cost_estimate = (avg_tokens / 1000) * cost_per_1k_tokens.get(model, cost_per_1k_tokens['gemini-2.5-flash'])
@@ -133,7 +130,7 @@ class ModelSelector:
 
         self.benchmarks[model] = benchmark
 
-        print(f"\n📊 RESULTS:")
+        print("\n📊 RESULTS:")
         print(f"   Avg Latency: {avg_latency:.2f}s")
         print(f"   Avg Tokens: {avg_tokens:.0f}")
         print(f"   Success Rate: {success_rate*100:.1f}%")
@@ -158,7 +155,7 @@ class ModelSelector:
         """
 
         print(f"\n{'#'*70}")
-        print(f"MODEL COMPARISON")
+        print("MODEL COMPARISON")
         print(f"{'#'*70}\n")
 
         for model in models:
@@ -234,7 +231,7 @@ def recommend_model_for_use_case(
         reason = 'Highest quality for critical business operations'
 
     elif 'extended context' in use_case_lower or 'large document' in use_case_lower:
-        recommendation = 'gemini-1.5-pro'
+        recommendation = 'gemini-2.5-pro'
         reason = '2M token context window for large documents'
 
     else:
@@ -288,31 +285,17 @@ def get_model_info(
         },
         'gemini-2.0-flash': {
             'context_window': '1M tokens',
-            'features': ['Multimodal', 'Balanced', 'Legacy'],
-            'best_for': 'General purpose (legacy)',
+            'features': ['Multimodal', 'Balanced', 'Legacy support'],
+            'best_for': 'General purpose with legacy compatibility',
             'pricing': 'Low',
             'speed': 'Fast'
         },
         'gemini-2.0-flash-live': {
             'context_window': '1M tokens',
             'features': ['Real-time', 'Bidirectional streaming', 'Voice'],
-            'best_for': 'Real-time voice applications',
+            'best_for': 'Real-time voice applications and streaming',
             'pricing': 'Medium',
             'speed': 'Real-time'
-        },
-        'gemini-1.5-flash': {
-            'context_window': '1M tokens',
-            'features': ['Multimodal', 'Legacy'],
-            'best_for': 'General purpose (legacy)',
-            'pricing': 'Low',
-            'speed': 'Fast'
-        },
-        'gemini-1.5-pro': {
-            'context_window': '2M tokens',
-            'features': ['Extended context', 'High quality', 'Legacy'],
-            'best_for': 'Large documents requiring 2M context',
-            'pricing': 'High',
-            'speed': 'Moderate'
         }
     }
 
@@ -353,12 +336,12 @@ When recommending models:
 - Mention tradeoffs (cost vs performance vs features)
 - Suggest alternatives when appropriate
 
-Available models:
+Available models (2025):
 - gemini-2.5-flash: RECOMMENDED - Best price-performance for general use
-- gemini-2.5-flash-lite: Ultra-fast and cheap for simple tasks
-- gemini-2.5-pro: Highest quality for complex reasoning
-- gemini-2.0-flash-live: Real-time bidirectional streaming
-- gemini-1.5-pro: 2M context for large documents
+- gemini-2.5-flash-lite: Ultra-fast and cheapest for simple/high-volume tasks
+- gemini-2.5-pro: Highest quality for complex reasoning and critical tasks
+- gemini-2.0-flash-live: Real-time bidirectional streaming for voice apps
+- gemini-2.0-flash: General purpose with legacy compatibility
 
 Always be helpful, clear, and provide actionable recommendations.
     """.strip(),
@@ -393,8 +376,8 @@ You are a helpful assistant. Answer questions accurately and concisely.
     # Compare models (using available models in 2025)
     models_to_test = [
         'gemini-2.5-flash',      # NEW DEFAULT - Best price-performance
-        'gemini-2.0-flash',      # Legacy but still good
-        'gemini-1.5-flash',      # Legacy
+        'gemini-2.0-flash',      # Legacy but still available
+        'gemini-2.5-flash-lite', # Ultra-fast for simple tasks
     ]
 
     await selector.compare_models(models_to_test, test_queries, instruction)
@@ -417,6 +400,55 @@ You are a helpful assistant. Answer questions accurately and concisely.
         print(f"📌 {use_case}")
         print(f"   → Recommended: {result['model']}")
         print(f"   → Reason: {result['reason']}\n")
+
+
+def compare_models_detailed():
+    """
+    Synchronous wrapper for model comparison.
+    Returns a dict with comparison results and key findings.
+    """
+    import asyncio
+
+    async def run_comparison():
+        selector = ModelSelector()
+
+        test_queries = [
+            "What is the capital of France?",
+            "Explain quantum computing in simple terms",
+            "Write a haiku about artificial intelligence"
+        ]
+
+        instruction = "You are a helpful assistant. Answer questions accurately and concisely."
+
+        models_to_test = [
+            'gemini-2.5-flash',
+            'gemini-2.0-flash',
+            'gemini-2.5-flash-lite'
+        ]
+
+        await selector.compare_models(models_to_test, test_queries, instruction)
+
+        # Generate key findings based on benchmarks
+        key_findings = []
+        if selector.benchmarks:
+            fastest = min(selector.benchmarks.items(), key=lambda x: x[1].avg_latency)
+            slowest = max(selector.benchmarks.items(), key=lambda x: x[1].avg_latency)
+            best_quality = max(selector.benchmarks.items(), key=lambda x: x[1].quality_score)
+            cheapest = min(selector.benchmarks.items(), key=lambda x: x[1].cost_estimate)
+
+            key_findings = [
+                f"{fastest[0]} is {slowest[1].avg_latency/fastest[1].avg_latency:.1f}x faster than {slowest[0]}",
+                f"{best_quality[0]} provides the highest quality score ({best_quality[1].quality_score:.3f})",
+                f"{cheapest[0]} is the most cost-effective option",
+                "gemini-2.5-flash offers the best price-performance balance"
+            ]
+
+        return {
+            'key_findings': key_findings,
+            'benchmarks': {k: v.__dict__ for k, v in selector.benchmarks.items()}
+        }
+
+    return asyncio.run(run_comparison())
 
 
 if __name__ == '__main__':

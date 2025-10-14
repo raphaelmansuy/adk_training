@@ -32,6 +32,7 @@ tutorial22/
 │   ├── __init__.py         # Package exports
 │   ├── agent.py            # Model selection framework
 │   └── .env.example        # Environment template
+├── model_specs.py           # Standalone model specifications
 ├── tests/                  # Comprehensive test suite
 │   ├── __init__.py         # Test package
 │   ├── test_agent.py       # Agent and tool tests
@@ -61,6 +62,7 @@ A conversational AI assistant that helps users:
 Recommends the best model for a given use case.
 
 **Example use cases:**
+
 - "real-time voice assistant" → `gemini-2.0-flash-live`
 - "complex strategic planning" → `gemini-2.5-pro`
 - "high-volume content moderation" → `gemini-2.5-flash-lite`
@@ -69,6 +71,7 @@ Recommends the best model for a given use case.
 #### 2. `get_model_info(model_name: str)`
 
 Returns detailed information about a specific model including:
+
 - Context window size
 - Key features
 - Best use cases
@@ -92,6 +95,42 @@ await selector.compare_models(
 )
 ```
 
+## Quality Score Calculation
+
+The **Quality Score** measures model **performance** using this formula:
+
+```python
+quality_score = success_rate * (1.0 / (1.0 + avg_latency))
+```
+
+**What it measures:**
+
+- **`success_rate`**: Percentage of successful queries (reliability)
+- **`avg_latency`**: Average response time in seconds (speed)
+- **Higher scores** = Better performance (faster + more reliable)
+
+**Important Note:** This score measures **performance** (speed + reliability),
+not **response quality** (accuracy, helpfulness, or correctness). The current
+implementation focuses on operational metrics that can be measured
+programmatically.
+
+**Score interpretation:**
+
+- **0.8-1.0**: Excellent performance (very fast, highly reliable)
+- **0.5-0.8**: Good performance (balanced speed and reliability)
+- **0.2-0.5**: Fair performance (acceptable for some use cases)
+- **<0.2**: Poor performance (slow or unreliable)
+
+**Example calculations:**
+
+- **gemini-2.5-flash-lite** (0.73s avg) → `1.0 / (1.0 + 0.73)` = **0.579**
+- **gemini-2.0-flash** (1.24s avg) → `1.0 / (1.0 + 1.24)` = **0.447**
+- **gemini-2.5-flash** (3.31s avg) → `1.0 / (1.0 + 3.31)` = **0.232**
+
+**Future Enhancement:** Response quality evaluation could be added using
+metrics like BLEU, ROUGE, or human evaluation, but this would require ground
+truth answers and more complex evaluation logic.
+
 ## Testing
 
 ### Unit Tests
@@ -111,7 +150,7 @@ make test
 - ✅ Import validation (10 tests)
 - ✅ Project structure (14 tests)
 
-**Total: 47 tests**
+Total: 47 tests
 
 ### Coverage Report
 
@@ -147,6 +186,7 @@ python -m model_selector.agent
 ```
 
 This benchmarks multiple models on standard test queries and provides:
+
 - Average latency per query
 - Token usage statistics
 - Cost estimates
@@ -160,12 +200,15 @@ This benchmarks multiple models on standard test queries and provides:
 Choose one authentication method:
 
 **Method 1 - API Key (Gemini API):**
+
 ```bash
 export GOOGLE_API_KEY=your_api_key_here
 ```
-Get a free key at: https://aistudio.google.com/app/apikey
+
+Get a free key at: <https://aistudio.google.com/app/apikey>
 
 **Method 2 - Service Account (Vertex AI):**
+
 ```bash
 export GOOGLE_APPLICATION_CREDENTIALS=/path/to/service-account.json
 export GOOGLE_CLOUD_PROJECT=your_project_id
@@ -184,23 +227,31 @@ The agent uses `gemini-2.5-flash` (recommended default) but can work with:
 ## Development Commands
 
 ### Setup
+
 ```bash
 make setup              # Install dependencies and configure environment
 ```
 
 ### Development
+
 ```bash
 make dev                # Start ADK web interface (localhost:8000)
 make demo               # Show demo prompts and run benchmark
+make benchmark          # Run automated model performance tests
+make compare-models     # Compare specific models side-by-side
+make model-info         # Show detailed model specifications
+make full-demo          # Complete experience (all demos)
 ```
 
-### Testing
+### Testing Commands
+
 ```bash
 make test               # Run all tests with pytest
 make test-cov           # Run tests with coverage report
 ```
 
 ### Cleanup
+
 ```bash
 make clean              # Remove cache files and artifacts
 ```
@@ -210,6 +261,7 @@ make clean              # Remove cache files and artifacts
 ### Model Selection Best Practices
 
 1. **Always Specify Model Explicitly**
+
    ```python
    agent = Agent(
        model='gemini-2.5-flash',  # RECOMMENDED
@@ -218,12 +270,14 @@ make clean              # Remove cache files and artifacts
    ```
 
 2. **Match Model to Use Case**
+
    - Real-time streaming → `gemini-2.0-flash-live`
    - Complex reasoning → `gemini-2.5-pro`
    - High-volume simple → `gemini-2.5-flash-lite`
    - General purpose → `gemini-2.5-flash`
 
 3. **Consider Tradeoffs**
+
    - Cost vs Quality
    - Speed vs Capability
    - Context window vs Price
@@ -246,13 +300,16 @@ make clean              # Remove cache files and artifacts
 
 **User:** "What model should I use for real-time voice chat?"
 
-**Agent:** "For real-time voice chat applications, I recommend **gemini-2.0-flash-live**. This model is specifically designed for:
+**Agent:** "For real-time voice chat applications, I recommend
+**gemini-2.0-flash-live**. This model is specifically designed for:
 
 - ✅ Real-time bidirectional streaming
 - ✅ Low latency audio processing
 - ✅ Multimodal voice + text interactions
 
-This is the only model in the Gemini family that supports live, bidirectional streaming, making it ideal for voice assistants and real-time conversational applications."
+This is the only model in the Gemini family that supports live,
+bidirectional streaming, making it ideal for voice assistants and
+real-time conversational applications."
 
 ### Benchmark Output
 
@@ -261,44 +318,84 @@ This is the only model in the Gemini family that supports live, bidirectional st
 BENCHMARKING: gemini-2.5-flash
 ======================================================================
 
+Both GOOGLE_API_KEY and GEMINI_API_KEY are set. Using GOOGLE_API_KEY.
 ✅ Query: What is the capital of France?...
-   Latency: 0.85s, Tokens: ~8
+   Latency: 0.56s, Tokens: ~1
 ✅ Query: Explain quantum computing in simple terms...
-   Latency: 1.23s, Tokens: ~95
-...
+   Latency: 6.69s, Tokens: ~126
+✅ Query: Write a haiku about artificial intelligence...
+   Latency: 2.67s, Tokens: ~14
 
 📊 RESULTS:
-   Avg Latency: 1.03s
-   Avg Tokens: 41
+   Avg Latency: 3.31s
+   Avg Tokens: 47
+   Success Rate: 100.0%
+   Cost Estimate: $0.000004 per query
+   Quality Score: 0.232
+
+======================================================================
+BENCHMARKING: gemini-2.0-flash
+======================================================================
+
+Both GOOGLE_API_KEY and GEMINI_API_KEY are set. Using GOOGLE_API_KEY.
+✅ Query: What is the capital of France?...
+   Latency: 0.56s, Tokens: ~6
+✅ Query: Explain quantum computing in simple terms...
+   Latency: 2.31s, Tokens: ~149
+✅ Query: Write a haiku about artificial intelligence...
+   Latency: 0.84s, Tokens: ~10
+
+📊 RESULTS:
+   Avg Latency: 1.24s
+   Avg Tokens: 55
+   Success Rate: 100.0%
+   Cost Estimate: $0.000006 per query
+   Quality Score: 0.447
+
+======================================================================
+BENCHMARKING: gemini-2.5-flash-lite
+======================================================================
+
+Both GOOGLE_API_KEY and GEMINI_API_KEY are set. Using GOOGLE_API_KEY.
+✅ Query: What is the capital of France?...
+   Latency: 0.61s, Tokens: ~6
+✅ Query: Explain quantum computing in simple terms...
+   Latency: 1.24s, Tokens: ~172
+✅ Query: Write a haiku about artificial intelligence...
+   Latency: 0.33s, Tokens: ~15
+
+📊 RESULTS:
+   Avg Latency: 0.73s
+   Avg Tokens: 64
    Success Rate: 100.0%
    Cost Estimate: $0.000003 per query
-   Quality Score: 0.493
+   Quality Score: 0.579
 
 ======================================================================
 COMPARISON SUMMARY
 ======================================================================
 
-Model                            Latency   Tokens       Cost    Quality
+Model                             Latency   Tokens       Cost    Quality
 ----------------------------------------------------------------------
-gemini-2.5-flash                    1.03s       41 $0.000003      0.493
-gemini-2.0-flash                    0.98s       39 $0.000004      0.505
-gemini-1.5-flash                    0.86s       37 $0.000003      0.537
+gemini-2.5-flash                    3.31s       47 $ 0.000004      0.232
+gemini-2.0-flash                    1.24s       55 $ 0.000006      0.447
+gemini-2.5-flash-lite               0.73s       64 $ 0.000003      0.579
 
 ======================================================================
 
 🎯 RECOMMENDATIONS:
 
-⚡ Fastest: gemini-1.5-flash (0.86s)
-💰 Cheapest: gemini-2.5-flash ($0.000003)
-🏆 Best Quality: gemini-1.5-flash (0.537)
+⚡ Fastest: gemini-2.5-flash-lite (0.73s)
+💰 Cheapest: gemini-2.5-flash-lite ($0.000003)
+🏆 Best Quality: gemini-2.5-flash-lite (0.579)
 ```
 
 ## Links
 
 - **Tutorial Documentation**: [docs/tutorial/22_model_selection.md](../../docs/tutorial/22_model_selection.md)
-- **ADK Documentation**: https://github.com/google/adk-python
-- **Gemini API Documentation**: https://ai.google.dev/gemini-api/docs/models
-- **Vertex AI Gemini**: https://cloud.google.com/vertex-ai/docs/generative-ai/models
+- **ADK Documentation**: <https://github.com/google/adk-python>
+- **Gemini API Documentation**: <https://ai.google.dev/gemini-api/docs/models>
+- **Vertex AI Gemini**: <https://cloud.google.com/vertex-ai/docs/generative-ai/models>
 
 ## Contributing
 
@@ -316,4 +413,5 @@ Part of the ADK Training repository. See main repository LICENSE for details.
 
 ---
 
-**🎉 Tutorial 22 Complete!** You now have a working model selection framework. Ready to optimize your AI applications!
+**🎉 Tutorial 22 Complete!** You now have a working model selection
+framework. Ready to optimize your AI applications!
