@@ -26,11 +26,22 @@ learning_objectives:
 implementation_link: "https://github.com/raphaelmansuy/adk_training/tree/main/tutorial_implementation/tutorial21"
 ---
 
-:::danger UNDER CONSTRUCTION
+:::tip WORKING IMPLEMENTATION AVAILABLE
 
-**This tutorial is currently under construction and may contain errors, incomplete information, or outdated code examples.**
+**A complete, tested implementation of this tutorial is available!**
 
-Please check back later for the completed version. If you encounter issues, refer to the working implementation in the [tutorial repository](https://github.com/raphaelmansuy/adk_training/tree/main/tutorial_implementation/tutorial21).
+- 📂 [View Implementation](./../../tutorial_implementation/tutorial21)
+- ✅ All 62 tests passing
+- 📚 Comprehensive README and demo scripts
+- 🎯 Production-ready code with 73% coverage
+
+See the implementation directory for:
+- Complete vision catalog agent with image processing
+- Multi-agent workflow (vision analyzer + catalog generator)
+- Image loading utilities and optimization
+- Comprehensive test suite
+- Interactive demo script
+- Sample images for testing
 
 :::
 
@@ -930,7 +941,19 @@ You've mastered multimodal and image generation:
 - [Gemini Vision Documentation](https://cloud.google.com/vertex-ai/docs/generative-ai/multimodal/overview)
 - [Imagen Documentation](https://cloud.google.com/vertex-ai/docs/generative-ai/image/overview)
 - [Multimodal Best Practices](https://cloud.google.com/vertex-ai/docs/generative-ai/multimodal/best-practices)
+- [Working Implementation](./../../tutorial_implementation/tutorial21) - Complete, tested code
 
 ---
 
 **🎉 Tutorial 21 Complete!** You now know how to work with images in ADK. Continue to Tutorial 22 to learn about model selection and optimization.
+
+:::info Implementation Available
+
+Check out the [complete implementation](./../../tutorial_implementation/tutorial21) with:
+- Vision catalog agent (62 passing tests)
+- Image processing utilities
+- Multi-agent workflow
+- Interactive demo
+- Comprehensive documentation
+
+:::

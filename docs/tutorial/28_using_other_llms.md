@@ -170,7 +170,7 @@ async def main():
     """Agent using OpenAI GPT-4o."""
 
     # Create LiteLLM model - format: "openai/model-name"
-    gpt4o_model = LiteLlm(model='openai/gpt-4o')
+    gpt4o_model = LiteLlm(model='openai/gpt-4o-mini')  # or 'openai/gpt-4o'
 
     # Create agent with OpenAI model
     agent = Agent(
