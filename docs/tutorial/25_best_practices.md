@@ -80,7 +80,7 @@ A complete, tested implementation of this tutorial is available in the repositor
 
 The implementation includes:
 
-- ✅ **Best Practices Agent** with `gemini-2.0-flash-exp` model
+- ✅ **Best Practices Agent** with `gemini-2.5-flash` model
 - ✅ **7 Production Tools**: validation, retry, circuit breaker, caching, batch processing, health checks, metrics
 - ✅ **85+ Comprehensive Tests** covering all functionality
 - ✅ **Makefile** with setup, dev, test, demo commands
@@ -104,8 +104,8 @@ The **best_practices_agent** demonstrates enterprise-grade patterns:
 ```
 Production-Ready Agent Architecture:
 ┌─────────────────────────────────────────────────────────┐
-│                  Best Practices Agent                    │
-│                  (gemini-2.0-flash-exp)                 │
+│                  Best Practices Agent                   │
+│                  (gemini-2.5-flash)                     │
 └─────────────────────────────────────────────────────────┘
                           │
         ┌─────────────────┼─────────────────┬───────────────┐
@@ -327,6 +327,49 @@ async def sequential_process(queries: list[str], agent: Agent):
 ---
 
 ## Security Best Practices
+
+**Defense in Depth - Security Layers:**
+
+```
+External User
+      |
+      | Rate Limiting
+      v
++-------------------+     Input
+|   API Gateway     | --> Validation
+| (FastAPI/Express) |     & Sanitization
++-------------------+
+      |
+      | Authentication
+      v
++-------------------+     Authorization
+| Authentication    | --> Access Control
+|   Middleware      |     & Permissions
++-------------------+
+      |
+      | Business Logic
+      v
++-------------------+     Tool
+|   Agent Core      | --> Validation
+|   (ADK Runner)    |     & Safety Checks
++-------------------+
+      |
+      | External Calls
+      v
++-------------------+     Response
+| External Services | --> Filtering
+|   (APIs, DBs)     |     & Sanitization
++-------------------+
+      |
+      v
+Secure Response
+```
+
+**Security Controls by Layer:**
+- **Network**: Rate limiting, IP filtering
+- **Application**: Input validation, authentication
+- **Business Logic**: Authorization, tool safety
+- **Data**: Sanitization, encryption
 
 ### 1. Input Validation
 
@@ -561,6 +604,45 @@ async def robust_agent_invocation(
     return None
 ```
 
+**Retry Logic with Exponential Backoff:**
+
+```
+Start Request
+      |
+      v
+   +-----+     Yes     +-----------------+
+   | Try | ----------> |   Success?      |
+   +-----+             +-----------------+
+      |                       |
+      | No                    | Yes
+      v                       v
+   +-----+             +-----------------+
+   | Log |             |   Return Result |
+   |Error|             +-----------------+
+   +-----+
+      |
+      v
+   +-----+     No      +-----------------+
+   |Last | ----------> |   Wait: 2^attempt|
+   |Try? |             |     seconds      |
+   +-----+             +-----------------+
+      |                       |
+      | Yes                   |
+      v                       |
+   +-----+             +-----------------+
+   |Raise|             |   Retry Request |
+   |Error|             +-----------------+
+   +-----+                    |
+                               |
+                               v
+                            Loop Back
+```
+
+**Backoff Schedule:**
+- Attempt 1: Wait 1 second (2^0)
+- Attempt 2: Wait 2 seconds (2^1) 
+- Attempt 3: Wait 4 seconds (2^2)
+
 ### 2. Circuit Breaker Pattern
 
 ```python
@@ -623,6 +705,38 @@ def call_external_api():
     return external_api_breaker.call(make_api_request)
 ```
 
+**Circuit Breaker State Machine:**
+
+```
+                    +-----------+
+                    |  CLOSED   |
+                    | (Normal)  |
+                    +-----------+
+                         |
+                         | Success: Reset failures
+                         | Failure: failures++
+                         v
+                    +-----------+
+                    |   OPEN    |
+                    | (Failing) |
+                    +-----------+
+                         |
+                         | Timeout expires
+                         v
+                    +-----------+
+                    | HALF_OPEN |
+                    |  (Test)   |
+                    +-----------+
+                         |
+                         | Success: -> CLOSED
+                         | Failure: -> OPEN
+```
+
+**State Transitions:**
+- **CLOSED**: Normal operation, requests pass through
+- **OPEN**: Service is failing, requests are blocked
+- **HALF_OPEN**: Testing if service has recovered
+
 ### 3. Graceful Degradation
 
 ```python
@@ -683,29 +797,35 @@ async def get_product_recommendation(
 ```python
 # ✅ Use cheaper models for simple tasks
 simple_classifier = Agent(
-    model='gemini-1.5-flash-8b',  # Cheapest
+    model='gemini-2.5-flash-lite',  # Cheapest 2.5 model
     instruction="Classify customer sentiment: positive, negative, or neutral"
+)
+
+# ✅ Use moderate models for standard tasks
+standard_agent = Agent(
+    model='gemini-2.5-flash',  # Balanced performance/cost
+    instruction="Answer customer questions and provide support"
 )
 
 # ✅ Use expensive models only when needed
 complex_analyzer = Agent(
-    model='gemini-1.5-pro',  # Most expensive
-    instruction="Perform deep financial analysis"
+    model='gemini-2.5-pro',  # Most expensive 2.5 model
+    instruction="Perform deep financial analysis and complex reasoning"
 )
 
 
-# ✅ Dynamic model selection
+# ✅ Dynamic model selection with 2.5 models
 def get_agent_for_query(query: str) -> Agent:
     """Select appropriate agent based on query complexity."""
 
     complexity = estimate_complexity(query)
 
     if complexity == 'simple':
-        return Agent(model='gemini-1.5-flash-8b')
+        return Agent(model='gemini-2.5-flash-lite')
     elif complexity == 'moderate':
-        return Agent(model='gemini-2.0-flash')
+        return Agent(model='gemini-2.5-flash')
     else:
-        return Agent(model='gemini-1.5-pro')
+        return Agent(model='gemini-2.5-pro')
 ```
 
 ### 2. Token Usage Optimization
@@ -791,6 +911,43 @@ async def batch_classify(texts: list[str], classifier: Agent) -> list[str]:
 
 ## Testing & Quality Assurance
 
+**Testing Pyramid for Agent Systems:**
+
+```
+                    +-------------------+
+                    |  Evaluation       |
+                    |  (End-to-End)     |
+                    |  - User scenarios |
+                    |  - Business logic |
+                    |  - Performance    |
+                    +-------------------+
+                             |
+                             | (Fewer tests, higher value)
+                             |
+                    +-------------------+
+                    |  Integration      |
+                    |  (Multi-component)|
+                    |  - Agent workflows|
+                    |  - Tool chains    |
+                    |  - State management|
+                    +-------------------+
+                             |
+                             | (More tests, focused scope)
+                             |
+                    +-------------------+
+                    |     Unit          |
+                    |   (Individual)    |
+                    |  - Tool functions |
+                    |  - Validation     |
+                    |  - Utilities      |
+                    +-------------------+
+```
+
+**Test Coverage Strategy:**
+- **Unit Tests**: 70-80% coverage (fast, isolated)
+- **Integration Tests**: 20-30% coverage (workflows, interactions)
+- **Evaluation Tests**: 5-10% coverage (end-to-end scenarios)
+
 ### 1. Unit Tests
 
 ```python
@@ -802,7 +959,7 @@ async def test_agent_basic_query():
     """Test basic agent query."""
 
     agent = Agent(
-        model='gemini-2.0-flash',
+        model='gemini-2.5-flash',
         instruction="Answer concisely"
     )
 
@@ -837,7 +994,7 @@ async def test_tool_invocation():
     mock_tool.return_value = "Order status: shipped"
 
     agent = Agent(
-        model='gemini-2.0-flash',
+        model='gemini-2.5-flash',
         tools=[FunctionTool(mock_tool)]
     )
 
@@ -870,11 +1027,11 @@ async def test_tool_invocation():
 async def test_multi_agent_workflow():
     """Test complete multi-agent workflow."""
 
-    order_agent = Agent(model='gemini-2.0-flash', name='order')
-    billing_agent = Agent(model='gemini-2.0-flash', name='billing')
+    order_agent = Agent(model='gemini-2.5-flash', name='order')
+    billing_agent = Agent(model='gemini-2.5-flash', name='billing')
 
     coordinator = Agent(
-        model='gemini-2.0-flash',
+        model='gemini-2.5-flash',
         name='coordinator',
         agents=[order_agent, billing_agent]
     )
@@ -970,6 +1127,35 @@ async def run_evaluation(agent: Agent):
 ---
 
 ## Production Deployment Checklist
+
+**Staged Deployment Pipeline:**
+
+```
+Development Environment
+        |
+        | Code Review & Testing
+        v
+   +-------------------+     Automated
+   |    Staging        | <--- Testing
+   | (Pre-Production)  |     & Validation
+   +-------------------+
+        |
+        | Manual Approval
+        | & Smoke Tests
+        v
+   +-------------------+     User
+   |   Production      | <--- Acceptance
+   |   (Live System)   |     & Monitoring
+   +-------------------+
+        |
+        | Continuous
+        | Improvement
+        v
+   +-------------------+
+   |   Rollback        |
+   |   (If Needed)     |
+   +-------------------+
+```
 
 ### Pre-Deployment
 

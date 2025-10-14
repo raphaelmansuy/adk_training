@@ -35,7 +35,7 @@ class TestAgentConfiguration:
     
     def test_agent_model(self):
         """Test that agent uses correct model."""
-        assert root_agent.model == "gemini-2.0-flash-exp"
+        assert root_agent.model == "gemini-2.5-flash"
     
     def test_agent_has_description(self):
         """Test that agent has description."""
@@ -277,7 +277,7 @@ class TestCaching:
             operation="get"
         )
         assert get_result['status'] == 'success'
-        assert get_result['cache_hit'] == True
+        assert get_result['cache_hit']
         assert get_result['value'] == "test_value"
     
     def test_cache_miss(self):
@@ -288,7 +288,7 @@ class TestCaching:
         )
         
         assert result['status'] == 'success'
-        assert result['cache_hit'] == False
+        assert not result['cache_hit']
     
     def test_cache_stats(self):
         """Test cache statistics."""

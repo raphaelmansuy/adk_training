@@ -14,7 +14,6 @@ from google.adk.agents import Agent
 from google.adk.tools.tool_context import ToolContext
 from pydantic import BaseModel, Field, field_validator, EmailStr
 from typing import Dict, Any, List, Optional
-from functools import lru_cache
 from enum import Enum
 import time
 import random
@@ -108,7 +107,7 @@ class CircuitBreaker:
             
             return result
             
-        except Exception as e:
+        except Exception:
             self.failures += 1
             self.last_failure_time = time.time()
             
@@ -522,7 +521,7 @@ def cache_operation_tool(
             return {
                 'status': 'error',
                 'error': f'Unknown operation: {operation}',
-                'report': f'❌ Invalid operation. Use: get, set, or stats'
+                'report': '❌ Invalid operation. Use: get, set, or stats'
             }
     
     except Exception as e:
@@ -684,7 +683,7 @@ def get_metrics_tool(
 
 root_agent = Agent(
     name="best_practices_agent",
-    model="gemini-2.0-flash-exp",
+    model="gemini-2.5-flash",
     description="Production-ready agent demonstrating best practices for security, performance, reliability, and observability",
     instruction="""
 You are a production-ready agent demonstrating best practices for building robust, secure, and performant systems.
