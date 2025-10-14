@@ -16,15 +16,13 @@ Features:
 - Production-ready monitoring patterns
 """
 
-import asyncio
 import time
 from datetime import datetime
-from typing import Dict, List, Optional, Any
+from typing import Dict, List, Optional
 from dataclasses import dataclass, field
 
 from google.adk.agents import Agent
 from google.adk.plugins import BasePlugin
-from google.adk.plugins.save_files_as_artifacts_plugin import SaveFilesAsArtifactsPlugin
 from google.adk.events import Event
 from google.genai import types
 
@@ -85,7 +83,7 @@ class MetricsCollectorPlugin(BasePlugin):
         self.metrics = AggregateMetrics()
         self.current_requests: Dict[str, RequestMetrics] = {}
 
-    async def on_event(self, event: Event) -> None:
+    async def on_event_callback(self, *, invocation_context, event: Event) -> Optional[Event]:
         """Handle agent events for metrics collection."""
         # Track events (implementation simplified for tutorial)
         if hasattr(event, 'event_type'):
@@ -155,7 +153,7 @@ class AlertingPlugin(BasePlugin):
         self.error_threshold = error_threshold
         self.consecutive_errors = 0
 
-    async def on_event(self, event: Event) -> None:
+    async def on_event_callback(self, *, invocation_context, event: Event) -> Optional[Event]:
         """Handle agent events for alerting."""
         if hasattr(event, 'event_type'):
             if event.event_type == 'request_complete':
@@ -164,7 +162,7 @@ class AlertingPlugin(BasePlugin):
             
             elif event.event_type == 'request_error':
                 self.consecutive_errors += 1
-                print(f"🚨 [ALERT] Error detected")
+                print("🚨 [ALERT] Error detected")
                 
                 if self.consecutive_errors >= self.error_threshold:
                     print(f"🚨🚨 [CRITICAL ALERT] {self.consecutive_errors} consecutive errors!")
@@ -179,7 +177,7 @@ class PerformanceProfilerPlugin(BasePlugin):
         self.profiles: List[Dict] = []
         self.current_profile: Optional[Dict] = None
 
-    async def on_event(self, event: Event) -> None:
+    async def on_event_callback(self, *, invocation_context, event: Event) -> Optional[Event]:
         """Handle agent events for profiling."""
         if hasattr(event, 'event_type'):
             if event.event_type == 'tool_call_start':
@@ -187,7 +185,7 @@ class PerformanceProfilerPlugin(BasePlugin):
                     'tool': getattr(event, 'tool_name', 'unknown'),
                     'start_time': time.time()
                 }
-                print(f"⚙️ [PROFILER] Tool call started")
+                print("⚙️ [PROFILER] Tool call started")
             
             elif event.event_type == 'tool_call_complete':
                 if self.current_profile:
