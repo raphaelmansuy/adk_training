@@ -31,9 +31,7 @@ learning_objectives:
 implementation_link: "https://github.com/raphaelmansuy/adk_training/tree/main/tutorial_implementation/tutorial28"
 ---
 
-
 # Tutorial 28: Using Other LLMs with LiteLLM
-
 
 **Goal**: Use OpenAI, Claude, Ollama, and other LLMs in your ADK agents via LiteLLM
 
@@ -52,9 +50,7 @@ implementation_link: "https://github.com/raphaelmansuy/adk_training/tree/main/tu
 - When NOT to use LiteLLM
 - Best practices for cross-provider development
 
-**Source**: `google/adk/models/lite_llm.py`,
-`contributing/samples/hello_world_litellm/`,
-`contributing/samples/hello_world_ollama/`
+**Source**: `google/adk/models/lite_llm.py`, `contributing/samples/hello_world_litellm/`, `contributing/samples/hello_world_ollama/`
 
 ---
 
@@ -93,7 +89,7 @@ pip install google-adk[litellm]
 pip install litellm openai
 ```
 
-**2. Get API key** from [OpenAI Platform](https://platform.openai.com/api-keys)
+**2. Get API key** from https://platform.openai.com/api-keys
 
 **3. Set environment variable**:
 
@@ -214,10 +210,9 @@ complex_agent = Agent(
 
 ## 2. Anthropic Claude Integration
 
-**Anthropic's Claude** excels at long-form content, analysis, and
-following complex instructions.
+**Anthropic's Claude** excels at long-form content, analysis, and following complex instructions.
 
-### Claude Setup
+### Setup
 
 **1. Install dependencies**:
 
@@ -225,7 +220,7 @@ following complex instructions.
 pip install google-adk[litellm] anthropic
 ```
 
-**2. Get API key** from [Anthropic Console](https://console.anthropic.com/)
+**2. Get API key** from https://console.anthropic.com/
 
 **3. Set environment variable**:
 
@@ -383,7 +378,7 @@ throughout.
 - ❌ Slower inference on CPU
 - ❌ Limited context window (typically 4K-32K vs. 200K for cloud models)
 
-### Ollama Setup
+### Setup
 
 **1. Install Ollama**:
 
@@ -600,7 +595,7 @@ model = LiteLlm(
 
 **Azure OpenAI** is for enterprises with **Azure contracts** or **compliance requirements**.
 
-### Azure Setup
+### Setup
 
 **1. Create Azure OpenAI resource** in Azure Portal
 
@@ -694,7 +689,7 @@ if __name__ == '__main__':
 
 **Claude on Vertex AI** combines Anthropic's models with Google Cloud infrastructure.
 
-### Vertex AI Setup
+### Setup
 
 **1. Enable Vertex AI API** in Google Cloud Console
 
