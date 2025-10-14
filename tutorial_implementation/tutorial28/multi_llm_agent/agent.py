@@ -89,12 +89,12 @@ Explain your reasoning clearly and provide detailed responses.
 
 # Alternative agent configurations (can be imported and used separately):
 
-# OpenAI GPT-4o (full version) - for complex reasoning
+# OpenAI GPT-4o-mini (cost-effective version) - for general tasks
 gpt4o_agent = Agent(
-    name="gpt4o_agent",
-    model=LiteLlm(model='openai/gpt-4o'),
-    description="Agent powered by OpenAI GPT-4o for complex reasoning tasks",
-    instruction="You are a powerful reasoning assistant using GPT-4o.",
+    name="gpt4o_mini_agent",
+    model=LiteLlm(model='openai/gpt-4o-mini'),
+    description="Agent powered by OpenAI GPT-4o-mini for efficient general tasks",
+    instruction="You are an efficient assistant using GPT-4o-mini for cost-effective AI interactions.",
     tools=[
         FunctionTool(calculate_square),
         FunctionTool(get_weather),
@@ -124,14 +124,14 @@ You excel at:
 )
 
 
-# Ollama Llama 3.3 - for local, privacy-first operation
+# Ollama Granite 4 - for local, privacy-first operation with IBM Granite model
 # Note: Requires Ollama to be installed and running locally
 # Use 'ollama_chat' prefix, NOT 'ollama' for proper function calling support
 ollama_agent = Agent(
     name="ollama_agent",
-    model=LiteLlm(model='ollama_chat/llama3.3'),  # ⚠️ Use ollama_chat, NOT ollama!
-    description="Agent running locally with Llama 3.3 via Ollama for privacy",
-    instruction="You are a helpful local assistant. All processing happens on-device.",
+    model=LiteLlm(model='ollama_chat/granite4:latest'),  # Updated to use Granite 4 model
+    description="Agent running locally with Granite 4 via Ollama for privacy",
+    instruction="You are a helpful local assistant powered by IBM Granite 4. All processing happens on-device.",
     tools=[
         FunctionTool(calculate_square),
         FunctionTool(get_weather),

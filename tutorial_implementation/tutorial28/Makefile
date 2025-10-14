@@ -10,7 +10,7 @@ help:
 	@echo "Quick Start Commands:"
 	@echo "  make setup     - Install dependencies"
 	@echo "  make dev       - Start the multi-LLM agent"
-	@echo "  make demo      - Run example demos"
+	@echo "  make demo      - Run interactive multi-LLM demos"
 	@echo ""
 	@echo "Advanced Commands:"
 	@echo "  make test      - Run all tests"
@@ -21,7 +21,7 @@ help:
 	@echo "⚠️  Prerequisites:"
 	@echo "  - OpenAI API key: export OPENAI_API_KEY='sk-...'"
 	@echo "  - Anthropic API key: export ANTHROPIC_API_KEY='sk-ant-...'"
-	@echo "  - Optional: Ollama installed for local models (see https://ollama.com)"
+	@echo "  - Optional: Ollama installed for local Granite 4 model (see https://ollama.com)"
 
 # Install dependencies
 setup:
@@ -32,22 +32,34 @@ setup:
 
 # Start the multi-LLM agent
 dev: check-env
-	@echo "🤖 Starting Multi-LLM Agent..."
+	@echo "🤖 Starting Multi-LLM Agent Demo..."
 	@echo "📱 Open http://localhost:8000 in your browser"
 	@echo "🎯 Select 'multi_llm_agent' from the dropdown"
+	@echo ""
+	@echo "🎬 What this demo does:"
+	@echo "   • Tests 4 different AI models: OpenAI GPT-4o-mini, Claude 3.7 Sonnet,"
+	@echo "     Ollama Granite 4 (local), and another GPT-4o-mini config"
+	@echo "   • All agents use the same tools: math calculator, weather info, sentiment analysis"
+	@echo "   • Compare responses from different models on identical prompts"
+	@echo ""
+	@echo "💬 Example questions to try:"
+	@echo "   • 'What is the square of 15?' (uses calculate_square tool)"
+	@echo "   • 'What's the weather like in San Francisco?' (uses get_weather tool)"
+	@echo "   • 'Analyze this text: I love this amazing new technology!' (sentiment analysis)"
+	@echo "   • 'Explain quantum computing in simple terms' (general reasoning)"
+	@echo "   • 'Compare OpenAI vs Claude vs local models' (meta discussion)"
+	@echo ""
+	@echo "🔄 Switch between agents to see different model responses!"
 	adk web
 
 # Run example demos
 demo:
 	@echo "🎬 Running Multi-LLM Demos..."
 	@echo ""
-	@echo "💬 Examples available:"
-	@echo "   1. OpenAI GPT-4o: python -m multi_llm_agent.examples.openai_example"
-	@echo "   2. Claude 3.7: python -m multi_llm_agent.examples.claude_example"
-	@echo "   3. Ollama Local: python -m multi_llm_agent.examples.ollama_example"
-	@echo "   4. Multi-Provider Comparison: python -m multi_llm_agent.examples.comparison"
+	@echo "🤖 This demo will test different LLMs with sample queries"
+	@echo "💡 Make sure your API keys are set for the models you want to test"
 	@echo ""
-	@echo "⚠️  Make sure to set your API keys first!"
+	python -m multi_llm_agent.examples.demo
 
 # Run tests
 test: check-env

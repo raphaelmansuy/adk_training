@@ -93,17 +93,264 @@ ollama pull llama3.3
 - **Best For**: Privacy, offline operation, no API costs
 - **Requires**: Ollama running locally
 
-## 🧪 Testing
+## 🧪 Testing Different AI Models
+
+### Step-by-Step Testing Guide
+
+#### 1. Test with OpenAI GPT-4o-mini (Default)
 
 ```bash
-# Run all tests
-make test
+# Set only OpenAI key
+export OPENAI_API_KEY=sk-your_openai_key_here
 
-# Run specific test file
-pytest tests/test_agent.py -v
+# Run the demo
+make demo
 
-# Run with coverage
-pytest tests/ --cov=multi_llm_agent --cov-report=html
+# Expected: All demos run successfully with GPT-4o-mini
+```
+
+#### 2. Test with Claude 3.7 Sonnet
+
+```bash
+# Set only Anthropic key
+export ANTHROPIC_API_KEY=sk-ant-your_anthropic_key_here
+
+# Run the demo
+make demo
+
+# Expected: All demos run successfully with Claude
+```
+
+#### 3. Test with Ollama (Local Model)
+
+```bash
+# Install Ollama if not already installed
+# Visit: https://ollama.com
+
+# Pull the Granite 4 model
+ollama pull granite4:latest
+
+# Start Ollama server (in another terminal)
+ollama serve
+
+# Run the demo (no API keys needed for local)
+make demo
+
+# Expected: Ollama demos run locally, others may fail without API keys
+```
+
+#### 4. Test Multiple Providers Simultaneously
+
+```bash
+# Set all API keys
+export OPENAI_API_KEY=sk-your_openai_key_here
+export ANTHROPIC_API_KEY=sk-ant-your_anthropic_key_here
+
+# Ensure Ollama is running
+ollama serve
+
+# Run the demo
+make demo
+
+# Expected: All 4 models tested across all demo scenarios
+```
+
+### Testing Specific Agents
+
+#### Run Individual Agents via ADK Web Interface
+
+```bash
+# Start ADK web interface
+make dev
+
+# Open http://localhost:8000
+# Select from dropdown:
+# - multi_llm_agent (OpenAI GPT-4o-mini)
+# - gpt4o_mini_agent (OpenAI GPT-4o-mini alternative)
+# - claude_agent (Claude 3.7 Sonnet)
+# - ollama_agent (Granite 4 local)
+```
+
+#### Test Agents Programmatically
+
+```python
+# Test specific agent
+from multi_llm_agent.agent import root_agent, claude_agent, ollama_agent
+
+# Test OpenAI agent
+print("Testing OpenAI GPT-4o-mini...")
+# Use agent.run() or Runner pattern
+
+# Test Claude agent
+print("Testing Claude 3.7 Sonnet...")
+# Use agent.run() or Runner pattern
+
+# Test Ollama agent
+print("Testing Ollama Granite 4...")
+# Use agent.run() or Runner pattern
+```
+
+### Adding More AI Models
+
+#### 1. Add a New LiteLLM-Supported Model
+
+```python
+# In agent.py, add new agent configuration
+new_agent = Agent(
+    name="new_model_agent",
+    model=LiteLlm(model='provider/model-name'),  # e.g., 'together/mistral-7b'
+    description="Agent powered by New Model",
+    instruction="You are powered by the new AI model.",
+    tools=[calculate_square, get_weather, analyze_sentiment]
+)
+```
+
+#### 2. Supported Model Examples
+
+```python
+# More OpenAI models
+gpt4_turbo_agent = Agent(
+    model=LiteLlm(model='openai/gpt-4-turbo'),
+    # ... other config
+)
+
+# Google models via LiteLLM (not recommended, use native instead)
+# gemini_pro_agent = Agent(
+#     model=LiteLlm(model='gemini/gemini-pro'),
+#     # ... but better to use native: model='gemini-pro'
+# )
+
+# Together AI models
+mistral_agent = Agent(
+    model=LiteLlm(model='together/mistral-7b-instruct'),
+    # ... other config
+)
+
+# Hugging Face models
+zephyr_agent = Agent(
+    model=LiteLlm(model='huggingface/zephyr-7b-beta'),
+    # ... other config
+)
+
+# More Ollama models
+llama_agent = Agent(
+    model=LiteLlm(model='ollama_chat/llama3.2'),
+    # ... other config
+)
+```
+
+#### 3. Test New Models
+
+```bash
+# Set appropriate API keys for the new provider
+export TOGETHER_API_KEY=your_together_key
+export HUGGINGFACE_API_KEY=your_hf_key
+
+# Add to demo.py agents list
+agents.append((new_agent, "New Model Name"))
+
+# Run demo
+make demo
+```
+
+### API Key Management
+
+#### Environment Variables for Different Providers
+
+```bash
+# OpenAI
+export OPENAI_API_KEY=sk-...
+
+# Anthropic
+export ANTHROPIC_API_KEY=sk-ant-...
+
+# Together AI
+export TOGETHER_API_KEY=...
+
+# Hugging Face
+export HUGGINGFACE_API_KEY=hf_...
+
+# Replicate
+export REPLICATE_API_TOKEN=...
+
+# Azure OpenAI
+export AZURE_API_KEY=...
+export AZURE_API_BASE=...
+export AZURE_API_VERSION=...
+```
+
+#### Testing API Key Validity
+
+```bash
+# Quick test script
+python -c "
+import os
+from litellm import completion
+
+# Test OpenAI
+try:
+    response = completion(
+        model='openai/gpt-4o-mini',
+        messages=[{'role': 'user', 'content': 'Hello'}],
+        api_key=os.getenv('OPENAI_API_KEY')
+    )
+    print('✅ OpenAI: Working')
+except Exception as e:
+    print(f'❌ OpenAI: {e}')
+
+# Test Anthropic
+try:
+    response = completion(
+        model='anthropic/claude-3-haiku-20240307',
+        messages=[{'role': 'user', 'content': 'Hello'}],
+        api_key=os.getenv('ANTHROPIC_API_KEY')
+    )
+    print('✅ Anthropic: Working')
+except Exception as e:
+    print(f'❌ Anthropic: {e}')
+"
+```
+
+### Performance Comparison Testing
+
+#### Run Benchmarks
+
+```bash
+# Test response times
+python -c "
+import time
+from multi_llm_agent.examples.demo import run_query
+from multi_llm_agent.agent import root_agent, claude_agent, ollama_agent
+
+agents = [
+    (root_agent, 'GPT-4o-mini'),
+    (claude_agent, 'Claude 3.7'),
+    (ollama_agent, 'Ollama Granite')
+]
+
+query = 'What is 15 squared?'
+for agent, name in agents:
+    start = time.time()
+    result = await run_query(agent, query, name)
+    elapsed = time.time() - start
+    print(f'{name}: {elapsed:.2f}s')
+"
+```
+
+#### Cost Analysis
+
+```bash
+# Estimate costs (requires litellm)
+python -c "
+import litellm
+
+# Get pricing
+pricing = litellm.get_model_cost('openai/gpt-4o-mini')
+print('GPT-4o-mini pricing:', pricing)
+
+pricing = litellm.get_model_cost('anthropic/claude-3-7-sonnet-20250219')
+print('Claude 3.7 pricing:', pricing)
+"
 ```
 
 ## 💬 Example Prompts
@@ -111,18 +358,22 @@ pytest tests/ --cov=multi_llm_agent --cov-report=html
 Try these prompts with the agent:
 
 **Mathematical Operations**:
+
 - "What is the square of 25?"
 - "Calculate the square of 144"
 
 **Weather Queries**:
+
 - "What's the weather like in San Francisco?"
 - "Get weather for New York"
 
 **Sentiment Analysis**:
+
 - "Analyze the sentiment: 'This product is absolutely amazing!'"
 - "What's the sentiment of: 'Disappointed with the service'"
 
 **General Conversation**:
+
 - "Explain how LiteLLM enables multi-model support"
 - "Compare OpenAI GPT-4o vs Claude 3.7 Sonnet"
 - "What are the benefits of using local models with Ollama?"
@@ -130,21 +381,25 @@ Try these prompts with the agent:
 ## 🔑 API Key Configuration
 
 ### Google (Gemini)
+
 ```bash
 export GOOGLE_API_KEY=your_google_api_key
 ```
 
 ### OpenAI
+
 ```bash
 export OPENAI_API_KEY=sk-your_openai_key
 ```
 
 ### Anthropic (Claude)
+
 ```bash
 export ANTHROPIC_API_KEY=sk-ant-your_anthropic_key
 ```
 
 ### Ollama (Local)
+
 ```bash
 export OLLAMA_API_BASE=http://localhost:11434
 ```
@@ -162,6 +417,7 @@ export OLLAMA_API_BASE=http://localhost:11434
 ## ⚠️ Important Notes
 
 ### Use `ollama_chat` for Ollama
+
 ```python
 # ✅ CORRECT
 model = LiteLlm(model='ollama_chat/llama3.3')
@@ -171,7 +427,9 @@ model = LiteLlm(model='ollama/llama3.3')
 ```
 
 ### Don't Use LiteLLM for Gemini
+
 For Gemini models, use native `GoogleGenAI` instead:
+
 ```python
 # ✅ CORRECT for Gemini
 agent = Agent(model='gemini-2.5-flash')
@@ -216,25 +474,32 @@ root_agent.model = LiteLlm(model='ollama_chat/llama3.3')
 ## 🐛 Troubleshooting
 
 ### "Module not found" error
+
 ```bash
 pip install -e .
 ```
 
 ### "Authentication error"
+
 Check that API keys are set correctly:
+
 ```bash
 echo $OPENAI_API_KEY
 echo $ANTHROPIC_API_KEY
 ```
 
 ### Ollama connection error
+
 Ensure Ollama is running:
+
 ```bash
 ollama serve
 ```
 
 ### Rate limits
+
 Implement exponential backoff or use fallback models:
+
 ```python
 try:
     # Try primary model
@@ -250,4 +515,4 @@ This tutorial is part of the ADK Training repository.
 
 ---
 
-**Built with ❤️ using Google ADK and LiteLLM**
+## Built with ❤️ using Google ADK and LiteLLM
