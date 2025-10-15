@@ -1,9 +1,46 @@
 import { useState, useRef, useEffect } from "react";
+import { Line, Bar, Scatter } from "react-chartjs-2";
+import {
+  Chart as ChartJS,
+  CategoryScale,
+  LinearScale,
+  PointElement,
+  LineElement,
+  BarElement,
+  Title,
+  Tooltip,
+  Legend,
+} from "chart.js";
 import "./App.css";
+
+// Register Chart.js components
+ChartJS.register(
+  CategoryScale,
+  LinearScale,
+  PointElement,
+  LineElement,
+  BarElement,
+  Title,
+  Tooltip,
+  Legend
+);
 
 interface Message {
   role: "user" | "assistant";
   content: string;
+}
+
+interface ChartData {
+  chart_type: string;
+  data: {
+    labels: string[];
+    values: number[];
+  };
+  options: {
+    x_label: string;
+    y_label: string;
+    title: string;
+  };
 }
 
 function App() {
@@ -15,7 +52,11 @@ function App() {
   ]);
   const [input, setInput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [uploadedFile, setUploadedFile] = useState<File | null>(null);
+  const [chartData, setChartData] = useState<ChartData | null>(null);
+  const [isDragOver, setIsDragOver] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -92,6 +133,19 @@ function App() {
         }
       }
 
+      // Check if response contains chart data
+      if (fullContent.includes('"chart_type"')) {
+        try {
+          const chartMatch = fullContent.match(/\{[^}]*"chart_type"[^}]*\}/);
+          if (chartMatch) {
+            const chartJson = JSON.parse(chartMatch[0]);
+            setChartData(chartJson);
+          }
+        } catch (e) {
+          // Failed to parse chart data
+        }
+      }
+
       // Ensure final message is added if not already
       if (fullContent && messages[messages.length - 1]?.role !== "assistant") {
         const assistantMessage: Message = {
@@ -111,198 +165,477 @@ function App() {
     }
   };
 
+  const handleFileUpload = async (file: File) => {
+    if (!file.name.endsWith('.csv')) {
+      alert('Please upload a CSV file');
+      return;
+    }
+
+    setUploadedFile(file);
+    setIsLoading(true);
+
+    try {
+      const csvText = await file.text();
+      
+      // Send the CSV data to the agent
+      const uploadMessage = `Please load this CSV data for analysis:\n\nFile: ${file.name}\nData:\n${csvText}`;
+      
+      const userMessage: Message = { role: "user", content: `Uploaded: ${file.name}` };
+      setMessages((prev) => [...prev, userMessage]);
+
+      const response = await fetch("http://localhost:8000/api/copilotkit", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          threadId: "data-analysis-thread",
+          runId: `run-${Date.now()}`,
+          messages: [...messages, { role: "user", content: uploadMessage }].map((m, i) => ({
+            id: `msg-${Date.now()}-${i}`,
+            role: m.role,
+            content: m.content,
+          })),
+          state: {},
+          tools: [],
+          context: [],
+          forwardedProps: {},
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}`);
+      }
+
+      // Handle response similar to sendMessage
+      const reader = response.body?.getReader();
+      const decoder = new TextDecoder();
+      let fullContent = "";
+
+      if (reader) {
+        while (true) {
+          const { done, value } = await reader.read();
+          if (done) break;
+
+          const chunk = decoder.decode(value);
+          const lines = chunk.split("\n");
+
+          for (const line of lines) {
+            if (line.startsWith("data: ")) {
+              try {
+                const jsonData = JSON.parse(line.slice(6));
+                if (jsonData.type === "TEXT_MESSAGE_CONTENT") {
+                  fullContent += jsonData.delta;
+                  setMessages((prev) => {
+                    const newMessages = [...prev];
+                    const lastMsg = newMessages[newMessages.length - 1];
+                    if (lastMsg && lastMsg.role === "assistant") {
+                      lastMsg.content = fullContent;
+                    } else {
+                      newMessages.push({ role: "assistant", content: fullContent });
+                    }
+                    return newMessages;
+                  });
+                }
+              } catch (e) {
+                // Skip invalid JSON
+              }
+            }
+          }
+        }
+      }
+
+      if (fullContent && messages[messages.length - 1]?.role !== "assistant") {
+        const assistantMessage: Message = {
+          role: "assistant",
+          content: fullContent,
+        };
+        setMessages((prev) => [...prev, assistantMessage]);
+      }
+
+    } catch (error) {
+      console.error("Upload error:", error);
+      setMessages((prev) => [
+        ...prev,
+        { role: "assistant", content: `Error uploading ${file.name}: ${error}` },
+      ]);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleDrop = (e: React.DragEvent) => {
+    e.preventDefault();
+    setIsDragOver(false);
+    
+    const files = Array.from(e.dataTransfer.files);
+    const csvFile = files.find(file => file.name.endsWith('.csv'));
+    
+    if (csvFile) {
+      handleFileUpload(csvFile);
+    } else {
+      alert('Please drop a CSV file');
+    }
+  };
+
+  const handleDragOver = (e: React.DragEvent) => {
+    e.preventDefault();
+    setIsDragOver(true);
+  };
+
+  const handleDragLeave = (e: React.DragEvent) => {
+    e.preventDefault();
+    setIsDragOver(false);
+  };
+
+  const renderChart = () => {
+    if (!chartData) return null;
+
+    const data = {
+      labels: chartData.data.labels,
+      datasets: [
+        {
+          label: chartData.options.y_label,
+          data: chartData.data.values,
+          backgroundColor: chartData.chart_type === 'line' 
+            ? 'rgba(59, 130, 246, 0.1)'
+            : 'rgba(59, 130, 246, 0.8)',
+          borderColor: 'rgba(59, 130, 246, 1)',
+          borderWidth: 2,
+          tension: chartData.chart_type === 'line' ? 0.4 : 0,
+        },
+      ],
+    };
+
+    const options = {
+      responsive: true,
+      plugins: {
+        legend: {
+          position: 'top' as const,
+        },
+        title: {
+          display: true,
+          text: chartData.options.title,
+        },
+      },
+      scales: {
+        x: {
+          title: {
+            display: true,
+            text: chartData.options.x_label,
+          },
+        },
+        y: {
+          title: {
+            display: true,
+            text: chartData.options.y_label,
+          },
+        },
+      },
+    };
+
+    switch (chartData.chart_type) {
+      case 'line':
+        return <Line data={data} options={options} />;
+      case 'bar':
+        return <Bar data={data} options={options} />;
+      case 'scatter':
+        return <Scatter data={data} options={options} />;
+      default:
+        return <Line data={data} options={options} />;
+    }
+  };
+
   return (
-    <div className="flex flex-col h-screen bg-gray-50">
+    <div className="flex flex-col h-screen bg-gradient-to-br from-gray-50 to-blue-50">
       {/* Header */}
-      <header className="bg-white border-b border-gray-200 shadow-sm" role="banner">
-        <div className="max-w-4xl mx-auto px-6 py-4">
+      <header className="bg-white/90 backdrop-blur-sm border-b border-gray-200 shadow-sm sticky top-0 z-10" role="banner">
+        <div className="max-w-6xl mx-auto px-6 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
               <div 
-                className="w-10 h-10 bg-gradient-to-br from-blue-600 to-indigo-600 rounded-xl flex items-center justify-center text-2xl shadow-lg"
+                className="w-12 h-12 bg-gradient-to-br from-blue-600 to-indigo-700 rounded-xl flex items-center justify-center text-2xl shadow-lg"
                 aria-hidden="true"
               >
                 📊
               </div>
               <div>
-                <h1 className="text-xl font-bold text-gray-900">Data Analysis Dashboard</h1>
+                <h1 className="text-2xl font-bold text-gray-900">Data Analysis Dashboard</h1>
                 <p className="text-sm text-gray-600">Powered by Gemini 2.0 Flash</p>
               </div>
             </div>
-            <div className="flex items-center gap-2" role="status" aria-live="polite">
-              <div 
-                className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse"
-                aria-hidden="true"
-              ></div>
-              <span className="text-sm font-medium text-emerald-700">Connected</span>
+            <div className="flex items-center gap-4">
+              {uploadedFile && (
+                <div className="text-sm text-gray-600 bg-green-50 px-3 py-1 rounded-full border border-green-200">
+                  📄 {uploadedFile.name}
+                </div>
+              )}
+              <div className="flex items-center gap-2" role="status" aria-live="polite">
+                <div 
+                  className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse"
+                  aria-hidden="true"
+                ></div>
+                <span className="text-sm font-medium text-emerald-700">Connected</span>
+              </div>
             </div>
           </div>
         </div>
       </header>
 
-      {/* Chat Messages */}
-      <main 
-        className="flex-1 overflow-y-auto" 
-        role="main"
-        aria-label="Chat conversation"
-      >
-        <div className="max-w-4xl mx-auto px-6 py-8">
-          {messages.length === 1 && (
-            <div 
-              className="text-center py-12"
-              role="status"
-              aria-label="Welcome message"
+      <div className="flex-1 flex max-w-6xl mx-auto w-full">
+        {/* Main Chat Area */}
+        <main className="flex-1 flex flex-col" role="main">
+          {/* File Upload Area */}
+          <div className="p-6 border-b border-gray-200 bg-white/50">
+            <div
+              className={`relative border-2 border-dashed rounded-xl p-6 text-center transition-all duration-200 ${
+                isDragOver
+                  ? "border-blue-500 bg-blue-50"
+                  : "border-gray-300 hover:border-blue-400 hover:bg-blue-50/50"
+              }`}
+              onDrop={handleDrop}
+              onDragOver={handleDragOver}
+              onDragLeave={handleDragLeave}
             >
-              <div className="text-6xl mb-4" aria-hidden="true">📈</div>
-              <p className="text-lg font-semibold text-gray-700 mb-2">
-                Ready to analyze your data
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept=".csv"
+                onChange={(e) => {
+                  const file = e.target.files?.[0];
+                  if (file) handleFileUpload(file);
+                }}
+                className="hidden"
+              />
+              <div className="text-4xl mb-2">📁</div>
+              <p className="text-lg font-semibold text-gray-700 mb-1">
+                Drop CSV files here or{" "}
+                <button
+                  onClick={() => fileInputRef.current?.click()}
+                  className="text-blue-600 hover:text-blue-700 underline"
+                >
+                  browse
+                </button>
               </p>
-              <p className="text-sm text-gray-600">
-                Try: "Load this CSV data..." or "Analyze sales trends"
+              <p className="text-sm text-gray-500">
+                Supports CSV files for data analysis and visualization
               </p>
             </div>
-          )}
-          
-          <div 
-            role="log" 
-            aria-live="polite" 
-            aria-atomic="false"
-            aria-label="Chat messages"
-          >
-            {messages.map((message, index) => (
-              <article
-                key={index}
-                className={`flex gap-3 mb-6 items-start animate-in slide-in-from-bottom-2 duration-300 ${
-                  message.role === "user" ? "justify-end" : "justify-start"
-                }`}
-                role="article"
-                aria-label={`${message.role === "user" ? "Your message" : "Assistant message"}`}
+          </div>
+
+          {/* Chat Messages */}
+          <div className="flex-1 overflow-y-auto" aria-label="Chat conversation">
+            <div className="px-6 py-4">
+              {messages.length === 1 && (
+                <div 
+                  className="text-center py-12"
+                  role="status"
+                  aria-label="Welcome message"
+                >
+                  <div className="text-6xl mb-4" aria-hidden="true">📈</div>
+                  <p className="text-xl font-semibold text-gray-700 mb-2">
+                    Ready to analyze your data
+                  </p>
+                  <p className="text-gray-600 mb-4">
+                    Upload a CSV file or ask me to analyze data trends
+                  </p>
+                  <div className="flex flex-wrap gap-2 justify-center">
+                    <button
+                      onClick={() => setInput("Analyze sales trends")}
+                      className="px-4 py-2 bg-blue-100 text-blue-700 rounded-full text-sm hover:bg-blue-200 transition-colors"
+                    >
+                      "Analyze sales trends"
+                    </button>
+                    <button
+                      onClick={() => setInput("Show correlation analysis")}
+                      className="px-4 py-2 bg-purple-100 text-purple-700 rounded-full text-sm hover:bg-purple-200 transition-colors"
+                    >
+                      "Show correlation analysis"
+                    </button>
+                    <button
+                      onClick={() => setInput("Create a line chart")}
+                      className="px-4 py-2 bg-green-100 text-green-700 rounded-full text-sm hover:bg-green-200 transition-colors"
+                    >
+                      "Create a line chart"
+                    </button>
+                  </div>
+                </div>
+              )}
+              
+              <div 
+                role="log" 
+                aria-live="polite" 
+                aria-atomic="false"
+                aria-label="Chat messages"
               >
-                {message.role === "assistant" && (
+                {messages.map((message, index) => (
+                  <article
+                    key={index}
+                    className={`flex gap-4 mb-6 items-start animate-in slide-in-from-bottom-2 duration-300 ${
+                      message.role === "user" ? "justify-end" : "justify-start"
+                    }`}
+                    role="article"
+                    aria-label={`${message.role === "user" ? "Your message" : "Assistant message"}`}
+                  >
+                    {message.role === "assistant" && (
+                      <div 
+                        className="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-600 to-indigo-700 flex items-center justify-center flex-shrink-0 text-lg shadow-lg"
+                        aria-hidden="true"
+                      >
+                        🤖
+                      </div>
+                    )}
+                    
+                    <div
+                      className={`max-w-[75%] px-5 py-4 rounded-2xl leading-relaxed break-words shadow-lg ${
+                        message.role === "user"
+                          ? "bg-gradient-to-r from-blue-600 to-blue-700 text-white rounded-br-md"
+                          : "bg-white text-gray-900 border border-gray-100 rounded-bl-md"
+                      }`}
+                      role="region"
+                      aria-label={message.role === "user" ? "Your message" : "Assistant response"}
+                    >
+                      <div className="whitespace-pre-wrap">{message.content}</div>
+                    </div>
+                    
+                    {message.role === "user" && (
+                      <div 
+                        className="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-600 to-blue-700 flex items-center justify-center flex-shrink-0 text-lg text-white shadow-lg"
+                        aria-hidden="true"
+                      >
+                        👤
+                      </div>
+                    )}
+                  </article>
+                ))}
+              </div>
+              
+              {isLoading && (
+                <div 
+                  className="flex gap-4 items-start animate-in slide-in-from-bottom-2 duration-300"
+                  role="status"
+                  aria-live="polite"
+                  aria-label="Assistant is typing"
+                >
                   <div 
-                    className="w-8 h-8 rounded-lg bg-gradient-to-br from-blue-600 to-indigo-600 flex items-center justify-center flex-shrink-0 text-lg shadow-md"
+                    className="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-600 to-indigo-700 flex items-center justify-center flex-shrink-0 text-lg shadow-lg"
                     aria-hidden="true"
                   >
                     🤖
                   </div>
-                )}
-                
-                <div
-                  className={`max-w-[75%] px-4 py-3 rounded-2xl leading-relaxed break-words ${
-                    message.role === "user"
-                      ? "bg-blue-600 text-white shadow-lg shadow-blue-600/30 rounded-br-sm"
-                      : "bg-white text-gray-900 shadow-md border border-gray-100 rounded-bl-sm"
-                  }`}
-                  role="region"
-                  aria-label={message.role === "user" ? "Your message" : "Assistant response"}
-                >
-                  {message.content}
-                </div>
-                
-                {message.role === "user" && (
-                  <div 
-                    className="w-8 h-8 rounded-lg bg-blue-600 flex items-center justify-center flex-shrink-0 text-lg text-white shadow-md"
-                    aria-hidden="true"
-                  >
-                    👤
+                  <div className="px-5 py-4 rounded-2xl rounded-bl-md bg-white shadow-lg border border-gray-100">
+                    <div className="flex gap-1" aria-label="Loading">
+                      <div className="w-2 h-2 rounded-full bg-blue-500 animate-bounce" style={{ animationDelay: "0s" }}></div>
+                      <div className="w-2 h-2 rounded-full bg-blue-500 animate-bounce" style={{ animationDelay: "0.2s" }}></div>
+                      <div className="w-2 h-2 rounded-full bg-blue-500 animate-bounce" style={{ animationDelay: "0.4s" }}></div>
+                    </div>
                   </div>
-                )}
-              </article>
-            ))}
+                </div>
+              )}
+              <div ref={messagesEndRef} aria-hidden="true" />
+            </div>
           </div>
-          
-          {isLoading && (
-            <div 
-              className="flex gap-3 items-start animate-in slide-in-from-bottom-2 duration-300"
-              role="status"
-              aria-live="polite"
-              aria-label="Assistant is typing"
-            >
-              <div 
-                className="w-8 h-8 rounded-lg bg-gradient-to-br from-blue-600 to-indigo-600 flex items-center justify-center flex-shrink-0 text-lg shadow-md"
-                aria-hidden="true"
-              >
-                🤖
-              </div>
-              <div className="px-4 py-3 rounded-2xl rounded-bl-sm bg-white shadow-md border border-gray-100">
-                <div className="flex gap-1" aria-label="Loading">
-                  <div className="w-2 h-2 rounded-full bg-gray-500 animate-bounce" style={{ animationDelay: "0s" }}></div>
-                  <div className="w-2 h-2 rounded-full bg-gray-500 animate-bounce" style={{ animationDelay: "0.2s" }}></div>
-                  <div className="w-2 h-2 rounded-full bg-gray-500 animate-bounce" style={{ animationDelay: "0.4s" }}></div>
-                </div>
-              </div>
-            </div>
-          )}
-          <div ref={messagesEndRef} aria-hidden="true" />
-        </div>
-      </main>
 
-      {/* Input Form */}
-      <footer className="bg-white border-t border-gray-200 shadow-lg" role="contentinfo">
-        <div className="max-w-4xl mx-auto px-6 py-4">
-          <form 
-            onSubmit={sendMessage} 
-            className="flex gap-3"
-            aria-label="Message input form"
-          >
-            <div className="flex-1 relative">
-              <label htmlFor="message-input" className="sr-only">
-                Type your message
-              </label>
-              <input
-                id="message-input"
-                type="text"
-                value={input}
-                onChange={(e) => setInput(e.target.value)}
-                placeholder="Ask about data analysis..."
-                disabled={isLoading}
-                autoFocus
-                autoComplete="off"
-                aria-label="Message input"
-                aria-describedby="message-hint"
-                aria-invalid="false"
-                className="w-full px-5 py-3 pr-12 border-2 border-gray-300 rounded-full text-base outline-none transition-all bg-white text-gray-900 placeholder-gray-500 focus:border-blue-600 focus:ring-4 focus:ring-blue-600/20 disabled:bg-gray-100 disabled:text-gray-500 disabled:cursor-not-allowed"
-              />
-              {input.length > 0 && (
-                <div 
-                  className="absolute right-4 top-1/2 -translate-y-1/2 text-sm text-gray-500 pointer-events-none"
-                  aria-live="polite"
-                  aria-atomic="true"
+          {/* Input Form */}
+          <footer className="bg-white/90 backdrop-blur-sm border-t border-gray-200 shadow-lg" role="contentinfo">
+            <div className="px-6 py-4">
+              <form 
+                onSubmit={sendMessage} 
+                className="flex gap-3"
+                aria-label="Message input form"
+              >
+                <div className="flex-1 relative">
+                  <label htmlFor="message-input" className="sr-only">
+                    Type your message
+                  </label>
+                  <input
+                    id="message-input"
+                    type="text"
+                    value={input}
+                    onChange={(e) => setInput(e.target.value)}
+                    placeholder="Ask about data analysis..."
+                    disabled={isLoading}
+                    autoFocus
+                    autoComplete="off"
+                    aria-label="Message input"
+                    aria-describedby="message-hint"
+                    aria-invalid="false"
+                    className="w-full px-6 py-4 pr-12 border-2 border-gray-300 rounded-2xl text-base outline-none transition-all bg-white text-gray-900 placeholder-gray-500 focus:border-blue-600 focus:ring-4 focus:ring-blue-600/20 disabled:bg-gray-100 disabled:text-gray-500 disabled:cursor-not-allowed shadow-sm"
+                  />
+                  {input.length > 0 && (
+                    <div 
+                      className="absolute right-4 top-1/2 -translate-y-1/2 text-sm text-gray-500 pointer-events-none"
+                      aria-live="polite"
+                      aria-atomic="true"
+                    >
+                      <span className="sr-only">Character count: </span>
+                      {input.length}
+                    </div>
+                  )}
+                </div>
+                <button
+                  type="submit"
+                  disabled={isLoading || !input.trim()}
+                  aria-label={isLoading ? "Sending message" : "Send message"}
+                  aria-busy={isLoading}
+                  className="px-8 py-4 bg-gradient-to-r from-blue-600 to-blue-700 text-white rounded-2xl font-semibold transition-all flex items-center gap-2 shadow-lg hover:from-blue-700 hover:to-blue-800 hover:-translate-y-0.5 hover:shadow-xl focus:outline-none focus:ring-4 focus:ring-blue-600/20 disabled:bg-gray-300 disabled:text-gray-600 disabled:cursor-not-allowed disabled:shadow-none disabled:translate-y-0"
                 >
-                  <span className="sr-only">Character count: </span>
-                  {input.length}
+                  {isLoading ? (
+                    <>
+                      <span>Sending</span>
+                      <span className="animate-spin" aria-hidden="true">⏳</span>
+                    </>
+                  ) : (
+                    <>
+                      <span>Send</span>
+                      <span aria-hidden="true">🚀</span>
+                    </>
+                  )}
+                </button>
+              </form>
+              <p 
+                id="message-hint" 
+                className="text-center text-xs text-gray-500 mt-3"
+                role="contentinfo"
+              >
+                Powered by Google ADK • Tutorial 31 Data Analysis Dashboard
+              </p>
+            </div>
+          </footer>
+        </main>
+
+        {/* Sidebar for Charts and Data */}
+        {(chartData || uploadedFile) && (
+          <aside className="w-96 bg-white border-l border-gray-200 flex flex-col">
+            <div className="p-6 border-b border-gray-200">
+              <h2 className="text-lg font-semibold text-gray-900 flex items-center gap-2">
+                📊 Visualization
+              </h2>
+            </div>
+            <div className="flex-1 p-6 overflow-y-auto">
+              {chartData && (
+                <div className="mb-6">
+                  <div className="bg-gray-50 rounded-xl p-4">
+                    {renderChart()}
+                  </div>
+                  <div className="mt-4 text-sm text-gray-600">
+                    <p><strong>Chart Type:</strong> {chartData.chart_type}</p>
+                    <p><strong>X-Axis:</strong> {chartData.options.x_label}</p>
+                    <p><strong>Y-Axis:</strong> {chartData.options.y_label}</p>
+                  </div>
+                </div>
+              )}
+              {uploadedFile && (
+                <div className="bg-blue-50 rounded-xl p-4">
+                  <h3 className="font-semibold text-blue-900 mb-2">📄 Uploaded File</h3>
+                  <p className="text-sm text-blue-700">{uploadedFile.name}</p>
+                  <p className="text-xs text-blue-600 mt-1">
+                    {(uploadedFile.size / 1024).toFixed(1)} KB
+                  </p>
                 </div>
               )}
             </div>
-            <button
-              type="submit"
-              disabled={isLoading || !input.trim()}
-              aria-label={isLoading ? "Sending message" : "Send message"}
-              aria-busy={isLoading}
-              className="px-6 py-3 bg-blue-600 text-white rounded-full font-semibold transition-all flex items-center gap-2 shadow-lg shadow-blue-600/30 hover:bg-blue-700 hover:-translate-y-0.5 hover:shadow-xl hover:shadow-blue-600/40 focus:outline-none focus:ring-4 focus:ring-blue-600/20 disabled:bg-gray-300 disabled:text-gray-600 disabled:cursor-not-allowed disabled:shadow-none disabled:translate-y-0"
-            >
-              {isLoading ? (
-                <>
-                  <span>Sending</span>
-                  <span className="animate-spin" aria-hidden="true">⏳</span>
-                </>
-              ) : (
-                <>
-                  <span>Send</span>
-                  <span aria-hidden="true">🚀</span>
-                </>
-              )}
-            </button>
-          </form>
-          <p 
-            id="message-hint" 
-            className="text-center text-xs text-gray-500 mt-3"
-            role="contentinfo"
-          >
-            Powered by Google ADK • Tutorial 31 Data Analysis Dashboard
-          </p>
-        </div>
-      </footer>
+          </aside>
+        )}
+      </div>
     </div>
   );
 }
