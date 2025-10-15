@@ -1,6 +1,6 @@
 # Tutorial 31: React Vite + ADK Integration with AG-UI
 
-A modern, fast data analysis dashboard built with Vite, React, TypeScript, and Google ADK. Upload CSV files and get instant insights through natural language conversations with a custom UI implementation using AG-UI protocol.
+A modern, fast data analysis dashboard built with Vite, React, TypeScript,AG-UI and Google ADK. Upload CSV files and get instant insights through natural language conversations with a custom UI implementation using AG-UI protocol.
 
 ## Features
 
@@ -19,7 +19,7 @@ A modern, fast data analysis dashboard built with Vite, React, TypeScript, and G
 ```
 ┌─────────────────────────────────────────────────────────────┐
 │  Frontend (Vite + React + TypeScript)                       │
-│  http://localhost:5173                                       │
+│  http://localhost:5173                                      │
 │  ├─ Custom chat UI (no CopilotKit)                          │
 │  ├─ File upload via drag-and-drop                           │
 │  ├─ Fixed sidebar for chart visualization                   │
@@ -28,12 +28,12 @@ A modern, fast data analysis dashboard built with Vite, React, TypeScript, and G
 └───────────────────┬─────────────────────────────────────────┘
                     │ Direct HTTP + SSE → /api/copilotkit
 ┌───────────────────▼─────────────────────────────────────────┐
-│  Backend (FastAPI + AG-UI ADK)                               │
-│  http://localhost:8000                                       │
+│  Backend (FastAPI + AG-UI ADK)                              │
+│  http://localhost:8000                                      │
 │  ├─ ag_ui_adk middleware (AG-UI Protocol)                   │
 │  ├─ ADKAgent wrapping Agent                                 │
 │  │  ├─ Agent: gemini-2.0-flash-exp                          │
-│  │  └─ Tools: load_csv_data, analyze_data, create_chart    │
+│  │  └─ Tools: load_csv_data, analyze_data, create_chart     │
 │  └─ /api/copilotkit endpoint (SSE streaming)                │
 └─────────────────────────────────────────────────────────────┘
 ```
