@@ -9,7 +9,7 @@ help:
 	@echo "  make setup-frontend - Install frontend dependencies only"
 	@echo ""
 	@echo "Development Commands:"
-	@echo "  make dev            - Run both agent and frontend (requires 2 terminals)"
+	@echo "  make dev            - Run both agent and frontend simultaneously"
 	@echo "  make dev-agent      - Run agent backend server (port 8000)"
 	@echo "  make dev-frontend   - Run frontend dev server (port 5173)"
 	@echo ""
@@ -25,9 +25,8 @@ help:
 	@echo "Full Workflow:"
 	@echo "  1. make setup       - Install dependencies"
 	@echo "  2. Configure .env   - Add your GOOGLE_API_KEY"
-	@echo "  3. make dev-agent   - Start backend (terminal 1)"
-	@echo "  4. make dev-frontend - Start frontend (terminal 2)"
-	@echo "  5. Open http://localhost:5173 in browser"
+	@echo "  3. make dev         - Start both backend and frontend"
+	@echo "  4. Open http://localhost:5173 in browser"
 
 setup: setup-agent setup-frontend
 	@echo "✅ Full setup complete!"
@@ -52,14 +51,15 @@ setup-frontend:
 	@echo "✅ Frontend setup complete!"
 
 dev:
-	@echo "⚠️  This command requires 2 separate terminals:"
+	@echo "🚀 Starting both agent backend and frontend servers..."
 	@echo ""
-	@echo "Terminal 1: make dev-agent"
-	@echo "Terminal 2: make dev-frontend"
+	@echo "This will start:"
+	@echo "  Backend: http://localhost:8000 (ADK agent)"
+	@echo "  Frontend: http://localhost:5173 (Data Analysis Dashboard)"
 	@echo ""
-	@echo "Or run them manually:"
-	@echo "  cd agent && . venv/bin/activate && python agent.py"
-	@echo "  cd frontend && npm run dev"
+	@echo "Press Ctrl+C to stop both servers"
+	@echo ""
+	@$(MAKE) dev-parallel
 
 dev-agent:
 	@echo "🚀 Starting agent backend server..."
@@ -73,6 +73,13 @@ dev-frontend:
 	@echo "Frontend will be available at: http://localhost:5173"
 	@echo ""
 	cd frontend && npm run dev
+
+# Start both backend and frontend in parallel (internal use)
+dev-parallel:
+	@trap 'kill 0' EXIT; \
+	(cd agent && . venv/bin/activate && python agent.py) & \
+	(cd frontend && npm run dev) & \
+	wait
 
 test:
 	@echo "🧪 Running tests with coverage..."
