@@ -1,0 +1,177 @@
+.app-container {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  padding: 2rem;
+}
+
+.dashboard {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.header {
+  text-align: center;
+  color: white;
+  margin-bottom: 2rem;
+}
+
+.header h1 {
+  font-size: 3rem;
+  margin-bottom: 0.5rem;
+  font-weight: 700;
+}
+
+.header p {
+  font-size: 1.2rem;
+  opacity: 0.9;
+}
+
+.upload-section {
+  background: white;
+  padding: 2rem;
+  border-radius: 12px;
+  margin-bottom: 2rem;
+  text-align: center;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+}
+
+.upload-button {
+  display: inline-block;
+  padding: 1rem 2rem;
+  background: #667eea;
+  color: white;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 1rem;
+  transition: all 0.3s ease;
+  border: none;
+}
+
+.upload-button:hover {
+  background: #764ba2;
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+}
+
+.file-info {
+  margin-top: 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+}
+
+.file-name {
+  color: #28a745;
+  font-weight: 600;
+  font-size: 1rem;
+}
+
+.file-size {
+  color: #666;
+  font-size: 0.9rem;
+}
+
+.chat-container {
+  background: white;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+  height: 600px;
+  margin-bottom: 2rem;
+}
+
+.instructions {
+  background: white;
+  padding: 2rem;
+  border-radius: 12px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+}
+
+.instructions h3 {
+  color: #667eea;
+  margin-bottom: 1rem;
+  font-size: 1.5rem;
+}
+
+.instructions ol {
+  margin-left: 1.5rem;
+  line-height: 1.8;
+  color: #333;
+}
+
+.instructions ul {
+  margin-left: 1.5rem;
+  margin-top: 0.5rem;
+  line-height: 1.6;
+  color: #666;
+}
+
+.instructions li {
+  margin-bottom: 0.5rem;
+}
+
+/* Chart container styles */
+.chart-container {
+  margin: 1rem 0;
+  padding: 1rem;
+  background: #f8f9fa;
+  border-radius: 8px;
+}
+
+/* Data table styles */
+.data-table-container {
+  max-height: 400px;
+  overflow: auto;
+  margin: 1rem 0;
+  border-radius: 8px;
+  border: 1px solid #e0e0e0;
+}
+
+.data-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.data-table thead {
+  background: #667eea;
+  color: white;
+  position: sticky;
+  top: 0;
+  z-index: 1;
+}
+
+.data-table th,
+.data-table td {
+  padding: 0.75rem;
+  text-align: left;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.data-table tbody tr:hover {
+  background: #f5f5f5;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+  .app-container {
+    padding: 1rem;
+  }
+
+  .header h1 {
+    font-size: 2rem;
+  }
+
+  .header p {
+    font-size: 1rem;
+  }
+
+  .chat-container {
+    height: 500px;
+  }
+
+  .instructions {
+    padding: 1.5rem;
+  }
+}
