@@ -375,13 +375,52 @@ ag_ui_agent = ADKAgent(
     user_id="demo_user"
 )
 
-# Add ADK endpoint for CopilotKit - handles all GraphQL protocol automatically
+# Add CopilotKit info endpoint - Required for CopilotKit 1.10.x
+@app.get("/api/copilotkit")
+async def copilotkit_info():
+    """
+    CopilotKit info endpoint for agent discovery.
+    Returns agent information in CopilotKit-expected format.
+    """
+    return {
+        "agents": [
+            {
+                "name": "data_analyst",
+                "description": "Expert data analysis assistant with CSV tools",
+                "tools": ["load_csv_data", "analyze_data", "create_chart"]
+            }
+        ],
+        "version": "1.0.0"
+    }
+
+
+# Add AG-UI ADK endpoint for CopilotKit
+# This creates a /api/copilotkit endpoint that CopilotKit can connect to directly
 add_adk_fastapi_endpoint(app, ag_ui_agent, path="/api/copilotkit")
 
 
 # ============================================================================
 # Additional API Endpoints
 # ============================================================================
+
+@app.get("/info")
+def info() -> Dict[str, Any]:
+    """
+    CopilotKit info endpoint - provides agent capabilities.
+
+    Returns:
+        Dict with agent information
+    """
+    return {
+        "agents": [
+            {
+                "name": "data_analyst",
+                "description": "Expert data analysis assistant with CSV tools",
+                "capabilities": ["data_analysis", "visualization", "statistics"]
+            }
+        ]
+    }
+
 
 @app.get("/health")
 def health_check() -> Dict[str, Any]:
