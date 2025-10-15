@@ -1,92 +1,310 @@
-import { useState } from 'react'
-import { CopilotKit } from "@copilotkit/react-core"
-import { CopilotChat } from "@copilotkit/react-ui"
-import "@copilotkit/react-ui/styles.css"
-import './App.css'
+import { useState, useRef, useEffect } from "react";
+import "./App.css";
 
-function App() {
-  const [uploadedFile, setUploadedFile] = useState<string | null>(null)
-  const [csvContent, setCsvContent] = useState<string | null>(null)
-
-  const handleFileUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0]
-    if (!file) return
-
-    const reader = new FileReader()
-    reader.onload = async (e) => {
-      const content = e.target?.result as string
-      setUploadedFile(file.name)
-      setCsvContent(content)
-      console.log(`✅ Loaded ${file.name}: ${content.length} bytes`)
-    }
-    reader.readAsText(file)
-  }
-
-  return (
-    <div className="app-container">
-      <CopilotKit runtimeUrl="/api/copilotkit" agent="data_analyst">
-        <div className="dashboard">
-          {/* Header */}
-          <header className="header">
-            <h1>📊 Data Analysis Dashboard</h1>
-            <p>Upload CSV data and ask questions to get insights</p>
-          </header>
-
-          {/* File Upload */}
-          <div className="upload-section">
-            <label htmlFor="file-upload" className="upload-button">
-              📁 Upload CSV File
-            </label>
-            <input
-              id="file-upload"
-              type="file"
-              accept=".csv"
-              onChange={handleFileUpload}
-              style={{ display: 'none' }}
-            />
-            {uploadedFile && (
-              <div className="file-info">
-                <span className="file-name">✅ {uploadedFile}</span>
-                {csvContent && (
-                  <span className="file-size">
-                    ({(csvContent.length / 1024).toFixed(1)} KB)
-                  </span>
-                )}
-              </div>
-            )}
-          </div>
-
-          {/* Chat Interface */}
-          <div className="chat-container">
-            <CopilotChat
-              instructions="You are a data analysis assistant. Help users analyze their CSV data."
-              labels={{
-                title: "Data Analyst",
-                initial: "Hi! Upload a CSV file and I'll help you analyze it. You can ask me to:\n\n• Summarize the data\n• Find correlations\n• Identify trends\n• Create visualizations",
-              }}
-            />
-          </div>
-
-          {/* Instructions */}
-          <div className="instructions">
-            <h3>How to use:</h3>
-            <ol>
-              <li>Upload a CSV file using the button above</li>
-              <li>Ask questions like:
-                <ul>
-                  <li>"What are the key statistics?"</li>
-                  <li>"Show me a summary of the data"</li>
-                  <li>"Create a line chart of sales over time"</li>
-                  <li>"What correlations exist in the data?"</li>
-                </ul>
-              </li>
-              <li>Get insights and visualizations instantly!</li>
-            </ol>
-          </div>
-        </div>
-      </CopilotKit>
-    </div>
-  )
+interface Message {
+  role: "user" | "assistant";
+  content: string;
 }
 
-export default App
+function App() {
+  const [messages, setMessages] = useState<Message[]>([
+    {
+      role: "assistant",
+      content: "Hi! I'm your data analysis assistant powered by Google ADK with Gemini 2.0 Flash. Upload CSV files or ask me to analyze data!",
+    },
+  ]);
+  const [input, setInput] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+  const messagesEndRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, [messages]);
+
+  const sendMessage = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!input.trim() || isLoading) return;
+
+    const userMessage: Message = { role: "user", content: input };
+    setMessages((prev) => [...prev, userMessage]);
+    setInput("");
+    setIsLoading(true);
+
+    try {
+      const response = await fetch("http://localhost:8000/api/copilotkit", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          threadId: "data-analysis-thread",
+          runId: `run-${Date.now()}`,
+          messages: [...messages, userMessage].map((m, i) => ({
+            id: `msg-${Date.now()}-${i}`,
+            role: m.role,
+            content: m.content,
+          })),
+          state: {},
+          tools: [],
+          context: [],
+          forwardedProps: {},
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}`);
+      }
+
+      // Handle SSE streaming response
+      const reader = response.body?.getReader();
+      const decoder = new TextDecoder();
+      let fullContent = "";
+
+      if (reader) {
+        while (true) {
+          const { done, value } = await reader.read();
+          if (done) break;
+
+          const chunk = decoder.decode(value);
+          const lines = chunk.split("\n");
+
+          for (const line of lines) {
+            if (line.startsWith("data: ")) {
+              try {
+                const jsonData = JSON.parse(line.slice(6));
+                if (jsonData.type === "TEXT_MESSAGE_CONTENT") {
+                  fullContent += jsonData.delta;
+                  // Update message in real-time
+                  setMessages((prev) => {
+                    const newMessages = [...prev];
+                    const lastMsg = newMessages[newMessages.length - 1];
+                    if (lastMsg && lastMsg.role === "assistant") {
+                      lastMsg.content = fullContent;
+                    } else {
+                      newMessages.push({ role: "assistant", content: fullContent });
+                    }
+                    return newMessages;
+                  });
+                }
+              } catch (e) {
+                // Skip invalid JSON
+              }
+            }
+          }
+        }
+      }
+
+      // Ensure final message is added if not already
+      if (fullContent && messages[messages.length - 1]?.role !== "assistant") {
+        const assistantMessage: Message = {
+          role: "assistant",
+          content: fullContent,
+        };
+        setMessages((prev) => [...prev, assistantMessage]);
+      }
+    } catch (error) {
+      console.error("Error:", error);
+      setMessages((prev) => [
+        ...prev,
+        { role: "assistant", content: "Error: Could not get response from server" },
+      ]);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  return (
+    <div className="flex flex-col h-screen bg-gray-50">
+      {/* Header */}
+      <header className="bg-white border-b border-gray-200 shadow-sm" role="banner">
+        <div className="max-w-4xl mx-auto px-6 py-4">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <div 
+                className="w-10 h-10 bg-gradient-to-br from-blue-600 to-indigo-600 rounded-xl flex items-center justify-center text-2xl shadow-lg"
+                aria-hidden="true"
+              >
+                📊
+              </div>
+              <div>
+                <h1 className="text-xl font-bold text-gray-900">Data Analysis Dashboard</h1>
+                <p className="text-sm text-gray-600">Powered by Gemini 2.0 Flash</p>
+              </div>
+            </div>
+            <div className="flex items-center gap-2" role="status" aria-live="polite">
+              <div 
+                className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse"
+                aria-hidden="true"
+              ></div>
+              <span className="text-sm font-medium text-emerald-700">Connected</span>
+            </div>
+          </div>
+        </div>
+      </header>
+
+      {/* Chat Messages */}
+      <main 
+        className="flex-1 overflow-y-auto" 
+        role="main"
+        aria-label="Chat conversation"
+      >
+        <div className="max-w-4xl mx-auto px-6 py-8">
+          {messages.length === 1 && (
+            <div 
+              className="text-center py-12"
+              role="status"
+              aria-label="Welcome message"
+            >
+              <div className="text-6xl mb-4" aria-hidden="true">📈</div>
+              <p className="text-lg font-semibold text-gray-700 mb-2">
+                Ready to analyze your data
+              </p>
+              <p className="text-sm text-gray-600">
+                Try: "Load this CSV data..." or "Analyze sales trends"
+              </p>
+            </div>
+          )}
+          
+          <div 
+            role="log" 
+            aria-live="polite" 
+            aria-atomic="false"
+            aria-label="Chat messages"
+          >
+            {messages.map((message, index) => (
+              <article
+                key={index}
+                className={`flex gap-3 mb-6 items-start animate-in slide-in-from-bottom-2 duration-300 ${
+                  message.role === "user" ? "justify-end" : "justify-start"
+                }`}
+                role="article"
+                aria-label={`${message.role === "user" ? "Your message" : "Assistant message"}`}
+              >
+                {message.role === "assistant" && (
+                  <div 
+                    className="w-8 h-8 rounded-lg bg-gradient-to-br from-blue-600 to-indigo-600 flex items-center justify-center flex-shrink-0 text-lg shadow-md"
+                    aria-hidden="true"
+                  >
+                    🤖
+                  </div>
+                )}
+                
+                <div
+                  className={`max-w-[75%] px-4 py-3 rounded-2xl leading-relaxed break-words ${
+                    message.role === "user"
+                      ? "bg-blue-600 text-white shadow-lg shadow-blue-600/30 rounded-br-sm"
+                      : "bg-white text-gray-900 shadow-md border border-gray-100 rounded-bl-sm"
+                  }`}
+                  role="region"
+                  aria-label={message.role === "user" ? "Your message" : "Assistant response"}
+                >
+                  {message.content}
+                </div>
+                
+                {message.role === "user" && (
+                  <div 
+                    className="w-8 h-8 rounded-lg bg-blue-600 flex items-center justify-center flex-shrink-0 text-lg text-white shadow-md"
+                    aria-hidden="true"
+                  >
+                    👤
+                  </div>
+                )}
+              </article>
+            ))}
+          </div>
+          
+          {isLoading && (
+            <div 
+              className="flex gap-3 items-start animate-in slide-in-from-bottom-2 duration-300"
+              role="status"
+              aria-live="polite"
+              aria-label="Assistant is typing"
+            >
+              <div 
+                className="w-8 h-8 rounded-lg bg-gradient-to-br from-blue-600 to-indigo-600 flex items-center justify-center flex-shrink-0 text-lg shadow-md"
+                aria-hidden="true"
+              >
+                🤖
+              </div>
+              <div className="px-4 py-3 rounded-2xl rounded-bl-sm bg-white shadow-md border border-gray-100">
+                <div className="flex gap-1" aria-label="Loading">
+                  <div className="w-2 h-2 rounded-full bg-gray-500 animate-bounce" style={{ animationDelay: "0s" }}></div>
+                  <div className="w-2 h-2 rounded-full bg-gray-500 animate-bounce" style={{ animationDelay: "0.2s" }}></div>
+                  <div className="w-2 h-2 rounded-full bg-gray-500 animate-bounce" style={{ animationDelay: "0.4s" }}></div>
+                </div>
+              </div>
+            </div>
+          )}
+          <div ref={messagesEndRef} aria-hidden="true" />
+        </div>
+      </main>
+
+      {/* Input Form */}
+      <footer className="bg-white border-t border-gray-200 shadow-lg" role="contentinfo">
+        <div className="max-w-4xl mx-auto px-6 py-4">
+          <form 
+            onSubmit={sendMessage} 
+            className="flex gap-3"
+            aria-label="Message input form"
+          >
+            <div className="flex-1 relative">
+              <label htmlFor="message-input" className="sr-only">
+                Type your message
+              </label>
+              <input
+                id="message-input"
+                type="text"
+                value={input}
+                onChange={(e) => setInput(e.target.value)}
+                placeholder="Ask about data analysis..."
+                disabled={isLoading}
+                autoFocus
+                autoComplete="off"
+                aria-label="Message input"
+                aria-describedby="message-hint"
+                aria-invalid="false"
+                className="w-full px-5 py-3 pr-12 border-2 border-gray-300 rounded-full text-base outline-none transition-all bg-white text-gray-900 placeholder-gray-500 focus:border-blue-600 focus:ring-4 focus:ring-blue-600/20 disabled:bg-gray-100 disabled:text-gray-500 disabled:cursor-not-allowed"
+              />
+              {input.length > 0 && (
+                <div 
+                  className="absolute right-4 top-1/2 -translate-y-1/2 text-sm text-gray-500 pointer-events-none"
+                  aria-live="polite"
+                  aria-atomic="true"
+                >
+                  <span className="sr-only">Character count: </span>
+                  {input.length}
+                </div>
+              )}
+            </div>
+            <button
+              type="submit"
+              disabled={isLoading || !input.trim()}
+              aria-label={isLoading ? "Sending message" : "Send message"}
+              aria-busy={isLoading}
+              className="px-6 py-3 bg-blue-600 text-white rounded-full font-semibold transition-all flex items-center gap-2 shadow-lg shadow-blue-600/30 hover:bg-blue-700 hover:-translate-y-0.5 hover:shadow-xl hover:shadow-blue-600/40 focus:outline-none focus:ring-4 focus:ring-blue-600/20 disabled:bg-gray-300 disabled:text-gray-600 disabled:cursor-not-allowed disabled:shadow-none disabled:translate-y-0"
+            >
+              {isLoading ? (
+                <>
+                  <span>Sending</span>
+                  <span className="animate-spin" aria-hidden="true">⏳</span>
+                </>
+              ) : (
+                <>
+                  <span>Send</span>
+                  <span aria-hidden="true">🚀</span>
+                </>
+              )}
+            </button>
+          </form>
+          <p 
+            id="message-hint" 
+            className="text-center text-xs text-gray-500 mt-3"
+            role="contentinfo"
+          >
+            Powered by Google ADK • Tutorial 31 Data Analysis Dashboard
+          </p>
+        </div>
+      </footer>
+    </div>
+  );
+}
+
+export default App;
