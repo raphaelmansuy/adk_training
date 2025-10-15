@@ -33,7 +33,6 @@ ChartJS.register(
 interface Message {
   role: "user" | "assistant";
   content: string;
-  chartData?: ChartData;
 }
 
 interface ChartData {
@@ -47,41 +46,22 @@ interface ChartData {
     y_label: string;
     title: string;
   };
-  status?: string;
-  report?: string;
 }
 
 function App() {
   const [messages, setMessages] = useState<Message[]>([
     {
       role: "assistant",
-      content: "Hi! I'm your **data analysis assistant** powered by Google ADK with Gemini 2.0 Flash. 📊\n\nUpload CSV files or ask me to analyze data!",
+      content: "Hi! I'm your data analysis assistant powered by Google ADK with Gemini 2.0 Flash. Upload CSV files or ask me to analyze data!",
     },
   ]);
   const [input, setInput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [uploadedFile, setUploadedFile] = useState<File | null>(null);
-  const [currentChart, setCurrentChart] = useState<ChartData | null>(null);
+  const [chartData, setChartData] = useState<ChartData | null>(null);
   const [isDragOver, setIsDragOver] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
-
-  // Extract chart data from agent response
-  const extractChartData = (content: string): ChartData | null => {
-    try {
-      // Look for JSON object with chart_type in the response
-      const jsonMatch = content.match(/\{[^{}]*"chart_type"[^{}]*"data"[^{}]*\}/s);
-      if (jsonMatch) {
-        const chartData = JSON.parse(jsonMatch[0]);
-        if (chartData.chart_type && chartData.data) {
-          return chartData;
-        }
-      }
-    } catch (e) {
-      console.error("Failed to extract chart data:", e);
-    }
-    return null;
-  };
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -158,18 +138,17 @@ function App() {
         }
       }
 
-      // Extract and display chart if present
-      const chartData = extractChartData(fullContent);
-      if (chartData) {
-        setCurrentChart(chartData);
-        setMessages((prev) => {
-          const newMessages = [...prev];
-          const lastMsg = newMessages[newMessages.length - 1];
-          if (lastMsg && lastMsg.role === "assistant") {
-            lastMsg.chartData = chartData;
+      // Check if response contains chart data
+      if (fullContent.includes('"chart_type"')) {
+        try {
+          const chartMatch = fullContent.match(/\{[^}]*"chart_type"[^}]*\}/);
+          if (chartMatch) {
+            const chartJson = JSON.parse(chartMatch[0]);
+            setChartData(chartJson);
           }
-          return newMessages;
-        });
+        } catch (e) {
+          // Failed to parse chart data
+        }
       }
 
       // Ensure final message is added if not already
@@ -177,7 +156,6 @@ function App() {
         const assistantMessage: Message = {
           role: "assistant",
           content: fullContent,
-          chartData: chartData || undefined,
         };
         setMessages((prev) => [...prev, assistantMessage]);
       }
@@ -313,7 +291,9 @@ function App() {
     setIsDragOver(false);
   };
 
-  const renderChart = (chartData: ChartData) => {
+  const renderChart = () => {
+    if (!chartData) return null;
+
     const data = {
       labels: chartData.data.labels,
       datasets: [
@@ -321,41 +301,24 @@ function App() {
           label: chartData.options.y_label,
           data: chartData.data.values,
           backgroundColor: chartData.chart_type === 'line' 
-            ? 'rgba(37, 99, 235, 0.1)'
-            : 'rgba(37, 99, 235, 0.8)',
-          borderColor: 'rgba(37, 99, 235, 1)',
+            ? 'rgba(59, 130, 246, 0.1)'
+            : 'rgba(59, 130, 246, 0.8)',
+          borderColor: 'rgba(59, 130, 246, 1)',
           borderWidth: 2,
           tension: chartData.chart_type === 'line' ? 0.4 : 0,
-          pointBackgroundColor: 'rgba(37, 99, 235, 1)',
-          pointBorderColor: '#fff',
-          pointHoverBackgroundColor: '#fff',
-          pointHoverBorderColor: 'rgba(37, 99, 235, 1)',
         },
       ],
     };
 
     const options = {
       responsive: true,
-      maintainAspectRatio: false,
       plugins: {
         legend: {
           position: 'top' as const,
-          labels: {
-            color: '#1f2937',
-            font: {
-              size: 12,
-              weight: 'bold' as const,
-            },
-          },
         },
         title: {
           display: true,
           text: chartData.options.title,
-          color: '#111827',
-          font: {
-            size: 16,
-            weight: 'bold' as const,
-          },
         },
       },
       scales: {
@@ -363,34 +326,12 @@ function App() {
           title: {
             display: true,
             text: chartData.options.x_label,
-            color: '#4b5563',
-            font: {
-              size: 12,
-              weight: 'bold' as const,
-            },
-          },
-          ticks: {
-            color: '#6b7280',
-          },
-          grid: {
-            color: 'rgba(0, 0, 0, 0.05)',
           },
         },
         y: {
           title: {
             display: true,
             text: chartData.options.y_label,
-            color: '#4b5563',
-            font: {
-              size: 12,
-              weight: 'bold' as const,
-            },
-          },
-          ticks: {
-            color: '#6b7280',
-          },
-          grid: {
-            color: 'rgba(0, 0, 0, 0.05)',
           },
         },
       },
@@ -549,35 +490,15 @@ function App() {
                     )}
                     
                     <div
-                      className={`max-w-[75%] px-5 py-4 rounded-2xl leading-relaxed shadow-lg ${
+                      className={`max-w-[75%] px-5 py-4 rounded-2xl leading-relaxed break-words shadow-lg ${
                         message.role === "user"
-                          ? "bg-gradient-to-r from-blue-700 to-blue-800 text-white rounded-br-md"
-                          : "bg-white text-gray-900 border-2 border-gray-200 rounded-bl-md"
+                          ? "bg-gradient-to-r from-blue-600 to-blue-700 text-white rounded-br-md"
+                          : "bg-white text-gray-900 border border-gray-100 rounded-bl-md"
                       }`}
                       role="region"
-                      aria-label={message.role === "user" ? "Your message content" : "Assistant response content"}
+                      aria-label={message.role === "user" ? "Your message" : "Assistant response"}
                     >
-                      <div className={`prose prose-sm max-w-none ${
-                        message.role === "user" 
-                          ? "prose-invert" 
-                          : "prose-gray prose-headings:text-gray-900 prose-p:text-gray-800 prose-strong:text-gray-900 prose-code:text-blue-700 prose-pre:bg-gray-100"
-                      }`}>
-                        <ReactMarkdown
-                          remarkPlugins={[remarkGfm]}
-                          rehypePlugins={[rehypeHighlight, rehypeRaw]}
-                        >
-                          {message.content}
-                        </ReactMarkdown>
-                      </div>
-                      
-                      {/* Inline chart for messages with chart data */}
-                      {message.chartData && (
-                        <div className="mt-4 bg-gray-50 rounded-lg p-4 border-2 border-gray-200">
-                          <div className="h-64">
-                            {renderChart(message.chartData)}
-                          </div>
-                        </div>
-                      )}
+                      <div className="whitespace-pre-wrap">{message.content}</div>
                     </div>
                     
                     {message.role === "user" && (
@@ -658,9 +579,9 @@ function App() {
                 <button
                   type="submit"
                   disabled={isLoading || !input.trim()}
-                  aria-label={isLoading ? "Sending message, please wait" : "Send message"}
+                  aria-label={isLoading ? "Sending message" : "Send message"}
                   aria-busy={isLoading}
-                  className="px-8 py-4 bg-gradient-to-r from-blue-700 to-blue-800 text-white rounded-2xl font-bold transition-all flex items-center gap-2 shadow-lg hover:from-blue-800 hover:to-blue-900 hover:-translate-y-0.5 hover:shadow-xl focus:outline-none focus:ring-4 focus:ring-blue-600/30 disabled:bg-gray-400 disabled:text-white disabled:cursor-not-allowed disabled:shadow-none disabled:translate-y-0 disabled:opacity-60"
+                  className="px-8 py-4 bg-gradient-to-r from-blue-600 to-blue-700 text-white rounded-2xl font-semibold transition-all flex items-center gap-2 shadow-lg hover:from-blue-700 hover:to-blue-800 hover:-translate-y-0.5 hover:shadow-xl focus:outline-none focus:ring-4 focus:ring-blue-600/20 disabled:bg-gray-300 disabled:text-gray-600 disabled:cursor-not-allowed disabled:shadow-none disabled:translate-y-0"
                 >
                   {isLoading ? (
                     <>
@@ -687,34 +608,31 @@ function App() {
         </main>
 
         {/* Sidebar for Charts and Data */}
-        {(currentChart || uploadedFile) && (
-          <aside className="w-96 bg-white border-l-2 border-gray-300 flex flex-col shadow-lg" role="complementary" aria-label="Chart visualization panel">
-            <div className="p-6 border-b-2 border-gray-300 bg-gray-50">
-              <h2 className="text-xl font-bold text-gray-900 flex items-center gap-2">
+        {(chartData || uploadedFile) && (
+          <aside className="w-96 bg-white border-l border-gray-200 flex flex-col">
+            <div className="p-6 border-b border-gray-200">
+              <h2 className="text-lg font-semibold text-gray-900 flex items-center gap-2">
                 📊 Visualization
               </h2>
             </div>
             <div className="flex-1 p-6 overflow-y-auto">
-              {currentChart && (
+              {chartData && (
                 <div className="mb-6">
-                  <div className="bg-white rounded-xl p-4 border-2 border-gray-300 shadow-sm">
-                    <div className="h-80">
-                      {renderChart(currentChart)}
-                    </div>
+                  <div className="bg-gray-50 rounded-xl p-4">
+                    {renderChart()}
                   </div>
-                  <div className="mt-4 text-sm text-gray-800 bg-gray-50 rounded-lg p-4 border border-gray-300 space-y-2">
-                    <p><strong className="text-gray-900">Chart Type:</strong> <span className="font-semibold">{currentChart.chart_type}</span></p>
-                    <p><strong className="text-gray-900">X-Axis:</strong> <span className="font-semibold">{currentChart.options.x_label}</span></p>
-                    <p><strong className="text-gray-900">Y-Axis:</strong> <span className="font-semibold">{currentChart.options.y_label}</span></p>
-                    <p><strong className="text-gray-900">Data Points:</strong> <span className="font-semibold">{currentChart.data.labels.length}</span></p>
+                  <div className="mt-4 text-sm text-gray-600">
+                    <p><strong>Chart Type:</strong> {chartData.chart_type}</p>
+                    <p><strong>X-Axis:</strong> {chartData.options.x_label}</p>
+                    <p><strong>Y-Axis:</strong> {chartData.options.y_label}</p>
                   </div>
                 </div>
               )}
               {uploadedFile && (
-                <div className="bg-blue-50 rounded-xl p-4 border-2 border-blue-300">
-                  <h3 className="font-bold text-blue-900 mb-2">📄 Uploaded File</h3>
-                  <p className="text-sm text-blue-800 font-semibold">{uploadedFile.name}</p>
-                  <p className="text-xs text-blue-700 mt-1 font-medium">
+                <div className="bg-blue-50 rounded-xl p-4">
+                  <h3 className="font-semibold text-blue-900 mb-2">📄 Uploaded File</h3>
+                  <p className="text-sm text-blue-700">{uploadedFile.name}</p>
+                  <p className="text-xs text-blue-600 mt-1">
                     {(uploadedFile.size / 1024).toFixed(1)} KB
                   </p>
                 </div>
