@@ -82,36 +82,36 @@ Think of it as the missing framework between "ChatGPT API call" and "production 
 │   ├── 33_slack_adk_integration.md # 📝 DRAFT - Slack integration
 │   └── 34_pubsub_adk_integration.md # 📝 DRAFT - PubSub integration
 ├── tutorial_implementation/       # ✅ 30 working implementations
-│   ├── [tutorial01/](https://github.com/raphaelmansuy/adk_training/tree/main/tutorial_implementation/tutorial01)                # Hello World Agent
-│   ├── [tutorial02/](https://github.com/raphaelmansuy/adk_training/tree/main/tutorial_implementation/tutorial02)                # Function Tools
-│   ├── [tutorial03/](https://github.com/raphaelmansuy/adk_training/tree/main/tutorial_implementation/tutorial03)                # OpenAPI Tools
-│   ├── [tutorial04/](https://github.com/raphaelmansuy/adk_training/tree/main/tutorial_implementation/tutorial04)                # Sequential Workflows
-│   ├── [tutorial05/](https://github.com/raphaelmansuy/adk_training/tree/main/tutorial_implementation/tutorial05)                # Parallel Processing
-│   ├── [tutorial06/](https://github.com/raphaelmansuy/adk_training/tree/main/tutorial_implementation/tutorial06)                # Multi-Agent Systems
-│   ├── [tutorial07/](https://github.com/raphaelmansuy/adk_training/tree/main/tutorial_implementation/tutorial07)                # Loop Agents
-│   ├── [tutorial08/](https://github.com/raphaelmansuy/adk_training/tree/main/tutorial_implementation/tutorial08)                # State & Memory
-│   ├── [tutorial09/](https://github.com/raphaelmansuy/adk_training/tree/main/tutorial_implementation/tutorial09)                # Callbacks & Guardrails
-│   ├── [tutorial10/](https://github.com/raphaelmansuy/adk_training/tree/main/tutorial_implementation/tutorial10)                # Evaluation & Testing
-│   ├── [tutorial11/](https://github.com/raphaelmansuy/adk_training/tree/main/tutorial_implementation/tutorial11)                # Built-in Tools & Grounding
-│   ├── [tutorial12/](https://github.com/raphaelmansuy/adk_training/tree/main/tutorial_implementation/tutorial12)                # Planners & Thinking
-│   ├── [tutorial13/](https://github.com/raphaelmansuy/adk_training/tree/main/tutorial_implementation/tutorial13)                # Code Execution
-│   ├── [tutorial14/](https://github.com/raphaelmansuy/adk_training/tree/main/tutorial_implementation/tutorial14)                # Streaming & SSE
-│   ├── [tutorial15/](https://github.com/raphaelmansuy/adk_training/tree/main/tutorial_implementation/tutorial15)                # Live API Audio
-│   ├── [tutorial16/](https://github.com/raphaelmansuy/adk_training/tree/main/tutorial_implementation/tutorial16)                # MCP Integration
-│   ├── [tutorial17/](https://github.com/raphaelmansuy/adk_training/tree/main/tutorial_implementation/tutorial17)                # Agent-to-Agent Communication
-│   ├── [tutorial18/](https://github.com/raphaelmansuy/adk_training/tree/main/tutorial_implementation/tutorial18)                # Events & Observability
-│   ├── [tutorial19/](https://github.com/raphaelmansuy/adk_training/tree/main/tutorial_implementation/tutorial19)                # Artifacts & Files
-│   ├── [tutorial20/](https://github.com/raphaelmansuy/adk_training/tree/main/tutorial_implementation/tutorial20)                # YAML Configuration
-│   ├── [tutorial21/](https://github.com/raphaelmansuy/adk_training/tree/main/tutorial_implementation/tutorial21)                # Multimodal Image
-│   ├── [tutorial22/](https://github.com/raphaelmansuy/adk_training/tree/main/tutorial_implementation/tutorial22)                # Model Selection
-│   ├── [tutorial24/](https://github.com/raphaelmansuy/adk_training/tree/main/tutorial_implementation/tutorial24)                # Advanced Observability
-│   ├── [tutorial25/](https://github.com/raphaelmansuy/adk_training/tree/main/tutorial_implementation/tutorial25)                # Best Practices
-│   ├── [tutorial26/](https://github.com/raphaelmansuy/adk_training/tree/main/tutorial_implementation/tutorial26)                # Google AgentSpace
-│   ├── [tutorial27/](https://github.com/raphaelmansuy/adk_training/tree/main/tutorial_implementation/tutorial27)                # Third-Party Framework Tools
-│   ├── [tutorial28/](https://github.com/raphaelmansuy/adk_training/tree/main/tutorial_implementation/tutorial28)                # Using Other LLMs
-│   ├── [tutorial29/](https://github.com/raphaelmansuy/adk_training/tree/main/tutorial_implementation/tutorial29)                # UI Integration Intro
-│   ├── [tutorial30/](https://github.com/raphaelmansuy/adk_training/tree/main/tutorial_implementation/tutorial30)                # Next.js ADK Integration
-│   └── [tutorial31/](https://github.com/raphaelmansuy/adk_training/tree/main/tutorial_implementation/tutorial31)                # React Vite ADK Integration
+│   ├── tutorial01/                # Hello World Agent
+│   ├── tutorial02/                # Function Tools
+│   ├── tutorial03/                # OpenAPI Tools
+│   ├── tutorial04/                # Sequential Workflows
+│   ├── tutorial05/                # Parallel Processing
+│   ├── tutorial06/                # Multi-Agent Systems
+│   ├── tutorial07/                # Loop Agents
+│   ├── tutorial08/                # State & Memory
+│   ├── tutorial09/                # Callbacks & Guardrails
+│   ├── tutorial10/                # Evaluation & Testing
+│   ├── tutorial11/                # Built-in Tools & Grounding
+│   ├── tutorial12/                # Planners & Thinking
+│   ├── tutorial13/                # Code Execution
+│   ├── tutorial14/                # Streaming & SSE
+│   ├── tutorial15/                # Live API Audio
+│   ├── tutorial16/                # MCP Integration
+│   ├── tutorial17/                # Agent-to-Agent Communication
+│   ├── tutorial18/                # Events & Observability
+│   ├── tutorial19/                # Artifacts & Files
+│   ├── tutorial20/                # YAML Configuration
+│   ├── tutorial21/                # Multimodal Image
+│   ├── tutorial22/                # Model Selection
+│   ├── tutorial24/                # Advanced Observability
+│   ├── tutorial25/                # Best Practices
+│   ├── tutorial26/                # Google AgentSpace
+│   ├── tutorial27/                # Third-Party Framework Tools
+│   ├── tutorial28/                # Using Other LLMs
+│   ├── tutorial29/                # UI Integration Intro
+│   ├── tutorial30/                # Next.js ADK Integration
+│   └── tutorial31/                # React Vite ADK Integration
 ├── research/                      # Integration research and examples
 │   ├── adk_ui_integration/        # UI framework integrations
 │   ├── adk-java/                  # Java ADK implementation
@@ -190,37 +190,37 @@ See the complete tutorial list in the [Project Structure](#🏗️-project-struc
 
 | Tutorial | Topic                        | Status       | Complexity   | Time  |
 | -------- | ---------------------------- | ------------ | ------------ | ----- |
-| 01       | Hello World Agent            | ✅ Completed | Beginner     | 30min |
-| 02       | Function Tools               | ✅ Completed | Beginner     | 45min |
-| 03       | OpenAPI Tools                | ✅ Completed | Beginner     | 1hr   |
-| 04       | Sequential Workflows         | ✅ Completed | Intermediate | 1hr   |
-| 05       | Parallel Processing          | ✅ Completed | Intermediate | 1hr   |
-| 06       | Multi-Agent Systems          | ✅ Completed | Intermediate | 1.5hr |
-| 07       | Loop Agents                  | ✅ Completed | Advanced     | 1hr   |
-| 08       | State & Memory               | ✅ Completed | Advanced     | 1.5hr |
-| 09       | Callbacks & Guardrails       | ✅ Completed | Advanced     | 2hr   |
-| 10       | Evaluation & Testing         | ✅ Completed | Advanced     | 1.5hr |
-| 11       | Built-in Tools & Grounding   | ✅ Completed | Intermediate | 1hr   |
-| 12       | Planners & Thinking          | ✅ Completed | Advanced     | 1.5hr |
-| 13       | Code Execution               | ✅ Completed | Advanced     | 1.5hr |
-| 14       | Streaming & SSE              | ✅ Completed | Intermediate | 1hr   |
-| 15       | Live API Audio               | ✅ Completed | Advanced     | 1hr   |
-| 16       | MCP Integration              | ✅ Completed | Advanced     | 1.5hr |
-| 17       | Agent-to-Agent Communication | ✅ Completed | Advanced     | 1hr   |
-| 18       | Events & Observability       | ✅ Completed | Advanced     | 1.5hr |
-| 19       | Artifacts & Files            | ✅ Completed | Intermediate | 1hr   |
-| 20       | YAML Configuration           | ✅ Completed | Intermediate | 1hr   |
-| 21       | Multimodal Image             | ✅ Completed | Advanced     | 1hr   |
-| 22       | Model Selection              | ✅ Completed | Advanced     | 1.5hr |
+| [01](https://github.com/raphaelmansuy/adk_training/tree/main/tutorial_implementation/tutorial01) | Hello World Agent            | ✅ Completed | Beginner     | 30min |
+| [02](https://github.com/raphaelmansuy/adk_training/tree/main/tutorial_implementation/tutorial02) | Function Tools               | ✅ Completed | Beginner     | 45min |
+| [03](https://github.com/raphaelmansuy/adk_training/tree/main/tutorial_implementation/tutorial03) | OpenAPI Tools                | ✅ Completed | Beginner     | 1hr   |
+| [04](https://github.com/raphaelmansuy/adk_training/tree/main/tutorial_implementation/tutorial04) | Sequential Workflows         | ✅ Completed | Intermediate | 1hr   |
+| [05](https://github.com/raphaelmansuy/adk_training/tree/main/tutorial_implementation/tutorial05) | Parallel Processing          | ✅ Completed | Intermediate | 1hr   |
+| [06](https://github.com/raphaelmansuy/adk_training/tree/main/tutorial_implementation/tutorial06) | Multi-Agent Systems          | ✅ Completed | Intermediate | 1.5hr |
+| [07](https://github.com/raphaelmansuy/adk_training/tree/main/tutorial_implementation/tutorial07) | Loop Agents                  | ✅ Completed | Advanced     | 1hr   |
+| [08](https://github.com/raphaelmansuy/adk_training/tree/main/tutorial_implementation/tutorial08) | State & Memory               | ✅ Completed | Advanced     | 1.5hr |
+| [09](https://github.com/raphaelmansuy/adk_training/tree/main/tutorial_implementation/tutorial09) | Callbacks & Guardrails       | ✅ Completed | Advanced     | 2hr   |
+| [10](https://github.com/raphaelmansuy/adk_training/tree/main/tutorial_implementation/tutorial10) | Evaluation & Testing         | ✅ Completed | Advanced     | 1.5hr |
+| [11](https://github.com/raphaelmansuy/adk_training/tree/main/tutorial_implementation/tutorial11) | Built-in Tools & Grounding   | ✅ Completed | Intermediate | 1hr   |
+| [12](https://github.com/raphaelmansuy/adk_training/tree/main/tutorial_implementation/tutorial12) | Planners & Thinking          | ✅ Completed | Advanced     | 1.5hr |
+| [13](https://github.com/raphaelmansuy/adk_training/tree/main/tutorial_implementation/tutorial13) | Code Execution               | ✅ Completed | Advanced     | 1.5hr |
+| [14](https://github.com/raphaelmansuy/adk_training/tree/main/tutorial_implementation/tutorial14) | Streaming & SSE              | ✅ Completed | Intermediate | 1hr   |
+| [15](https://github.com/raphaelmansuy/adk_training/tree/main/tutorial_implementation/tutorial15) | Live API Audio               | ✅ Completed | Advanced     | 1hr   |
+| [16](https://github.com/raphaelmansuy/adk_training/tree/main/tutorial_implementation/tutorial16) | MCP Integration              | ✅ Completed | Advanced     | 1.5hr |
+| [17](https://github.com/raphaelmansuy/adk_training/tree/main/tutorial_implementation/tutorial17) | Agent-to-Agent Communication | ✅ Completed | Advanced     | 1hr   |
+| [18](https://github.com/raphaelmansuy/adk_training/tree/main/tutorial_implementation/tutorial18) | Events & Observability       | ✅ Completed | Advanced     | 1.5hr |
+| [19](https://github.com/raphaelmansuy/adk_training/tree/main/tutorial_implementation/tutorial19) | Artifacts & Files            | ✅ Completed | Intermediate | 1hr   |
+| [20](https://github.com/raphaelmansuy/adk_training/tree/main/tutorial_implementation/tutorial20) | YAML Configuration           | ✅ Completed | Intermediate | 1hr   |
+| [21](https://github.com/raphaelmansuy/adk_training/tree/main/tutorial_implementation/tutorial21) | Multimodal Image             | ✅ Completed | Advanced     | 1hr   |
+| [22](https://github.com/raphaelmansuy/adk_training/tree/main/tutorial_implementation/tutorial22) | Model Selection              | ✅ Completed | Advanced     | 1.5hr |
 | 23       | Production Deployment        | 📝 Draft     | Advanced     | 1.5hr |
-| 24       | Advanced Observability       | ✅ Completed | Advanced     | 1hr   |
-| 25       | Best Practices               | ✅ Completed | Advanced     | 1.5hr |
-| 26       | Google AgentSpace            | ✅ Completed | Advanced     | 2hr   |
-| 27       | Third-Party Framework Tools  | ✅ Completed | Advanced     | 1.5hr |
-| 28       | Using Other LLMs             | ✅ Completed | Advanced     | 2hr   |
-| 29       | UI Integration Intro         | ✅ Completed | Intermediate | 1.5hr |
-| 30       | Next.js ADK Integration      | ✅ Completed | Advanced     | 2hr   |
-| 31       | React Vite ADK Integration   | ✅ Completed | Advanced     | 1.5hr   |
+| [24](https://github.com/raphaelmansuy/adk_training/tree/main/tutorial_implementation/tutorial24) | Advanced Observability       | ✅ Completed | Advanced     | 1hr   |
+| [25](https://github.com/raphaelmansuy/adk_training/tree/main/tutorial_implementation/tutorial25) | Best Practices               | ✅ Completed | Advanced     | 1.5hr |
+| [26](https://github.com/raphaelmansuy/adk_training/tree/main/tutorial_implementation/tutorial26) | Google AgentSpace            | ✅ Completed | Advanced     | 2hr   |
+| [27](https://github.com/raphaelmansuy/adk_training/tree/main/tutorial_implementation/tutorial27) | Third-Party Framework Tools  | ✅ Completed | Advanced     | 1.5hr |
+| [28](https://github.com/raphaelmansuy/adk_training/tree/main/tutorial_implementation/tutorial28) | Using Other LLMs             | ✅ Completed | Advanced     | 2hr   |
+| [29](https://github.com/raphaelmansuy/adk_training/tree/main/tutorial_implementation/tutorial29) | UI Integration Intro         | ✅ Completed | Intermediate | 1.5hr |
+| [30](https://github.com/raphaelmansuy/adk_training/tree/main/tutorial_implementation/tutorial30) | Next.js ADK Integration      | ✅ Completed | Advanced     | 2hr   |
+| [31](https://github.com/raphaelmansuy/adk_training/tree/main/tutorial_implementation/tutorial31) | React Vite ADK Integration   | ✅ Completed | Advanced     | 1.5hr   |
 | 32       | Streamlit ADK Integration    | 📝 Draft     | Advanced     | 2hr   |
 | 33       | Slack ADK Integration        | 📝 Draft     | Advanced     | 2hr   |
 | 34       | PubSub ADK Integration       | 📝 Draft     | Advanced     | 2hr   |
