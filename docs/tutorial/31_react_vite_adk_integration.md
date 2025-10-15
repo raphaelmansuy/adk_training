@@ -1,37 +1,48 @@
 ---
 id: react_vite_adk_integration
-title: "Tutorial 31: React Vite ADK Integration - Fast Development Setup"
-description: "Create fast, modern React applications with Vite and CopilotKit for rapid agent interface development and deployment."
-sidebar_label: "31. React Vite ADK"
+title: "Tutorial 31: React Vite ADK Integration - Custom UI with AG-UI Protocol"
+description: "Build a fast, modern data analysis dashboard with Vite, React, TypeScript, and Google ADK using custom SSE streaming and AG-UI protocol."
+sidebar_label: "31. React Vite ADK (Custom)"
 sidebar_position: 31
-tags: ["ui", "react", "vite", "copilotkit", "fast-development"]
+tags: ["ui", "react", "vite", "ag-ui", "custom-implementation", "sse-streaming"]
 keywords:
   [
     "react",
     "vite",
-    "copilotkit",
-    "fast development",
-    "modern ui",
-    "agent interface",
+    "ag-ui protocol",
+    "custom frontend",
+    "sse streaming",
+    "data analysis",
+    "chart visualization",
   ]
-status: "draft"
+status: "updated"
 difficulty: "intermediate"
 estimated_time: "1.5 hours"
 prerequisites:
-  ["Tutorial 30: Next.js ADK Integration", "React experience", "Node.js setup"]
+  ["Tutorial 29: UI Integration Intro", "React experience", "Node.js setup", "TypeScript basics"]
 learning_objectives:
-  - "Set up Vite-based React applications with ADK"
-  - "Optimize build performance with Vite"
-  - "Create lightning-fast agent interfaces"
-  - "Deploy optimized React agent applications"
+  - "Build custom React frontends with AG-UI protocol"
+  - "Implement SSE streaming with fetch() API"
+  - "Handle TOOL_CALL_RESULT events for chart visualization"
+  - "Create fixed sidebar UI patterns"
+  - "Deploy optimized React + ADK applications"
 implementation_link: "https://github.com/raphaelmansuy/adk_training/tree/main/tutorial_implementation/tutorial31"
 ---
 
-:::danger UNDER CONSTRUCTION
+:::info CUSTOM IMPLEMENTATION
 
-**This tutorial is currently under construction and may contain errors, incomplete information, or outdated code examples.**
+**This tutorial demonstrates a custom React frontend implementation using AG-UI protocol directly, WITHOUT CopilotKit.**
 
-Please check back later for the completed version. If you encounter issues, refer to the working implementation in the [tutorial repository](https://github.com/raphaelmansuy/adk_training/tree/main/tutorial_implementation/tutorial31).
+Unlike Tutorial 30 which uses CopilotKit's pre-built components, this tutorial shows you how to build your own chat interface with manual SSE streaming, custom event handling, and tailored UX patterns like fixed sidebars for chart visualization.
+
+**Key Differences:**
+- ✅ Custom React components (no CopilotKit dependency)
+- ✅ Manual SSE streaming with fetch() API
+- ✅ Direct TOOL_CALL_RESULT event parsing
+- ✅ Custom UI patterns (fixed sidebar, markdown rendering)
+- ✅ Complete control over UX and styling
+
+Refer to the [working implementation](https://github.com/raphaelmansuy/adk_training/tree/main/tutorial_implementation/tutorial31) for complete, tested code.
 
 :::
 
@@ -63,11 +74,13 @@ Please check back later for the completed version. If you encounter issues, refe
 
 In this tutorial, you'll build a **real-time data analysis dashboard** using:
 
-- **React 18** (with Vite)
-- **CopilotKit** (AG-UI Protocol)
-- **Google ADK** (Agent backend)
-- **Gemini 2.0 Flash** (LLM)
-- **Chart.js** (Visualizations)
+- **React 18** (with Vite) + **TypeScript**
+- **Custom UI** (NO CopilotKit - manual SSE streaming)
+- **AG-UI Protocol** (ag_ui_adk middleware)
+- **Google ADK** (Agent backend with pandas tools)
+- **Gemini 2.0 Flash Exp** (LLM)
+- **Chart.js** + **react-chartjs-2** (Interactive visualizations)
+- **react-markdown** (Rich text rendering with syntax highlighting)
 
 **Final Result**:
 
@@ -83,14 +96,25 @@ In this tutorial, you'll build a **real-time data analysis dashboard** using:
 └─────────────────────────────────────────────────────────────┘
 ```
 
+### Data Flow Architecture
+
+```
+User Uploads CSV → Agent Loads Data → User Asks Questions → Agent Analyzes → Charts Render
+        ↓              ↓              ↓              ↓              ↓
+   File Reader → load_csv_data() → SSE Stream → analyze_data() → TOOL_CALL_RESULT
+   (Browser)     (Python Tool)    (AG-UI)      (Python Tool)     (Event Parsing)
+```
+
 ### Tutorial Goals
 
-✅ Understand Vite + React + ADK architecture  
-✅ Build a data analysis agent with pandas tools  
-✅ Implement generative UI for charts  
-✅ Handle file uploads and processing  
-✅ Deploy to production (Netlify or Vercel)  
-✅ Compare Vite vs Next.js approaches
+✅ Build custom React frontends without CopilotKit  
+✅ Implement SSE streaming with fetch() API  
+✅ Parse and handle AG-UI protocol events  
+✅ Create a data analysis agent with pandas tools  
+✅ Render charts from TOOL_CALL_RESULT events  
+✅ Build fixed sidebar UI patterns for better UX  
+✅ Handle file uploads and CSV processing  
+✅ Deploy to production (Netlify + Cloud Run)
 
 ---
 
@@ -124,31 +148,77 @@ In this tutorial, you'll build a **real-time data analysis dashboard** using:
 - 📊 Complex server-side logic
 - 🏢 Enterprise features (ISR, etc.)
 
-### Vite + ADK Architecture
+### End-to-End Data Flow
+
+```text
+User Uploads CSV → Agent Loads Data → User Asks Questions → Agent Analyzes → Charts Render
+        ↓              ↓              ↓              ↓              ↓
+   File Reader → load_csv_data() → SSE Stream → analyze_data() → TOOL_CALL_RESULT
+   (Browser)     (Python Tool)    (AG-UI)      (Python Tool)     (Event Parsing)
+```
+
+### Custom React + AG-UI Architecture
 
 ```text
 ┌─────────────────────────────────────────────────────────────┐
 │                    USER'S BROWSER                            │
 │  ┌──────────────────────────────────────────────────────┐  │
 │  │  Vite Dev Server (Port 5173)                         │  │
-│  │  ├─ React 18 SPA                                     │  │
-│  │  ├─ `<CopilotKit>` provider                           │  │
-│  │  ├─ Hot Module Replacement (HMR)                    │  │
-│  │  └─ Instant updates                                 │  │
+│  │  ├─ React 18 SPA (NO CopilotKit)                    │  │
+│  │  ├─ Custom chat UI                                  │  │
+│  │  ├─ Manual fetch() API calls                        │  │
+│  │  ├─ SSE streaming parser                            │  │
+│  │  ├─ Fixed sidebar for charts                        │  │
+│  │  └─ Hot Module Replacement (HMR)                    │  │
 │  └──────────────────────────────────────────────────────┘  │
 └───────────────────────┬─────────────────────────────────────┘
                         │
-                        │ Vite Proxy → AG-UI Protocol
+                        │ Direct HTTP + SSE
+                        │ http://localhost:8000/api/copilotkit
                         │
 ┌───────────────────────▼─────────────────────────────────────┐
 │            BACKEND SERVER (Port 8000)                        │
 │  ┌──────────────────────────────────────────────────────┐  │
 │  │  FastAPI + ag_ui_adk (AG-UI middleware)              │  │
-│  │  ├─ ADKAgent → LlmAgent (gemini-2.5-flash)           │  │
+│  │  ├─ ADKAgent wrapping Agent                          │  │
+│  │  │  └─ Agent: gemini-2.0-flash-exp                   │  │
 │  │  ├─ pandas tools (3 functions)                       │  │
-│  │  └─ In-memory file storage                           │  │
+│  │  │  ├─ load_csv_data                                 │  │
+│  │  │  ├─ analyze_data                                  │  │
+│  │  │  └─ create_chart → TOOL_CALL_RESULT               │  │
+│  │  └─ In-memory file storage (datasets dict)           │  │
 │  └──────────────────┬───────────────────────────────────┘  │
 └─────────────────────┴─────────────────────────────────────┘
+```
+
+### SSE Streaming Workflow
+
+```
+User Types Message
+        ↓
+   React onClick/sendMessage()
+        ↓
+   fetch('/api/copilotkit', {
+     method: 'POST',
+     body: JSON.stringify({messages, agent})
+   })
+        ↓
+   Response.body.getReader() ← SSE Stream
+        ↓
+   Read chunks as they arrive
+        ↓
+   Split by '\n' (newline)
+        ↓
+   Parse 'data: {...}' lines
+        ↓
+   JSON.parse() each event
+        ↓
+   Handle Event Types:
+   ├── TEXT_MESSAGE_CONTENT → Append to chat
+   ├── TOOL_CALL_RESULT → Extract chart data
+   └── Other events → Skip
+        ↓
+   Update React state → Re-render UI
 ```
 
 **Key Difference from Next.js**:
@@ -169,17 +239,15 @@ npm create vite@latest data-dashboard -- --template react-ts
 
 cd data-dashboard
 
-# Install CopilotKit
-npm install @copilotkit/react-core @copilotkit/react-ui
-
-# Install additional dependencies
-npm install chart.js react-chartjs-2 papaparse
-npm install -D @types/papaparse
+# Install visualization and markdown libraries
+npm install chart.js react-chartjs-2
+npm install react-markdown remark-gfm rehype-highlight rehype-raw
+npm install highlight.js
 
 npm install
 ```
 
-### Step 2: Configure Vite Proxy
+### Step 2: Configure Vite (Simple Config)
 
 Update `vite.config.ts`:
 
@@ -192,10 +260,7 @@ export default defineConfig({
   plugins: [react()],
   server: {
     port: 5173,
-    proxy: {
-      // Proxy API requests to backend
-      "/api": {
-        target: "http://localhost:8000",
+    // NO PROXY NEEDED - Direct connection to backend
         changeOrigin: true,
         rewrite: (path) => path.replace(/^\/api/, ""),
       },
@@ -458,19 +523,67 @@ Create `agent/.env`:
 GOOGLE_API_KEY=your_gemini_api_key_here
 ```
 
-### Step 4: Create React Frontend
+### Step 4: Create Custom React Frontend
 
-Update `src/App.tsx`:
+### File Upload and Processing Workflow
+
+```
+User Selects CSV File
+        ↓
+   React onChange Event
+        ↓
+   FileReader.readAsText()
+        ↓
+   File content loaded as string
+        ↓
+   sendMessage("Load this CSV file: " + content)
+        ↓
+   Manual fetch() to /api/copilotkit
+        ↓
+   Agent receives message with CSV data
+        ↓
+   Agent calls load_csv_data() tool
+        ↓
+   pandas reads CSV from string
+        ↓
+   Data stored in uploaded_data[file_name]
+        ↓
+   Agent confirms: "Data loaded successfully!"
+        ↓
+   User can now ask questions about the data
+```
+
+Update `src/App.tsx` with custom SSE streaming:
 
 ```typescript
 import { useState } from 'react'
-import { CopilotKit } from "@copilotkit/react-core"
-import { CopilotChat } from "@copilotkit/react-ui"
-import "@copilotkit/react-ui/styles.css"
+import ReactMarkdown from 'react-markdown'
+import { Line, Bar, Scatter } from 'react-chartjs-2'
 import './App.css'
 
+interface Message {
+  role: 'user' | 'assistant'
+  content: string
+}
+
+interface ChartData {
+  chart_type: 'line' | 'bar' | 'scatter'
+  data: {
+    labels: string[]
+    values: number[]
+  }
+  options: {
+    title: string
+    x_label: string
+    y_label: string
+  }
+}
+
 function App() {
-  const [uploadedFile, setUploadedFile] = useState<string | null>(null)
+  const [messages, setMessages] = useState<Message[]>([])
+  const [input, setInput] = useState('')
+  const [isLoading, setIsLoading] = useState(false)
+  const [currentChart, setCurrentChart] = useState<ChartData | null>(null)
 
   const handleFileUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0]
@@ -479,53 +592,143 @@ function App() {
     const reader = new FileReader()
     reader.onload = async (e) => {
       const content = e.target?.result as string
-      setUploadedFile(file.name)
-
-      // File content will be passed to agent via chat
-      console.log(`Loaded ${file.name}: ${content.length} bytes`)
+      
+      // Send file to agent via manual SSE streaming
+      await sendMessage(`Load this CSV file named "${file.name}":\n\n${content}`)
     }
     reader.readAsText(file)
   }
 
+  const sendMessage = async (messageContent: string) => {
+    const userMessage: Message = { role: 'user', content: messageContent }
+    setMessages(prev => [...prev, userMessage])
+    setInput('')
+    setIsLoading(true)
+
+    try {
+      // Manual fetch to AG-UI endpoint with SSE
+      const response = await fetch('http://localhost:8000/api/copilotkit', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          messages: [...messages, userMessage],
+          agent: 'data_analyst'
+        })
+      })
+
+      const reader = response.body?.getReader()
+      const decoder = new TextDecoder()
+      let assistantMessage = ''
+
+      while (true) {
+        const { done, value } = await reader!.read()
+        if (done) break
+
+        const chunk = decoder.decode(value)
+        const lines = chunk.split('\n')
+
+        for (const line of lines) {
+          if (line.startsWith('data: ')) {
+            const jsonStr = line.slice(6)
+            try {
+              const jsonData = JSON.parse(jsonStr)
+              
+              // Handle different AG-UI event types
+              if (jsonData.type === 'TEXT_MESSAGE_CONTENT') {
+                assistantMessage += jsonData.content
+                setMessages(prev => [
+                  ...prev.slice(0, -1),
+                  { role: 'assistant', content: assistantMessage }
+                ])
+              } else if (jsonData.type === 'TOOL_CALL_RESULT') {
+                // Extract chart data from tool result
+                const resultContent = typeof jsonData.content === 'string'
+                  ? JSON.parse(jsonData.content)
+                  : jsonData.content
+                
+                if (resultContent && resultContent.chart_type) {
+                  setCurrentChart(resultContent)
+                }
+              }
+            } catch (e) {
+              // Skip invalid JSON
+            }
+          }
+        }
+      }
+    } catch (error) {
+      console.error('Error:', error)
+      setMessages(prev => [
+        ...prev,
+        { role: 'assistant', content: 'Error: Could not get response from server.' }
+      ])
+    } finally {
+      setIsLoading(false)
+    }
+  }
+
   return (
     <div className="app-container">
-      <CopilotKit runtimeUrl="/api/copilotkit">
-        <div className="dashboard">
-          {/* Header */}
-          <header className="header">
-            <h1>📊 Data Analysis Dashboard</h1>
-            <p>Upload CSV data and ask questions to get insights</p>
-          </header>
+      <div className="dashboard">
+        <header className="header">
+          <h1>📊 Data Analysis Dashboard</h1>
+          <p>Upload CSV data and ask questions to get insights</p>
+        </header>
 
-          {/* File Upload */}
-          <div className="upload-section">
-            <label htmlFor="file-upload" className="upload-button">
-              📁 Upload CSV File
-            </label>
-            <input
-              id="file-upload"
-              type="file"
-              accept=".csv"
-              onChange={handleFileUpload}
-              style={{ display: 'none' }}
-            />
-            {uploadedFile && (
-              <span className="file-name">✅ {uploadedFile}</span>
-            )}
-          </div>
-
-          {/* Chat Interface */}
-          <div className="chat-container">
-            <CopilotChat
-              instructions="You are a data analysis assistant. Help users analyze their CSV data."
-              labels={{
-                title: "Data Analyst",
-                initial: "Hi! Upload a CSV file and I'll help you analyze it. You can ask me to:\n\n• Summarize the data\n• Find correlations\n• Identify trends\n• Create visualizations",
-              }}
-            />
-          </div>
+        {/* File Upload */}
+        <div className="upload-section">
+          <label htmlFor="file-upload" className="upload-button">
+            📁 Drop CSV files here or browse
+          </label>
+          <input
+            id="file-upload"
+            type="file"
+            accept=".csv"
+            onChange={handleFileUpload}
+            style={{ display: 'none' }}
+          />
         </div>
-      </CopilotKit>
+
+        {/* Custom Chat Interface */}
+        <div className="chat-container">
+          {messages.map((msg, i) => (
+            <div key={i} className={`message ${msg.role}`}>
+              <ReactMarkdown>{msg.content}</ReactMarkdown>
+            </div>
+          ))}
+          {isLoading && <div className="loading">Thinking...</div>}
+        </div>
+
+        {/* Input */}
+        <div className="input-container">
+          <input
+            value={input}
+            onChange={(e) => setInput(e.target.value)}
+            onKeyPress={(e) => e.key === 'Enter' && sendMessage(input)}
+            placeholder="Ask about your data..."
+            disabled={isLoading}
+          />
+          <button onClick={() => sendMessage(input)} disabled={isLoading}>
+            Send
+          </button>
+        </div>
+      </div>
+
+      {/* Fixed Sidebar for Charts */}
+      {currentChart && (
+        <aside className="chart-sidebar">
+          <button onClick={() => setCurrentChart(null)}>✕</button>
+          {currentChart.chart_type === 'line' && (
+            <Line data={/* format chart data */} />
+          )}
+          {currentChart.chart_type === 'bar' && (
+            <Bar data={/* format chart data */} />
+          )}
+          {currentChart.chart_type === 'scatter' && (
+            <Scatter data={/* format chart data */} />
+          )}
+        </aside>
+      )}
     </div>
   )
 }
@@ -742,33 +945,75 @@ export function ChartRenderer({ chartData }: ChartRendererProps) {
 }
 ```
 
-### Feature 2: Generative UI for Charts
+### Feature 2: Chart Rendering from TOOL_CALL_RESULT Events
 
-Register chart rendering with CopilotKit:
+The custom implementation extracts chart data from AG-UI protocol events:
 
 ```typescript
-import { useCopilotAction } from "@copilotkit/react-core"
-import { ChartRenderer } from './components/ChartRenderer'
-
-// In App component
-useCopilotAction({
-  name: "render_chart",
-  description: "Render a data visualization chart",
-  parameters: [
-    {
-      name: "chartData",
-      type: "object",
-      description: "Chart configuration and data"
+// In the SSE streaming loop (from App.tsx)
+for (const line of lines) {
+  if (line.startsWith('data: ')) {
+    const jsonStr = line.slice(6)
+    try {
+      const jsonData = JSON.parse(jsonStr)
+      
+      // Extract chart data from TOOL_CALL_RESULT events
+      if (jsonData.type === 'TOOL_CALL_RESULT') {
+        const resultContent = typeof jsonData.content === 'string'
+          ? JSON.parse(jsonData.content)
+          : jsonData.content
+        
+        // Check if this is chart data
+        if (resultContent && resultContent.chart_type) {
+          setCurrentChart(resultContent)
+        }
+      }
+    } catch (e) {
+      // Skip invalid JSON
     }
-  ],
-  handler: async ({ chartData }) => {
-    // Render chart as generative UI
-    return <ChartRenderer chartData={chartData} />
   }
-})
+}
 ```
 
-Now when the agent calls `create_chart()`, beautiful charts render inline! 📊
+### TOOL_CALL_RESULT Processing Flow
+
+```
+Agent Decides to Create Chart
+        ↓
+   Calls create_chart() tool
+        ↓
+   Tool returns chart config:
+   {
+     "status": "success",
+     "chart_type": "line",
+     "data": {"labels": [...], "values": [...]},
+     "options": {"title": "...", "x_label": "..."}
+   }
+        ↓
+   AG-UI wraps in TOOL_CALL_RESULT event
+        ↓
+   SSE stream sends: data: {
+     "type": "TOOL_CALL_RESULT",
+     "content": "{chart config JSON}"
+   }
+        ↓
+   Frontend parses event
+        ↓
+   Extracts chart data from content
+        ↓
+   setCurrentChart(chartData) → React state
+        ↓
+   Fixed sidebar re-renders with Chart.js
+        ↓
+   User sees interactive visualization
+```
+
+**Key Points:**
+- Agent calls `create_chart()` tool
+- Backend returns chart data via `TOOL_CALL_RESULT` event
+- Frontend extracts and stores chart data in state
+- Chart renders in fixed sidebar with Chart.js components
+- No generative UI framework needed - direct state management! 📊
 
 ### Feature 3: Data Table View
 
@@ -881,55 +1126,69 @@ const exportAnalysis = () => {
 
 ### Feature 1: Real-Time Collaboration
 
-Share dashboard state across users:
+Share dashboard state with the agent:
 
 ```typescript
-import { useCopilotReadable } from "@copilotkit/react-core";
-
 function App() {
   const [sharedState, setSharedState] = useState({
     uploadedFiles: [],
     currentAnalysis: null,
-    collaborators: [],
+    activeDataset: null,
   });
 
-  // Make state readable by agent
-  useCopilotReadable({
-    description: "Current dashboard state",
-    value: sharedState,
-  });
-
-  // Agent can now see what files are loaded, what analysis is active, etc.
+  // Include state in messages for agent context
+  const sendMessageWithContext = async (userMessage: string) => {
+    const contextMessage = {
+      role: 'system',
+      content: `Current state: ${JSON.stringify(sharedState)}`
+    }
+    
+    const response = await fetch('http://localhost:8000/api/copilotkit', {
+      method: 'POST',
+      body: JSON.stringify({
+        messages: [contextMessage, ...messages, { role: 'user', content: userMessage }],
+        agent: 'data_analyst'
+      })
+    })
+    // ... handle response
+  }
 }
 ```
 
-### Feature 2: Agent Memory
+**No special hooks needed** - just include state in message history!
 
-Persist analysis history:
+### Feature 2: Analysis History Persistence
+
+Persist analysis history with localStorage:
 
 ```typescript
-const [analysisHistory, setAnalysisHistory] = useState<Analysis[]>([]);
-
-useCopilotAction({
-  name: "save_analysis",
-  description: "Save analysis to history",
-  parameters: [
-    {
-      name: "analysis",
-      type: "object",
-      description: "Analysis results to save",
-    },
-  ],
-  handler: async ({ analysis }) => {
-    setAnalysisHistory((prev) => [...prev, analysis]);
-    localStorage.setItem(
-      "analysis_history",
-      JSON.stringify([...analysisHistory, analysis]),
-    );
-    return { status: "saved" };
-  },
+const [analysisHistory, setAnalysisHistory] = useState<Analysis[]>(() => {
+  // Load from localStorage on mount
+  const saved = localStorage.getItem('analysis_history')
+  return saved ? JSON.parse(saved) : []
 });
+
+// Save to localStorage whenever history changes
+useEffect(() => {
+  localStorage.setItem('analysis_history', JSON.stringify(analysisHistory))
+}, [analysisHistory])
+
+// Add analysis to history
+const saveAnalysis = (analysis: Analysis) => {
+  setAnalysisHistory((prev) => [...prev, analysis])
+}
+
+// Agent doesn't need special hooks - just include history in messages:
+const messagesWithHistory = [
+  {
+    role: 'system',
+    content: `Previous analyses: ${JSON.stringify(analysisHistory)}`
+  },
+  ...messages
+]
 ```
+
+**Key Difference:** No special agent memory framework needed - use standard React patterns!
 
 ### Feature 3: Multi-File Analysis
 
@@ -961,7 +1220,42 @@ def compare_datasets(
 
 ## Production Deployment
 
+### Deployment Architecture Comparison
+
+**Development Setup:**
+```
+Browser (5173) ←─── Proxy ────→ FastAPI (8000)
+     ↓                        ↓
+   Vite Dev                 ADK Agent
+   Server                   + AG-UI
+```
+
+**Production Setup:**
+```
+Browser ←─── HTTPS ────→ Netlify/Vercel ←─── HTTPS ────→ Cloud Run
+                              ↓                        ↓
+                         Static Files              ADK Agent
+                                                    + AG-UI
+```
+
 ### Option 1: Deploy to Netlify
+
+**Deployment Workflow:**
+```
+Local Development
+        ↓
+   npm run build          (Create dist/ folder)
+        ↓
+   gcloud run deploy      (Deploy agent to Cloud Run)
+        ↓
+   Update API_URL         (Point to Cloud Run URL)
+        ↓
+   netlify deploy         (Upload static files)
+        ↓
+   Configure CORS         (Allow Netlify domain)
+        ↓
+   Test live app          (End-to-end verification)
+```
 
 **Step 1: Build Frontend**
 
@@ -993,7 +1287,7 @@ Create `src/config.ts`:
 ```typescript
 export const API_URL = import.meta.env.PROD
   ? "https://data-analysis-agent-xyz.run.app"
-  : "/api";
+  : "http://localhost:8000";
 ```
 
 Update `src/App.tsx`:
@@ -1001,7 +1295,11 @@ Update `src/App.tsx`:
 ```typescript
 import { API_URL } from './config'
 
-<CopilotKit runtimeUrl={`${API_URL}/copilotkit`}>
+// Use in fetch calls
+const response = await fetch(`${API_URL}/api/copilotkit`, {
+  method: 'POST',
+  // ... rest of config
+})
 ```
 
 **Step 4: Deploy to Netlify**
@@ -1092,60 +1390,148 @@ vercel --prod
 
 ### Code Comparison
 
-**Vite** (Simple):
+**Vite + Custom React** (Tutorial 31):
 
 ```typescript
-// Single file, straightforward
-import { CopilotKit } from "@copilotkit/react-core"
+### Code Comparison
 
+**Vite + Custom React** (Tutorial 31):
+
+```typescript
+// Single App.tsx file with full control
+// Manual SSE streaming with fetch()
+// Custom UI components
+// Direct state management
+// ~200 lines of code for complete chat interface
+
+const response = await fetch('http://localhost:8000/api/copilotkit', {
+  method: 'POST',
+  body: JSON.stringify({ messages, agent: 'data_analyst' })
+})
+// Parse SSE events manually, extract TOOL_CALL_RESULT, render charts
+```
+
+**Next.js + CopilotKit** (Tutorial 30):
+
+```typescript
+// app/layout.tsx - CopilotKit wrapper
+// app/page.tsx - Main page with <CopilotChat />
+// app/api/copilotkit/route.ts - API route handler
+
+// Pre-built components, less code, standard UX, faster to build
+import { CopilotKit } from "@copilotkit/react-core"
 <CopilotKit runtimeUrl="/api/copilotkit">
-  <App />
+  <CopilotChat /> {/* ~10 lines for basic chat */}
 </CopilotKit>
 ```
 
-**Next.js** (Structured):
+### Implementation Comparison Diagram
+
+```
+Feature Category          Vite + Custom React          Next.js + CopilotKit
+───────────────────       ────────────────────         ────────────────────
+Code Volume               High (200+ lines)            Low (10-50 lines)
+UI Control                Full control                 Limited to CopilotKit
+UX Flexibility            Custom (fixed sidebar!)      Standard chat UI
+Learning Curve            Higher (manual streaming)    Lower (pre-built)
+Bundle Size               Smaller (no framework)       Larger (framework)
+Development Speed         Slower initial              Faster initial
+Maintenance               More complex                 Simpler
+Customization             Unlimited                    Limited
+Performance               Better (no framework)        Good
+Deployment                Static hosting               Server required
+```
+```
+
+**Next.js + CopilotKit** (Tutorial 30):
 
 ```typescript
-// app/layout.tsx - Layout wrapper
-// app/page.tsx - Main page
-// app/api/copilotkit/route.ts - API route
+// app/layout.tsx - CopilotKit wrapper
+// app/page.tsx - Main page with <CopilotChat />
+// app/api/copilotkit/route.ts - API route handler
 
-// More structure, more power
+// Pre-built components, less code, less control
+import { CopilotKit } from "@copilotkit/react-core"
+<CopilotKit runtimeUrl="/api/copilotkit">
+  <CopilotChat /> {/* ~10 lines for basic chat */}
+</CopilotKit>
 ```
+
+**Trade-offs:**
+- Custom React: More code, full control, custom UX (fixed sidebar!)
+- CopilotKit: Less code, standard UX, faster to build
 
 ---
 
 ## Troubleshooting
 
-### Issue 1: Proxy Not Working
+### SSE Streaming Debug Flow
+
+```
+SSE Not Working?
+        ↓
+   Check browser console for errors
+        ↓
+   Is fetch() getting HTTP 200?
+        ├── YES → Check response.body exists
+        └── NO → Check backend running on port 8000
+        ↓
+   Is reader getting chunks?
+        ├── YES → Check 'data: ' lines parsing
+        └── NO → Check fetch URL and method
+        ↓
+   Are events being parsed?
+        ├── YES → Check event.type handling
+        └── NO → Check JSON.parse() not failing
+        ↓
+   Is UI updating?
+        ├── YES → Success!
+        └── NO → Check React state updates
+```
+
+### Issue 1: SSE Streaming Not Working
 
 **Symptoms**:
 
-- 404 errors on `/api/copilotkit`
-- Agent not receiving requests
+- No response from agent
+- Messages appear to send but no reply
+- Browser console shows no errors
 
 **Solution**:
 
 ```typescript
-// vite.config.ts - Check proxy config
-export default defineConfig({
-  server: {
-    proxy: {
-      "/api": {
-        target: "http://localhost:8000",
-        changeOrigin: true,
-        rewrite: (path) => path.replace(/^\/api/, ""),
-        configure: (proxy, options) => {
-          // Log proxy requests for debugging
-          proxy.on("proxyReq", (proxyReq, req, res) => {
-            console.log("Proxying:", req.method, req.url, "→", proxyReq.path);
-          });
-        },
-      },
-    },
+// Check fetch() is configured correctly
+const response = await fetch('http://localhost:8000/api/copilotkit', {
+  method: 'POST',
+  headers: {
+    'Content-Type': 'application/json',
   },
-});
+  body: JSON.stringify({
+    messages: [...messages, userMessage],
+    agent: 'data_analyst'  // CRITICAL: Must match agent name in backend
+  })
+})
+
+// Verify response is readable stream
+if (!response.body) {
+  console.error('Response body is null - check backend')
+  return
+}
+
+// Check for response errors
+if (!response.ok) {
+  console.error(`HTTP ${response.status}: ${response.statusText}`)
+  const text = await response.text()
+  console.error('Response:', text)
+  return
+}
 ```
+
+**Debug steps:**
+1. Check backend is running: `curl http://localhost:8000/health`
+2. Verify agent name matches: Check `agent/agent.py` for `name="data_analyst"`
+3. Open browser DevTools → Network tab → Check `/api/copilotkit` request
+4. Look for backend errors in terminal running `make dev-agent`
 
 ---
 
@@ -1212,17 +1598,56 @@ uvicorn.run(
 
 ---
 
-### Issue 4: Chart Not Rendering
+### Issue 4: TOOL_CALL_RESULT Event Not Parsed
 
 **Symptoms**:
 
-- Chart data received but nothing displays
-- Console errors about Chart.js
+- Agent responds but charts don't appear
+- Console shows "Cannot read property 'chart_type' of undefined"
 
 **Solution**:
 
 ```typescript
-// Make sure Chart.js is registered
+// Proper TOOL_CALL_RESULT parsing
+if (jsonData.type === 'TOOL_CALL_RESULT') {
+  // Content might be string or object
+  const resultContent = typeof jsonData.content === 'string'
+    ? JSON.parse(jsonData.content)  // Parse if string
+    : jsonData.content               // Use directly if object
+  
+  // Validate chart data structure
+  if (resultContent && 
+      resultContent.chart_type && 
+      resultContent.data && 
+      resultContent.data.labels && 
+      resultContent.data.values) {
+    console.log('Valid chart data:', resultContent)
+    setCurrentChart(resultContent)
+  } else {
+    console.warn('Invalid chart data structure:', resultContent)
+  }
+}
+```
+
+**Debug checklist:**
+1. Check backend `create_chart` returns correct format
+2. Verify `status: "success"` in tool result
+3. Ensure `chart_type` is 'line', 'bar', or 'scatter'
+4. Confirm arrays: `data.labels` (strings), `data.values` (numbers)
+
+---
+
+### Issue 5: Chart.js Not Registered
+
+**Symptoms**:
+
+- Error: "category is not a registered scale"
+- Charts show blank canvas
+
+**Solution**:
+
+```typescript
+// Import and register ALL Chart.js components at app startup
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -1235,7 +1660,7 @@ import {
   Legend,
 } from "chart.js";
 
-// MUST register before using
+// Register ONCE at app initialization (top of App.tsx)
 ChartJS.register(
   CategoryScale,
   LinearScale,
