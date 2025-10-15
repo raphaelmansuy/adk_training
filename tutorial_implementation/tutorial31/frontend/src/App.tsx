@@ -123,6 +123,7 @@ function App() {
       const reader = response.body?.getReader();
       const decoder = new TextDecoder();
       let fullContent = "";
+      let toolResults: Record<string, any> = {};
 
       if (reader) {
         while (true) {
@@ -136,6 +137,9 @@ function App() {
             if (line.startsWith("data: ")) {
               try {
                 const jsonData = JSON.parse(line.slice(6));
+                console.log("📡 Received event:", jsonData.type, jsonData);
+                
+                // Handle text content streaming
                 if (jsonData.type === "TEXT_MESSAGE_CONTENT") {
                   fullContent += jsonData.delta;
                   // Update message in real-time
@@ -150,6 +154,53 @@ function App() {
                     return newMessages;
                   });
                 }
+                
+                // Handle tool call results (where chart data lives!)
+                if (jsonData.type === "TOOL_CALL_RESULT") {
+                  console.log("� TOOL_CALL_RESULT Event Received!");
+                  console.log("   Full event object:", JSON.stringify(jsonData, null, 2));
+                  console.log("   Content type:", typeof jsonData.content);
+                  console.log("   Content value:", jsonData.content);
+                  
+                  try {
+                    // Parse the tool result content
+                    const resultContent = typeof jsonData.content === 'string' 
+                      ? JSON.parse(jsonData.content) 
+                      : jsonData.content;
+                    
+                    console.log("   Parsed content:", resultContent);
+                    console.log("   Has chart_type?:", !!resultContent.chart_type);
+                    
+                    toolResults[jsonData.tool_call_id] = resultContent;
+                    
+                    // Check if this is a chart creation result
+                    if (resultContent && resultContent.chart_type) {
+                      console.log("✅ CHART DATA FOUND!");
+                      console.log("   Chart type:", resultContent.chart_type);
+                      console.log("   Chart data:", resultContent);
+                      
+                      setCurrentChart(resultContent);
+                      console.log("   Set currentChart state");
+                      
+                      setMessages((prev) => {
+                        const newMessages = [...prev];
+                        const lastMsg = newMessages[newMessages.length - 1];
+                        console.log("   Last message role:", lastMsg?.role);
+                        if (lastMsg && lastMsg.role === "assistant") {
+                          lastMsg.chartData = resultContent;
+                          console.log("   Attached chartData to message");
+                        }
+                        return newMessages;
+                      });
+                    } else {
+                      console.log("❌ No chart_type found in result");
+                      console.log("   Result keys:", Object.keys(resultContent));
+                    }
+                  } catch (e) {
+                    console.error("❌ Error parsing tool result:", e);
+                    console.error("   Raw content:", jsonData.content);
+                  }
+                }
               } catch (e) {
                 // Skip invalid JSON
               }
@@ -158,26 +209,28 @@ function App() {
         }
       }
 
-      // Extract and display chart if present
-      const chartData = extractChartData(fullContent);
-      if (chartData) {
-        setCurrentChart(chartData);
-        setMessages((prev) => {
-          const newMessages = [...prev];
-          const lastMsg = newMessages[newMessages.length - 1];
-          if (lastMsg && lastMsg.role === "assistant") {
-            lastMsg.chartData = chartData;
-          }
-          return newMessages;
-        });
+      // Fallback: Extract chart from text content if not found in tool results
+      if (!currentChart) {
+        const chartData = extractChartData(fullContent);
+        if (chartData) {
+          console.log("📊 Chart data extracted from text (fallback):", chartData);
+          setCurrentChart(chartData);
+          setMessages((prev) => {
+            const newMessages = [...prev];
+            const lastMsg = newMessages[newMessages.length - 1];
+            if (lastMsg && lastMsg.role === "assistant") {
+              lastMsg.chartData = chartData;
+            }
+            return newMessages;
+          });
+        }
       }
 
-      // Ensure final message is added if not already
+      // Ensure final message is added if not already (this should not happen in streaming)
       if (fullContent && messages[messages.length - 1]?.role !== "assistant") {
         const assistantMessage: Message = {
           role: "assistant",
           content: fullContent,
-          chartData: chartData || undefined,
         };
         setMessages((prev) => [...prev, assistantMessage]);
       }
@@ -236,6 +289,7 @@ function App() {
       const reader = response.body?.getReader();
       const decoder = new TextDecoder();
       let fullContent = "";
+      let chartDataFromTool: ChartData | null = null;
 
       if (reader) {
         while (true) {
@@ -249,6 +303,9 @@ function App() {
             if (line.startsWith("data: ")) {
               try {
                 const jsonData = JSON.parse(line.slice(6));
+                console.log("📡 Received event:", jsonData.type, jsonData);
+                
+                // Handle text content streaming
                 if (jsonData.type === "TEXT_MESSAGE_CONTENT") {
                   fullContent += jsonData.delta;
                   setMessages((prev) => {
@@ -262,6 +319,24 @@ function App() {
                     return newMessages;
                   });
                 }
+                
+                // Handle tool results (chart data)
+                if (jsonData.type === "TOOL_CALL_RESULT") {
+                  console.log("📊 Upload: Received TOOL_CALL_RESULT:", jsonData);
+                  try {
+                    const resultContent = typeof jsonData.content === 'string' 
+                      ? JSON.parse(jsonData.content) 
+                      : jsonData.content;
+                    
+                    if (resultContent && resultContent.chart_type) {
+                      console.log("📈 Upload: Chart data found:", resultContent);
+                      chartDataFromTool = resultContent;
+                      setCurrentChart(resultContent);
+                    }
+                  } catch (e) {
+                    console.error("Error parsing upload tool result:", e);
+                  }
+                }
               } catch (e) {
                 // Skip invalid JSON
               }
@@ -274,6 +349,7 @@ function App() {
         const assistantMessage: Message = {
           role: "assistant",
           content: fullContent,
+          chartData: chartDataFromTool || undefined,
         };
         setMessages((prev) => [...prev, assistantMessage]);
       }
@@ -409,9 +485,9 @@ function App() {
   };
 
   return (
-    <div className="flex flex-col h-screen bg-gradient-to-br from-gray-50 to-blue-50">
+    <div className="flex flex-col h-screen bg-gradient-to-br from-gray-50 to-blue-50 overflow-hidden">
       {/* Header */}
-      <header className="bg-white/90 backdrop-blur-sm border-b border-gray-200 shadow-sm sticky top-0 z-10" role="banner">
+      <header className="bg-white/90 backdrop-blur-sm border-b border-gray-200 shadow-sm sticky top-0 z-10 flex-shrink-0" role="banner">
         <div className="max-w-6xl mx-auto px-6 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
@@ -444,9 +520,9 @@ function App() {
         </div>
       </header>
 
-      <div className="flex-1 flex max-w-6xl mx-auto w-full">
+      <div className="flex-1 flex max-w-full mx-auto w-full relative">
         {/* Main Chat Area */}
-        <main className="flex-1 flex flex-col" role="main">
+        <main className={`flex-1 flex flex-col transition-all duration-300 ${(currentChart || uploadedFile) ? 'mr-96' : ''}`} style={{maxWidth: '100%'}} role="main">
           {/* File Upload Area */}
           <div className="p-6 border-b border-gray-200 bg-white/50">
             <div
@@ -487,7 +563,7 @@ function App() {
 
           {/* Chat Messages */}
           <div className="flex-1 overflow-y-auto" aria-label="Chat conversation">
-            <div className="px-6 py-4">
+            <div className="px-6 py-4 max-w-5xl mx-auto">
               {messages.length === 1 && (
                 <div 
                   className="text-center py-12"
@@ -686,37 +762,93 @@ function App() {
           </footer>
         </main>
 
-        {/* Sidebar for Charts and Data */}
+        {/* Sidebar for Charts and Data - Fixed Position */}
         {(currentChart || uploadedFile) && (
-          <aside className="w-96 bg-white border-l-2 border-gray-300 flex flex-col shadow-lg" role="complementary" aria-label="Chart visualization panel">
-            <div className="p-6 border-b-2 border-gray-300 bg-gray-50">
-              <h2 className="text-xl font-bold text-gray-900 flex items-center gap-2">
-                📊 Visualization
-              </h2>
+          <aside 
+            className="fixed right-0 top-0 w-96 h-screen bg-white border-l-2 border-gray-300 flex flex-col shadow-2xl z-20 animate-in slide-in-from-right duration-300" 
+            role="complementary" 
+            aria-label="Chart visualization panel"
+          >
+            {/* Fixed Header */}
+            <div className="flex-shrink-0 p-6 border-b-2 border-gray-300 bg-gradient-to-r from-gray-50 to-blue-50">
+              <div className="flex items-center justify-between">
+                <h2 className="text-xl font-bold text-gray-900 flex items-center gap-2">
+                  📊 Visualization
+                </h2>
+                <button
+                  onClick={() => setCurrentChart(null)}
+                  className="text-gray-500 hover:text-gray-700 hover:bg-gray-200 rounded-lg p-2 transition-colors"
+                  aria-label="Close visualization panel"
+                  title="Close panel"
+                >
+                  ✕
+                </button>
+              </div>
             </div>
-            <div className="flex-1 p-6 overflow-y-auto">
+            
+            {/* Scrollable Content */}
+            <div className="flex-1 overflow-y-auto p-6 space-y-6" style={{maxHeight: 'calc(100vh - 88px)'}}>
               {currentChart && (
-                <div className="mb-6">
-                  <div className="bg-white rounded-xl p-4 border-2 border-gray-300 shadow-sm">
+                <div className="space-y-4">
+                  {/* Chart Container */}
+                  <div className="bg-gradient-to-br from-white to-gray-50 rounded-xl p-6 border-2 border-gray-300 shadow-lg">
                     <div className="h-80">
                       {renderChart(currentChart)}
                     </div>
                   </div>
-                  <div className="mt-4 text-sm text-gray-800 bg-gray-50 rounded-lg p-4 border border-gray-300 space-y-2">
-                    <p><strong className="text-gray-900">Chart Type:</strong> <span className="font-semibold">{currentChart.chart_type}</span></p>
-                    <p><strong className="text-gray-900">X-Axis:</strong> <span className="font-semibold">{currentChart.options.x_label}</span></p>
-                    <p><strong className="text-gray-900">Y-Axis:</strong> <span className="font-semibold">{currentChart.options.y_label}</span></p>
-                    <p><strong className="text-gray-900">Data Points:</strong> <span className="font-semibold">{currentChart.data.labels.length}</span></p>
+                  
+                  {/* Chart Metadata */}
+                  <div className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-xl p-5 border-2 border-blue-200 shadow-sm space-y-3">
+                    <h3 className="text-sm font-bold text-gray-700 uppercase tracking-wide mb-3 flex items-center gap-2">
+                      <span className="text-blue-600">📋</span> Chart Details
+                    </h3>
+                    <div className="space-y-2.5">
+                      <div className="flex items-start justify-between gap-2">
+                        <span className="text-sm font-medium text-gray-600">Type:</span>
+                        <span className="text-sm font-bold text-gray-900 capitalize">{currentChart.chart_type}</span>
+                      </div>
+                      <div className="flex items-start justify-between gap-2">
+                        <span className="text-sm font-medium text-gray-600">X-Axis:</span>
+                        <span className="text-sm font-semibold text-gray-800 text-right">{currentChart.options.x_label}</span>
+                      </div>
+                      <div className="flex items-start justify-between gap-2">
+                        <span className="text-sm font-medium text-gray-600">Y-Axis:</span>
+                        <span className="text-sm font-semibold text-gray-800 text-right">{currentChart.options.y_label}</span>
+                      </div>
+                      <div className="flex items-start justify-between gap-2 pt-2 border-t border-blue-200">
+                        <span className="text-sm font-medium text-gray-600">Data Points:</span>
+                        <span className="text-sm font-bold text-blue-700">{currentChart.data.labels.length}</span>
+                      </div>
+                    </div>
                   </div>
+                  
+                  {/* Chart Status */}
+                  {currentChart.report && (
+                    <div className="bg-green-50 rounded-lg p-4 border border-green-200">
+                      <p className="text-sm text-green-800 leading-relaxed">
+                        <span className="font-semibold">✓</span> {currentChart.report}
+                      </p>
+                    </div>
+                  )}
                 </div>
               )}
+              
               {uploadedFile && (
-                <div className="bg-blue-50 rounded-xl p-4 border-2 border-blue-300">
-                  <h3 className="font-bold text-blue-900 mb-2">📄 Uploaded File</h3>
-                  <p className="text-sm text-blue-800 font-semibold">{uploadedFile.name}</p>
-                  <p className="text-xs text-blue-700 mt-1 font-medium">
-                    {(uploadedFile.size / 1024).toFixed(1)} KB
-                  </p>
+                <div className="bg-gradient-to-br from-blue-50 to-blue-100 rounded-xl p-5 border-2 border-blue-300 shadow-sm">
+                  <h3 className="font-bold text-blue-900 mb-3 flex items-center gap-2 text-sm uppercase tracking-wide">
+                    <span>📄</span> Uploaded File
+                  </h3>
+                  <div className="space-y-2">
+                    <p className="text-sm text-blue-900 font-semibold break-all">{uploadedFile.name}</p>
+                    <div className="flex items-center gap-3 text-xs text-blue-700">
+                      <span className="font-medium bg-blue-200 px-2 py-1 rounded">
+                        {(uploadedFile.size / 1024).toFixed(1)} KB
+                      </span>
+                      <span className="font-medium bg-blue-200 px-2 py-1 rounded">
+                        CSV Format
+                      </span>
+                    </div>
+                  </div>
                 </div>
               )}
             </div>
