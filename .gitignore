@@ -357,3 +357,5 @@ next-env.d.ts
 research/
 
 tutorial_implementation/tutorial16/sample_files
+
+.tasks/

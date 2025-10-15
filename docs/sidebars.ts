@@ -42,6 +42,7 @@ const sidebars: SidebarsConfig = {
       label: 'Foundation Tutorials',
       collapsed: false,
       items: [
+        'setup_authentication',
         'hello_world_agent',
         'function_tools',
         'openapi_tools',
