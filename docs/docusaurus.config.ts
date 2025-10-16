@@ -381,7 +381,7 @@ const config: Config = {
       { property: 'og:site_name', content: 'Google ADK Training Hub' },
 
       // Google Search Console verification
-      { name: 'google-site-verification', content: 'YOUR_VERIFICATION_CODE' }, // Replace with your actual verification code
+      { name: 'google-site-verification', content: 'tuQTXHERxeAB5YzYV7ZHPEFqwMYBCEBVmsYy_m-nJEU' }, // Replace with your actual verification code
     ],
 
     // Replace with your project's social card
