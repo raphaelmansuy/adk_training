@@ -341,6 +341,38 @@ const config: Config = {
         ],
       },
     ],
+    // Custom plugin to format sitemap.xml for Google Search Console
+    function sitemapFormatterPlugin(context, options) {
+      return {
+        name: 'sitemap-formatter',
+        async postBuild({ outDir }) {
+          const fs = require('fs');
+          const path = require('path');
+          const sitemapPath = path.join(outDir, 'sitemap.xml');
+
+          if (fs.existsSync(sitemapPath)) {
+            try {
+              const xmlContent = fs.readFileSync(sitemapPath, 'utf8');
+
+              // Parse and reformat the XML
+              const { DOMParser, XMLSerializer } = require('@xmldom/xmldom');
+              const parser = new DOMParser();
+              const doc = parser.parseFromString(xmlContent, 'text/xml');
+
+              // Serialize with proper formatting
+              const serializer = new XMLSerializer();
+              const formattedXml = serializer.serializeToString(doc);
+
+              // Write back the formatted XML
+              fs.writeFileSync(sitemapPath, formattedXml, 'utf8');
+              console.log('✅ Sitemap formatted for Google Search Console');
+            } catch (error) {
+              console.warn('⚠️ Failed to format sitemap.xml:', error.message);
+            }
+          }
+        },
+      };
+    },
     // TODO: Add Giscus plugin when available
     // TODO: Add social sharing plugin
   ],
