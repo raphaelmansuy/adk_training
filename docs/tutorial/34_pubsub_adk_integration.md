@@ -1,16 +1,29 @@
 ---
 id: pubsub_adk_integration
+title: "Tutorial 34: Google Cloud Pub/Sub + Event-Driven Agents"
+description: "Build scalable, event-driven document processing pipelines with Google Cloud Pub/Sub and ADK agents for real-time asynchronous processing."
+sidebar_label: "34. Pub/Sub Event Agents"
+sidebar_position: 34
+tags: ["cloud", "pubsub", "event-driven", "python", "scalability"]
+keywords: ["pubsub", "google cloud", "event-driven", "agent", "python", "scalability"]
+status: "updated"
+difficulty: "advanced"
+estimated_time: "2 hours"
+prerequisites: ["Tutorial 01: Hello World Agent", "Google Cloud project", "Python experience"]
+learning_objectives:
+  - "Build event-driven architectures with Pub/Sub"
+  - "Scale ADK agents to millions of messages"
+  - "Deploy to Cloud Run with DLQ handling"
+  - "Implement real-time WebSocket updates"
+implementation_link: "https://github.com/raphaelmansuy/adk_training/tree/main/tutorial_implementation/tutorial34"
 ---
 
-# Tutorial 34: Google Cloud Pub/Sub + Event-Driven Agents
+:::info VERIFIED WITH LATEST SOURCES
 
-:::danger UNDER CONSTRUCTION
-
-**This tutorial is currently under construction and may contain errors, incomplete information, or outdated code examples.**
-
-Please check back later for the completed version. If you encounter issues, refer to the working implementation in the [tutorial repository](https://github.com/raphaelmansuy/adk_training/tree/main/tutorial_implementation/tutorial34).
-
-:::
+This tutorial has been verified against official Google Cloud Pub/Sub Python
+SDK (latest), Cloud Run deployment patterns, and ADK async best practices.
+FlowControl parameter syntax and at-least-once delivery semantics confirmed
+current as of October 2025.
 
 **Estimated Reading Time**: 70-80 minutes  
 **Difficulty Level**: Advanced  
