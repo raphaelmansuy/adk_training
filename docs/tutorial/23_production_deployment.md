@@ -1,4 +1,4 @@
-# 23: Production Deployment Strategies
+# 23. Production Deployment Strategies
 
 **Goal**: Understand ADK deployment options and implement production-grade agents with custom authentication, monitoring, and reliability patterns.
 
