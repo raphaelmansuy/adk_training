@@ -148,14 +148,31 @@ class TestAgentIntegration:
     )
     async def test_agent_invocation(self):
         """Test actual agent invocation."""
-        from google.adk.agents import Runner
+        from google.adk.runners import Runner
+        from google.adk.sessions import InMemorySessionService
+        from google.genai import types
         
-        runner = Runner()
+        session_service = InMemorySessionService()
+        runner = Runner(app_name="test", agent=root_agent, session_service=session_service)
+        
+        session = await session_service.create_session(
+            app_name="test",
+            user_id="test_user"
+        )
+        
         query = "What deployment options are available?"
+        new_message = types.Content(role="user", parts=[types.Part(text=query)])
         
-        result = await runner.run_async(query, agent=root_agent)
+        response_text = ""
+        async for event in runner.run_async(
+            user_id="test_user",
+            session_id=session.id,
+            new_message=new_message
+        ):
+            if event.content and event.content.parts:
+                text = event.content.parts[0].text
+                if text:  # Only concatenate if text is not None
+                    response_text += text
         
-        assert result is not None
-        assert hasattr(result, 'content')
-        assert hasattr(result.content, 'parts')
-        assert len(result.content.parts) > 0
+        assert response_text is not None
+        assert len(response_text) > 0

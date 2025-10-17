@@ -66,11 +66,14 @@ open http://localhost:8000/docs
 ```
 
 Features:
+
 - Health check endpoint at `/health`
 - Agent invocation at `/invoke`
 - Request metrics tracking
 - Error handling and logging
 - OpenAPI documentation
+
+📖 **Guide**: [FastAPI Best Practices](./FASTAPI_BEST_PRACTICES.md) - learn 7 core patterns.
 
 ## Deployment Options
 
@@ -81,6 +84,7 @@ adk api_server
 ```
 
 Features:
+
 - Hot reload for development
 - Automatic API docs
 - CORS enabled
@@ -94,6 +98,7 @@ adk deploy cloud_run \
 ```
 
 Features:
+
 - Serverless auto-scaling
 - Pay-per-use pricing
 - Managed infrastructure
@@ -107,6 +112,7 @@ adk deploy agent_engine \
 ```
 
 Features:
+
 - Managed agent infrastructure
 - Built-in monitoring
 - Version control
@@ -118,6 +124,7 @@ adk deploy gke
 ```
 
 Features:
+
 - Full Kubernetes control
 - Custom scaling policies
 - Advanced networking
@@ -138,24 +145,28 @@ Try these prompts with the agent:
 ## Best Practices
 
 ### Security
+
 - Use Google Secret Manager for secrets
 - Never commit API keys
 - Configure CORS with specific origins
 - Implement rate limiting
 
 ### Monitoring
+
 - Add health check endpoints
 - Use structured logging (JSON)
 - Enable Cloud Trace
 - Track error rates and latency
 
 ### Scalability
+
 - Configure auto-scaling
 - Set resource limits
 - Use connection pooling
 - Optimize memory usage
 
 ### Reliability
+
 - Implement graceful shutdown
 - Add liveness/readiness probes
 - Use circuit breakers
@@ -197,6 +208,7 @@ pytest tests/ -v --cov=production_agent --cov-report=html
 ```
 
 Test coverage includes:
+
 - ✅ Project structure validation
 - ✅ Import verification
 - ✅ Agent configuration
@@ -236,6 +248,7 @@ HOST=0.0.0.0
 ### "Agent not found in dropdown"
 
 Make sure you've installed the package:
+
 ```bash
 pip install -e .
 ```
@@ -243,6 +256,7 @@ pip install -e .
 ### "GOOGLE_API_KEY not set"
 
 Export your API key:
+
 ```bash
 export GOOGLE_API_KEY=your_key
 ```
@@ -250,6 +264,7 @@ export GOOGLE_API_KEY=your_key
 ### "Module not found"
 
 Install dependencies:
+
 ```bash
 make setup
 ```

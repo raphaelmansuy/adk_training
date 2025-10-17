@@ -24,7 +24,8 @@ def test_import_server_module():
 def test_google_adk_imports():
     """Test that required Google ADK imports work."""
     try:
-        from google.adk.agents import Agent, Runner
+        from google.adk.agents import Agent
+        from google.adk.runners import Runner
         from google.genai import types
         assert True
     except ImportError as e:
