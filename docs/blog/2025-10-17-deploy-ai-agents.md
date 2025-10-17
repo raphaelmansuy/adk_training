@@ -1,4 +1,5 @@
 ---
+slug: deploy-ai-agents-5-minutes
 title: "Deploy Your AI Agent in 5 Minutes (Seriously)"
 description: "The complete guide to choosing and deploying AI agents. Includes decision framework, cost breakdown, and real-world scenarios. Simple enough for startups, powerful enough for enterprises."
 tags: [deployment, adk, cloud-run, agent-engine, production, architecture]
@@ -422,8 +423,8 @@ Cloud Run. You're done. Deploy now.
 - 📖 [**FastAPI Best Practices**](https://github.com/raphaelmansuy/adk_training/blob/main/tutorial_implementation/tutorial23/FASTAPI_BEST_PRACTICES.md) - 7 production patterns
 
 ### Security Research
-- 📋 [**Security Research Summary**](https://github.com/raphaelmansuy/adk_training/blob/main/SECURITY_RESEARCH_SUMMARY.md) - Executive summary (5 min read)
-- 🔍 [**Detailed Security Analysis**](https://github.com/raphaelmansuy/adk_training/blob/main/SECURITY_ANALYSIS_ALL_DEPLOYMENT_OPTIONS.md) - Per-platform breakdown
+- 📋 [**Security Research Summary**](https://github.com/raphaelmansuy/adk_training/blob/main/tutorial_implementation/tutorial23/SECURITY_RESEARCH_SUMMARY.md) - Executive summary (5 min read) - What ADK provides, what platforms provide
+- 🔍 [**Detailed Security Analysis**](https://github.com/raphaelmansuy/adk_training/blob/main/tutorial_implementation/tutorial23/SECURITY_ANALYSIS_ALL_DEPLOYMENT_OPTIONS.md) - Per-platform breakdown - Deep dive into each deployment option
 
 ### Platform Documentation
 - 🌐 [Cloud Run Docs](https://cloud.google.com/run/docs) - Official Google documentation
