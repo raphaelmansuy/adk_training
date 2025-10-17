@@ -226,39 +226,39 @@ This tutorial has been updated with insights from implementing **22 comprehensiv
 
 ```text
                     ╔══════════════════════════════════════════════╗
-                    ║              EVALUATION TESTS               ║
-                    ║              (3 tests - 14%)                ║
+                    ║              EVALUATION TESTS                ║
+                    ║              (3 tests - 14%)                 ║
                     ║                                              ║
-                    ║  • AgentEvaluator with real API calls       ║
-                    ║  • Trajectory & response quality            ║
-                    ║  • LLM behavioral validation                ║
-                    ║  • Subject to rate limits                   ║
+                    ║  • AgentEvaluator with real API calls        ║
+                    ║  • Trajectory & response quality             ║
+                    ║  • LLM behavioral validation                 ║
+                    ║  • Subject to rate limits                    ║
                     ╚══════════════════════════════════════════════╝
                                        │
                                        │ Slowest, most realistic
                                        │ Requires API access
                                        ▼
                     ╔══════════════════════════════════════════════╗
-                    ║            INTEGRATION TESTS               ║
-                    ║            (2 tests - 9%)                  ║
+                    ║            INTEGRATION TESTS                 ║
+                    ║            (2 tests - 9%)                    ║
                     ║                                              ║
-                    ║  • Multi-step workflows                     ║
-                    ║  • Tool orchestration                       ║
-                    ║  • End-to-end scenarios                     ║
-                    ║  • Mock external dependencies               ║
+                    ║  • Multi-step workflows                      ║
+                    ║  • Tool orchestration                        ║
+                    ║  • End-to-end scenarios                      ║
+                    ║  • Mock external dependencies                ║
                     ╚══════════════════════════════════════════════╝
                                        │
                                        │ Moderate speed & complexity
                                        │ Validates system interactions
                                        ▼
                     ╔══════════════════════════════════════════════╗
-                    ║             UNIT TESTS                      ║
-                    ║             (19 tests - 86%)               ║
+                    ║             UNIT TESTS                       ║
+                    ║             (19 tests - 86%)                 ║
                     ║                                              ║
-                    ║  • Individual tool functions               ║
-                    ║  • Agent configuration                      ║
-                    ║  • Error handling & edge cases              ║
-                    ║  • Fast, deterministic, isolated            ║
+                    ║  • Individual tool functions                 ║
+                    ║  • Agent configuration                       ║
+                    ║  • Error handling & edge cases               ║
+                    ║  • Fast, deterministic, isolated             ║
                     ╚══════════════════════════════════════════════╝
 ```
 
@@ -464,65 +464,65 @@ tutorial10/
 ┌─────────────────────────────────────────────────────────────────────────────┐
 │                           AGENT TESTING ARCHITECTURE                        │
 │                                                                             │
-│  ┌─────────────────────────────────────────────────────────────────────────┐ │
-│  │                    TestAgentEvaluation (Async)                         │ │
-│  │                    pytest.mark.asyncio                                 │ │
-│  │                                                                         │ │
-│  │  ┌─────────────┐  ┌─────────────┐  ┌─────────────┐  ┌─────────────┐     │ │
-│  │  │Simple KB    │  │Ticket       │  │Multi-turn   │  │All Tests    │     │ │
-│  │  │Search Test  │  │Creation     │  │Conversation │  │in Directory │     │ │
-│  │  │(.test.json) │  │(.test.json) │  │(.evalset.json│  │(tests/)      │     │ │
-│  │  └─────────────┘  └─────────────┘  └─────────────┘  └─────────────┘     │ │
-│  │          │              │                  │                  │          │ │
-│  └──────────┼──────────────┼──────────────────┼──────────────────┘          │ │
-│             │              │                  │                             │ │
-│             └──────────────┼──────────────────┼─────────────────────────────┘ │
-│                            │                  │                               │ │
-│  ┌─────────────────────────┼──────────────────┼─────────────────────────────┐ │
-│  │              AgentEvaluator.evaluate()                                 │ │
-│  │              Real Gemini API Calls                                   │ │
-│  │              Trajectory + Response Quality                           │ │
-│  └─────────────────────────────────────────────────────────────────────────┘ │
-│                            │                                                  │
-│                            ▼                                                  │
-│  ┌─────────────────────────────────────────────────────────────────────────┐ │
-│  │                        SUPPORT AGENT                                  │ │
-│  │                        (root_agent)                                   │ │
-│  │                                                                         │ │
-│  │  ┌─────────────┐  ┌─────────────┐  ┌─────────────┐                     │ │
-│  │  │Search KB    │  │Create       │  │Check Ticket │                     │ │
-│  │  │Tool         │  │Ticket Tool  │  │Status Tool  │                     │ │
-│  │  └─────────────┘  └─────────────┘  └─────────────┘                     │ │
-│  │          │              │                  │                             │ │
-│  └──────────┼──────────────┼──────────────────┼─────────────────────────────┘ │
-│             │              │                  │                               │ │
-│             └──────────────┼──────────────────┼───────────────────────────────┘ │
-│                            │                  │                                 │ │
-│  ┌─────────────────────────┼──────────────────┼───────────────────────────────┐ │
+│  ┌─────────────────────────────────────────────────────────────────────────┐│
+│  │                    TestAgentEvaluation (Async)                          ││
+│  │                    pytest.mark.asyncio                                  ││
+│  │                                                                         ││
+│  │  ┌─────────────┐  ┌─────────────┐  ┌─────────────┐  ┌─────────────┐     ││
+│  │  │Simple KB    │  │Ticket       │  │Multi-turn   │  │All Tests    │     ││
+│  │  │Search Test  │  │Creation     │  │Conversation │  │in Directory │     ││
+│  │  │(.test.json) │  │(.test.json) │  │(.evalset.json  │(tests/)     │     ││
+│  │  └─────────────┘  └─────────────┘  └─────────────┘  └─────────────┘     ││
+│  │          │              │                  │                  │         ││
+│  └──────────┼──────────────┼──────────────────┼──────────────────┘         ││
+│             │              │                  │                            ││
+│             └──────────────┼──────────────────┼────────────────────────────┘│
+│                            │                  │                             │
+│  ┌─────────────────────────┼──────────────────┼─────────────────────────────┐ 
+│  │              AgentEvaluator.evaluate()                                   │
+│  │              Real Gemini API Calls                                       │
+│  │              Trajectory + Response Quality                               │
+│  └──────────────────────────────────────────────────────────────────────────┘ 
+│                            │                                                │
+│                            ▼                                                │
+│  ┌─────────────────────────────────────────────────────────────────────────┐│
+│  │                        SUPPORT AGENT                                    ││
+│  │                        (root_agent)                                     ││
+│  │                                                                         ││
+│  │  ┌─────────────┐  ┌─────────────┐  ┌─────────────┐                      ││
+│  │  │Search KB    │  │Create       │  │Check Ticket │                      ││
+│  │  │Tool         │  │Ticket Tool  │  │Status Tool  │                      ││
+│  │  └─────────────┘  └─────────────┘  └─────────────┘                      ││
+│  │          │              │                  │                            ││ 
+│  └──────────┼──────────────┼──────────────────┼────────────────────────────┘│
+│             │              │                  │                            ││
+│             └──────────────┼──────────────────┼────────────────────────────┘│
+│                            │                  │                             │
+│  ┌─────────────────────────┼──────────────────┼───────────────────────────┐ │
 │  │              TestIntegration (Sync)                                    │ │
-│  │              Multi-step workflows                                     │ │
-│  │                                                                         │ │
+│  │              Multi-step workflows                                      │ │
+│  │                                                                        │ │
 │  │  ┌─────────────┐  ┌─────────────┐                                      │ │
-│  │  │KB Completeness│  │Ticket Workflow│                                      │ │
-│  │  │Test          │  │Test          │                                      │ │
+│  │  │KB Completeness │Ticket Workflow                                     │ │
+│  │  │Test            │Test                                                │ │
 │  │  └─────────────┘  └─────────────┘                                      │ │
-│  │                                                                         │ │
+│  │                                                                        │ │
 │  │              TestAgentConfiguration (Sync)                             │ │
-│  │              Agent setup validation                                   │ │
-│  │                                                                         │ │
-│  │  ┌─────────────┐  ┌─────────────┐  ┌─────────────┐  ┌─────────────┐     │ │
-│  │  │Agent Exists │  │Agent Name   │  │Has Tools    │  │Has Model    │     │ │
-│  │  │Test         │  │Test         │  │Test         │  │Test         │     │ │
-│  │  └─────────────┘  └─────────────┘  └─────────────┘  └─────────────┘     │ │
-│  │                                                                         │ │
+│  │              Agent setup validation                                    │ │
+│  │                                                                        │ │
+│  │  ┌─────────────┐  ┌─────────────┐  ┌─────────────┐  ┌─────────────┐    │ │
+│  │  │Agent Exists │  │Agent Name   │  │Has Tools    │  │Has Model    │    │ │
+│  │  │Test         │  │Test         │  │Test         │  │Test         │    │ │
+│  │  └─────────────┘  └─────────────┘  └─────────────┘  └─────────────┘    │ │
+│  │                                                                        │ │
 │  │              TestToolFunctions (Sync)                                  │ │
 │  │              Individual tool validation                                │ │
-│  │                                                                         │ │
-│  │  ┌─────────────┐  ┌─────────────┐  ┌─────────────┐  ┌─────────────┐     │ │
-│  │  │KB Search    │  │Create Ticket│  │Check Status │  │Error Cases  │     │ │
-│  │  │Tests        │  │Tests        │  │Tests        │  │Tests        │     │ │
-│  │  └─────────────┘  └─────────────┘  └─────────────┘  └─────────────┘     │ │
-│  └─────────────────────────────────────────────────────────────────────────┘ │
+│  │                                                                        │ │
+│  │  ┌─────────────┐  ┌─────────────┐  ┌─────────────┐  ┌─────────────┐    │ │
+│  │  │KB Search    │  │Create Ticket│  │Check Status │  │Error Cases  │    │ │
+│  │  │Tests        │  │Tests        │  │Tests        │  │Tests        │    │ │
+│  │  └─────────────┘  └─────────────┘  └─────────────┘  └─────────────┘    │ │
+│  └────────────────────────────────────────────────────────────────────────┘ │
 └─────────────────────────────────────────────────────────────────────────────┘
 ```
 
@@ -1598,15 +1598,18 @@ adk web support_agent
    ```
 
 2. **Save as Eval Case**:
+
    - Name it: "test_password_reset"
    - Expected response: "To reset your password..."
 
 3. **Edit Eval Case**:
+
    - Add tool expectations
    - Set evaluation criteria
    - Save changes
 
 4. **Run Evaluation**:
+
    - Click "Start Evaluation"
    - View Pass/Fail results
 
@@ -1855,28 +1858,28 @@ Evaluates tool usage against custom criteria:
 
 ```text
 ┌─────────────────────────────────────────────────────────────────────────────┐
-│                        AGENT EVALUATION PROCESS                           │
+│                        AGENT EVALUATION PROCESS                             │
 │                                                                             │
-│  ┌─────────────────────────────────────────────────────────────────────────┐ │
+│  ┌────────────────────────────────────────────────────────────────────────┐ │
 │  │                    1. LOAD TEST DATA                                   │ │
-│  │                    EvalSet JSON Files                                 │ │
-│  │                                                                       │ │
+│  │                    EvalSet JSON Files                                  │ │
+│  │                                                                        │ │
 │  │  ┌─────────────────┐  ┌─────────────────┐  ┌─────────────────┐         │ │
-│  │  │simple.test.json│  │ticket_creation.│  │complex.evalset.│         │ │
-│  │  │                 │  │test.json       │  │json            │         │ │
+│  │  │simple.test.json │  │ticket_creation. │  │complex.evalset. │         │ │
+│  │  │                 │  │test.json        │  │json             │         │ │
 │  │  │{ "eval_set_id": │  │{ "eval_set_id": │  │{ "eval_set_id": │         │ │
-│  │  │  "simple_kb_..."│  │  "ticket_..."  │  │  "multi_turn..."│         │ │
+│  │  │  "simple_kb_..."│  │  "ticket_..."   │  │  "multi_turn..."│         │ │
 │  │  │}                │  │}                │  │}                │         │ │
 │  │  └─────────────────┘  └─────────────────┘  └─────────────────┘         │ │
-│  └─────────────────────────────────────────────────────────────────────────┘ │
+│  └────────────────────────────────────────────────────────────────────────┘ │
 │                            │                                                │
 │                            ▼                                                │
-│  ┌─────────────────────────────────────────────────────────────────────────┐ │
-│  │                 2. PARSE EVALUATION CASES                             │ │
-│  │                 Extract Conversations & Expectations                  │ │
-│  │                                                                       │ │
-│  │  Expected: {                                                          │ │
-│  │    "conversation": [                                                  │ │
+│  ┌─────────────────────────────────────────────────────────────────────────┐│ 
+│  │                 2. PARSE EVALUATION CASES                               ││
+│  │                 Extract Conversations & Expectations                    ││
+│  │                                                                         ││
+│  │  Expected: {                                                            ││
+│  │    "conversation": [                                                    ││
 │  │      {                                                                │ │
 │  │        "user_content": {"text": "How do I reset my password?"},       │ │
 │  │        "final_response": {"text": "To reset your password..."},       │ │
@@ -1993,19 +1996,23 @@ Evaluates tool usage against custom criteria:
 ## Key Takeaways
 
 1. **Two Dimensions of Quality**:
+
    - **Trajectory**: Did the agent call the right tools? (removed from our tests due to LLM variability)
    - **Response**: Is the answer good? (primary metric in our implementation)
 
 2. **Two Testing Approaches**:
+
    - **Unit Tests**: Mock data, deterministic, fast (19 tests)
    - **Evaluation Tests**: Real API calls, qualitative assessment (3 tests)
 
 3. **Three Execution Methods**:
+
    - **Pytest**: Automated, CI/CD ready
    - **CLI**: Quick manual testing
    - **Web UI**: Interactive debugging
 
 4. **Flexible Thresholds**:
+
    - Lower thresholds for LLM variability (0.3 vs 0.7)
    - Remove strict metrics that cause false failures
    - Focus on response quality over perfect trajectories
