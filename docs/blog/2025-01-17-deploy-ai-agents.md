@@ -2,7 +2,11 @@
 title: "Deploy Your AI Agent in 5 Minutes (Seriously)"
 description: "The complete guide to choosing and deploying AI agents. Includes decision framework, cost breakdown, and real-world scenarios. Simple enough for startups, powerful enough for enterprises."
 tags: [deployment, adk, cloud-run, agent-engine, production, architecture]
-authors: [team]
+authors:
+  - name: ADK Training Team
+    title: Google ADK Training
+    url: https://github.com/raphaelmansuy/adk_training
+    image_url: https://github.com/raphaelmansuy.png
 date: 2025-01-17
 ---
 
@@ -15,6 +19,8 @@ You just built an amazing AI agent. It works perfectly locally. You've tested it
 You Google it. You find 47 different opinions. Some say "use Kubernetes." Others say "just use serverless." One person mentions "you definitely need a custom FastAPI server." Another says you absolutely don't.
 
 What you need is clarity. Not complexity. That's what this guide gives you.
+
+<!-- truncate -->
 
 ---
 
