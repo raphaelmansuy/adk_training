@@ -1,16 +1,28 @@
 ---
 id: slack_adk_integration
+title: "Tutorial 33: Slack Bot Integration with ADK"
+description: "Build intelligent Slack bots with Google ADK for team support, knowledge base search, and enterprise automation."
+sidebar_label: "33. Slack Bot ADK"
+sidebar_position: 33
+tags: ["ui", "slack", "python", "bot", "messaging"]
+keywords: ["slack", "bolt", "python", "bot", "chat", "team collaboration"]
+status: "updated"
+difficulty: "intermediate-advanced"
+estimated_time: "1.5 hours"
+prerequisites: ["Tutorial 01: Hello World Agent", "Slack workspace admin access", "Python experience"]
+learning_objectives:
+  - "Build intelligent Slack bots with ADK agents"
+  - "Deploy bots in Socket Mode (development) and HTTP Mode (production)"
+  - "Integrate knowledge base search and ticket creation"
+  - "Design rich Slack Block Kit interfaces"
+implementation_link: "https://github.com/raphaelmansuy/adk_training/tree/main/tutorial_implementation/tutorial33"
 ---
 
-# Tutorial 33: Slack Bot Integration with ADK
+:::info VERIFIED WITH LATEST SOURCES
 
-:::danger UNDER CONSTRUCTION
-
-**This tutorial is currently under construction and may contain errors, incomplete information, or outdated code examples.**
-
-Please check back later for the completed version. If you encounter issues, refer to the working implementation in the [tutorial repository](https://github.com/raphaelmansuy/adk_training/tree/main/tutorial_implementation/tutorial33).
-
-:::
+This tutorial has been verified against official Slack Bolt Python SDK
+(v1.26.0 - verified October 2025), Google ADK patterns, and production
+deployment best practices.
 
 **Estimated Reading Time**: 60-70 minutes  
 **Difficulty Level**: Intermediate to Advanced  
