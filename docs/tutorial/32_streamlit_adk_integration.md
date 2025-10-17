@@ -28,7 +28,7 @@ learning_objectives:
   - "Build interactive data analysis dashboards"
   - "Integrate agents with Streamlit widgets"
   - "Deploy Python-based agent applications"
-implementation_link: "https://github.com/raphaelmansuy/adk_training/tree/main/tutorial_implementation/tutorial32"
+implementation_link: "./../../tutorial_implementation/tutorial32"
 ---
 
 :::info VERIFIED WITH LATEST SOURCES
