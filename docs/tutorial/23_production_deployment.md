@@ -1,854 +1,1104 @@
----
-id: production_deployment
-title: "Tutorial 23: Production Deployment - Scalable Agent Systems"
-description: "Deploy agents to production environments using Cloud Run, Kubernetes, and Vertex AI for scalable, reliable agent systems."
-sidebar_label: "23. Production Deployment"
-sidebar_position: 23
-tags: ["advanced", "production", "deployment", "cloud-run", "kubernetes"]
-keywords:
-  [
-    "production deployment",
-    "cloud run",
-    "kubernetes",
-    "vertex ai",
-    "scalability",
-    "reliability",
-  ]
-status: "draft"
-difficulty: "advanced"
-estimated_time: "2.5 hours"
-prerequisites:
-  [
-    "Tutorial 01: Hello World Agent",
-    "Google Cloud Platform account",
-    "Docker knowledge",
-  ]
-learning_objectives:
-  - "Deploy agents to Google Cloud Run"
-  - "Configure production environments"
-  - "Set up monitoring and logging"
-  - "Implement scalability and reliability patterns"
-implementation_link: "https://github.com/raphaelmansuy/adk_training/tree/main/tutorial_implementation/tutorial23"
----
-
-:::danger UNDER CONSTRUCTION
-
-**This tutorial is currently under construction and may contain errors, incomplete information, or outdated code examples.**
-
-Please check back later for the completed version. If you encounter issues, refer to the working implementation in the [tutorial repository](https://github.com/raphaelmansuy/adk_training/tree/main/tutorial_implementation/tutorial23).
-
-## :::
-
 # Tutorial 23: Production Deployment Strategies
 
-**Goal**: Master production deployment patterns including local servers, Cloud Run, Agent Engine, and GKE deployments with best practices for scalability, reliability, and monitoring.
+**Goal**: Understand ADK deployment options and implement production-grade agents with custom authentication, monitoring, and reliability patterns.
 
 **Prerequisites**:
-
 - Tutorial 01 (Hello World Agent)
-- Tutorial 18 (Events & Observability)
-- Tutorial 22 (Model Selection)
-- Basic understanding of Docker and Kubernetes (optional)
+- Google Cloud Platform account
+- Basic Docker knowledge (helpful)
+- Understanding of FastAPI (helpful)
 
 **What You'll Learn**:
+- ✅ Deploy agents using ADK's built-in server (5 minutes)
+- 🏗️ Build production FastAPI servers with custom patterns (when needed)
+- 📊 Implement custom monitoring and observability
+- 🔐 Add authentication and security patterns
+- 📈 Auto-scale across platforms
+- 🛡️ Understand when to use ADK vs custom server
 
-- Local API server with `adk api_server`
-- Cloud Run deployment with `adk deploy cloud_run`
-- Vertex AI Agent Engine deployment
-- Google Kubernetes Engine (GKE) deployment
-- Environment configuration management
-- Scaling and load balancing strategies
-- Monitoring and health checks
-- CI/CD integration patterns
+**Quick Decision Framework**:
+- **5 minutes to production?** → Cloud Run ✅
+- **Need FedRAMP compliance?** → Agent Engine ✅✅
+- **Have Kubernetes?** → GKE ✅
+- **Need custom auth?** → Tutorial 23 + Cloud Run ⚙️
+- **Just testing locally?** → Local Dev ⚡
 
-**Time to Complete**: 60-75 minutes
-
----
-
-## Why Production Deployment Matters
-
-**Problem**: Development agents need robust, scalable deployment infrastructure for production use.
-
-**Solution**: **ADK deployment tools** provide streamlined paths from development to production across multiple platforms.
-
-**Benefits**:
-
-- 🚀 **One-Command Deployment**: Deploy with ADK CLI
-- 📈 **Auto-Scaling**: Handle variable load automatically
-- 🛡️ **Reliability**: Health checks, retries, failover
-- 📊 **Monitoring**: Built-in observability
-- 💰 **Cost Optimization**: Pay for actual usage
-- 🔐 **Security**: Authentication, authorization, encryption
-
-**Deployment Options**:
-
-- **Local Server**: Development and testing
-- **Cloud Run**: Serverless, auto-scaling
-- **Agent Engine**: Managed agent infrastructure (Vertex AI)
-- **GKE**: Full Kubernetes control
-- **Custom**: Your own infrastructure
+**Time to Complete**: 5 minutes (Cloud Run) to 2+ hours (custom patterns)
 
 ---
 
-## 1. Local API Server
+## 🎯 DECISION FRAMEWORK: Choose Your Platform
 
-### Starting Local Server
+### What's Your Situation?
+
+```
+┌──────────────────────────────────────────────────────────────────┐
+│ 1. QUICK MVP / MOVING FAST?                                      │
+├──────────────────────────────────────────────────────────────────┤
+│ Setup: 5 minutes | Cost: ~$40/mo | Security: Auto ✅            │
+│ → Use: CLOUD RUN ✅                                              │
+│ Best for: Startups, MVPs, most production apps                  │
+│ Deploy: adk deploy cloud_run --project ID --region us-central1  │
+└──────────────────────────────────────────────────────────────────┘
+
+┌──────────────────────────────────────────────────────────────────┐
+│ 2. NEED COMPLIANCE (FedRAMP, HIPAA, PCI-DSS)?                    │
+├──────────────────────────────────────────────────────────────────┤
+│ Setup: 10 minutes | Cost: ~$50/mo | Security: Auto ✅✅         │
+│ → Use: AGENT ENGINE ✅✅                                         │
+│ Best for: Enterprise, government, compliance-heavy              │
+│ Why: Only platform with FedRAMP compliance                      │
+│ Deploy: adk deploy agent_engine --project ID --region us-center │
+└──────────────────────────────────────────────────────────────────┘
+
+┌──────────────────────────────────────────────────────────────────┐
+│ 3. HAVE KUBERNETES / NEED FULL CONTROL?                          │
+├──────────────────────────────────────────────────────────────────┤
+│ Setup: 20 minutes | Cost: $200-500/mo | Security: Configure ⚙️  │
+│ → Use: GKE ✅                                                    │
+│ Best for: Complex deployments, existing Kubernetes shops       │
+│ Deploy: kubectl apply -f deployment.yaml                        │
+└──────────────────────────────────────────────────────────────────┘
+
+┌──────────────────────────────────────────────────────────────────┐
+│ 4. NEED CUSTOM AUTH (LDAP, KERBEROS)?                            │
+├──────────────────────────────────────────────────────────────────┤
+│ Setup: 2 hours | Cost: ~$60/mo | Security: Custom + Platform ⚙️ │
+│ → Use: TUTORIAL 23 + CLOUD RUN ⚙️                               │
+│ Best for: Custom authentication requirements                    │
+│ Why: Platform doesn't support these auth methods natively      │
+│ Note: Most users don't need this - use Cloud Run IAM instead   │
+└──────────────────────────────────────────────────────────────────┘
+
+┌──────────────────────────────────────────────────────────────────┐
+│ 5. JUST DEVELOPING LOCALLY?                                      │
+├──────────────────────────────────────────────────────────────────┤
+│ Setup: < 1 min | Cost: Free | Security: Add before deploy ⚡    │
+│ → Use: LOCAL DEV ⚡                                              │
+│ Best for: Development, prototyping, testing                     │
+│ Deploy: adk api_server                                          │
+└──────────────────────────────────────────────────────────────────┘
+```
+
+**→ Pick the box that matches your situation. That's your platform.**
+
+---
+
+## ⚠️ Important: Understanding ADK's Deployment Model
+
+### Key Insight: Security is Platform-First
+
+ADK's built-in server is **intentionally minimal by design**. Here's why:
+
+- ✅ **ADK provides**: Input validation, session management, error handling
+- ✅ **Platform provides**: TLS/HTTPS, DDoS protection, authentication, compliance
+- ✅ **Result**: Secure production deployment with zero custom security code
+
+**See**: [Security Research Summary](https://github.com/raphaelmansuy/adk_training/blob/main/SECURITY_RESEARCH_SUMMARY.md) for complete analysis of what each platform secures automatically.
+
+### Custom Server (Tutorial 23) is ADVANCED & OPTIONAL
+
+**You only need the custom FastAPI server if**:
+- You need custom authentication (LDAP, Kerberos, etc.)
+- You need advanced logging beyond platform defaults
+- You have specific business logic endpoints
+- You're not using Google Cloud infrastructure
+
+**Most production deployments use Cloud Run + ADK's built-in. No custom server needed.**
+
+### Platform Comparison
+
+| Platform | Security | Setup | Cost | Best For | Needs Custom Server? |
+|----------|----------|-------|------|----------|----------------------|
+| **Cloud Run** | Auto ✅ | 5 min | Pay-per-use | Most apps | ❌ No |
+| **Agent Engine** | Auto ✅✅ | 10 min | Pay-per-use | Enterprise | ❌ No |
+| **GKE** | Configure ⚙️ | 20 min | Hourly | Complex | ❌ No |
+| **Custom + Cloud Run** | Hybrid ⚙️ | 2 hrs | Pay-per-use | Special needs | ✅ Yes |
+| **Local Dev** | Minimal | < 1 min | Free | Development | ✅ Yes (add locally) |
+
+**See**: [Complete Security Analysis](https://github.com/raphaelmansuy/adk_training/blob/main/SECURITY_ANALYSIS_ALL_DEPLOYMENT_OPTIONS.md) for detailed security breakdown per platform.
+
+---
+
+## 🔐 Security First: What's Automatic vs Manual
+
+**Important Discovery**: Each platform provides different levels of automatic security.
+
+### Security by Platform (Quick Reference)
+
+| Security Feature | Cloud Run | Agent Engine | GKE | Local |
+|------------------|-----------|--------------|-----|-------|
+| **HTTPS/TLS** | ✅ Auto | ✅ Auto | ✅ Manual | ❌ |
+| **DDoS Protection** | ✅ Auto | ✅ Auto | ❌ | ❌ |
+| **Authentication** | ✅ Auto (IAM) | ✅ Auto (OAuth) | ⚙️ Manual | ❌ |
+| **Encryption at Rest** | ✅ Auto | ✅ Auto | ✅ Manual | ❌ |
+| **Audit Logging** | ✅ Auto | ✅ Auto | ✅ Manual | ❌ |
+| **Compliance Ready** | ✅ HIPAA, PCI | ✅✅ **FedRAMP** | ✅ All | ❌ |
+
+**Key Message**: Cloud Run and Agent Engine give you **production-ready security with zero configuration**. All security is automatic.
+
+### Read the Full Security Analysis
+
+For comprehensive details on what's secure across all platforms:
+
+- 📄 [**SECURITY_RESEARCH_SUMMARY.md**](https://github.com/raphaelmansuy/adk_training/blob/main/SECURITY_RESEARCH_SUMMARY.md) - Executive summary (5 min read)
+  - What ADK provides vs what platforms provide
+  - When you actually need custom authentication
+  - Platform security capabilities comparison
+  - Real-world use case recommendations
+
+- 📋 [**SECURITY_ANALYSIS_ALL_DEPLOYMENT_OPTIONS.md**](https://github.com/raphaelmansuy/adk_training/blob/main/SECURITY_ANALYSIS_ALL_DEPLOYMENT_OPTIONS.md) - Comprehensive (20 min read)
+  - Detailed security breakdown per platform
+  - Compliance certifications
+  - Platform-specific security checklists
+  - Security verification steps
+  - When to use custom server
+
+**Bottom Line**: "ADK's built-in server is secure by design because platform security is the foundation."
+
+---
+
+## Quick Reference: Understanding ADK's Deployment
+
+### What Happens When You Run `adk deploy cloud_run`?
+
+```
+Your Agent Code
+       ↓
+[ADK Generates]
+├── Dockerfile
+├── main.py (using get_fast_api_app() from ADK)
+└── requirements.txt
+       ↓
+[Builds Container]
+       ↓
+[Deploys to Cloud Run]
+       ↓
+✅ Live FastAPI Server
+   (with basic endpoints only)
+```
+
+### What's Inside ADK's Built-In Server?
+
+**Provided by `get_fast_api_app()`:**
+- ✅ `GET /` - API info
+- ✅ `GET /health` - Health check
+- ✅ `GET /agents` - List agents
+- ✅ `POST /invoke` - Run agent
+- ✅ Session management
+
+**NOT Provided:**
+- ❌ Custom authentication
+- ❌ Custom logging
+- ❌ Custom metrics
+- ❌ Rate limiting
+- ❌ Circuit breakers
+
+### When You Need a Custom Server
+
+The custom server in this repository (Tutorial 23) adds:
+- ✅ Custom authentication
+- ✅ Structured logging with request tracing
+- ✅ Health checks with real metrics
+- ✅ Request timeouts and circuit breaking
+- ✅ Custom error handling
+- ✅ Full observability
+
+**See**: `DEPLOYMENT_OPTIONS_EXPLAINED.md` for complete details
+
+**Time to Complete**: 45 minutes
+
+---
+
+## 🌍 Real-World Scenarios: Which Platform for Which Situation?
+
+### Scenario 1: Startup Building MVP
+
+**Your Situation**: Moving fast, limited resources, want to deploy this week.
+
+**What You Need**:
+- Deployment in < 5 minutes
+- Automatic security (don't want to manage this)
+- Pay only for what you use
+- Can iterate quickly
+
+**Recommendation**: ✅ **Cloud Run**
+
+**Why**: 
+- Fastest time to market (5 minutes!)
+- Secure by default (HTTPS, DDoS, IAM)
+- Cost-effective (~$40/mo for 1M requests)
+- No infrastructure to manage
+
+**Deploy**:
+```bash
+adk deploy cloud_run \
+  --project your-project-id \
+  --region us-central1
+```
+
+**Cost**: ~$40/month (1M requests) + $0.30/CPU-month
+
+**Next Step**: As you grow, consider Agent Engine for better compliance.
+
+---
+
+### Scenario 2: Enterprise System (Need Compliance)
+
+**Your Situation**: Building for enterprise customers, need FedRAMP or HIPAA compliance.
+
+**What You Need**:
+- FedRAMP compliance (government-ready)
+- HIPAA/PCI-DSS certifications
+- Zero infrastructure management
+- Immutable audit logs
+- Sandboxed execution
+
+**Recommendation**: ✅✅ **Agent Engine (ONLY PLATFORM WITH FedRAMP)**
+
+**Why**:
+- Only platform with FedRAMP compliance built-in
+- Google manages all security/compliance
+- Zero configuration needed
+- Best for highly regulated industries
+
+**Deploy**:
+```bash
+adk deploy agent_engine \
+  --project your-project-id \
+  --region us-central1 \
+  --agent-name my-agent
+```
+
+**Cost**: ~$50/month (1M requests) + usage
+
+**Benefits**: 
+- FedRAMP compliance
+- SOC 2 Type II certified
+- Automatic audit logging
+- Content safety filters
+- No ops burden
+
+**Next Step**: Already production-ready. Focus on agent safety.
+
+---
+
+### Scenario 3: Kubernetes Shop
+
+**Your Situation**: Your company runs Kubernetes infrastructure, you want ADK in that environment.
+
+**What You Need**:
+- Deploy in existing Kubernetes cluster
+- Full control over configuration
+- NetworkPolicy for traffic control
+- Workload Identity integration
+- Pod resource limits
+
+**Recommendation**: ✅ **GKE (or any Kubernetes)**
+
+**Why**:
+- Leverage existing infrastructure
+- Full control over security config
+- Support for complex networking
+- Advanced observability
+
+**Deploy**:
+```bash
+kubectl apply -f deployment.yaml
+```
+
+**Cost**: $200-500+/month (based on cluster size)
+
+**Requires**: 
+- Kubernetes expertise
+- Manual security configuration
+- Pod security setup
+- RBAC configuration
+
+**Next Step**: Use GKE Autopilot to simplify security.
+
+---
+
+### Scenario 4: Custom Authentication Required
+
+**Your Situation**: You need LDAP, Kerberos, or other custom authentication not available on platforms.
+
+**What You Need**:
+- Custom authentication provider
+- Custom API endpoints
+- Advanced logging
+- Specific business logic
+
+**Recommendation**: ⚙️ **Tutorial 23 Custom Server + Cloud Run**
+
+**Why**:
+- Cloud Run provides platform security
+- Tutorial 23 provides custom authentication
+- Combined = secure + custom
+
+**Deploy**:
+```bash
+# 1. Use custom server from Tutorial 23
+cd tutorial_implementation/tutorial23
+
+# 2. Deploy to Cloud Run
+adk deploy cloud_run \
+  --project your-project-id \
+  --region us-central1
+```
+
+**Cost**: ~$60/month (on Cloud Run) + custom server complexity
+
+**Note**: **MOST USERS DON'T NEED THIS**
+- Use Cloud Run IAM for standard authentication
+- Use Agent Engine OAuth for standards
+- Only use this if platforms don't support your auth method
+
+**Effort**: 2+ hours to implement custom server
+
+---
+
+### Scenario 5: Local Development
+
+**Your Situation**: Building and testing locally before deploying.
+
+**What You Need**:
+- Fast iteration loop
+- Hot reload on code changes
+- Easy testing
+- No infrastructure needed
+
+**Recommendation**: ⚡ **Local Dev (add security before deploy)**
+
+**Why**:
+- Zero setup time
+- Instant feedback
+- Free
+- Perfect for development
+
+**Run Locally**:
+```bash
+# Start dev server
+adk api_server
+
+# Or use custom server
+python -m uvicorn production_agent.server:app --reload
+```
+
+**Before Production**:
+- Add authentication layer
+- Test with HTTPS (use ngrok)
+- Verify security settings
+- Move to Cloud Run
+
+**Cost**: Free (local)
+
+**Next Step**: Deploy to Cloud Run when ready for production.
+
+---
+
+## Path 1: Simple Deployment (Recommended)
+
+### 5-Minute Quick Start with ADK's Built-In Server
+
+**Want to deploy NOW?** Use this command:
 
 ```bash
-# Start local FastAPI server
+# Cloud Run
+adk deploy cloud_run \
+  --project your-project-id \
+  --region us-central1 \
+  ./your_agent_directory
+
+# GKE
+adk deploy gke \
+  --project your-project-id \
+  --cluster_name my-cluster \
+  --region us-central1 \
+  ./your_agent_directory
+
+# Agent Engine
+adk deploy agent_engine \
+  --project your-project-id \
+  --region us-central1 \
+  ./your_agent_directory
+```
+
+✅ **That's it!** Your agent is live in 5 minutes.
+
+**What you get:**
+- Automatic container build
+- FastAPI server with basic endpoints
+- Auto-scaling
+- Public HTTPS URL
+- Session management
+- `/health` endpoint
+- No custom code needed
+
+---
+
+## 🏗️ Advanced: When You Need a Custom FastAPI Server
+
+### ⚠️ Important: Most Users Don't Need This
+
+**First Check**: Do you actually need a custom server?
+
+- ✅ **Use Cloud Run + ADK's built-in** if you need standard authentication (IAM, OAuth)
+- ✅ **Use Agent Engine** if you need compliance/security
+- ✅ **Use GKE** if you need Kubernetes control
+- ⚙️ **Use Custom Server** ONLY if you have special needs below
+
+### When Custom Server is Actually Needed
+
+You need Tutorial 23's custom server IF:
+
+1. **Custom authentication** (LDAP, Kerberos, API keys)
+   - Cloud Run IAM doesn't support it
+   - Agent Engine OAuth doesn't work for you
+   - You have proprietary auth system
+
+2. **Advanced logging/observability** beyond platform defaults
+   - Custom request correlation IDs
+   - Business event tracking
+   - Custom metrics
+
+3. **Additional API endpoints** for business logic
+   - Webhooks
+   - Custom health checks
+   - Integration endpoints
+
+4. **Non-Google infrastructure**
+   - Running on AWS, Azure, on-premises
+   - Portable solution needed
+
+**If none of these apply**: Use Cloud Run or Agent Engine. Much simpler.
+
+### What Tutorial 23 Provides
+
+This tutorial includes a **complete, production-ready implementation**:
+
+```
+tutorial23/
+├── production_agent/
+│   ├── agent.py              # Agent with 3 tools
+│   └── server.py             # FastAPI server (488 lines)
+├── tests/                    # 40 comprehensive tests
+├── Makefile                  # Commands: setup, dev, test, demo
+├── FASTAPI_BEST_PRACTICES.md # 7 core patterns guide
+└── README.md                 # Complete documentation
+```
+
+**Key Features** (If You Need Custom Server):
+- ✅ Custom authentication with API keys
+- ✅ Structured logging with request tracing
+- ✅ Health checks with real metrics
+- ✅ Error handling and validation
+- ✅ Request timeouts and circuit breaking
+- ✅ 40 passing tests (93% coverage)
+- ✅ Production-ready patterns
+
+📖 **Full Implementation**: [View on GitHub →](https://github.com/raphaelmansuy/adk_training/tree/main/tutorial_implementation/tutorial23)
+
+**Security Note**: Tutorial 23 is ADVANCED pattern. It adds application-layer features but depends on platform-layer security from Cloud Run or your infrastructure.
+
+---
+
+## Quick Start (5 minutes)
+
+```bash
+cd tutorial_implementation/tutorial23
+
+# Setup
+make setup
+
+# Run development server
+export GOOGLE_API_KEY=your_key
+make dev
+
+# Run tests
+make test
+
+# See demos
+make demo-info
+```
+
+**Open** `http://localhost:8000` and select `production_deployment_agent` from dropdown.
+
+---
+
+## Deployment Strategies
+
+ADK supports multiple deployment paths. Choose based on your needs:
+
+### Comparison Matrix
+
+| Strategy | Setup Time | Scaling | Cost | Best For |
+|----------|-----------|---------|------|----------|
+| **Local** | < 1 min | Manual | Free | Development |
+| **Cloud Run** | 5 mins | Auto | Pay-per-use | Most apps |
+| **Agent Engine** | 10 mins | Auto | Pay-per-use | Enterprise |
+| **GKE** | 20 mins | Manual | Hourly | Complex |
+
+---
+
+## 1. Local Development
+
+**Perfect for**: Quick testing and iteration
+
+```bash
+# Start FastAPI server
 adk api_server
 
 # Custom port
 adk api_server --port 8090
-
-# Custom host
-adk api_server --host 0.0.0.0 --port 8080
-
-# With specific agent file
-adk api_server --agent agent.py
 ```
 
-### Server Features
-
-- **FastAPI** backend
-- **Automatic API docs** at `/docs`
-- **Health check** endpoint at `/health`
-- **Agent invocation** endpoint at `/invoke`
-- **CORS** enabled for web clients
-- **Hot reload** in development mode
-
-### Testing Local Server
-
+Test it:
 ```bash
-# Health check
 curl http://localhost:8080/health
-
-# Invoke agent
 curl -X POST http://localhost:8080/invoke \
   -H "Content-Type: application/json" \
-  -d '{"query": "Hello, world!"}'
+  -d '{"query": "Hello!"}'
 ```
 
-### Custom Server Implementation
+**Features**:
+- 🔄 Hot reload during development
+- 📖 Auto-generated API docs at `/docs`
+- ⚡ Instant feedback loop
 
-```python
-"""
-Custom FastAPI server with ADK agent.
-"""
-
-from fastapi import FastAPI, HTTPException
-from pydantic import BaseModel
-from google.adk.agents import Agent, Runner
-from google.genai import types
-import os
-
-# Environment setup
-os.environ['GOOGLE_GENAI_USE_VERTEXAI'] = '1'
-os.environ['GOOGLE_CLOUD_PROJECT'] = 'your-project-id'
-os.environ['GOOGLE_CLOUD_LOCATION'] = 'us-central1'
-
-app = FastAPI(title="ADK Agent API", version="1.0")
-
-# Create agent
-agent = Agent(
-    model='gemini-2.0-flash',
-    name='api_agent',
-    instruction="You are a helpful API assistant."
-)
-
-runner = Runner()
-
-
-class QueryRequest(BaseModel):
-    """Request model for agent invocation."""
-    query: str
-    temperature: float = 0.7
-    max_tokens: int = 1024
-
-
-class QueryResponse(BaseModel):
-    """Response model for agent invocation."""
-    response: str
-    model: str
-    tokens: int
-
-
-@app.get("/health")
-async def health_check():
-    """Health check endpoint."""
-    return {"status": "healthy", "service": "adk-agent-api"}
-
-
-@app.post("/invoke", response_model=QueryResponse)
-async def invoke_agent(request: QueryRequest):
-    """
-    Invoke agent with query.
-
-    Args:
-        request: Query and configuration
-
-    Returns:
-        Agent response
-    """
-
-    try:
-        # Update agent config if needed
-        agent.generate_content_config = types.GenerateContentConfig(
-            temperature=request.temperature,
-            max_output_tokens=request.max_tokens
-        )
-
-        # Run agent
-        result = await runner.run_async(request.query, agent=agent)
-
-        # Extract response
-        response_text = result.content.parts[0].text
-
-        # Estimate tokens
-        token_count = len(response_text.split())
-
-        return QueryResponse(
-            response=response_text,
-            model=agent.model,
-            tokens=token_count
-        )
-
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
-
-
-@app.get("/")
-async def root():
-    """Root endpoint."""
-    return {
-        "message": "ADK Agent API",
-        "endpoints": {
-            "health": "/health",
-            "invoke": "/invoke (POST)",
-            "docs": "/docs"
-        }
-    }
-
-
-if __name__ == "__main__":
-    import uvicorn
-    uvicorn.run(app, host="0.0.0.0", port=8080)
-```
+See [tutorial implementation](https://github.com/raphaelmansuy/adk_training/tree/main/tutorial_implementation/tutorial23) for custom server code.
 
 ---
 
-## 2. Cloud Run Deployment
+## 2. Cloud Run (Recommended for Most Apps)
 
-### Automated Cloud Run Deployment
+**Perfect for**: Serverless auto-scaling with minimal ops
 
 ```bash
-# Deploy to Cloud Run (one command)
+# Deploy in one command
 adk deploy cloud_run \
   --project your-project-id \
   --region us-central1 \
-  --service-name my-agent-service
-
-# Deploy with custom configuration
-adk deploy cloud_run \
-  --project your-project-id \
-  --region us-central1 \
-  --service-name my-agent-service \
-  --memory 2Gi \
-  --cpu 2 \
-  --max-instances 100 \
-  --min-instances 1
+  --service-name my-agent
 ```
 
-### Manual Cloud Run Deployment
+That's it! ADK handles:
+- ✅ Building container image
+- ✅ Pushing to Container Registry
+- ✅ Deploying to Cloud Run
+- ✅ Setting up auto-scaling
 
-**Step 1: Create Dockerfile**
-
-```dockerfile
-# Dockerfile
-
-FROM python:3.11-slim
-
-WORKDIR /app
-
-# Install dependencies
-COPY requirements.txt .
-RUN pip install --no-cache-dir -r requirements.txt
-
-# Copy agent code
-COPY . .
-
-# Expose port
-EXPOSE 8080
-
-# Set environment variables
-ENV PORT=8080
-ENV PYTHONUNBUFFERED=1
-
-# Start server
-CMD ["uvicorn", "server:app", "--host", "0.0.0.0", "--port", "8080"]
-```
-
-**Step 2: Create requirements.txt**
-
-```
-google-adk>=0.5.0
-fastapi>=0.104.0
-uvicorn[standard]>=0.24.0
-google-cloud-aiplatform>=1.38.0
-```
-
-**Step 3: Build and Deploy**
-
+**Manual Alternative**:
 ```bash
-# Build container
-gcloud builds submit --tag gcr.io/your-project-id/agent-service
+# 1. Build
+gcloud builds submit --tag gcr.io/YOUR_PROJECT/agent
 
-# Deploy to Cloud Run
-gcloud run deploy agent-service \
-  --image gcr.io/your-project-id/agent-service \
+# 2. Deploy
+gcloud run deploy agent \
+  --image gcr.io/YOUR_PROJECT/agent \
   --platform managed \
   --region us-central1 \
-  --allow-unauthenticated \
   --memory 2Gi \
-  --cpu 2 \
-  --max-instances 100 \
-  --min-instances 1 \
-  --set-env-vars "GOOGLE_CLOUD_PROJECT=your-project-id,GOOGLE_CLOUD_LOCATION=us-central1"
+  --max-instances 100
 ```
 
-### Cloud Run Configuration
-
-```yaml
-# service.yaml (Cloud Run configuration)
-
-apiVersion: serving.knative.dev/v1
-kind: Service
-metadata:
-  name: agent-service
-  namespace: "your-project-id"
-spec:
-  template:
-    metadata:
-      annotations:
-        autoscaling.knative.dev/minScale: "1"
-        autoscaling.knative.dev/maxScale: "100"
-        run.googleapis.com/cpu-throttling: "false"
-    spec:
-      containerConcurrency: 80
-      timeoutSeconds: 300
-      containers:
-        - image: gcr.io/your-project-id/agent-service
-          ports:
-            - containerPort: 8080
-          env:
-            - name: GOOGLE_CLOUD_PROJECT
-              value: "your-project-id"
-            - name: GOOGLE_CLOUD_LOCATION
-              value: "us-central1"
-            - name: GOOGLE_GENAI_USE_VERTEXAI
-              value: "1"
-          resources:
-            limits:
-              memory: 2Gi
-              cpu: "2"
-```
+**Cost**: ~$0.40 per million requests + compute
 
 ---
 
-## 3. Vertex AI Agent Engine Deployment
+## 3. Vertex AI Agent Engine
 
-### Agent Engine Overview
+**Perfect for**: Managed agent infrastructure with built-in versioning
 
-**Agent Engine** is a fully managed service for deploying and scaling agents on Vertex AI.
+```bash
+# Deploy to managed service
+adk deploy agent_engine \
+  --project your-project-id \
+  --region us-central1 \
+  --agent-name my-agent
+```
 
 **Benefits**:
+- 📦 Managed infrastructure
+- 🎯 Version control
+- 🔄 A/B testing
+- 📊 Built-in monitoring
+- 🔐 Enterprise security
 
-- Managed infrastructure
-- Built-in scaling
-- Integrated monitoring
-- Version management
-- A/B testing support
+---
 
-### Deploy to Agent Engine
+## 4. Google Kubernetes Engine (GKE)
+
+**Perfect for**: Complex deployments needing full control
 
 ```bash
-# Deploy agent to Agent Engine
-adk deploy agent_engine \
-  --project your-project-id \
-  --region us-central1 \
-  --agent-name my-production-agent
-
-# Deploy with specific configuration
-adk deploy agent_engine \
-  --project your-project-id \
-  --region us-central1 \
-  --agent-name my-production-agent \
-  --model gemini-2.0-flash \
-  --max-instances 50
-```
-
-### Agent Engine Configuration
-
-```python
-"""
-Configure agent for Agent Engine deployment.
-"""
-
-from google.cloud import aiplatform
-from google.adk.agents import Agent
-from google.genai import types
-
-# Initialize Vertex AI
-aiplatform.init(
-    project='your-project-id',
-    location='us-central1'
-)
-
-# Create agent for deployment
-agent = Agent(
-    model='gemini-2.0-flash',
-    name='production_agent',
-    instruction="""
-You are a production assistant helping customers with inquiries.
-    """.strip(),
-    generate_content_config=types.GenerateContentConfig(
-        temperature=0.5,
-        max_output_tokens=2048
-    )
-)
-
-# Deploy to Agent Engine
-# (ADK handles deployment details)
-```
-
----
-
-## 4. Google Kubernetes Engine (GKE) Deployment
-
-### Kubernetes Deployment
-
-**Step 1: Create Kubernetes manifests**
-
-```yaml
-# deployment.yaml
-
-apiVersion: apps/v1
-kind: Deployment
-metadata:
-  name: agent-service
-  labels:
-    app: agent-service
-spec:
-  replicas: 3
-  selector:
-    matchLabels:
-      app: agent-service
-  template:
-    metadata:
-      labels:
-        app: agent-service
-    spec:
-      containers:
-        - name: agent-service
-          image: gcr.io/your-project-id/agent-service:latest
-          ports:
-            - containerPort: 8080
-          env:
-            - name: GOOGLE_CLOUD_PROJECT
-              value: "your-project-id"
-            - name: GOOGLE_CLOUD_LOCATION
-              value: "us-central1"
-            - name: GOOGLE_GENAI_USE_VERTEXAI
-              value: "1"
-          resources:
-            requests:
-              memory: "1Gi"
-              cpu: "500m"
-            limits:
-              memory: "2Gi"
-              cpu: "1"
-          livenessProbe:
-            httpGet:
-              path: /health
-              port: 8080
-            initialDelaySeconds: 30
-            periodSeconds: 10
-          readinessProbe:
-            httpGet:
-              path: /health
-              port: 8080
-            initialDelaySeconds: 5
-            periodSeconds: 5
----
-apiVersion: v1
-kind: Service
-metadata:
-  name: agent-service
-spec:
-  type: LoadBalancer
-  selector:
-    app: agent-service
-  ports:
-    - protocol: TCP
-      port: 80
-      targetPort: 8080
----
-apiVersion: autoscaling/v2
-kind: HorizontalPodAutoscaler
-metadata:
-  name: agent-service-hpa
-spec:
-  scaleTargetRef:
-    apiVersion: apps/v1
-    kind: Deployment
-    name: agent-service
-  minReplicas: 3
-  maxReplicas: 100
-  metrics:
-    - type: Resource
-      resource:
-        name: cpu
-        target:
-          type: Utilization
-          averageUtilization: 70
-    - type: Resource
-      resource:
-        name: memory
-        target:
-          type: Utilization
-          averageUtilization: 80
-```
-
-**Step 2: Deploy to GKE**
-
-```bash
-# Create GKE cluster
+# Create cluster
 gcloud container clusters create agent-cluster \
   --region us-central1 \
   --machine-type n1-standard-2 \
-  --num-nodes 3 \
-  --enable-autoscaling \
-  --min-nodes 3 \
-  --max-nodes 10
+  --num-nodes 3
 
 # Get credentials
 gcloud container clusters get-credentials agent-cluster \
   --region us-central1
 
-# Deploy application
+# Deploy
 kubectl apply -f deployment.yaml
+```
 
-# Check status
-kubectl get pods
-kubectl get services
-kubectl get hpa
+**When to use GKE**:
+- Need advanced networking
+- Running multiple services
+- Existing Kubernetes expertise
+- Custom orchestration requirements
 
-# View logs
-kubectl logs -l app=agent-service --follow
+See tutorial implementation for full Kubernetes manifests.
+
+---
+
+## Deployment Flow Diagram
+
+```
+YOUR AGENT CODE
+       |
+       v
++-------------------+
+| adk deploy XXXX   |
++-------------------+
+       |
+       +-------+-------+-------+-------+
+       |       |       |       |       |
+       v       v       v       v       v
+     LOCAL  CLOUD-RUN  AGENT-ENG  GKE  CUSTOM
+       |       |         |        |      |
+       v       v         v        v      v
+  localhost  serverless  managed  k8s  your-infra
 ```
 
 ---
 
-## 5. Environment Configuration
+## Production Setup
 
-### Environment Variables
+### Environment Configuration
+
+Create `.env` file (never commit!):
 
 ```bash
-# .env file (DO NOT COMMIT)
-
-# Google Cloud Configuration
+# Google Cloud
 GOOGLE_CLOUD_PROJECT=your-project-id
 GOOGLE_CLOUD_LOCATION=us-central1
 GOOGLE_GENAI_USE_VERTEXAI=1
 
-# Application Configuration
+# Application
 MODEL=gemini-2.0-flash
 TEMPERATURE=0.5
 MAX_TOKENS=2048
 
-# Monitoring
-ENABLE_TRACING=true
-LOG_LEVEL=INFO
-
 # Security
-API_KEY=your-secret-api-key
-ALLOWED_ORIGINS=https://yourdomain.com,https://app.yourdomain.com
+API_KEY=your-secret-key
+ALLOWED_ORIGINS=https://yourdomain.com
+
+# Monitoring
+LOG_LEVEL=INFO
+ENABLE_TRACING=true
 ```
 
-### Configuration Management
+### Health Checks
 
-```python
-"""
-Configuration management with environment variables.
-"""
+All deployments should expose `/health` endpoint:
 
-import os
-from dataclasses import dataclass
-from typing import Optional
+```json
+GET /health
 
-
-@dataclass
-class Config:
-    """Application configuration."""
-
-    # Google Cloud
-    project_id: str
-    location: str
-    use_vertexai: bool
-
-    # Model
-    model: str
-    temperature: float
-    max_tokens: int
-
-    # Monitoring
-    enable_tracing: bool
-    log_level: str
-
-    # Security
-    api_key: Optional[str]
-    allowed_origins: list[str]
-
-    @classmethod
-    def from_env(cls) -> 'Config':
-        """Load configuration from environment variables."""
-
-        return cls(
-            project_id=os.environ['GOOGLE_CLOUD_PROJECT'],
-            location=os.environ.get('GOOGLE_CLOUD_LOCATION', 'us-central1'),
-            use_vertexai=os.environ.get('GOOGLE_GENAI_USE_VERTEXAI', '1') == '1',
-
-            model=os.environ.get('MODEL', 'gemini-2.0-flash'),
-            temperature=float(os.environ.get('TEMPERATURE', '0.5')),
-            max_tokens=int(os.environ.get('MAX_TOKENS', '2048')),
-
-            enable_tracing=os.environ.get('ENABLE_TRACING', 'false').lower() == 'true',
-            log_level=os.environ.get('LOG_LEVEL', 'INFO'),
-
-            api_key=os.environ.get('API_KEY'),
-            allowed_origins=os.environ.get('ALLOWED_ORIGINS', '').split(',')
-        )
-
-
-# Usage
-config = Config.from_env()
-
-agent = Agent(
-    model=config.model,
-    generate_content_config=types.GenerateContentConfig(
-        temperature=config.temperature,
-        max_output_tokens=config.max_tokens
-    )
-)
+{
+  "status": "healthy",
+  "uptime_seconds": 3600,
+  "request_count": 1250,
+  "error_count": 3,
+  "error_rate": 0.0024,
+  "metrics": {
+    "successful_requests": 1247,
+    "timeout_count": 0
+  }
+}
 ```
 
----
+**Configure in orchestrator**:
+- **Cloud Run**: Automatically detected
+- **GKE**: Set as liveness probe
+- **Agent Engine**: Built-in
 
-## 6. Monitoring and Health Checks
+### Secrets Management
 
-### Health Check Implementation
-
-```python
-from fastapi import FastAPI
-from datetime import datetime
-
-app = FastAPI()
-
-# Track service metrics
-service_start_time = datetime.now()
-request_count = 0
-error_count = 0
-
-
-@app.get("/health")
-async def health_check():
-    """Comprehensive health check."""
-
-    uptime = (datetime.now() - service_start_time).total_seconds()
-
-    # Check critical dependencies
-    vertex_ai_healthy = check_vertex_ai_connection()
-
-    health_status = {
-        "status": "healthy" if vertex_ai_healthy else "degraded",
-        "uptime_seconds": uptime,
-        "request_count": request_count,
-        "error_count": error_count,
-        "error_rate": error_count / request_count if request_count > 0 else 0,
-        "dependencies": {
-            "vertex_ai": "healthy" if vertex_ai_healthy else "unhealthy"
-        }
-    }
-
-    return health_status
-
-
-def check_vertex_ai_connection() -> bool:
-    """Check Vertex AI connectivity."""
-    try:
-        # Attempt simple API call
-        # aiplatform.gapic.ModelServiceClient()
-        return True
-    except Exception:
-        return False
-
-
-@app.middleware("http")
-async def track_requests(request, call_next):
-    """Middleware to track requests."""
-    global request_count, error_count
-
-    request_count += 1
-
-    response = await call_next(request)
-
-    if response.status_code >= 400:
-        error_count += 1
-
-    return response
-```
-
----
-
-## 7. Best Practices
-
-### ✅ DO: Use Secrets Manager
+**Never** commit API keys to code. Use Google Secret Manager:
 
 ```python
 from google.cloud import secretmanager
 
 def get_secret(secret_id: str) -> str:
-    """Retrieve secret from Secret Manager."""
-
     client = secretmanager.SecretManagerServiceClient()
-
-    project_id = os.environ['GOOGLE_CLOUD_PROJECT']
-    name = f"projects/{project_id}/secrets/{secret_id}/versions/latest"
-
+    project = os.environ['GOOGLE_CLOUD_PROJECT']
+    name = f"projects/{project}/secrets/{secret_id}/versions/latest"
     response = client.access_secret_version(request={"name": name})
-
     return response.payload.data.decode('UTF-8')
 
-
-# Use secret
+# Usage
 api_key = get_secret('api-key')
 ```
 
-### ✅ DO: Implement Rate Limiting
+---
 
-```python
-from fastapi import Request, HTTPException
-from fastapi.responses import JSONResponse
-import time
+## Monitoring & Observability
 
-# Simple rate limiter
-rate_limit_store = {}
+### Key Metrics to Track
 
-@app.middleware("http")
-async def rate_limit(request: Request, call_next):
-    """Rate limiting middleware."""
+| Metric | Target | Alert Threshold |
+|--------|--------|-----------------|
+| Error Rate | < 0.5% | > 5% |
+| P99 Latency | < 2 sec | > 5 sec |
+| Availability | > 99.9% | < 99% |
+| Request Count | Track | N/A |
 
-    client_ip = request.client.host
-    current_time = time.time()
+### Structured Logging
 
-    if client_ip in rate_limit_store:
-        last_request, count = rate_limit_store[client_ip]
+All production servers should log JSON to stdout:
 
-        # Reset if more than 60 seconds
-        if current_time - last_request > 60:
-            rate_limit_store[client_ip] = (current_time, 1)
-        else:
-            # Check rate limit (100 requests per minute)
-            if count >= 100:
-                return JSONResponse(
-                    status_code=429,
-                    content={"error": "Rate limit exceeded"}
-                )
-
-            rate_limit_store[client_ip] = (last_request, count + 1)
-    else:
-        rate_limit_store[client_ip] = (current_time, 1)
-
-    response = await call_next(request)
-    return response
+```json
+{
+  "timestamp": "2025-01-17T10:30:45Z",
+  "severity": "INFO",
+  "message": "invoke_agent.success",
+  "request_id": "550e8400-e29b",
+  "tokens": 245,
+  "latency_ms": 1230
+}
 ```
 
-### ✅ DO: Enable Structured Logging
+Cloud Logging automatically parses and indexes these fields.
 
-```python
-import logging
-import json
+---
 
-class JSONFormatter(logging.Formatter):
-    """JSON log formatter for Cloud Logging."""
+## 💰 Cost Breakdown: Choose Based on Budget
 
-    def format(self, record):
-        log_obj = {
-            "timestamp": self.formatTime(record),
-            "severity": record.levelname,
-            "message": record.getMessage(),
-            "logger": record.name,
-            "function": record.funcName,
-            "line": record.lineno
-        }
+### Monthly Cost Estimates (at 1M requests/month)
 
-        if record.exc_info:
-            log_obj["exception"] = self.formatException(record.exc_info)
+| Platform | Base | Per-Request | Setup | Monthly Total | Best For |
+|----------|------|-------------|-------|---------------|----------|
+| **Cloud Run** | $0 | ~$0.40 | 5 min | ~$40 | Most apps |
+| **Agent Engine** | $0 | ~$0.50 | 10 min | ~$50 | Enterprise |
+| **GKE** | $50+ | Varies | 20 min | $200-500+ | Complex |
+| **Custom + Cloud Run** | $0 | ~$0.40 | 2 hrs | ~$60 | Special needs |
+| **Local Dev** | $0 | $0 | < 1 min | $0 | Development |
 
-        return json.dumps(log_obj)
+**Notes**:
+- Costs based on US pricing (may vary by region)
+- Includes compute + storage estimates
+- Actual costs depend on model, memory, CPU usage
+- Agent Engine includes managed infrastructure overhead
+- GKE includes cluster base cost + node costs
 
+**ROI Analysis**:
+- **Startup**: Start with Cloud Run ($40/mo), move to Agent Engine ($50/mo) if compliance needed
+- **Enterprise**: Start with Agent Engine ($50/mo), includes compliance
+- **Existing K8s**: Use GKE ($200+/mo), leverages existing infrastructure
 
-# Configure logging
-logger = logging.getLogger("agent-service")
-handler = logging.StreamHandler()
-handler.setFormatter(JSONFormatter())
-logger.addHandler(handler)
-logger.setLevel(logging.INFO)
+---
 
+## ✅ Deployment Verification: How to Verify It Works
 
-# Usage
-logger.info("Agent invoked", extra={"query_id": "123", "user_id": "user-456"})
+### After Deploying to Cloud Run
+
+```bash
+# 1. Get your service URL
+SERVICE_URL=$(gcloud run services describe my-agent \
+  --region us-central1 \
+  --format 'value(status.url)')
+
+# 2. Test health endpoint
+curl $SERVICE_URL/health
+
+# 3. Test agent invocation
+curl -X POST $SERVICE_URL/invoke \
+  -H "Content-Type: application/json" \
+  -d '{"query": "Hello agent!", "temperature": 0.5}'
+
+# 4. Check metrics
+curl $SERVICE_URL/health | jq '.metrics'
+```
+
+### After Deploying to Agent Engine
+
+```bash
+# Agent Engine dashboard: https://console.cloud.google.com/vertex-ai/
+# Check:
+# - ✅ Agent deployed
+# - ✅ Endpoints responding
+# - ✅ Invocation successful
+# - ✅ Audit logs appearing
+```
+
+### Security Verification Checklist
+
+- [ ] HTTPS/TLS working (curl shows https://)
+- [ ] Authentication enabled (get 401 on unauthenticated call)
+- [ ] CORS configured (check headers)
+- [ ] Health check responding (GET /health)
+- [ ] Logging to Cloud Logging (check console)
+- [ ] No API keys in logs (verify secrets not exposed)
+- [ ] Request timeouts working (test long-running query)
+- [ ] Error handling working (test invalid input)
+
+**See**: [DEPLOYMENT_CHECKLIST.md](https://github.com/raphaelmansuy/adk_training/blob/main/tutorial_implementation/tutorial23/DEPLOYMENT_CHECKLIST.md) for complete verification steps.
+
+---
+
+## ✨ Best Practices for Production Deployment
+
+### 🔐 Security (Platform Provides Most of This Automatically)
+
+**What Cloud Run/Agent Engine Provides Automatically**:
+- ✅ HTTPS/TLS encryption (handled by platform)
+- ✅ DDoS protection (included)
+- ✅ Encryption at rest (Google-managed)
+- ✅ Non-root container execution (enforced)
+- ✅ Binary vulnerability scanning (included)
+
+**What You Must Configure**:
+- [ ] Use Secret Manager for API keys (never hardcode)
+- [ ] Enable authentication in Cloud Run console
+- [ ] Configure CORS with specific origins (never use wildcard `*`)
+- [ ] Set resource limits (memory, CPU)
+- [ ] Store secrets in Secret Manager (not .env)
+- [ ] Monitor error rates and latency
+
+**For Custom Server**:
+- [ ] Implement request authentication (see Tutorial 23 examples)
+- [ ] Use Bearer token validation
+- [ ] Implement timeout protection
+- [ ] Validate input sizes
+- [ ] Handle errors securely (don't expose internals)
+
+### 📊 Observability
+
+- [ ] Export logs to Cloud Logging
+- [ ] Set up error tracking with Error Reporting
+- [ ] Monitor metrics with Cloud Monitoring
+- [ ] Use request IDs for tracing
+- [ ] Log important business events
+
+### ⚡ Reliability
+
+- [ ] Set request timeouts (30s recommended)
+- [ ] Implement health checks
+- [ ] Configure auto-scaling appropriately
+- [ ] Use load balancing
+- [ ] Plan for disaster recovery
+
+### 📈 Performance
+
+- [ ] Use connection pooling
+- [ ] Stream responses when possible
+- [ ] Cache agent configuration
+- [ ] Monitor memory usage
+- [ ] Use multiple workers
+
+---
+
+## FastAPI Best Practices
+
+This implementation demonstrates **7 core production patterns**:
+
+1. **Configuration Management** - Environment-based settings
+2. **Authentication & Security** - Bearer token validation
+3. **Health Checks** - Real metrics-based status
+4. **Request Lifecycle** - Timeout protection
+5. **Error Handling** - Typed exceptions
+6. **Logging & Observability** - Request tracing
+7. **Metrics & Monitoring** - Observable systems
+
+📖 **Full Guide**: [FastAPI Best Practices for ADK Agents →](https://github.com/raphaelmansuy/adk_training/blob/main/tutorial_implementation/tutorial23/FASTAPI_BEST_PRACTICES.md)
+
+This guide includes:
+- ✅ Code examples for each pattern
+- ✅ ASCII diagrams showing flows
+- ✅ Production checklist
+- ✅ Common pitfalls (❌ Don't / ✅ Do)
+- ✅ Deployment examples
+
+---
+
+## Common Patterns
+
+### Pattern: Gradual Rollout
+
+```
+Deploy to Cloud Run
+       |
+       v
+Traffic: 5% (canary)
+       |
+       v
+Monitor for 1 hour
+       |
+       +------ Error Rate High? -----> ROLLBACK
+       |
+       +------ Healthy? -------> 25% traffic
+                                  |
+                                  v
+                               Monitor
+                                  |
+                                  +---> 100% traffic
+```
+
+### Pattern: Zero-Downtime Deployment
+
+**Blue-Green Deployment**:
+```
+CURRENT (Blue)          NEW (Green)
+   |                        |
+   +----> BOTH ACTIVE <-----+
+   |           |            |
+   +--- LB routes traffic ---+
+   |                        |
+   +-- Health checks OK? ---|
+           |                |
+         YES                NO
+           |                |
+           v                v
+        Blue OFF       Rollback (Blue ON)
+        Green ON           Green OFF
+```
+
+---
+
+## Troubleshooting
+
+### Agent Not Found in Dropdown
+
+**Problem**: `adk web agent_name` fails
+
+**Solution**: Install as package first
+```bash
+pip install -e .
+adk web  # Then select from dropdown
+```
+
+### `GOOGLE_API_KEY Not Set`
+
+```bash
+export GOOGLE_API_KEY=your_key
+# Or in Cloud Run: Set env var in Cloud Console
+```
+
+### High Latency
+
+Check:
+1. Request timeout setting
+2. Agent complexity (use streaming)
+3. Resource limits (increase CPU)
+4. Model selection (try `gemini-2.0-flash`)
+
+### Memory Issues
+
+- Reduce max_tokens
+- Enable request streaming
+- Use connection pooling
+- Monitor with Cloud Profiler
+
+---
+
+## Quick Reference
+
+### CLI Commands
+
+```bash
+# Local
+adk api_server --port 8080
+
+# Deploy
+adk deploy cloud_run --project PROJECT --region REGION
+adk deploy agent_engine --project PROJECT --region REGION
+adk deploy gke
+
+# List deployments
+adk list deployments
+```
+
+### Environment Variables
+
+```
+GOOGLE_CLOUD_PROJECT       # GCP project ID
+GOOGLE_CLOUD_LOCATION      # Region (us-central1)
+GOOGLE_GENAI_USE_VERTEXAI  # Use Vertex AI (1 or 0)
+MODEL                      # Model name
+API_KEY                    # Secret key for auth
+REQUEST_TIMEOUT            # Timeout in seconds
+```
+
+### Endpoints
+
+```
+GET  /                  # API info
+GET  /health            # Health check + metrics
+POST /invoke            # Agent invocation
+GET  /docs              # OpenAPI docs
 ```
 
 ---
 
 ## Summary
 
-You've mastered production deployment:
+**You now know**:
+- ✅ Deploy locally for development
+- ✅ Deploy to Cloud Run for most production apps
+- ✅ Use Agent Engine for managed infrastructure
+- ✅ Use GKE for complex deployments
+- ✅ Configure and secure production systems
+- ✅ Monitor and observe agent systems
+- ✅ Implement reliability patterns
 
-**Key Takeaways**:
-
-- ✅ `adk api_server` for local development
-- ✅ `adk deploy cloud_run` for serverless deployment
-- ✅ `adk deploy agent_engine` for managed agents
-- ✅ GKE for full Kubernetes control
-- ✅ Environment configuration management
-- ✅ Health checks and monitoring
-- ✅ Secrets management and rate limiting
-
-**Production Checklist**:
-
-- [ ] Deployment strategy selected
+**Deployment Checklist**:
 - [ ] Environment variables configured
-- [ ] Secrets stored in Secret Manager
-- [ ] Health checks implemented
-- [ ] Monitoring and logging configured
-- [ ] Rate limiting enabled
+- [ ] Secrets in Secret Manager
+- [ ] Health checks working
+- [ ] Monitoring/logging setup
 - [ ] Auto-scaling configured
-- [ ] CI/CD pipeline setup
-- [ ] Disaster recovery plan documented
+- [ ] CORS properly configured
+- [ ] Rate limiting enabled
+- [ ] Error handling tested
+- [ ] Disaster recovery planned
 
 **Next Steps**:
 
-- **Tutorial 24**: Master Advanced Observability
-- **Tutorial 25**: Explore Best Practices & Patterns
-
-**Resources**:
-
-- [Cloud Run Documentation](https://cloud.google.com/run/docs)
-- [Agent Engine Documentation](https://cloud.google.com/vertex-ai/docs/agent-builder)
-- [GKE Documentation](https://cloud.google.com/kubernetes-engine/docs)
+- **Tutorial 24**: [Advanced Observability](./24_advanced_observability.md) - Deep observability patterns
+- **Tutorial 25**: [Best Practices & Patterns](./25_best_practices.md) - Production patterns
+- 🚀 Deploy your own agent to production!
 
 ---
 
-**🎉 Tutorial 23 Complete!** You now know how to deploy agents to production. Continue to Tutorial 24 to learn about advanced observability patterns.
+## Supporting Resources
+
+### Comprehensive Guides
+
+- 🔐 [Security Verification Guide →](https://github.com/raphaelmansuy/adk_training/blob/main/tutorial_implementation/tutorial23/SECURITY_VERIFICATION.md) - Step-by-step verification for each platform
+- 🚀 [Migration Guide →](https://github.com/raphaelmansuy/adk_training/blob/main/tutorial_implementation/tutorial23/MIGRATION_GUIDE.md) - Safe migration between all platforms
+- 💰 [Cost Breakdown Analysis →](https://github.com/raphaelmansuy/adk_training/blob/main/tutorial_implementation/tutorial23/COST_BREAKDOWN.md) - Detailed pricing for budget planning
+- ✅ [Deployment Checklist →](https://github.com/raphaelmansuy/adk_training/blob/main/tutorial_implementation/tutorial23/DEPLOYMENT_CHECKLIST.md) - Pre/during/post deployment verification
+
+### Security Research
+
+- 📋 [Security Research Summary →](https://github.com/raphaelmansuy/adk_training/blob/main/SECURITY_RESEARCH_SUMMARY.md) - Executive summary of platform security
+- 🔍 [Detailed Security Analysis →](https://github.com/raphaelmansuy/adk_training/blob/main/SECURITY_ANALYSIS_ALL_DEPLOYMENT_OPTIONS.md) - Per-platform security breakdown
+
+### Additional Resources
+
+- 📚 [Tutorial Implementation →](https://github.com/raphaelmansuy/adk_training/tree/main/tutorial_implementation/tutorial23)
+- 📖 [FastAPI Best Practices Guide →](https://github.com/raphaelmansuy/adk_training/blob/main/tutorial_implementation/tutorial23/FASTAPI_BEST_PRACTICES.md)
+- 🌐 [Cloud Run Docs](https://cloud.google.com/run/docs)
+- 🤖 [Agent Engine Docs](https://cloud.google.com/vertex-ai/docs/agent-engine)
+- ⚙️ [GKE Docs](https://cloud.google.com/kubernetes-engine/docs)
+- 🔐 [Secret Manager](https://cloud.google.com/secret-manager/docs)
+
+---
+
+**🎉 Tutorial 23 Complete!** You're now ready to deploy agents to production. Proceed to Tutorial 24 for advanced observability.
