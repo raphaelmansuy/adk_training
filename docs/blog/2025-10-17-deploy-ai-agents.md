@@ -7,7 +7,8 @@ authors:
     title: Google ADK Training
     url: https://github.com/raphaelmansuy/adk_training
     image_url: https://github.com/raphaelmansuy.png
-date: 2025-01-17
+date: 2025-10-17
+image: /img/blog-deploy-agents-hero.svg
 ---
 
 import Mermaid from '@theme/Mermaid';

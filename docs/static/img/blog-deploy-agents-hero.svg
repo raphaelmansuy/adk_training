@@ -1,0 +1,207 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630">
+  <defs>
+    <!-- Background gradients -->
+    <linearGradient id="bgGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#0f172a;stop-opacity:1" />
+      <stop offset="50%" style="stop-color:#1e3a8a;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#1e40af;stop-opacity:1" />
+    </linearGradient>
+    
+    <!-- Accent gradients -->
+    <linearGradient id="accentGradient1" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#06b6d4;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#0ea5e9;stop-opacity:1" />
+    </linearGradient>
+    
+    <linearGradient id="accentGradient2" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#10b981;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#34d399;stop-opacity:1" />
+    </linearGradient>
+    
+    <linearGradient id="agentGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#f59e0b;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#d97706;stop-opacity:1" />
+    </linearGradient>
+    
+    <!-- Cloud gradients -->
+    <linearGradient id="cloudGradient1" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#e0f2fe;stop-opacity:0.95" />
+      <stop offset="100%" style="stop-color:#bae6fd;stop-opacity:0.95" />
+    </linearGradient>
+    
+    <linearGradient id="cloudGradient2" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#dcfce7;stop-opacity:0.95" />
+      <stop offset="100%" style="stop-color:#bbf7d0;stop-opacity:0.95" />
+    </linearGradient>
+    
+    <!-- Arrow markers - multiple sizes for different arrows -->
+    <marker id="arrowhead-cyan" markerWidth="12" markerHeight="12" refX="10" refY="6" orient="auto">
+      <polygon points="0 0, 12 6, 0 12" fill="#06b6d4" />
+    </marker>
+    
+    <marker id="arrowhead-green" markerWidth="12" markerHeight="12" refX="10" refY="6" orient="auto">
+      <polygon points="0 0, 12 6, 0 12" fill="#10b981" />
+    </marker>
+    
+    <marker id="arrowhead-amber" markerWidth="12" markerHeight="12" refX="10" refY="6" orient="auto">
+      <polygon points="0 0, 12 6, 0 12" fill="#f59e0b" />
+    </marker>
+    
+    <!-- Filter for glow effect -->
+    <filter id="glow">
+      <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
+      <feMerge>
+        <feMergeNode in="coloredBlur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+  
+  <!-- Main background -->
+  <rect width="1200" height="630" fill="url(#bgGradient)"/>
+  
+  <!-- Animated background dots pattern -->
+  <circle cx="150" cy="100" r="3" fill="#06b6d4" opacity="0.1"/>
+  <circle cx="300" cy="80" r="2" fill="#0ea5e9" opacity="0.08"/>
+  <circle cx="450" cy="120" r="2.5" fill="#06b6d4" opacity="0.1"/>
+  <circle cx="1050" cy="150" r="3" fill="#10b981" opacity="0.1"/>
+  <circle cx="900" cy="90" r="2" fill="#34d399" opacity="0.08"/>
+  <circle cx="750" cy="110" r="2.5" fill="#10b981" opacity="0.1"/>
+  
+  <!-- Decorative circles background (contained within viewBox) -->
+  <circle cx="80" cy="120" r="100" fill="#06b6d4" opacity="0.05"/>
+  <circle cx="1080" cy="480" r="100" fill="#10b981" opacity="0.05"/>
+  <circle cx="600" cy="550" r="100" fill="#0ea5e9" opacity="0.03"/>
+  
+  <!-- AI Agent box (left side) -->
+  <g id="agent-section">
+    <!-- Box shadow -->
+    <filter id="shadow">
+      <feDropShadow dx="0" dy="8" stdDeviation="4" flood-opacity="0.3"/>
+    </filter>
+    
+    <!-- Main agent box -->
+    <rect x="80" y="320" width="240" height="200" rx="16" fill="#1e293b" stroke="#334155" stroke-width="2" filter="url(#shadow)"/>
+    
+    <!-- Agent header -->
+    <rect x="95" y="335" width="210" height="40" rx="12" fill="url(#agentGradient)"/>
+    <text x="200" y="365" font-size="18" font-weight="bold" fill="white" text-anchor="middle">Your AI Agent</text>
+    
+    <!-- Agent elements -->
+    <circle cx="120" cy="410" r="6" fill="#06b6d4" opacity="0.7"/>
+    <circle cx="180" cy="410" r="6" fill="#06b6d4" opacity="0.7"/>
+    <circle cx="240" cy="410" r="6" fill="#06b6d4" opacity="0.7"/>
+    
+    <!-- Lines representing code -->
+    <line x1="95" y1="450" x2="295" y2="450" stroke="#475569" stroke-width="1.5" opacity="0.5"/>
+    <line x1="95" y1="468" x2="250" y2="468" stroke="#475569" stroke-width="1.5" opacity="0.5"/>
+    <line x1="95" y1="486" x2="280" y2="486" stroke="#475569" stroke-width="1.5" opacity="0.5"/>
+    <line x1="95" y1="504" x2="220" y2="504" stroke="#475569" stroke-width="1.5" opacity="0.5"/>
+  </g>
+  
+  <!-- Cloud Run Platform (top middle) -->
+  <g id="cloud-run">
+    <ellipse cx="480" cy="170" rx="130" ry="65" fill="url(#cloudGradient1)" stroke="#0369a1" stroke-width="2"/>
+    <ellipse cx="340" cy="210" rx="95" ry="48" fill="url(#cloudGradient1)" stroke="#0369a1" stroke-width="2" opacity="0.8"/>
+    <ellipse cx="620" cy="190" rx="100" ry="55" fill="url(#cloudGradient1)" stroke="#0369a1" stroke-width="2" opacity="0.8"/>
+    
+    <!-- Platform label -->
+    <circle cx="460" cy="170" r="22" fill="#0ea5e9" opacity="0.95"/>
+    <text x="460" y="178" font-size="14" font-weight="bold" fill="white" text-anchor="middle">CR</text>
+    
+    <!-- Platform badge - moved lower for clarity -->
+    <text x="480" y="310" font-size="15" font-weight="600" fill="#00d4ff" text-anchor="middle">Cloud Run</text>
+    <text x="480" y="328" font-size="12" fill="#7dd3fc" text-anchor="middle">~$40/month</text>
+  </g>
+  
+  <!-- Agent Engine Platform (top right) -->
+  <g id="agent-engine">
+    <ellipse cx="950" cy="150" rx="130" ry="65" fill="url(#cloudGradient2)" stroke="#059669" stroke-width="2"/>
+    <ellipse cx="820" cy="190" rx="95" ry="48" fill="url(#cloudGradient2)" stroke="#059669" stroke-width="2" opacity="0.8"/>
+    <ellipse cx="1080" cy="170" rx="100" ry="55" fill="url(#cloudGradient2)" stroke="#059669" stroke-width="2" opacity="0.8"/>
+    
+    <!-- Platform label -->
+    <circle cx="930" cy="150" r="22" fill="#10b981" opacity="0.95"/>
+    <text x="930" y="158" font-size="14" font-weight="bold" fill="white" text-anchor="middle">AE</text>
+    
+    <!-- Platform badge - moved lower for clarity -->
+    <text x="950" y="310" font-size="15" font-weight="600" fill="#00d4a0" text-anchor="middle">Agent Engine</text>
+    <text x="950" y="328" font-size="12" fill="#86efac" text-anchor="middle">FedRAMP Ready</text>
+  </g>
+  
+  <!-- GKE Platform (middle right) -->
+  <g id="gke-platform">
+    <rect x="980" y="370" width="140" height="95" rx="12" fill="#1e293b" stroke="#334155" stroke-width="2"/>
+    <text x="1050" y="393" font-size="14" font-weight="600" fill="#e2e8f0" text-anchor="middle">GKE</text>
+    <text x="1050" y="413" font-size="11" fill="#94a3b8" text-anchor="middle">Kubernetes</text>
+    <text x="1050" y="430" font-size="11" fill="#94a3b8" text-anchor="middle">$200-500+/mo</text>
+  </g>
+  
+  <!-- Deployment arrows with improved visibility -->
+  <!-- Arrow 1: Agent to Cloud Run -->
+  <path d="M 320 380 Q 380 300 420 250" stroke="#06b6d4" stroke-width="4" fill="none" marker-end="url(#arrowhead-cyan)" stroke-dasharray="6,4" opacity="1"/>
+  <circle cx="340" cy="360" r="24" fill="#06b6d4" opacity="0.3" stroke="#06b6d4" stroke-width="2"/>
+  <text x="340" y="367" font-size="14" fill="white" text-anchor="middle" font-weight="bold">1</text>
+  
+  <!-- Arrow 2: Agent to Agent Engine -->
+  <path d="M 320 380 Q 620 270 820 200" stroke="#10b981" stroke-width="4" fill="none" marker-end="url(#arrowhead-green)" stroke-dasharray="6,4" opacity="1"/>
+  <circle cx="550" cy="325" r="24" fill="#10b981" opacity="0.3" stroke="#10b981" stroke-width="2"/>
+  <text x="550" y="332" font-size="14" fill="white" text-anchor="middle" font-weight="bold">2</text>
+  
+  <!-- Arrow 3: Agent to GKE -->
+  <path d="M 320 420 L 980 415" stroke="#f59e0b" stroke-width="4" fill="none" marker-end="url(#arrowhead-amber)" stroke-dasharray="6,4" opacity="1"/>
+  <circle cx="650" cy="420" r="24" fill="#f59e0b" opacity="0.3" stroke="#f59e0b" stroke-width="2"/>
+  <text x="650" y="427" font-size="14" fill="white" text-anchor="middle" font-weight="bold">3</text>
+  
+  <!-- Success checkmarks - integrated with platforms -->
+  <g id="check-1">
+    <circle cx="440" cy="245" r="32" fill="#10b981" opacity="1" filter="url(#glow)"/>
+    <path d="M 425 245 L 437 257 L 460 230" stroke="white" stroke-width="4" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+  </g>
+  
+  <g id="check-2">
+    <circle cx="900" cy="220" r="32" fill="#10b981" opacity="1" filter="url(#glow)"/>
+    <path d="M 885 220 L 897 232 L 920 205" stroke="white" stroke-width="4" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+  </g>
+  
+  <!-- Title section with improved readability -->
+  <text x="600" y="65" font-size="56" font-weight="900" fill="white" text-anchor="middle" font-family="system-ui, -apple-system, sans-serif" letter-spacing="-0.5">
+    Deploy in 5 Minutes
+  </text>
+  
+  <!-- Subtitle -->
+  <text x="600" y="105" font-size="20" fill="#e0f2fe" text-anchor="middle" font-family="system-ui, -apple-system, sans-serif" opacity="1" font-weight="500">
+    Choose your platform. Deploy. Scale.
+  </text>
+  
+  <!-- Accent underline -->
+  <line x1="350" y1="120" x2="850" y2="120" stroke="#06b6d4" stroke-width="5" opacity="0.8" stroke-linecap="round"/>
+  
+  <!-- Bottom metrics with improved styling -->
+  <g id="metrics-bottom">
+    <!-- Speed metric -->
+    <rect x="90" y="545" width="160" height="75" rx="12" fill="#1e293b" stroke="#06b6d4" stroke-width="2.5" opacity="0.9"/>
+    <circle cx="140" cy="565" r="16" fill="#06b6d4" opacity="0.9"/>
+    <path d="M 133 560 L 140 567 L 150 555" stroke="white" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+    <text x="210" y="572" font-size="18" font-weight="bold" fill="#06b6d4">5 min</text>
+    <text x="210" y="592" font-size="12" fill="#94a3b8">Setup time</text>
+    
+    <!-- Scalability metric -->
+    <rect x="520" y="545" width="160" height="75" rx="12" fill="#1e293b" stroke="#10b981" stroke-width="2.5" opacity="0.9"/>
+    <circle cx="570" cy="565" r="16" fill="#10b981" opacity="0.9"/>
+    <text x="600" y="578" font-size="20" font-weight="bold" fill="#10b981" text-anchor="start">∞</text>
+    <text x="600" y="598" font-size="12" fill="#94a3b8" text-anchor="start">Auto-scaling</text>
+    
+    <!-- Cost metric -->
+    <rect x="950" y="545" width="160" height="75" rx="12" fill="#1e293b" stroke="#f59e0b" stroke-width="2.5" opacity="0.9"/>
+    <circle cx="1000" cy="565" r="16" fill="#f59e0b" opacity="0.9"/>
+    <text x="1030" y="578" font-size="20" font-weight="bold" fill="#f59e0b" text-anchor="start">$40</text>
+    <text x="1030" y="598" font-size="12" fill="#94a3b8" text-anchor="start">/month</text>
+  </g>
+  
+  <!-- Decorative elements -->
+  <g id="decorative-lines" opacity="0.1">
+    <line x1="0" y1="300" x2="1200" y2="300" stroke="#06b6d4" stroke-width="1" stroke-dasharray="10,10"/>
+    <line x1="600" y1="0" x2="600" y2="630" stroke="#10b981" stroke-width="1" stroke-dasharray="10,10" opacity="0.05"/>
+  </g>
+</svg>
