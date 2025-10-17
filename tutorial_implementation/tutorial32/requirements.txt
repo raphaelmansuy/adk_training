@@ -1,0 +1,17 @@
+# Google ADK and Gemini
+google-genai>=1.41.0
+
+# Streamlit UI framework
+streamlit>=1.39.0
+
+# Data analysis and visualization
+pandas>=2.0.0
+plotly>=5.24.0
+numpy>=1.21.0
+
+# Environment and utilities
+python-dotenv>=1.0.0
+
+# Development dependencies
+pytest>=7.0.0
+pytest-cov>=4.0.0
