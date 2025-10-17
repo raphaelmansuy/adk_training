@@ -1,14 +1,16 @@
-# Tutorial 23: Production Deployment Strategies
+# 23: Production Deployment Strategies
 
 **Goal**: Understand ADK deployment options and implement production-grade agents with custom authentication, monitoring, and reliability patterns.
 
 **Prerequisites**:
+
 - Tutorial 01 (Hello World Agent)
 - Google Cloud Platform account
 - Basic Docker knowledge (helpful)
 - Understanding of FastAPI (helpful)
 
 **What You'll Learn**:
+
 - ✅ Deploy agents using ADK's built-in server (5 minutes)
 - 🏗️ Build production FastAPI servers with custom patterns (when needed)
 - 📊 Implement custom monitoring and observability
@@ -17,6 +19,7 @@
 - 🛡️ Understand when to use ADK vs custom server
 
 **Quick Decision Framework**:
+
 - **5 minutes to production?** → Cloud Run ✅
 - **Need FedRAMP compliance?** → Agent Engine ✅✅
 - **Have Kubernetes?** → GKE ✅
@@ -94,11 +97,12 @@ ADK's built-in server is **intentionally minimal by design**. Here's why:
 - ✅ **Platform provides**: TLS/HTTPS, DDoS protection, authentication, compliance
 - ✅ **Result**: Secure production deployment with zero custom security code
 
-**See**: [Security Research Summary](https://github.com/raphaelmansuy/adk_training/blob/main/SECURITY_RESEARCH_SUMMARY.md) for complete analysis of what each platform secures automatically.
+**See**: [Security Research Summary](https://github.com/raphaelmansuy/adk_training/blob/main/tutorial_implementation/tutorial23/SECURITY_RESEARCH_SUMMARY.md) for complete analysis of what each platform secures automatically.
 
 ### Custom Server (Tutorial 23) is ADVANCED & OPTIONAL
 
 **You only need the custom FastAPI server if**:
+
 - You need custom authentication (LDAP, Kerberos, etc.)
 - You need advanced logging beyond platform defaults
 - You have specific business logic endpoints
@@ -108,15 +112,15 @@ ADK's built-in server is **intentionally minimal by design**. Here's why:
 
 ### Platform Comparison
 
-| Platform | Security | Setup | Cost | Best For | Needs Custom Server? |
-|----------|----------|-------|------|----------|----------------------|
-| **Cloud Run** | Auto ✅ | 5 min | Pay-per-use | Most apps | ❌ No |
-| **Agent Engine** | Auto ✅✅ | 10 min | Pay-per-use | Enterprise | ❌ No |
-| **GKE** | Configure ⚙️ | 20 min | Hourly | Complex | ❌ No |
-| **Custom + Cloud Run** | Hybrid ⚙️ | 2 hrs | Pay-per-use | Special needs | ✅ Yes |
-| **Local Dev** | Minimal | < 1 min | Free | Development | ✅ Yes (add locally) |
+| Platform               | Security     | Setup   | Cost        | Best For      | Needs Custom Server? |
+| ---------------------- | ------------ | ------- | ----------- | ------------- | -------------------- |
+| **Cloud Run**          | Auto ✅      | 5 min   | Pay-per-use | Most apps     | ❌ No                |
+| **Agent Engine**       | Auto ✅✅    | 10 min  | Pay-per-use | Enterprise    | ❌ No                |
+| **GKE**                | Configure ⚙️ | 20 min  | Hourly      | Complex       | ❌ No                |
+| **Custom + Cloud Run** | Hybrid ⚙️    | 2 hrs   | Pay-per-use | Special needs | ✅ Yes               |
+| **Local Dev**          | Minimal      | < 1 min | Free        | Development   | ✅ Yes (add locally) |
 
-**See**: [Complete Security Analysis](https://github.com/raphaelmansuy/adk_training/blob/main/SECURITY_ANALYSIS_ALL_DEPLOYMENT_OPTIONS.md) for detailed security breakdown per platform.
+**See**: [Complete Security Analysis](https://github.com/raphaelmansuy/adk_training/blob/main/tutorial_implementation/tutorial23/SECURITY_ANALYSIS_ALL_DEPLOYMENT_OPTIONS.md) for detailed security breakdown per platform.
 
 ---
 
@@ -126,14 +130,14 @@ ADK's built-in server is **intentionally minimal by design**. Here's why:
 
 ### Security by Platform (Quick Reference)
 
-| Security Feature | Cloud Run | Agent Engine | GKE | Local |
-|------------------|-----------|--------------|-----|-------|
-| **HTTPS/TLS** | ✅ Auto | ✅ Auto | ✅ Manual | ❌ |
-| **DDoS Protection** | ✅ Auto | ✅ Auto | ❌ | ❌ |
-| **Authentication** | ✅ Auto (IAM) | ✅ Auto (OAuth) | ⚙️ Manual | ❌ |
-| **Encryption at Rest** | ✅ Auto | ✅ Auto | ✅ Manual | ❌ |
-| **Audit Logging** | ✅ Auto | ✅ Auto | ✅ Manual | ❌ |
-| **Compliance Ready** | ✅ HIPAA, PCI | ✅✅ **FedRAMP** | ✅ All | ❌ |
+| Security Feature       | Cloud Run     | Agent Engine     | GKE       | Local |
+| ---------------------- | ------------- | ---------------- | --------- | ----- |
+| **HTTPS/TLS**          | ✅ Auto       | ✅ Auto          | ✅ Manual | ❌    |
+| **DDoS Protection**    | ✅ Auto       | ✅ Auto          | ❌        | ❌    |
+| **Authentication**     | ✅ Auto (IAM) | ✅ Auto (OAuth)  | ⚙️ Manual | ❌    |
+| **Encryption at Rest** | ✅ Auto       | ✅ Auto          | ✅ Manual | ❌    |
+| **Audit Logging**      | ✅ Auto       | ✅ Auto          | ✅ Manual | ❌    |
+| **Compliance Ready**   | ✅ HIPAA, PCI | ✅✅ **FedRAMP** | ✅ All    | ❌    |
 
 **Key Message**: Cloud Run and Agent Engine give you **production-ready security with zero configuration**. All security is automatic.
 
@@ -142,6 +146,7 @@ ADK's built-in server is **intentionally minimal by design**. Here's why:
 For comprehensive details on what's secure across all platforms:
 
 - 📄 [**SECURITY_RESEARCH_SUMMARY.md**](https://github.com/raphaelmansuy/adk_training/blob/main/SECURITY_RESEARCH_SUMMARY.md) - Executive summary (5 min read)
+
   - What ADK provides vs what platforms provide
   - When you actually need custom authentication
   - Platform security capabilities comparison
@@ -181,6 +186,7 @@ Your Agent Code
 ### What's Inside ADK's Built-In Server?
 
 **Provided by `get_fast_api_app()`:**
+
 - ✅ `GET /` - API info
 - ✅ `GET /health` - Health check
 - ✅ `GET /agents` - List agents
@@ -188,6 +194,7 @@ Your Agent Code
 - ✅ Session management
 
 **NOT Provided:**
+
 - ❌ Custom authentication
 - ❌ Custom logging
 - ❌ Custom metrics
@@ -197,6 +204,7 @@ Your Agent Code
 ### When You Need a Custom Server
 
 The custom server in this repository (Tutorial 23) adds:
+
 - ✅ Custom authentication
 - ✅ Structured logging with request tracing
 - ✅ Health checks with real metrics
@@ -217,6 +225,7 @@ The custom server in this repository (Tutorial 23) adds:
 **Your Situation**: Moving fast, limited resources, want to deploy this week.
 
 **What You Need**:
+
 - Deployment in < 5 minutes
 - Automatic security (don't want to manage this)
 - Pay only for what you use
@@ -224,13 +233,15 @@ The custom server in this repository (Tutorial 23) adds:
 
 **Recommendation**: ✅ **Cloud Run**
 
-**Why**: 
+**Why**:
+
 - Fastest time to market (5 minutes!)
 - Secure by default (HTTPS, DDoS, IAM)
 - Cost-effective (~$40/mo for 1M requests)
 - No infrastructure to manage
 
 **Deploy**:
+
 ```bash
 adk deploy cloud_run \
   --project your-project-id \
@@ -248,6 +259,7 @@ adk deploy cloud_run \
 **Your Situation**: Building for enterprise customers, need FedRAMP or HIPAA compliance.
 
 **What You Need**:
+
 - FedRAMP compliance (government-ready)
 - HIPAA/PCI-DSS certifications
 - Zero infrastructure management
@@ -257,12 +269,14 @@ adk deploy cloud_run \
 **Recommendation**: ✅✅ **Agent Engine (ONLY PLATFORM WITH FedRAMP)**
 
 **Why**:
+
 - Only platform with FedRAMP compliance built-in
 - Google manages all security/compliance
 - Zero configuration needed
 - Best for highly regulated industries
 
 **Deploy**:
+
 ```bash
 adk deploy agent_engine \
   --project your-project-id \
@@ -272,7 +286,8 @@ adk deploy agent_engine \
 
 **Cost**: ~$50/month (1M requests) + usage
 
-**Benefits**: 
+**Benefits**:
+
 - FedRAMP compliance
 - SOC 2 Type II certified
 - Automatic audit logging
@@ -288,6 +303,7 @@ adk deploy agent_engine \
 **Your Situation**: Your company runs Kubernetes infrastructure, you want ADK in that environment.
 
 **What You Need**:
+
 - Deploy in existing Kubernetes cluster
 - Full control over configuration
 - NetworkPolicy for traffic control
@@ -297,19 +313,22 @@ adk deploy agent_engine \
 **Recommendation**: ✅ **GKE (or any Kubernetes)**
 
 **Why**:
+
 - Leverage existing infrastructure
 - Full control over security config
 - Support for complex networking
 - Advanced observability
 
 **Deploy**:
+
 ```bash
 kubectl apply -f deployment.yaml
 ```
 
 **Cost**: $200-500+/month (based on cluster size)
 
-**Requires**: 
+**Requires**:
+
 - Kubernetes expertise
 - Manual security configuration
 - Pod security setup
@@ -324,6 +343,7 @@ kubectl apply -f deployment.yaml
 **Your Situation**: You need LDAP, Kerberos, or other custom authentication not available on platforms.
 
 **What You Need**:
+
 - Custom authentication provider
 - Custom API endpoints
 - Advanced logging
@@ -332,11 +352,13 @@ kubectl apply -f deployment.yaml
 **Recommendation**: ⚙️ **Tutorial 23 Custom Server + Cloud Run**
 
 **Why**:
+
 - Cloud Run provides platform security
 - Tutorial 23 provides custom authentication
 - Combined = secure + custom
 
 **Deploy**:
+
 ```bash
 # 1. Use custom server from Tutorial 23
 cd tutorial_implementation/tutorial23
@@ -350,6 +372,7 @@ adk deploy cloud_run \
 **Cost**: ~$60/month (on Cloud Run) + custom server complexity
 
 **Note**: **MOST USERS DON'T NEED THIS**
+
 - Use Cloud Run IAM for standard authentication
 - Use Agent Engine OAuth for standards
 - Only use this if platforms don't support your auth method
@@ -363,6 +386,7 @@ adk deploy cloud_run \
 **Your Situation**: Building and testing locally before deploying.
 
 **What You Need**:
+
 - Fast iteration loop
 - Hot reload on code changes
 - Easy testing
@@ -371,12 +395,14 @@ adk deploy cloud_run \
 **Recommendation**: ⚡ **Local Dev (add security before deploy)**
 
 **Why**:
+
 - Zero setup time
 - Instant feedback
 - Free
 - Perfect for development
 
 **Run Locally**:
+
 ```bash
 # Start dev server
 adk api_server
@@ -386,6 +412,7 @@ python -m uvicorn production_agent.server:app --reload
 ```
 
 **Before Production**:
+
 - Add authentication layer
 - Test with HTTPS (use ngrok)
 - Verify security settings
@@ -427,6 +454,7 @@ adk deploy agent_engine \
 ✅ **That's it!** Your agent is live in 5 minutes.
 
 **What you get:**
+
 - Automatic container build
 - FastAPI server with basic endpoints
 - Auto-scaling
@@ -453,16 +481,19 @@ adk deploy agent_engine \
 You need Tutorial 23's custom server IF:
 
 1. **Custom authentication** (LDAP, Kerberos, API keys)
+
    - Cloud Run IAM doesn't support it
    - Agent Engine OAuth doesn't work for you
    - You have proprietary auth system
 
 2. **Advanced logging/observability** beyond platform defaults
+
    - Custom request correlation IDs
    - Business event tracking
    - Custom metrics
 
 3. **Additional API endpoints** for business logic
+
    - Webhooks
    - Custom health checks
    - Integration endpoints
@@ -489,6 +520,7 @@ tutorial23/
 ```
 
 **Key Features** (If You Need Custom Server):
+
 - ✅ Custom authentication with API keys
 - ✅ Structured logging with request tracing
 - ✅ Health checks with real metrics
@@ -532,12 +564,12 @@ ADK supports multiple deployment paths. Choose based on your needs:
 
 ### Comparison Matrix
 
-| Strategy | Setup Time | Scaling | Cost | Best For |
-|----------|-----------|---------|------|----------|
-| **Local** | < 1 min | Manual | Free | Development |
-| **Cloud Run** | 5 mins | Auto | Pay-per-use | Most apps |
-| **Agent Engine** | 10 mins | Auto | Pay-per-use | Enterprise |
-| **GKE** | 20 mins | Manual | Hourly | Complex |
+| Strategy         | Setup Time | Scaling | Cost        | Best For    |
+| ---------------- | ---------- | ------- | ----------- | ----------- |
+| **Local**        | < 1 min    | Manual  | Free        | Development |
+| **Cloud Run**    | 5 mins     | Auto    | Pay-per-use | Most apps   |
+| **Agent Engine** | 10 mins    | Auto    | Pay-per-use | Enterprise  |
+| **GKE**          | 20 mins    | Manual  | Hourly      | Complex     |
 
 ---
 
@@ -554,6 +586,7 @@ adk api_server --port 8090
 ```
 
 Test it:
+
 ```bash
 curl http://localhost:8080/health
 curl -X POST http://localhost:8080/invoke \
@@ -562,6 +595,7 @@ curl -X POST http://localhost:8080/invoke \
 ```
 
 **Features**:
+
 - 🔄 Hot reload during development
 - 📖 Auto-generated API docs at `/docs`
 - ⚡ Instant feedback loop
@@ -583,12 +617,14 @@ adk deploy cloud_run \
 ```
 
 That's it! ADK handles:
+
 - ✅ Building container image
 - ✅ Pushing to Container Registry
 - ✅ Deploying to Cloud Run
 - ✅ Setting up auto-scaling
 
 **Manual Alternative**:
+
 ```bash
 # 1. Build
 gcloud builds submit --tag gcr.io/YOUR_PROJECT/agent
@@ -619,6 +655,7 @@ adk deploy agent_engine \
 ```
 
 **Benefits**:
+
 - 📦 Managed infrastructure
 - 🎯 Version control
 - 🔄 A/B testing
@@ -647,6 +684,7 @@ kubectl apply -f deployment.yaml
 ```
 
 **When to use GKE**:
+
 - Need advanced networking
 - Running multiple services
 - Existing Kubernetes expertise
@@ -724,6 +762,7 @@ GET /health
 ```
 
 **Configure in orchestrator**:
+
 - **Cloud Run**: Automatically detected
 - **GKE**: Set as liveness probe
 - **Agent Engine**: Built-in
@@ -752,12 +791,12 @@ api_key = get_secret('api-key')
 
 ### Key Metrics to Track
 
-| Metric | Target | Alert Threshold |
-|--------|--------|-----------------|
-| Error Rate | < 0.5% | > 5% |
-| P99 Latency | < 2 sec | > 5 sec |
-| Availability | > 99.9% | < 99% |
-| Request Count | Track | N/A |
+| Metric        | Target  | Alert Threshold |
+| ------------- | ------- | --------------- |
+| Error Rate    | < 0.5%  | > 5%            |
+| P99 Latency   | < 2 sec | > 5 sec         |
+| Availability  | > 99.9% | < 99%           |
+| Request Count | Track   | N/A             |
 
 ### Structured Logging
 
@@ -782,15 +821,16 @@ Cloud Logging automatically parses and indexes these fields.
 
 ### Monthly Cost Estimates (at 1M requests/month)
 
-| Platform | Base | Per-Request | Setup | Monthly Total | Best For |
-|----------|------|-------------|-------|---------------|----------|
-| **Cloud Run** | $0 | ~$0.40 | 5 min | ~$40 | Most apps |
-| **Agent Engine** | $0 | ~$0.50 | 10 min | ~$50 | Enterprise |
-| **GKE** | $50+ | Varies | 20 min | $200-500+ | Complex |
-| **Custom + Cloud Run** | $0 | ~$0.40 | 2 hrs | ~$60 | Special needs |
-| **Local Dev** | $0 | $0 | < 1 min | $0 | Development |
+| Platform               | Base | Per-Request | Setup   | Monthly Total | Best For      |
+| ---------------------- | ---- | ----------- | ------- | ------------- | ------------- |
+| **Cloud Run**          | $0   | ~$0.40      | 5 min   | ~$40          | Most apps     |
+| **Agent Engine**       | $0   | ~$0.50      | 10 min  | ~$50          | Enterprise    |
+| **GKE**                | $50+ | Varies      | 20 min  | $200-500+     | Complex       |
+| **Custom + Cloud Run** | $0   | ~$0.40      | 2 hrs   | ~$60          | Special needs |
+| **Local Dev**          | $0   | $0          | < 1 min | $0            | Development   |
 
 **Notes**:
+
 - Costs based on US pricing (may vary by region)
 - Includes compute + storage estimates
 - Actual costs depend on model, memory, CPU usage
@@ -798,6 +838,7 @@ Cloud Logging automatically parses and indexes these fields.
 - GKE includes cluster base cost + node costs
 
 **ROI Analysis**:
+
 - **Startup**: Start with Cloud Run ($40/mo), move to Agent Engine ($50/mo) if compliance needed
 - **Enterprise**: Start with Agent Engine ($50/mo), includes compliance
 - **Existing K8s**: Use GKE ($200+/mo), leverages existing infrastructure
@@ -857,6 +898,7 @@ curl $SERVICE_URL/health | jq '.metrics'
 ### 🔐 Security (Platform Provides Most of This Automatically)
 
 **What Cloud Run/Agent Engine Provides Automatically**:
+
 - ✅ HTTPS/TLS encryption (handled by platform)
 - ✅ DDoS protection (included)
 - ✅ Encryption at rest (Google-managed)
@@ -864,6 +906,7 @@ curl $SERVICE_URL/health | jq '.metrics'
 - ✅ Binary vulnerability scanning (included)
 
 **What You Must Configure**:
+
 - [ ] Use Secret Manager for API keys (never hardcode)
 - [ ] Enable authentication in Cloud Run console
 - [ ] Configure CORS with specific origins (never use wildcard `*`)
@@ -872,6 +915,7 @@ curl $SERVICE_URL/health | jq '.metrics'
 - [ ] Monitor error rates and latency
 
 **For Custom Server**:
+
 - [ ] Implement request authentication (see Tutorial 23 examples)
 - [ ] Use Bearer token validation
 - [ ] Implement timeout protection
@@ -919,6 +963,7 @@ This implementation demonstrates **7 core production patterns**:
 📖 **Full Guide**: [FastAPI Best Practices for ADK Agents →](https://github.com/raphaelmansuy/adk_training/blob/main/tutorial_implementation/tutorial23/FASTAPI_BEST_PRACTICES.md)
 
 This guide includes:
+
 - ✅ Code examples for each pattern
 - ✅ ASCII diagrams showing flows
 - ✅ Production checklist
@@ -953,6 +998,7 @@ Monitor for 1 hour
 ### Pattern: Zero-Downtime Deployment
 
 **Blue-Green Deployment**:
+
 ```
 CURRENT (Blue)          NEW (Green)
    |                        |
@@ -978,6 +1024,7 @@ CURRENT (Blue)          NEW (Green)
 **Problem**: `adk web agent_name` fails
 
 **Solution**: Install as package first
+
 ```bash
 pip install -e .
 adk web  # Then select from dropdown
@@ -993,6 +1040,7 @@ export GOOGLE_API_KEY=your_key
 ### High Latency
 
 Check:
+
 1. Request timeout setting
 2. Agent complexity (use streaming)
 3. Resource limits (increase CPU)
@@ -1049,6 +1097,7 @@ GET  /docs              # OpenAPI docs
 ## Summary
 
 **You now know**:
+
 - ✅ Deploy locally for development
 - ✅ Deploy to Cloud Run for most production apps
 - ✅ Use Agent Engine for managed infrastructure
@@ -1058,6 +1107,7 @@ GET  /docs              # OpenAPI docs
 - ✅ Implement reliability patterns
 
 **Deployment Checklist**:
+
 - [ ] Environment variables configured
 - [ ] Secrets in Secret Manager
 - [ ] Health checks working

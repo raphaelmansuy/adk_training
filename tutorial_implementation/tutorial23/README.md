@@ -142,6 +142,26 @@ Try these prompts with the agent:
 "What's the difference between Cloud Run and Agent Engine?"
 ```
 
+## Security Documentation
+
+Comprehensive security guides for production deployments:
+
+- 📋 **[SECURITY_RESEARCH_SUMMARY.md](./SECURITY_RESEARCH_SUMMARY.md)** - Executive summary
+  - 15-minute read for decision-makers
+  - Security overview by platform (Local, Cloud Run, GKE, Agent Engine)
+  - Key findings and misconceptions corrected
+  - Recommendations by use case
+
+- 📖 **[SECURITY_ANALYSIS_ALL_DEPLOYMENT_OPTIONS.md](./SECURITY_ANALYSIS_ALL_DEPLOYMENT_OPTIONS.md)** - Technical deep dive
+  - 45-minute read for engineers and architects
+  - Detailed per-platform security analysis
+  - Threat models and implementation patterns
+  - Security comparison matrices and decision framework
+
+- ✅ **[SECURITY_VERIFICATION.md](./SECURITY_VERIFICATION.md)** - Step-by-step verification
+  - Pre-deployment checklist
+  - Per-platform security verification procedures
+
 ## Best Practices
 
 ### Security
@@ -150,6 +170,8 @@ Try these prompts with the agent:
 - Never commit API keys
 - Configure CORS with specific origins
 - Implement rate limiting
+- Review security documentation for your platform
+- Follow pre-deployment security checklist
 
 ### Monitoring
 
