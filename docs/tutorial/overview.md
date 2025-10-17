@@ -266,7 +266,9 @@ This mental models guide is organized into focused sections for optimal learning
 
 ## 🎓 Getting Started
 
-**Recommended Path**: Start with this overview, then follow the [Foundation Learning Path](learning-paths.md#path-1-foundation-start-here) for a structured approach to mastering ADK.
+**Recommended Path**: Start with this overview, then follow the
+[Foundation Learning Path](learning-paths#path-1-foundation-start-here)
+for a structured approach to mastering ADK.
 
 **Quick Start**: If you're new to ADK, begin with [Tutorial 01: Hello World Agent](../tutorial/01_hello_world_agent.md) after reading this overview.
 

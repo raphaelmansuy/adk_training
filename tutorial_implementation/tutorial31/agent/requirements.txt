@@ -1,0 +1,8 @@
+google-genai>=1.15.0
+fastapi>=0.115.0
+uvicorn[standard]>=0.30.0
+python-dotenv>=1.0.0
+pandas>=2.0.0
+pydantic>=2.0.0
+ag-ui-adk>=0.0.40
+httpx>=0.25.0

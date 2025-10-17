@@ -11,7 +11,7 @@ sidebar_label: Learning Paths
 
 ---
 
-## 🏁 Beginner Path (1-2 weeks)
+## 🏁 Beginner Path (1-2 weeks) {#path-1-foundation-start-here}
 
 ### Phase 1: Core Concepts (Days 1-3)
 
