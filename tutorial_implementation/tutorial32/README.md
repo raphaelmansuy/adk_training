@@ -1,207 +1,134 @@
-# Data Analysis Agent with Streamlit + ADK
+# 📊 Data Analysis Agent: Streamlit + ADK
 
-A production-ready Streamlit application that integrates Google ADK agents for intelligent data analysis. Upload any CSV file and chat with an AI assistant to explore your data, discover insights, and perform analyses.
+Chat with AI about your CSV data. Pure Python, no backend needed. Upload a file, ask questions, get instant insights and beautiful charts.
 
-## 🌟 Features
+**What you get**:
+- 💬 Natural language data exploration
+- � Automatic chart generation
+- ⚡ Real-time streaming responses
+- 🚀 Deploy in minutes
+- � Secure (API keys in `.env` only)
 
-- **📊 Interactive Chat Interface**: Ask questions about your data in natural language
-- **🔄 Direct ADK Integration**: No HTTP overhead - agent runs in-process with Streamlit
-- **📁 CSV Upload**: Load and analyze any CSV file
-- **🧠 Gemini 2.0 Flash**: State-of-the-art language model for analysis
-- **📈 Dynamic Visualizations**: Python code execution for matplotlib/plotly charts
-- **✨ Proactive Analysis**: Agent suggests analyses and visualizations automatically
-- **⚡ Real-time Streaming**: Stream responses and visualization generation as they happen
-- **🎯 Smart Routing**: Automatic selection between analysis tools and code execution
-- **⏳ Better UX**: Loading indicators and status messages while processing
-- **🔒 Secure**: Never commits secrets, uses environment variables
+## � Get Started in 2 Minutes
 
-## 📋 Prerequisites
+### Prerequisites
+- Python 3.9+
+- Google API key (free) from [Google AI Studio](https://makersuite.google.com/app/apikey)
 
-- **Python 3.9+**
-- **Google AI API Key** from [Google AI Studio](https://makersuite.google.com/app/apikey)
-- **pip** (Python package manager)
-
-## 🚀 Quick Start
-
-### 1. Setup Environment
-
+### Setup
 ```bash
-# Clone and navigate to this directory
 cd tutorial_implementation/tutorial32
-
-# Install dependencies and package
-make setup
+make setup              # Install dependencies
+cp .env.example .env    # Create config
+# Add your API key to .env
+make dev                # Start app at localhost:8501
 ```
 
-### 2. Configure API Key
+**That's it!** Open the browser and start analyzing. 📊
 
-```bash
-# Copy the example environment file
-cp .env.example .env
+## 💡 How It Works
 
-# Edit .env and add your Google API key
-# GOOGLE_API_KEY=your_api_key_here
+### 1. Upload your data
+```
+┌─ Sidebar ────────────────────┐
+│ 📁 Upload CSV                │
+│                              │
+│ [Choose file...]             │
+│                              │
+│ ✅ Loaded: sales.csv         │
+│    📊 500 rows × 8 columns   │
+└──────────────────────────────┘
 ```
 
-**Get your API key:**
-
-1. Visit [Google AI Studio](https://makersuite.google.com/app/apikey)
-2. Click "Get API key"
-3. Copy the key into your `.env` file
-
-### 3. Run the App
-
-```bash
-make dev
+### 2. Chat with your data
+```
+You:  "Show me sales by region"
+      ↓
+🤖 AI analyzes context with data
+      ↓
+Bot:  "Based on your data...
+       
+       📊 Chart: Sales by Region
+       
+       Top regions: West ($50k), 
+       North ($45k), South ($38k)"
 ```
 
-The app opens at `http://localhost:8501` 🎉
+### 3. Two modes available
 
-## 💡 Usage
+**Code Execution Mode** (recommended for charts)
+- Automatic visualizations with matplotlib/plotly
+- AI generates and executes Python code
+- Professional charts appear inline
 
-### Basic Workflow
+**Chat Mode** (for analysis)
+- Direct AI responses
+- Perfect for questions and insights
+- Faster feedback
 
-1. **Upload CSV**: Use the sidebar to upload your data
-2. **Review Data**: See columns, types, and statistics
-3. **Choose Mode**:
-   - **Smart Mode** (recommended): Uses ADK Code Execution for visualizations
-   - **Chat Mode**: Uses direct Gemini API for text analysis
-4. **Ask Questions**: Chat with the AI about your data
-5. **Get Insights**: Receive analysis, visualizations, and recommendations
+## 🎯 Try It Now
 
-### Code Execution Mode (NEW!)
-
-Enable "Use Code Execution for Visualizations" in the sidebar to unlock advanced features:
-
-✨ **Proactive Agent**: The AI automatically suggests analyses and visualizations
-📊 **Dynamic Charts**: matplotlib and plotly charts generated via Python code execution
-⚡ **Real-time Display**: Charts appear as they're generated with loading indicators
-🎯 **Smart Routing**: Agent intelligently chooses between tools and code execution
-
-**Example requests that trigger visualizations:**
-
-```
-"Show me a pie chart of categories"
-"Create a line plot of trends over time"
-"Visualize the distribution of values"
-"Compare these metrics with scatter plots"
-"Generate a comprehensive dashboard"
-```
-
-### Sample Data
-
-Create a simple CSV to test:
-
+**Sample CSV** to test:
 ```csv
-name,age,salary,department
-Alice,30,75000,Engineering
-Bob,28,68000,Engineering
-Carol,35,82000,Sales
-David,32,70000,Marketing
+date,product,sales,region
+2024-01-01,Widget A,1200,North
+2024-01-01,Widget B,980,West
+2024-01-02,Widget A,1450,South
 ```
 
-Save as `sample.csv` and upload it!
+**Example Questions**:
+- "What are the top products by sales?"
+- "Create a chart of sales over time"
+- "Compare regions - which is growing fastest?"
+- "Any trends or patterns you notice?"
 
-## 🏗️ Project Structure
+## 📁 Project Layout
 
 ```
 tutorial32/
-├── app.py                      # Main Streamlit application
-├── data_analysis_agent/        # ADK agent module
-│   ├── __init__.py            # Package initialization
-│   └── agent.py               # Agent definition and tools
-├── tests/                      # Comprehensive test suite
-│   ├── test_agent.py          # Agent and tool tests
-│   ├── test_imports.py        # Import validation tests
-│   └── test_structure.py      # Project structure tests
-├── pyproject.toml             # Modern Python packaging
-├── requirements.txt           # Python dependencies
-├── .env.example               # Environment template
-├── Makefile                   # Development commands
-└── README.md                  # This file
+├── app.py                    Main Streamlit app
+├── data_analysis_agent/      AI agent code
+│   ├── __init__.py
+│   └── agent.py
+├── tests/                    Tests
+├── Makefile                  Quick commands
+├── requirements.txt          Dependencies
+├── pyproject.toml           Python config
+├── .env.example             API key template
+└── README.md                This file
 ```
 
-## 🛠️ Development Commands
+**Key files**:
+- `app.py` - User interface and chat logic
+- `data_analysis_agent/agent.py` - AI agent configuration
+- `Makefile` - Run `make help` to see all commands
 
-All commands use the Makefile for consistency:
-
-### Setup & Installation
-
-```bash
-# Install dependencies and package for development
-make setup
-```
-
-### Running
+## ⚙️ Commands
 
 ```bash
-# Start the Streamlit app (localhost:8501)
-make dev
-
-# Show demo with usage examples
-make demo
-```
-
-### Testing
-
-```bash
-# Run all tests with coverage
-make test
-
-# Check code quality
-make lint
-
-# Format code with black and isort
-make format
-```
-
-### Cleanup
-
-```bash
-# Remove cache and generated files
-make clean
-```
-
-### Help
-
-```bash
-# Show all available commands
-make help
+make setup       # Install dependencies
+make dev         # Start app (localhost:8501)
+make demo        # Show usage examples
+make test        # Run tests
+make clean       # Clean cache
+make help        # Show all commands
 ```
 
 ## 🧪 Testing
 
-The project includes comprehensive tests covering:
-
-- **Agent Configuration** (`test_agent.py`): Agent setup, tools, return formats
-- **Tool Functions** (`test_agent.py`): Each tool's behavior and error handling
-- **Import System** (`test_imports.py`): Module imports and accessibility
-- **Project Structure** (`test_structure.py`): Required files and configuration
-
-### Run Tests
+Tests verify agent setup and tools work correctly:
 
 ```bash
-# Full test suite
-make test
-
-# Specific test file
-pytest tests/test_agent.py -v
-
-# With coverage
-pytest tests/ --cov=data_analysis_agent
+make test                  # Run all tests
+pytest tests/ -v           # Detailed output
+pytest tests/ --cov        # Coverage report
 ```
 
-### Test Coverage
-
-The test suite covers:
-
-- ✅ Agent initialization and configuration
-- ✅ Tool function behavior and error handling
-- ✅ Return format consistency
-- ✅ Module imports and accessibility
-- ✅ Project file structure
-- ✅ Environment configuration
-- ✅ Code quality aspects
+Tests cover:
+- Agent configuration ✓
+- Tool functionality ✓
+- Import system ✓
+- Project structure ✓
 
 ## 🔧 Configuration
 
@@ -261,217 +188,114 @@ Each tool returns consistent format:
 }
 ```
 
-## 🏛️ Architecture
+## 🏛️ How It's Built
 
-### Dual-Runner Pattern for Data Passing
+```
+Your Browser
+     ↓
+  Streamlit App (localhost:8501)
+     │
+     ├─ File Upload → Load CSV with pandas
+     ├─ Chat UI → Display messages
+     └─ Agent Call → Direct in-process execution
+                     (no HTTP server!)
+     ↓
+  Google Gemini API
+     └─ Analyze data, generate code
+```
 
-Tutorial 32 implements a sophisticated multi-runner architecture to solve the context-passing problem:
+**Two execution paths**:
 
-**The Challenge**: Multi-agent coordination through AgentTool delegation loses context data (like CSV data).
+1. **Code Execution Mode** (Smart)
+   - You ask for a chart
+   - AI generates Python code
+   - Code runs, matplotlib/plotly creates image
+   - Chart displays in chat
 
-**The Solution**: Direct runner for visualization agents that bypasses multi-agent routing.
+2. **Chat Mode** (Fast)
+   - You ask a question
+   - AI responds directly
+   - No code execution, just insights
 
-### Key Components
+**Architecture benefits**:
+- Pure Python (no JavaScript needed)
+- Direct in-process execution (fast!)
+- Single service to deploy
+- Perfect for data tools
 
-1. **viz_runner**: Direct visualization_agent without routing
-
-   - Receives full CSV data in context
-   - Executes Python code via BuiltInCodeExecutor
-   - Returns matplotlib/plotly charts as inline_data
-   - Independent session service
-
-2. **runner**: Multi-agent root_agent with tool delegation
-   - Routes to analysis_agent for statistics
-   - Routes to visualization_agent via AgentTool for simple viz
-   - Good for text-based analysis
-
-### Data Flow for Visualizations
-
-1. User requests visualization
-2. App prepares context_message with CSV data
-3. viz_runner sends directly to visualization_agent
-4. visualization_agent loads: df = pd.read_csv(StringIO(csv_data))
-5. Agent generates Python code with matplotlib/plotly
-6. BuiltInCodeExecutor runs code and generates PNG
-7. Chart returned as Part.inline_data
-8. app.py extracts inline_data and displays with st.image()
-9. User sees visualization in Streamlit UI
-
-## 🚀 Deployment
+## 🚀 Share Your App
 
 ### Streamlit Cloud (Easiest)
 
-1. **Create `secrets.toml`**:
-
-   ```toml
-   GOOGLE_API_KEY = "your_production_key"
-   ```
-
-2. **Push to GitHub**:
-
-   ```bash
-   git push origin main
-   ```
-
-3. **Deploy on Streamlit**:
-   - Go to [share.streamlit.io](https://share.streamlit.io)
-   - Click "New app"
-   - Select repository
-   - Set main file: `app.py`
-   - Add secret in settings
-   - Click "Deploy"
+1. Push code to GitHub
+2. Go to [share.streamlit.io](https://share.streamlit.io)
+3. Click "New app" → select repo → `app.py`
+4. Add secret: `GOOGLE_API_KEY = your_key`
+5. Done! Your app is live 🎉
 
 ### Google Cloud Run
 
 ```bash
-# Build and deploy
+# Deploy (takes 1-2 minutes)
 gcloud run deploy data-analysis-agent \
   --source=. \
-  --platform=managed \
-  --region=us-central1 \
-  --allow-unauthenticated \
-  --port=8501
+  --allow-unauthenticated
 
-# Output: https://data-analysis-agent-xyz.run.app
+# View logs
+gcloud run logs read data-analysis-agent
 ```
 
-## 🔐 Security Best Practices
+## 🐛 Issues?
 
-✅ **What we do:**
-
-- Use `.env.example` as template (never commit real keys)
-- Load secrets from environment variables
-- Use `python-dotenv` for local development
-- Validate all inputs
-
-❌ **What we don't do:**
-
-- Commit `.env` files
-- Hardcode API keys
-- Log sensitive information
-- Trust user input directly
-
-## 🐛 Troubleshooting
-
-### "Please set GOOGLE_API_KEY"
-
-**Solution**:
+### Please set GOOGLE_API_KEY
 
 ```bash
-# Create .env from template
 cp .env.example .env
-
-# Edit and add your key
-nano .env  # or your favorite editor
-
-# Verify it loads
-source .env
-echo $GOOGLE_API_KEY
+# Edit .env and add your key
 ```
 
 ### App won't start
 
-**Check dependencies**:
-
 ```bash
-# Reinstall everything
 make clean
 make setup
-
-# Run with verbose output
 streamlit run app.py --logger.level=debug
 ```
 
 ### Tests fail
 
-**Run with verbose output**:
-
 ```bash
-pytest tests/ -vv --tb=long
-
-# Run specific test
-pytest tests/test_agent.py::TestAgentTools::test_analyze_column_tool -vv
+pytest tests/ -vv
 ```
 
-### Slow responses
+## � Learn More
 
-**Streamlit caching**:
+**Understand the code**:
+1. Read `app.py` - how Streamlit UI works
+2. Check `data_analysis_agent/agent.py` - AI configuration
+3. Run tests - verify everything works
 
-```python
-@st.cache_data
-def process_data(df):
-    return df.describe()
+**Customize it**:
+- Change agent instructions for different analysis styles
+- Add more tools (statistical tests, ML predictions)
+- Modify charts and visualizations
+- Add user authentication
 
-# Will cache results for repeated calls
-```
+**Related tutorials**:
+- Tutorial 30: Web apps with Next.js + CopilotKit
+- Tutorial 31: Lightweight UI with React + Vite
+- Tutorial 33: Slack bot integration
+- Tutorial 34: Event-driven agents with Pub/Sub
 
-## 📖 Learning Path
+## � Resources
 
-1. **Quick Start** (10 min): Upload CSV, ask questions
-2. **Architecture** (20 min): Read `app.py` and understand flow
-3. **Agent Tools** (15 min): Study `data_analysis_agent/agent.py`
-4. **Testing** (10 min): Run and understand tests
-5. **Customization** (30+ min): Modify and extend
-
-## 🎯 Next Steps
-
-### Extend the App
-
-1. **Add more tools**:
-
-   - Visualization generation
-   - Statistical tests
-   - Machine learning predictions
-
-2. **Enhance UI**:
-
-   - Custom CSS styling
-   - Export reports
-   - Data validation
-
-3. **Production features**:
-   - User authentication
-   - Data persistence
-   - Rate limiting
-   - Monitoring
-
-### Related Tutorials
-
-- **Tutorial 30**: Next.js + CopilotKit (web apps)
-- **Tutorial 31**: React Vite + CopilotKit (lightweight)
-- **Tutorial 33**: Slack bot integration
-- **Tutorial 34**: Google Cloud Pub/Sub events
-
-## 📚 Resources
-
-- [Streamlit Docs](https://docs.streamlit.io)
-- [Google ADK Docs](https://google.github.io/adk-docs/)
-- [Google AI Studio](https://makersuite.google.com/app/apikey)
+- [Streamlit Documentation](https://docs.streamlit.io)
+- [Google ADK](https://google.github.io/adk-docs/)
 - [Gemini API](https://ai.google.dev/)
-- [Pandas Documentation](https://pandas.pydata.org/docs/)
-
-## 🤝 Contributing
-
-Found an issue? Have an improvement?
-
-1. Check existing issues
-2. Create detailed bug reports
-3. Suggest enhancements
-4. Submit pull requests
-
-## 📄 License
-
-MIT License - See LICENSE file for details
-
-## 🙏 Acknowledgments
-
-- Google ADK Team
-- Streamlit Community
-- Pandas & NumPy creators
-- Tutorial 32 Contributors
+- [Pandas Guide](https://pandas.pydata.org/docs/)
 
 ---
 
-**🎉 Happy analyzing!**
+**Questions?** Open an issue on [GitHub](https://github.com/raphaelmansuy/adk_training)
 
-For questions or feedback, open an issue on the [ADK Training Repository](https://github.com/raphaelmansuy/adk_training).
+**Ready to build?** Start with `make dev` 🚀
