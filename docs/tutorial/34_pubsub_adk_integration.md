@@ -5,11 +5,17 @@ description: "Build scalable, event-driven document processing pipelines with Go
 sidebar_label: "34. Pub/Sub Event Agents"
 sidebar_position: 34
 tags: ["cloud", "pubsub", "event-driven", "python", "scalability"]
-keywords: ["pubsub", "google cloud", "event-driven", "agent", "python", "scalability"]
+keywords:
+  ["pubsub", "google cloud", "event-driven", "agent", "python", "scalability"]
 status: "updated"
 difficulty: "advanced"
 estimated_time: "2 hours"
-prerequisites: ["Tutorial 01: Hello World Agent", "Google Cloud project", "Python experience"]
+prerequisites:
+  [
+    "Tutorial 01: Hello World Agent",
+    "Google Cloud project",
+    "Python experience",
+  ]
 learning_objectives:
   - "Build event-driven architectures with Pub/Sub"
   - "Scale ADK agents to millions of messages"
@@ -28,6 +34,28 @@ current as of October 2025.
 **Estimated Reading Time**: 70-80 minutes  
 **Difficulty Level**: Advanced  
 **Prerequisites**: Tutorial 29 (UI Integration Intro), Tutorial 1-3 (ADK Basics), Google Cloud project
+
+---
+
+## 🚀 Quick Start - Working Implementation
+
+The easiest way to get started is with our **complete working implementation**:
+
+```bash
+cd tutorial_implementation/tutorial34
+make setup      # Install dependencies
+make test       # Run all tests
+make demo       # See example usage
+```
+
+[📁 View Full Implementation](../../tutorial_implementation/tutorial34)
+
+**What's included:**
+
+- ✅ Complete `pubsub_agent` with document processing tools
+- ✅ 66 comprehensive tests (all passing)
+- ✅ Tool functions: summarization, entity extraction, classification
+- ✅ Real-world example code ready to run
 
 ---
 
@@ -61,7 +89,7 @@ In this tutorial, you'll build a **scalable document processing system** using:
 
 ```text
 ┌─────────────────────────────────────────────────────────────┐
-│  Document Processing Pipeline                                │
+│  Document Processing Pipeline                               │
 │  ├─ Upload documents (PDF, DOCX, TXT)                       │
 │  ├─ Asynchronous agent processing                           │
 │  ├─ Multiple subscribers (summarize, extract, classify)     │
@@ -383,9 +411,9 @@ Format as JSON."""
                 app_name='document_processor',
                 user_id='system'
             )
-            
+
             new_message = types.Content(role='user', parts=[types.Part(text=prompt)])
-            
+
             response_text = ""
             async for event in runner.run_async(
                 user_id='system',
@@ -394,7 +422,7 @@ Format as JSON."""
             ):
                 if event.content and event.content.parts:
                     response_text += event.content.parts[0].text
-            
+
             return response_text
 
         full_response = asyncio.run(get_response(prompt, document_id))
@@ -519,16 +547,16 @@ Result: completed
 
 ```text
 ┌─────────────────────────────────────────────────────────────┐
-│                    DOCUMENT SOURCES                          │
-│  ┌──────────────┐  ┌──────────────┐  ┌──────────────┐     │
-│  │  Web Upload  │  │  API Endpoint│  │  Cloud Storage│     │
-│  └──────┬───────┘  └──────┬───────┘  └──────┬───────┘     │
-└─────────┼──────────────────┼──────────────────┼─────────────┘
-          │                  │                  │
-          │   Publish        │   Publish        │   Trigger
-          │                  │                  │
-┌─────────▼──────────────────▼──────────────────▼─────────────┐
-│              GOOGLE CLOUD PUB/SUB                            │
+│                    DOCUMENT SOURCES                         │
+│  ┌──────────────┐  ┌──────────────┐   ┌──────────────┐      │
+│  │  Web Upload  │  │  API Endpoint│   │  Cloud Storage      │
+│  └──────┬───────┘  └──────┬───────┘   └──────┬───────┘      │
+└─────────┼─────────────────┼───────── ────────┼──────────────┘
+          │                 │                  │
+          │   Publish       │   Publish        │   Trigger
+          │                 │                  │
+┌─────────▼─────────────────▼──────────────────▼─────────────┐
+│              GOOGLE CLOUD PUB/SUB                          │
 │  ┌──────────────────────────────────────────────────────┐  │
 │  │  Topic: document-uploads                             │  │
 │  │  ├─ Message queue (buffered)                         │  │
@@ -543,16 +571,16 @@ Result: completed
       │               │               │               │
 ┌─────▼──────┐  ┌────▼────┐  ┌───────▼──────┐  ┌────▼────┐
 │ Summarizer │  │Extractor│  │  Classifier  │  │ Notifier│
-│ Subscriber │  │Subscriber│  │  Subscriber  │  │Subscriber│
+│ Subscriber │  │Subscriber  │  Subscriber  │  │Subscriber
 │            │  │         │  │              │  │         │
 │ ADK Agent  │  │ADK Agent│  │  ADK Agent   │  │ Webhook │
-│ (Summary)  │  │(Entities)│  │ (Category)   │  │ (Email) │
+│ (Summary)  │  │(Entities)  │ (Category)   │  │ (Email) │
 └────────────┘  └─────────┘  └──────────────┘  └─────────┘
       │               │               │               │
       │   Store       │   Store       │   Store       │   Send
       │               │               │               │
 ┌─────▼───────────────▼───────────────▼───────────────▼───────┐
-│              RESULTS & NOTIFICATIONS                         │
+│              RESULTS & NOTIFICATIONS                        │
 │  ├─ Firestore (structured data)                             │
 │  ├─ Cloud Storage (processed documents)                     │
 │  └─ WebSocket (real-time UI updates)                        │
@@ -691,12 +719,12 @@ def summarize_document(content: str, doc_id: str = 'default') -> str:
             app_name='summarizer',
             user_id='system'
         )
-        
+
         new_message = types.Content(
             role='user',
             parts=[types.Part(text=f"Summarize this document:\n\n{text}")]
         )
-        
+
         summary_text = ""
         async for event in runner.run_async(
             user_id='system',
@@ -705,7 +733,7 @@ def summarize_document(content: str, doc_id: str = 'default') -> str:
         ):
             if event.content and event.content.parts:
                 summary_text += event.content.parts[0].text
-        
+
         return summary_text
 
     summary = asyncio.run(get_summary(content))
@@ -894,12 +922,12 @@ def extract_entities(content: str, doc_id: str = 'default') -> dict:
             app_name='entity_extractor',
             user_id='system'
         )
-        
+
         new_message = types.Content(
             role='user',
             parts=[types.Part(text=f"Extract all entities from:\n\n{text}")]
         )
-        
+
         result_text = ""
         async for event in runner.run_async(
             user_id='system',
@@ -908,7 +936,7 @@ def extract_entities(content: str, doc_id: str = 'default') -> dict:
         ):
             if event.content and event.content.parts:
                 result_text += event.content.parts[0].text
-        
+
         return result_text
 
     result = asyncio.run(get_entities(content))
@@ -1180,7 +1208,7 @@ if __name__ == "__main__":
           .sort(
             (a, b) =>
               new Date(b.updated_at || b.uploaded_at) -
-              new Date(a.updated_at || a.uploaded_at),
+              new Date(a.updated_at || a.uploaded_at)
           )
           .map(
             (doc) => `
@@ -1188,10 +1216,19 @@ if __name__ == "__main__":
                         <h3>${doc.document_id}</h3>
                         <p><strong>Status:</strong> ${doc.status}</p>
                         <p><strong>Type:</strong> ${doc.type || "Unknown"}</p>
-                        ${doc.result ? `<p><strong>Result:</strong> ${doc.result.substring(0, 100)}...</p>` : ""}
-                        <p class="timestamp">${doc.updated_at || doc.uploaded_at}</p>
+                        ${
+                          doc.result
+                            ? `<p><strong>Result:</strong> ${doc.result.substring(
+                                0,
+                                100
+                              )}...</p>`
+                            : ""
+                        }
+                        <p class="timestamp">${
+                          doc.updated_at || doc.uploaded_at
+                        }</p>
                     </div>
-                `,
+                `
           )
           .join("");
       }
@@ -1361,7 +1398,7 @@ def publish_with_priority(document_id, content, priority="normal"):
 
 ```text
 ┌────────────────────────────────────────────────────────────┐
-│  Cloud Run (Auto-scaling)                                   │
+│  Cloud Run (Auto-scaling)                                  │
 │  ├─ Publisher Service (HTTP API)                           │
 │  ├─ Summarizer Service (Pub/Sub triggered)                 │
 │  ├─ Extractor Service (Pub/Sub triggered)                  │
@@ -1370,7 +1407,7 @@ def publish_with_priority(document_id, content, priority="normal"):
                             ▲
                             │
 ┌───────────────────────────┴────────────────────────────────┐
-│  Pub/Sub                                                    │
+│  Pub/Sub                                                   │
 │  ├─ document-uploads (main topic)                          │
 │  ├─ document-results (processed results)                   │
 │  └─ document-dlq (failed messages)                         │

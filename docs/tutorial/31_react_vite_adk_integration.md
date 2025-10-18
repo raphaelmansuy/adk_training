@@ -86,8 +86,8 @@ In this tutorial, you'll build a **real-time data analysis dashboard** using:
 
 ```text
 ┌─────────────────────────────────────────────────────────────┐
-│  Data Analysis Dashboard                                     │
-│  ├─ Upload CSV files                                         │
+│  Data Analysis Dashboard                                    │
+│  ├─ Upload CSV files                                        │
 │  ├─ Ask questions about data ("What's the trend?")          │
 │  ├─ Agent analyzes and generates insights                   │
 │  ├─ Interactive charts render inline                        │
@@ -161,34 +161,34 @@ User Uploads CSV → Agent Loads Data → User Asks Questions → Agent Analyzes
 
 ```text
 ┌─────────────────────────────────────────────────────────────┐
-│                    USER'S BROWSER                            │
-│  ┌──────────────────────────────────────────────────────┐  │
-│  │  Vite Dev Server (Port 5173)                         │  │
-│  │  ├─ React 18 SPA (NO CopilotKit)                    │  │
-│  │  ├─ Custom chat UI                                  │  │
-│  │  ├─ Manual fetch() API calls                        │  │
-│  │  ├─ SSE streaming parser                            │  │
-│  │  ├─ Fixed sidebar for charts                        │  │
-│  │  └─ Hot Module Replacement (HMR)                    │  │
-│  └──────────────────────────────────────────────────────┘  │
+│                    USER'S BROWSER                           │
+│  ┌──────────────────────────────────────────────────────┐   │
+│  │  Vite Dev Server (Port 5173)                         │   │
+│  │  ├─ React 18 SPA (NO CopilotKit)                     │   │
+│  │  ├─ Custom chat UI                                   │   │
+│  │  ├─ Manual fetch() API calls                         │   │
+│  │  ├─ SSE streaming parser                             │   │
+│  │  ├─ Fixed sidebar for charts                         │   │
+│  │  └─ Hot Module Replacement (HMR)                     │   │
+│  └──────────────────────────────────────────────────────┘   │
 └───────────────────────┬─────────────────────────────────────┘
                         │
                         │ Direct HTTP + SSE
                         │ http://localhost:8000/api/copilotkit
                         │
 ┌───────────────────────▼─────────────────────────────────────┐
-│            BACKEND SERVER (Port 8000)                        │
-│  ┌──────────────────────────────────────────────────────┐  │
-│  │  FastAPI + ag_ui_adk (AG-UI middleware)              │  │
-│  │  ├─ ADKAgent wrapping Agent                          │  │
-│  │  │  └─ Agent: gemini-2.0-flash-exp                   │  │
-│  │  ├─ pandas tools (3 functions)                       │  │
-│  │  │  ├─ load_csv_data                                 │  │
-│  │  │  ├─ analyze_data                                  │  │
-│  │  │  └─ create_chart → TOOL_CALL_RESULT               │  │
-│  │  └─ In-memory file storage (datasets dict)           │  │
-│  └──────────────────┬───────────────────────────────────┘  │
-└─────────────────────┴─────────────────────────────────────┘
+│            BACKEND SERVER (Port 8000)                       │
+│  ┌──────────────────────────────────────────────────────┐   │
+│  │  FastAPI + ag_ui_adk (AG-UI middleware)              │   │
+│  │  ├─ ADKAgent wrapping Agent                          │   │
+│  │  │  └─ Agent: gemini-2.0-flash-exp                   │   │
+│  │  ├─ pandas tools (3 functions)                       │   │
+│  │  │  ├─ load_csv_data                                 │   │
+│  │  │  ├─ analyze_data                                  │   │
+│  │  │  └─ create_chart → TOOL_CALL_RESULT               │   │
+│  │  └─ In-memory file storage (datasets dict)           │   │
+│  └──────────────────┬───────────────────────────────────┘   │
+└─────────────────────┴───────────────────────────────────────┘
 ```
 
 ### SSE Streaming Workflow

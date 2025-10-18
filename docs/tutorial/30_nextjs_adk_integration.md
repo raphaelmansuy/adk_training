@@ -38,6 +38,7 @@ implementation_link: "https://github.com/raphaelmansuy/adk_training/tree/main/tu
 👉 [View Implementation](./../../tutorial_implementation/tutorial30)
 
 The implementation includes:
+
 - ✅ Python ADK agent with customer support tools
 - ✅ FastAPI backend with AG-UI integration
 - ✅ Next.js 15 frontend with CopilotKit
@@ -46,6 +47,7 @@ The implementation includes:
 - ✅ Complete documentation
 
 **Quick Start:**
+
 ```bash
 cd tutorial_implementation/tutorial30
 make setup
@@ -150,7 +152,7 @@ For deployment: [Sign up at Vercel](https://vercel.com)
 
 ```text
          Quick Start Decision Flow
-         
+
                     START
                       |
                       v
@@ -395,7 +397,7 @@ def create_support_ticket(issue_description: str, priority: str = "normal") -> s
 def get_product_details(product_id: str) -> Dict[str, Any]:
     """
     Get product details from the database.
-    
+
     Returns product information that can be displayed to the user.
     The frontend will handle rendering this as a ProductCard component.
 
@@ -473,7 +475,7 @@ IMPORTANT - Advanced Features:
      b) Then call render_product_card(name, price, image, rating, inStock)
         with the product details
    - Example: "Show me product PROD-001"
-     → call get_product_details("PROD-001") 
+     → call get_product_details("PROD-001")
      → extract the product data from the result
      → call render_product_card(name="Widget Pro", price=99.99, image="...",
         rating=4.5, inStock=True)
@@ -576,7 +578,7 @@ export function ThemeToggle() {
       ? "dark"
       : "light";
     const initialTheme = savedTheme || systemTheme;
-    
+
     setTheme(initialTheme);
     document.documentElement.classList.toggle("dark", initialTheme === "dark");
   }, []);
@@ -684,7 +686,7 @@ Update `app/globals.css` with minimal, clean styles:
   * {
     border-color: hsl(var(--border));
   }
-  
+
   body {
     background: hsl(var(--background));
     color: hsl(var(--foreground));
@@ -726,7 +728,11 @@ Create `app/page.tsx`:
 "use client";
 
 import { useState, useEffect } from "react";
-import { CopilotKit, useCopilotReadable, useCopilotAction } from "@copilotkit/react-core";
+import {
+  CopilotKit,
+  useCopilotReadable,
+  useCopilotAction,
+} from "@copilotkit/react-core";
 import { CopilotChat } from "@copilotkit/react-ui";
 import "@copilotkit/react-ui/styles.css";
 import { ThemeToggle } from "@/components/ThemeToggle";
@@ -767,18 +773,44 @@ function ChatInterface() {
   useCopilotAction({
     name: "render_product_card",
     available: "remote",
-    description: "Render a product card in the chat interface with product details",
+    description:
+      "Render a product card in the chat interface with product details",
     parameters: [
-      { name: "name", type: "string", description: "Product name", required: true },
-      { name: "price", type: "number", description: "Product price in USD", required: true },
-      { name: "image", type: "string", description: "Product image URL", required: true },
-      { name: "rating", type: "number", description: "Product rating (0-5)", required: true },
-      { name: "inStock", type: "boolean", description: "Product availability", required: true },
+      {
+        name: "name",
+        type: "string",
+        description: "Product name",
+        required: true,
+      },
+      {
+        name: "price",
+        type: "number",
+        description: "Product price in USD",
+        required: true,
+      },
+      {
+        name: "image",
+        type: "string",
+        description: "Product image URL",
+        required: true,
+      },
+      {
+        name: "rating",
+        type: "number",
+        description: "Product rating (0-5)",
+        required: true,
+      },
+      {
+        name: "inStock",
+        type: "boolean",
+        description: "Product availability",
+        required: true,
+      },
     ],
     handler: async ({ name, price, image, rating, inStock }) => {
       // Update state to show the product card
       setCurrentProduct({ name, price, image, rating, inStock });
-      
+
       return `Product card displayed successfully for ${name}`;
     },
     render: ({ args, status }) => {
@@ -819,13 +851,28 @@ function ChatInterface() {
     available: "remote",
     description: "Process a refund after user approval",
     parameters: [
-      { name: "order_id", type: "string", description: "Order ID to refund", required: true },
-      { name: "amount", type: "number", description: "Refund amount", required: true },
-      { name: "reason", type: "string", description: "Refund reason", required: true },
+      {
+        name: "order_id",
+        type: "string",
+        description: "Order ID to refund",
+        required: true,
+      },
+      {
+        name: "amount",
+        type: "number",
+        description: "Refund amount",
+        required: true,
+      },
+      {
+        name: "reason",
+        type: "string",
+        description: "Refund reason",
+        required: true,
+      },
     ],
     handler: async ({ order_id, amount, reason }) => {
       setRefundRequest({ order_id, amount, reason });
-      
+
       // Return a promise that resolves when user approves/cancels
       return new Promise((resolve) => {
         (window as any).__refundPromiseResolve = resolve;
@@ -837,13 +884,27 @@ function ChatInterface() {
           <div className="p-5 border-2 border-yellow-300 dark:border-yellow-700 rounded-xl bg-gradient-to-br from-yellow-50 to-orange-50 dark:from-yellow-900/20 dark:to-orange-900/20 space-y-3 shadow-lg">
             <div className="flex items-center gap-3">
               <div className="w-10 h-10 bg-yellow-500 rounded-full flex items-center justify-center animate-pulse">
-                <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                <svg
+                  className="w-6 h-6 text-white"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2.5}
+                    d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
+                  />
                 </svg>
               </div>
               <div>
-                <h4 className="font-bold text-lg text-yellow-900 dark:text-yellow-100">Awaiting Your Approval</h4>
-                <p className="text-sm text-yellow-700 dark:text-yellow-300">Please review the modal dialog above</p>
+                <h4 className="font-bold text-lg text-yellow-900 dark:text-yellow-100">
+                  Awaiting Your Approval
+                </h4>
+                <p className="text-sm text-yellow-700 dark:text-yellow-300">
+                  Please review the modal dialog above
+                </p>
               </div>
             </div>
           </div>
@@ -853,13 +914,27 @@ function ChatInterface() {
       return (
         <div className="p-4 border-2 border-green-300 dark:border-green-700 rounded-lg bg-gradient-to-br from-green-50 to-emerald-50 dark:from-green-900/20 dark:to-emerald-900/20 flex items-center gap-3 shadow-md">
           <div className="w-10 h-10 bg-green-500 rounded-full flex items-center justify-center">
-            <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7" />
+            <svg
+              className="w-5 h-5 text-white"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2.5}
+                d="M5 13l4 4L19 7"
+              />
             </svg>
           </div>
           <div>
-            <p className="font-semibold text-green-900 dark:text-green-100">Decision Recorded</p>
-            <p className="text-sm text-green-700 dark:text-green-300">Processing your choice...</p>
+            <p className="font-semibold text-green-900 dark:text-green-100">
+              Decision Recorded
+            </p>
+            <p className="text-sm text-green-700 dark:text-green-300">
+              Processing your choice...
+            </p>
           </div>
         </div>
       );
@@ -882,7 +957,7 @@ function ChatInterface() {
         });
       }
     }
-    
+
     setRefundRequest(null);
     delete (window as any).__refundPromiseResolve;
   };
@@ -909,7 +984,7 @@ function ChatInterface() {
     <div className="flex flex-col min-h-screen">
       {/* HITL Approval Dialog */}
       {refundRequest && (
-        <div 
+        <div
           className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4"
           onClick={(e) => {
             if (e.target === e.currentTarget) {
@@ -920,31 +995,51 @@ function ChatInterface() {
           <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-2xl p-8 max-w-md w-full shadow-2xl">
             <div className="flex items-start gap-4 mb-6">
               <div className="w-14 h-14 bg-yellow-400 rounded-full flex items-center justify-center shadow-lg">
-                <svg className="w-8 h-8 text-gray-900" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                <svg
+                  className="w-8 h-8 text-gray-900"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2.5}
+                    d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
+                  />
                 </svg>
               </div>
               <div className="flex-1">
-                <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-1">Refund Approval Required</h2>
-                <p className="text-sm text-gray-600 dark:text-gray-400">Please review the details below carefully</p>
+                <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-1">
+                  Refund Approval Required
+                </h2>
+                <p className="text-sm text-gray-600 dark:text-gray-400">
+                  Please review the details below carefully
+                </p>
               </div>
             </div>
 
             <div className="space-y-3 bg-gray-50 dark:bg-gray-800 rounded-lg p-5 mb-6">
               <div className="flex justify-between items-center py-2 border-b border-gray-200 dark:border-gray-700">
-                <span className="text-sm font-medium text-gray-600 dark:text-gray-400">Order ID</span>
+                <span className="text-sm font-medium text-gray-600 dark:text-gray-400">
+                  Order ID
+                </span>
                 <span className="text-sm font-mono font-semibold text-gray-900 dark:text-gray-100 bg-gray-100 dark:bg-gray-700 px-3 py-1 rounded-md">
                   {refundRequest.order_id}
                 </span>
               </div>
               <div className="flex justify-between items-center py-2 border-b border-gray-200 dark:border-gray-700">
-                <span className="text-sm font-medium text-gray-600 dark:text-gray-400">Refund Amount</span>
+                <span className="text-sm font-medium text-gray-600 dark:text-gray-400">
+                  Refund Amount
+                </span>
                 <span className="text-2xl font-bold text-gray-900 dark:text-gray-100">
                   ${refundRequest.amount.toFixed(2)}
                 </span>
               </div>
               <div className="pt-2">
-                <span className="text-sm font-medium text-gray-600 dark:text-gray-400 block mb-2">Reason</span>
+                <span className="text-sm font-medium text-gray-600 dark:text-gray-400 block mb-2">
+                  Reason
+                </span>
                 <div className="text-sm text-gray-900 dark:text-gray-100 bg-white dark:bg-gray-900 rounded-md p-3 border border-gray-200 dark:border-gray-700">
                   {refundRequest.reason}
                 </div>
@@ -952,11 +1047,20 @@ function ChatInterface() {
             </div>
 
             <div className="flex items-start gap-3 mb-6 p-4 bg-yellow-50 dark:bg-yellow-900/20 border-l-4 border-yellow-500 rounded-r-lg shadow-sm">
-              <svg className="w-5 h-5 text-yellow-600 dark:text-yellow-400 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
-                <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />
+              <svg
+                className="w-5 h-5 text-yellow-600 dark:text-yellow-400 flex-shrink-0 mt-0.5"
+                fill="currentColor"
+                viewBox="0 0 20 20"
+              >
+                <path
+                  fillRule="evenodd"
+                  d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z"
+                  clipRule="evenodd"
+                />
               </svg>
               <p className="text-sm text-yellow-900 dark:text-yellow-100 font-medium">
-                This action cannot be undone. Approving will process the refund immediately.
+                This action cannot be undone. Approving will process the refund
+                immediately.
               </p>
             </div>
 
@@ -976,7 +1080,11 @@ function ChatInterface() {
             </div>
 
             <p className="text-xs text-center text-gray-500 dark:text-gray-400 mt-5">
-              Press <kbd className="px-2 py-1 bg-gray-100 dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded text-xs font-mono text-gray-900 dark:text-gray-100 shadow-sm">ESC</kbd> to cancel
+              Press{" "}
+              <kbd className="px-2 py-1 bg-gray-100 dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded text-xs font-mono text-gray-900 dark:text-gray-100 shadow-sm">
+                ESC
+              </kbd>{" "}
+              to cancel
             </p>
           </div>
         </div>
@@ -1028,18 +1136,18 @@ function ChatInterface() {
                   "👋 Hi! I'm your AI support assistant.\n\n" +
                   "**Try these example prompts:**\n\n" +
                   "🎨 **Generative UI**\n" +
-                  "• \"Show me product PROD-001\"\n" +
-                  "• \"Display product PROD-002\"\n\n" +
+                  '• "Show me product PROD-001"\n' +
+                  '• "Display product PROD-002"\n\n' +
                   "🔐 **Human-in-the-Loop**\n" +
-                  "• \"I want a refund for order ORD-12345\"\n" +
-                  "• \"Process a refund for my purchase\"\n\n" +
+                  '• "I want a refund for order ORD-12345"\n' +
+                  '• "Process a refund for my purchase"\n\n' +
                   "👤 **Shared State**\n" +
-                  "• \"What's my account status?\"\n" +
-                  "• \"Show me my recent orders\"\n\n" +
+                  '• "What\'s my account status?"\n' +
+                  '• "Show me my recent orders"\n\n' +
                   "📦 **General Support**\n" +
-                  "• \"What is your refund policy?\"\n" +
-                  "• \"Track my order ORD-67890\"\n" +
-                  "• \"I need help with a billing issue\"\n\n" +
+                  '• "What is your refund policy?"\n' +
+                  '• "Track my order ORD-67890"\n' +
+                  '• "I need help with a billing issue"\n\n' +
                   "💡 *Scroll down to see interactive demos of all features!*",
               }}
               className="h-full"
@@ -1072,7 +1180,7 @@ make dev
 # Terminal 1: Backend
 make dev-backend
 
-# Terminal 2: Frontend  
+# Terminal 2: Frontend
 make dev-frontend
 ```
 
@@ -1086,55 +1194,55 @@ make dev-frontend
 
 ```text
 ┌─────────────────────────────────────────────────────────────┐
-│                    USER'S BROWSER                            │
-│  ┌──────────────────────────────────────────────────────┐  │
-│  │  Next.js 15 App (Port 3000)                          │  │
-│  │  ├─ app/page.tsx                                     │  │
-│  │  │  └─ <CopilotKit> provider                        │  │
-│  │  │     └─ <CopilotChat> component                   │  │
-│  │  │                                                    │  │
-│  │  └─ @copilotkit/react-core (TypeScript SDK)         │  │
-│  │     ├─ WebSocket connection                          │  │
-│  │     ├─ Message streaming                             │  │
-│  │     └─ State management                              │  │
-│  └──────────────────────────────────────────────────────┘  │
+│                    USER'S BROWSER                           │
+│  ┌──────────────────────────────────────────────────────┐   │
+│  │  Next.js 15 App (Port 3000)                          │   │
+│  │  ├─ app/page.tsx                                     │   │
+│  │  │  └─ <CopilotKit> provider                         │   │
+│  │  │     └─ <CopilotChat> component                    │   │
+│  │  │                                                   │   │
+│  │  └─ @copilotkit/react-core (TypeScript SDK)          │   │
+│  │     ├─ WebSocket connection                          │   │
+│  │     ├─ Message streaming                             │   │
+│  │     └─ State management                              │   │
+│  └──────────────────────────────────────────────────────┘   │
 └───────────────────────┬─────────────────────────────────────┘
                         │
                         │ AG-UI Protocol (WebSocket/SSE)
                         │
 ┌───────────────────────▼─────────────────────────────────────┐
-│            BACKEND SERVER (Port 8000)                        │
-│  ┌──────────────────────────────────────────────────────┐  │
-│  │  ag_ui_adk (AG-UI Middleware)                        │  │
-│  │  ├─ FastAPI app                                      │  │
-│  │  ├─ /api/copilotkit endpoint                         │  │
-│  │  ├─ AG-UI protocol adapter                           │  │
-│  │  └─ Session management                               │  │
-│  └──────────────────────┬───────────────────────────────┘  │
+│            BACKEND SERVER (Port 8000)                       │
+│  ┌──────────────────────────────────────────────────────┐   │
+│  │  ag_ui_adk (AG-UI Middleware)                        │   │
+│  │  ├─ FastAPI app                                      │   │
+│  │  ├─ /api/copilotkit endpoint                         │   │
+│  │  ├─ AG-UI protocol adapter                           │   │
+│  │  └─ Session management                               │   │
+│  └──────────────────────┬───────────────────────────────┘   │
 │                         │                                   │
-│  ┌──────────────────────▼───────────────────────────────┐  │
-│  │  ADKAgent (wrapper)                                  │  │
-│  │  ├─ app_name: "customer_support_app"                 │  │
-│  │  ├─ user_id & session management                     │  │
-│  │  └─ Wraps LlmAgent                                   │  │
-│  └──────────────────────┬───────────────────────────────┘  │
+│  ┌──────────────────────▼───────────────────────────────┐   │
+│  │  ADKAgent (wrapper)                                  │   │
+│  │  ├─ app_name: "customer_support_app"                 │   │
+│  │  ├─ user_id & session management                     │   │
+│  │  └─ Wraps LlmAgent                                   │   │
+│  └──────────────────────┬───────────────────────────────┘   │
 │                         │                                   │
-│  ┌──────────────────────▼───────────────────────────────┐  │
-│  │  Google ADK LlmAgent                                 │  │
-│  │  ├─ model: "gemini-2.5-flash"                        │  │
-│  │  ├─ instruction: System prompt                       │  │
-│  │  └─ tools: [search_knowledge_base, lookup_order,    │  │
-│  │            create_support_ticket]                    │  │
-│  └──────────────────────┬───────────────────────────────┘  │
+│  ┌──────────────────────▼───────────────────────────────┐   │
+│  │  Google ADK LlmAgent                                 │   │
+│  │  ├─ model: "gemini-2.5-flash"                        │   │
+│  │  ├─ instruction: System prompt                       │   │
+│  │  └─ tools: [search_knowledge_base, lookup_order,     │   │
+│  │            create_support_ticket]                    │   │
+│  └──────────────────────┬───────────────────────────────┘   │
 └───────────────────────┬─┴───────────────────────────────────┘
                         │
                         │ Gemini API
                         │
 ┌───────────────────────▼─────────────────────────────────────┐
-│              GEMINI 2.0 FLASH                                │
-│  ├─ Text generation                                          │
-│  ├─ Function calling                                         │
-│  └─ Streaming responses                                      │
+│              GEMINI 2.0 FLASH                               │
+│  ├─ Text generation                                         │
+│  ├─ Function calling                                        │
+│  └─ Streaming responses                                     │
 └─────────────────────────────────────────────────────────────┘
 ```
 
@@ -1209,15 +1317,15 @@ Agent: "Our refund policy is...
 AG-UI is complementary to other agentic protocols in the ecosystem:
 
 - **MCP** (Model Context Protocol) - Gives agents tools
-- **A2A** (Agent2Agent) - Allows agents to communicate with other agents  
+- **A2A** (Agent2Agent) - Allows agents to communicate with other agents
 - **AG-UI** - Brings agents into user-facing applications
 
 ```text
                     The Agentic Protocol Stack
-                    
+
 +-----------------------------------------------------------+
 |                    USER APPLICATION                       |
-|  (React, Next.js, Streamlit, Mobile Apps)                |
+|  (React, Next.js, Streamlit, Mobile Apps)                 |
 +-----------------------------------------------------------+
                             |
                             | AG-UI Protocol
@@ -1225,7 +1333,7 @@ AG-UI is complementary to other agentic protocols in the ecosystem:
                             v
 +-----------------------------------------------------------+
 |                    AGENT FRAMEWORK                        |
-|  (Google ADK, LangGraph, CrewAI, Pydantic AI)            |
+|  (Google ADK, LangGraph, CrewAI, Pydantic AI)             |
 +-----------------------------------------------------------+
             |                           |
             | A2A Protocol              | MCP Protocol
@@ -1257,9 +1365,9 @@ AG-UI is complementary to other agentic protocols in the ecosystem:
 
 ```text
                     AG-UI Protocol Flow
-                    
+
     USER INTERACTION                EVENTS                  AGENT PROCESSING
-          
+
 +------------------+          +------------------+       +------------------+
 |   User Types     |          |  textMessage     |       |  Agent Receives  |
 |   "Help me"      |  ------> |  event created   | ----> |  user message    |
@@ -1294,17 +1402,17 @@ AG-UI is complementary to other agentic protocols in the ecosystem:
 
 AG-UI supports 15+ agent frameworks with official partnerships:
 
-| Framework | Status | Type |
-|-----------|--------|------|
-| **Google ADK** | ✅ Supported | Partnership |
-| **LangGraph** | ✅ Supported | Partnership |
-| **CrewAI** | ✅ Supported | Partnership |
-| **Pydantic AI** | ✅ Supported | 1st party |
-| **Mastra** | ✅ Supported | 1st party |
-| **LlamaIndex** | ✅ Supported | 1st party |
-| **AG2** | ✅ Supported | 1st party |
-| **Vercel AI SDK** | 🛠️ In Progress | Community |
-| **OpenAI Agent SDK** | 🛠️ In Progress | Community |
+| Framework            | Status         | Type        |
+| -------------------- | -------------- | ----------- |
+| **Google ADK**       | ✅ Supported   | Partnership |
+| **LangGraph**        | ✅ Supported   | Partnership |
+| **CrewAI**           | ✅ Supported   | Partnership |
+| **Pydantic AI**      | ✅ Supported   | 1st party   |
+| **Mastra**           | ✅ Supported   | 1st party   |
+| **LlamaIndex**       | ✅ Supported   | 1st party   |
+| **AG2**              | ✅ Supported   | 1st party   |
+| **Vercel AI SDK**    | 🛠️ In Progress | Community   |
+| **OpenAI Agent SDK** | 🛠️ In Progress | Community   |
 
 [View all supported frameworks →](https://docs.ag-ui.com/introduction#supported-frameworks)
 
@@ -1333,28 +1441,28 @@ Let's add more realistic features to our support agent.
 
 ```text
          Customer Support Agent Architecture
-         
+
 +-------------------------------------------------------+
 |                 AGENT CAPABILITIES                    |
 +-------------------------------------------------------+
 |                                                       |
-|  +------------------+    +---------------------+     |
-|  | Knowledge Base   |    | Order Management    |     |
-|  | Search           |    | System              |     |
-|  |                  |    |                     |     |
-|  | - FAQs           |    | - Status Lookup     |     |
-|  | - Policies       |    | - Tracking Info     |     |
-|  | - Documentation  |    | - Order History     |     |
-|  +------------------+    +---------------------+     |
+|  +------------------+    +---------------------+      |
+|  | Knowledge Base   |    | Order Management    |      |
+|  | Search           |    | System              |      |
+|  |                  |    |                     |      |
+|  | - FAQs           |    | - Status Lookup     |      |
+|  | - Policies       |    | - Tracking Info     |      |
+|  | - Documentation  |    | - Order History     |      |
+|  +------------------+    +---------------------+      |
 |                                                       |
-|  +------------------+    +---------------------+     |
-|  | Support Ticket   |    | Customer Context    |     |
-|  | System           |    | Management          |     |
-|  |                  |    |                     |     |
-|  | - Create Tickets |    | - User Preferences  |     |
-|  | - Set Priority   |    | - Conversation      |     |
-|  | - Route to Team  |    | - Session State     |     |
-|  +------------------+    +---------------------+     |
+|  +------------------+    +---------------------+      |
+|  | Support Ticket   |    | Customer Context    |      |
+|  | System           |    | Management          |      |
+|  |                  |    |                     |      |
+|  | - Create Tickets |    | - User Preferences  |      |
+|  | - Set Priority   |    | - Conversation      |      |
+|  | - Route to Team  |    | - Session State     |      |
+|  +------------------+    +---------------------+      |
 |                                                       |
 +-------------------------------------------------------+
                          |
@@ -1621,6 +1729,7 @@ Remember: You represent TechCo's commitment to excellent customer service!""",
 All three advanced features are **fully implemented** in the working example at `/tutorial_implementation/tutorial30/nextjs_frontend/app/page.tsx`.
 
 **Try them now:**
+
 ```bash
 cd tutorial_implementation/tutorial30
 make dev
@@ -1630,11 +1739,11 @@ make dev
 - 🎨 **Generative UI**: "Show me product PROD-001" → Beautiful product card renders
 - 🔐 **Human-in-the-Loop**: "I want a refund for ORD-12345" → Approval modal appears
 - 👤 **Shared State**: "What's my account status?" → Agent knows you're John Doe
-:::
+  :::
 
 ```text
          Advanced Features Architecture
-         
+
 +--------------------------------------------------------+
 |                   Your Application                     |
 +--------------------------------------------------------+
@@ -1673,12 +1782,14 @@ make dev
 :::success Fully Implemented in Tutorial 30
 
 The working Generative UI implementation renders beautiful product cards:
+
 - ✅ **ProductCard component** with responsive design
 - ✅ **useCopilotAction** registration with proper render function
 - ✅ **Dynamic content** with product images, pricing, ratings
 - ✅ **Dark mode support** with Tailwind classes
 
 **Try it:**
+
 ```bash
 cd tutorial_implementation/tutorial30
 make dev
@@ -1718,7 +1829,7 @@ function ChatInterface() {
     handler: async ({ product_id, name, price, image, rating, in_stock }) => {
       // Store product data to trigger render
       setCurrentProduct({ product_id, name, price, image, rating, in_stock });
-      
+
       return `Product card rendered for ${name}`;
     },
     // Render function shows the UI in chat
@@ -1754,20 +1865,21 @@ interface ProductCardProps {
   in_stock: boolean;
 }
 
-export function ProductCard({ name, price, image, rating, in_stock }: ProductCardProps) {
+export function ProductCard({
+  name,
+  price,
+  image,
+  rating,
+  in_stock,
+}: ProductCardProps) {
   return (
     <div className="border border-gray-200 dark:border-gray-700 rounded-xl p-5 bg-white dark:bg-gray-800 shadow-lg max-w-sm">
       <div className="relative w-full h-48 mb-4 rounded-lg overflow-hidden">
-        <Image
-          src={image}
-          alt={name}
-          fill
-          className="object-cover"
-        />
+        <Image src={image} alt={name} fill className="object-cover" />
       </div>
-      
+
       <h3 className="font-bold text-xl mb-2">{name}</h3>
-      
+
       <div className="flex items-center justify-between mb-3">
         <span className="text-3xl font-bold text-green-600 dark:text-green-500">
           ${price.toFixed(2)}
@@ -1776,7 +1888,7 @@ export function ProductCard({ name, price, image, rating, in_stock }: ProductCar
           ⭐ {rating.toFixed(1)}
         </span>
       </div>
-      
+
       {in_stock ? (
         <span className="inline-block px-4 py-2 bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200 rounded-full text-sm font-semibold">
           ✓ In Stock
@@ -1823,6 +1935,7 @@ Now when agent mentions products, gorgeous cards render inline! 🎨
 :::success Fully Implemented in Tutorial 30
 
 The working HITL implementation includes:
+
 - ✅ **Professional modal dialog** with solid design
 - ✅ **Keyboard shortcuts** (ESC to cancel, Enter to approve)
 - ✅ **Promise-based flow** that blocks agent until user decides
@@ -1830,6 +1943,7 @@ The working HITL implementation includes:
 - ✅ **Full dark mode support**
 
 **See it in action:**
+
 ```bash
 cd tutorial_implementation/tutorial30
 make dev
@@ -1838,17 +1952,18 @@ make dev
 # Beautiful modal appears for approval! 🎉
 ```
 
-**Implementation details:** 
+**Implementation details:**
+
 - Frontend: `nextjs_frontend/app/page.tsx` (lines 99-279)
 - Backend: Agent does NOT have `process_refund` tool (frontend-only action)
 - Pattern: `available: "remote"` + Promise + React state + modal overlay
-:::
+  :::
 
 Let users approve sensitive actions with a professional approval modal:
 
 ```text
          Human-in-the-Loop Workflow
-         
+
 +----------------------+       +----------------------+
 |  Agent Determines    |       |  User Interface      |
 |  Action Needed       |       |                      |
@@ -1913,10 +2028,10 @@ function ChatInterface() {
     ],
     handler: async ({ order_id, amount, reason }) => {
       console.log("🔍 HITL handler called with:", { order_id, amount, reason });
-      
+
       // Store the refund request to show in the dialog
       setRefundRequest({ order_id, amount, reason });
-      
+
       // Return a promise that resolves when user approves/cancels
       return new Promise((resolve) => {
         // We'll resolve this in the dialog buttons
@@ -1925,30 +2040,51 @@ function ChatInterface() {
     },
     render: ({ args, status }) => {
       console.log("🔍 HITL render - Status:", status, "Args:", args);
-      
+
       if (status !== "complete") {
         // Show loading while waiting for user decision
         return (
           <div className="p-5 border-2 border-yellow-300 dark:border-yellow-700 rounded-xl bg-gradient-to-br from-yellow-50 to-orange-50 dark:from-yellow-900/20 dark:to-orange-900/20 space-y-3 shadow-lg">
             <div className="flex items-center gap-3">
               <div className="w-10 h-10 bg-yellow-500 rounded-full flex items-center justify-center animate-pulse">
-                <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                <svg
+                  className="w-6 h-6 text-white"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
+                  />
                 </svg>
               </div>
               <div>
-                <h4 className="font-bold text-lg text-yellow-900 dark:text-yellow-100">Awaiting Your Approval</h4>
-                <p className="text-sm text-yellow-700 dark:text-yellow-300">Please review the modal dialog above</p>
+                <h4 className="font-bold text-lg text-yellow-900 dark:text-yellow-100">
+                  Awaiting Your Approval
+                </h4>
+                <p className="text-sm text-yellow-700 dark:text-yellow-300">
+                  Please review the modal dialog above
+                </p>
               </div>
             </div>
             <div className="pl-13 space-y-1">
               <div className="flex items-center gap-2 text-sm text-yellow-800 dark:text-yellow-200">
                 <div className="w-2 h-2 bg-yellow-500 rounded-full animate-pulse"></div>
-                <span>Order: <strong>{args.order_id}</strong></span>
+                <span>
+                  Order: <strong>{args.order_id}</strong>
+                </span>
               </div>
               <div className="flex items-center gap-2 text-sm text-yellow-800 dark:text-yellow-200">
-                <div className="w-2 h-2 bg-yellow-500 rounded-full animate-pulse" style={{ animationDelay: "0.2s" }}></div>
-                <span>Amount: <strong>${args.amount}</strong></span>
+                <div
+                  className="w-2 h-2 bg-yellow-500 rounded-full animate-pulse"
+                  style={{ animationDelay: "0.2s" }}
+                ></div>
+                <span>
+                  Amount: <strong>${args.amount}</strong>
+                </span>
               </div>
             </div>
           </div>
@@ -1958,13 +2094,27 @@ function ChatInterface() {
       return (
         <div className="p-4 border-2 border-green-300 dark:border-green-700 rounded-lg bg-gradient-to-br from-green-50 to-emerald-50 dark:from-green-900/20 dark:to-emerald-900/20 flex items-center gap-3 shadow-md">
           <div className="w-10 h-10 bg-green-500 rounded-full flex items-center justify-center">
-            <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7" />
+            <svg
+              className="w-6 h-6 text-white"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2.5}
+                d="M5 13l4 4L19 7"
+              />
             </svg>
           </div>
           <div>
-            <p className="font-semibold text-green-900 dark:text-green-100">Decision Recorded</p>
-            <p className="text-sm text-green-700 dark:text-green-300">Processing your choice...</p>
+            <p className="font-semibold text-green-900 dark:text-green-100">
+              Decision Recorded
+            </p>
+            <p className="text-sm text-green-700 dark:text-green-300">
+              Processing your choice...
+            </p>
           </div>
         </div>
       );
@@ -1974,7 +2124,7 @@ function ChatInterface() {
   // Render approval dialog when refundRequest is set
   const handleRefundApproval = async (approved: boolean) => {
     console.log("🔍 User decision:", approved ? "APPROVED" : "CANCELLED");
-    
+
     const resolve = (window as any).__refundPromiseResolve;
     if (resolve && refundRequest) {
       if (approved) {
@@ -2006,7 +2156,7 @@ function ChatInterface() {
         });
       }
     }
-    
+
     setRefundRequest(null);
     delete (window as any).__refundPromiseResolve;
   };
@@ -2033,7 +2183,7 @@ function ChatInterface() {
     <div>
       {/* HITL Approval Dialog - Enhanced UX Modal */}
       {refundRequest && (
-        <div 
+        <div
           className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4 animate-in fade-in duration-200"
           onClick={(e) => {
             // Close modal if clicking backdrop
@@ -2046,32 +2196,52 @@ function ChatInterface() {
             {/* Header with icon */}
             <div className="flex items-start gap-4 mb-6">
               <div className="flex-shrink-0 w-14 h-14 bg-yellow-400 dark:bg-yellow-500 rounded-full flex items-center justify-center shadow-lg">
-                <svg className="w-8 h-8 text-gray-900 dark:text-gray-900" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                <svg
+                  className="w-8 h-8 text-gray-900 dark:text-gray-900"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2.5}
+                    d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
+                  />
                 </svg>
               </div>
               <div className="flex-1">
-                <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-1">Refund Approval Required</h2>
-                <p className="text-sm text-gray-600 dark:text-gray-400">Please review the details below carefully</p>
+                <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-1">
+                  Refund Approval Required
+                </h2>
+                <p className="text-sm text-gray-600 dark:text-gray-400">
+                  Please review the details below carefully
+                </p>
               </div>
             </div>
 
             {/* Refund details card */}
             <div className="space-y-3 bg-gray-50 dark:bg-gray-800 rounded-lg p-5 mb-6 border border-gray-200 dark:border-gray-700">
               <div className="flex justify-between items-center py-2 border-b border-gray-200 dark:border-gray-700">
-                <span className="text-sm font-medium text-gray-600 dark:text-gray-400">Order ID</span>
+                <span className="text-sm font-medium text-gray-600 dark:text-gray-400">
+                  Order ID
+                </span>
                 <span className="text-sm font-mono font-semibold text-gray-900 dark:text-gray-100 bg-gray-100 dark:bg-gray-700 px-3 py-1.5 rounded-md">
                   {refundRequest.order_id}
                 </span>
               </div>
               <div className="flex justify-between items-center py-2 border-b border-gray-200 dark:border-gray-700">
-                <span className="text-sm font-medium text-gray-600 dark:text-gray-400">Refund Amount</span>
+                <span className="text-sm font-medium text-gray-600 dark:text-gray-400">
+                  Refund Amount
+                </span>
                 <span className="text-2xl font-bold text-gray-900 dark:text-gray-100">
                   ${refundRequest.amount.toFixed(2)}
                 </span>
               </div>
               <div className="pt-2">
-                <span className="text-sm font-medium text-gray-600 dark:text-gray-400 block mb-2">Reason</span>
+                <span className="text-sm font-medium text-gray-600 dark:text-gray-400 block mb-2">
+                  Reason
+                </span>
                 <div className="text-sm text-gray-900 dark:text-gray-100 bg-white dark:bg-gray-900 rounded-md p-3 border border-gray-200 dark:border-gray-700">
                   {refundRequest.reason}
                 </div>
@@ -2080,11 +2250,20 @@ function ChatInterface() {
 
             {/* Warning message */}
             <div className="flex items-start gap-3 mb-6 p-4 bg-yellow-50 dark:bg-yellow-900/20 border-l-4 border-yellow-500 rounded-r-lg shadow-sm">
-              <svg className="w-5 h-5 text-yellow-600 dark:text-yellow-400 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
-                <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />
+              <svg
+                className="w-5 h-5 text-yellow-600 dark:text-yellow-400 flex-shrink-0 mt-0.5"
+                fill="currentColor"
+                viewBox="0 0 20 20"
+              >
+                <path
+                  fillRule="evenodd"
+                  d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z"
+                  clipRule="evenodd"
+                />
               </svg>
               <p className="text-sm text-yellow-900 dark:text-yellow-100 font-medium">
-                This action cannot be undone. Approving will process the refund immediately.
+                This action cannot be undone. Approving will process the refund
+                immediately.
               </p>
             </div>
 
@@ -2094,8 +2273,18 @@ function ChatInterface() {
                 onClick={() => handleRefundApproval(false)}
                 className="flex-1 px-6 py-3.5 bg-gray-200 hover:bg-gray-300 dark:bg-gray-700 dark:hover:bg-gray-600 text-gray-900 dark:text-gray-100 rounded-xl font-bold transition-all duration-200 hover:scale-105 active:scale-95 flex items-center justify-center gap-2 shadow-md"
               >
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M6 18L18 6M6 6l12 12" />
+                <svg
+                  className="w-5 h-5"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2.5}
+                    d="M6 18L18 6M6 6l12 12"
+                  />
                 </svg>
                 Cancel
               </button>
@@ -2103,8 +2292,18 @@ function ChatInterface() {
                 onClick={() => handleRefundApproval(true)}
                 className="flex-1 px-6 py-3.5 bg-green-600 hover:bg-green-700 dark:bg-green-600 dark:hover:bg-green-500 text-white rounded-xl font-bold transition-all duration-200 hover:scale-105 active:scale-95 flex items-center justify-center gap-2 shadow-lg"
               >
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7" />
+                <svg
+                  className="w-5 h-5"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2.5}
+                    d="M5 13l4 4L19 7"
+                  />
                 </svg>
                 Approve Refund
               </button>
@@ -2112,7 +2311,11 @@ function ChatInterface() {
 
             {/* ESC hint */}
             <p className="text-xs text-center text-gray-500 dark:text-gray-400 mt-5">
-              Press <kbd className="px-2 py-1 bg-gray-100 dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded text-xs font-mono text-gray-900 dark:text-gray-100 shadow-sm">ESC</kbd> to cancel
+              Press{" "}
+              <kbd className="px-2 py-1 bg-gray-100 dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded text-xs font-mono text-gray-900 dark:text-gray-100 shadow-sm">
+                ESC
+              </kbd>{" "}
+              to cancel
             </p>
           </div>
         </div>
@@ -2149,11 +2352,13 @@ User: "100, items arrived broken"
 :::success Fully Implemented in Tutorial 30
 
 Shared state works seamlessly with `useCopilotReadable`:
+
 - ✅ **User context** automatically available to agent
 - ✅ **Real-time sync** when state changes
 - ✅ **No manual passing** of data required
 
 **Try it:**
+
 ```bash
 cd tutorial_implementation/tutorial30
 make dev
@@ -2206,8 +2411,8 @@ export default function Home() {
 ```text
 User: "What's my account status?"
 
-Agent Response: "Hi John! You have a Premium account with email 
-john@example.com. I see you have 2 orders: ORD-12345 and ORD-67890. 
+Agent Response: "Hi John! You have a Premium account with email
+john@example.com. I see you have 2 orders: ORD-12345 and ORD-67890.
 Would you like to check on any of them?"
 ```
 
@@ -2275,9 +2480,9 @@ This enables truly context-aware conversations without manual data passing! 🚀
 
 ```text
               Deployment Architecture
-              
+
    LOCAL DEVELOPMENT           PRODUCTION DEPLOYMENT
-   
+
 +-------------------+       +-------------------+
 |  Developer        |       |  Vercel CDN       |
 |  Laptop           |       |  (Global Edge)    |
@@ -2389,7 +2594,7 @@ URL: `https://customer-support-bot.vercel.app`
 
 ```text
          Production Deployment Checklist
-         
+
                     START
                       |
                       v
@@ -2520,7 +2725,7 @@ async def global_exception_handler(request, exc):
 
 ```text
              Troubleshooting Decision Tree
-             
+
                     START
                       |
                       v
@@ -2534,11 +2739,11 @@ async def global_exception_handler(request, exc):
     | Messages sent?   |  | Check WebSocket URL  |
     +------------------+  | /api/copilotkit path |
               |           +----------------------+
-          YES |                      
-              v              
-    +------------------+  
-    | Agent responds?  |  
-    +------------------+  
+          YES |
+              v
+    +------------------+
+    | Agent responds?  |
+    +------------------+
          |          |
      YES |          | NO
          v          v

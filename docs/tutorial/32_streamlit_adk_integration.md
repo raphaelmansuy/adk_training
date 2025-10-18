@@ -290,14 +290,14 @@ with st.status("Processing...", expanded=False) as status:
 
 ```text
 ┌─────────────────────────────────────────────────────────────┐
-│                    USER'S BROWSER                            │
-│  ┌──────────────────────────────────────────────────────┐  │
-│  │  Streamlit App (Port 8501)                           │  │
-│  │  ├─ Chat UI (st.chat_message, st.chat_input)        │  │
-│  │  ├─ File upload (st.file_uploader)                   │  │
-│  │  ├─ Data display (st.dataframe)                      │  │
-│  │  └─ Session state (st.session_state)                 │  │
-│  └──────────────────────────────────────────────────────┘  │
+│                    USER'S BROWSER                           │
+│  ┌──────────────────────────────────────────────────────┐   │
+│  │  Streamlit App (Port 8501)                           │   │
+│  │  ├─ Chat UI (st.chat_message, st.chat_input)         │   │
+│  │  ├─ File upload (st.file_uploader)                   │   │
+│  │  ├─ Data display (st.dataframe)                      │   │
+│  │  └─ Session state (st.session_state)                 │   │
+│  └──────────────────────────────────────────────────────┘   │
 └───────────────────────┬─────────────────────────────────────┘
                         │
                         │ WebSocket (Streamlit protocol)

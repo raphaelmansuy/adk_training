@@ -31,9 +31,7 @@ learning_objectives:
 implementation_link: "https://github.com/raphaelmansuy/adk_training/tree/main/tutorial_implementation/tutorial28"
 ---
 
-
 # Tutorial 28: Using Other LLMs with LiteLLM
-
 
 **Goal**: Use OpenAI, Claude, Ollama, and other LLMs in your ADK agents via LiteLLM
 
@@ -153,7 +151,7 @@ async def main():
         role='user',
         parts=[types.Part(text=query)]
     )
-    
+
     async for event in runner.run_async(
         user_id='user_001',
         session_id=session.id,
@@ -302,7 +300,7 @@ is intuitive and the speed is impressive. Highly recommended!"
         role='user',
         parts=[types.Part(text=query)]
     )
-    
+
     async for event in runner.run_async(
         user_id='user_001',
         session_id=session.id,
@@ -513,7 +511,7 @@ async def main():
         role='user',
         parts=[types.Part(text=query)]
     )
-    
+
     async for event in runner.run_async(
         user_id='user_001',
         session_id=session.id,
@@ -561,15 +559,15 @@ of 72°F and 45% humidity. It's a beautiful day!
 
 ### Popular Ollama Models
 
-| Model                   | Size   | Best For                        | GPU RAM |
-| ----------------------- | ------ | ------------------------------- | ------- |
-| `ollama_chat/granite4:latest` | 8B    | IBM Granite, strong reasoning   | 12GB    |
-| `ollama_chat/llama3.3`  | 70B    | General tasks, strong reasoning | 40GB+   |
-| `ollama_chat/llama3.2`  | 3B     | Fast, low resource              | 4GB     |
-| `ollama_chat/mistral`   | 7B     | Balanced speed/quality          | 8GB     |
-| `ollama_chat/phi4`      | 14B    | Coding, STEM                    | 16GB    |
-| `ollama_chat/gemma2`    | 9B     | Google, instruction following   | 12GB    |
-| `ollama_chat/qwen2.5`   | 7B-72B | Multilingual                    | 8-40GB  |
+| Model                         | Size   | Best For                        | GPU RAM |
+| ----------------------------- | ------ | ------------------------------- | ------- |
+| `ollama_chat/granite4:latest` | 8B     | IBM Granite, strong reasoning   | 12GB    |
+| `ollama_chat/llama3.3`        | 70B    | General tasks, strong reasoning | 40GB+   |
+| `ollama_chat/llama3.2`        | 3B     | Fast, low resource              | 4GB     |
+| `ollama_chat/mistral`         | 7B     | Balanced speed/quality          | 8GB     |
+| `ollama_chat/phi4`            | 14B    | Coding, STEM                    | 16GB    |
+| `ollama_chat/gemma2`          | 9B     | Google, instruction following   | 12GB    |
+| `ollama_chat/qwen2.5`         | 7B-72B | Multilingual                    | 8-40GB  |
 
 **Model string format**: `ollama_chat/[model-name]` ⚠️ NOT `ollama/`!
 
@@ -666,7 +664,7 @@ async def main():
         role='user',
         parts=[types.Part(text=query)]
     )
-    
+
     async for event in runner.run_async(
         user_id='user_001',
         session_id=session.id,
@@ -753,7 +751,7 @@ async def main():
         role='user',
         parts=[types.Part(text=query)]
     )
-    
+
     async for event in runner.run_async(
         user_id='user_001',
         session_id=session.id,
@@ -856,7 +854,7 @@ Use an analogy they can relate to.
                 role='user',
                 parts=[types.Part(text=query)]
             )
-            
+
             response = ""
             async for event in runner.run_async(
                 user_id='user_001',
@@ -957,15 +955,15 @@ that scientists are still trying to fully understand.
 
 ### Cost Comparison (per 1M tokens)
 
-| Provider      | Model             | Input Cost | Output Cost | Total (1M in + 1M out) |
-| ------------- | ----------------- | ---------- | ----------- | ---------------------- |
-| **Google**    | gemini-2.5-flash  | $0.075     | $0.30       | **$0.375** ⭐ Cheapest |
-| **Google**    | gemini-2.5-pro    | $1.25      | $5.00       | $6.25                  |
-| **OpenAI**    | gpt-4o-mini       | $0.15      | $0.60       | $0.75                  |
-| **OpenAI**    | gpt-4o            | $2.50      | $10.00      | $12.50                 |
-| **Anthropic** | claude-3-5-haiku  | $0.80      | $4.00       | $4.80                  |
-| **Anthropic** | claude-3-7-sonnet | $3.00      | $15.00      | $18.00                 |
-| **Ollama**    | granite4:latest (local)  | $0         | $0          | **$0** 🎉 Free         |
+| Provider      | Model                   | Input Cost | Output Cost | Total (1M in + 1M out) |
+| ------------- | ----------------------- | ---------- | ----------- | ---------------------- |
+| **Google**    | gemini-2.5-flash        | $0.075     | $0.30       | **$0.375** ⭐ Cheapest |
+| **Google**    | gemini-2.5-pro          | $1.25      | $5.00       | $6.25                  |
+| **OpenAI**    | gpt-4o-mini             | $0.15      | $0.60       | $0.75                  |
+| **OpenAI**    | gpt-4o                  | $2.50      | $10.00      | $12.50                 |
+| **Anthropic** | claude-3-5-haiku        | $0.80      | $4.00       | $4.80                  |
+| **Anthropic** | claude-3-7-sonnet       | $3.00      | $15.00      | $18.00                 |
+| **Ollama**    | granite4:latest (local) | $0         | $0          | **$0** 🎉 Free         |
 
 ### Strategy 1: Tiered Model Selection
 
@@ -1014,12 +1012,12 @@ async def run_with_fallback(query: str):
                 app_name='fallback_app',
                 user_id='user_001'
             )
-            
+
             new_message = types.Content(
                 role='user',
                 parts=[types.Part(text=query)]
             )
-            
+
             result_text = None
             async for event in runner.run_async(
                 user_id='user_001',
@@ -1068,19 +1066,19 @@ async def process_batch(queries: list[str]):
         else:
             # Use cloud for complex
             runner = InMemoryRunner(agent=cloud_agent, app_name='batch_app')
-        
+
         # Create session
         session = await runner.session_service.create_session(
             app_name='batch_app',
             user_id='batch_user'
         )
-        
+
         # Run query with async iteration
         new_message = types.Content(
             role='user',
             parts=[types.Part(text=query)]
         )
-        
+
         result_text = None
         async for event in runner.run_async(
             user_id='batch_user',
@@ -1089,7 +1087,7 @@ async def process_batch(queries: list[str]):
         ):
             if event.content and event.content.parts:
                 result_text = event.content.parts[0].text
-        
+
         results.append(result_text)
 
     return results
@@ -1235,26 +1233,26 @@ You've learned how to use OpenAI, Claude, Ollama, and other LLMs in ADK agents v
 
 **Model String Formats**:
 
-| Provider  | Format                | Example                                 |
-| --------- | --------------------- | --------------------------------------- |
-| OpenAI    | `openai/[model]`      | `openai/gpt-4o`                         |
-| Anthropic | `anthropic/[model]`   | `anthropic/claude-3-7-sonnet-20250219`  |
+| Provider  | Format                | Example                                        |
+| --------- | --------------------- | ---------------------------------------------- |
+| OpenAI    | `openai/[model]`      | `openai/gpt-4o`                                |
+| Anthropic | `anthropic/[model]`   | `anthropic/claude-3-7-sonnet-20250219`         |
 | Ollama    | `ollama_chat/[model]` | `ollama_chat/granite4:latest` ⚠️ NOT `ollama/` |
-| Azure     | `azure/[deployment]`  | `azure/gpt-4o-deployment`               |
-| Vertex AI | `vertex_ai/[model]`   | `vertex_ai/claude-3-7-sonnet@20250219`  |
+| Azure     | `azure/[deployment]`  | `azure/gpt-4o-deployment`                      |
+| Vertex AI | `vertex_ai/[model]`   | `vertex_ai/claude-3-7-sonnet@20250219`         |
 
 **When to Use What**:
 
-| Use Case                  | Recommended Model                 |
-| ------------------------- | --------------------------------- |
-| Simple tasks, high volume | gemini-2.5-flash or gpt-4o-mini   |
-| Complex reasoning         | claude-3-7-sonnet or gpt-4o       |
+| Use Case                  | Recommended Model                   |
+| ------------------------- | ----------------------------------- |
+| Simple tasks, high volume | gemini-2.5-flash or gpt-4o-mini     |
+| Complex reasoning         | claude-3-7-sonnet or gpt-4o         |
 | Privacy/compliance        | ollama_chat/granite4:latest (local) |
-| Enterprise Azure          | azure/gpt-4o-deployment           |
-| Cost optimization         | gemini-2.5-flash (cheapest cloud) |
-| Offline/air-gapped        | ollama_chat models                |
-| Coding tasks              | ollama_chat/phi4 or gpt-4o        |
-| Long-form content         | claude-3-7-sonnet                 |
+| Enterprise Azure          | azure/gpt-4o-deployment             |
+| Cost optimization         | gemini-2.5-flash (cheapest cloud)   |
+| Offline/air-gapped        | ollama_chat models                  |
+| Coding tasks              | ollama_chat/phi4 or gpt-4o          |
+| Long-form content         | claude-3-7-sonnet                   |
 
 **Environment Variables Required**:
 

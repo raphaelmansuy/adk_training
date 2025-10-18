@@ -34,6 +34,7 @@ This tutorial has been verified against official Google AI documentation and ADK
 **Verification Date**: October 12, 2025  
 **ADK Version**: 1.16.0+  
 **Sources Checked**:
+
 - ADK Python source code (`llm_agent.py`)
 - Official Gemini API documentation (https://ai.google.dev/gemini-api/docs/models)
 - Vertex AI Gemini documentation
