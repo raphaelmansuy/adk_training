@@ -24,23 +24,112 @@ This tutorial has been verified against official Slack Bolt Python SDK
 (v1.26.0 - verified October 2025), Google ADK patterns, and production
 deployment best practices.
 
-**Estimated Reading Time**: 60-70 minutes  
+**Estimated Reading Time**: 50-60 minutes  
 **Difficulty Level**: Intermediate to Advanced  
-**Prerequisites**: Tutorial 29 (UI Integration Intro), Tutorial 1-3 (ADK Basics), Slack workspace admin access
+**Prerequisites**: Tutorial 1-3 (ADK Basics), Python 3.9+, Slack workspace admin access
 
 ---
 
 ## Table of Contents
 
-1. [Overview](#overview)
-2. [Prerequisites & Setup](#prerequisites--setup)
+1. [Why Slack + ADK? (Real-World Value)](#why-slack--adk-real-world-value)
+2. [What You'll Learn](#what-youll-learn)
 3. [Quick Start (15 Minutes)](#quick-start-15-minutes)
-4. [Understanding the Architecture](#understanding-the-architecture)
-5. [Building a Team Support Bot](#building-a-team-support-bot)
-6. [Advanced Features](#advanced-features)
-7. [Production Deployment](#production-deployment)
-8. [Troubleshooting](#troubleshooting)
-9. [Next Steps](#next-steps)
+4. [Key Mental Models](#key-mental-models)
+5. [Understanding the Architecture](#understanding-the-architecture)
+6. [Building a Team Support Bot](#building-a-team-support-bot)
+7. [Advanced Features](#advanced-features)
+8. [Production Deployment](#production-deployment)
+9. [Common Pitfalls & How to Avoid Them](#common-pitfalls--how-to-avoid-them)
+10. [Troubleshooting](#troubleshooting)
+11. [Next Steps](#next-steps)
+
+---
+
+## Why Slack + ADK? (Real-World Value)
+
+### The Problem You're Solving
+
+Teams waste **3-4 hours per day** switching between tools to answer questions:
+
+- "What's our vacation policy?"
+- "How do I reset my password?"
+- "Which project should I focus on?"
+
+Developers waste context switching time. Support teams field repetitive questions. Knowledge lives in scattered places.
+
+### The ADK Solution
+
+With Slack + ADK, you build an **intelligent bot that lives where your team already works**:
+
+```
+Without Bot:
+User → Google Docs → Notion → Wiki → Email support team → Wait 4 hours
+
+With Slack Bot:
+User: @Support Bot help with expense reports
+Bot:   (instant response with the exact policy + ticket creation option)
+```
+
+### Real-World Learning Gains
+
+By the end of this tutorial, you'll be able to:
+
+- ✅ **Build intelligent Slack bots** that understand context and respond in real-time
+- ✅ **Integrate ADK agents** with Slack Bolt for production-grade bots
+- ✅ **Manage conversation state** across threads and DMs
+- ✅ **Deploy to Cloud Run** safely with secrets and monitoring
+- ✅ **Handle 100+ concurrent users** without manual scaling
+- ✅ **Create tools** that execute real business logic (ticket creation, knowledge base search)
+
+### Who Should Use This?
+
+| Role | Why Slack + ADK? |
+|------|-----------------|
+| **Platform Engineers** | Build internal developer tools that feel native to workflows |
+| **DevOps Teams** | Create incident response bots that execute runbooks in Slack |
+| **Product Managers** | Deploy analytics dashboards and decision-making tools |
+| **Support Teams** | Automate FAQ responses and ticket triage |
+| **HR/People Teams** | Build onboarding bots and policy finders |
+
+### Why Not Web UI?
+
+When to choose **Slack** vs **Web UI** (Tutorial 30):
+
+| Feature | Slack Bot | Web UI |
+|---------|-----------|--------|
+| **Setup** | Easy (in team's workflow) | Requires URL sharing |
+| **Adoption** | Native (9/10 usage) | Low friction (2/10 usage) |
+| **Context** | Rich (user, channel, thread) | Limited (just user) |
+| **Public** | Internal team tool | External customer-facing |
+| **Mobile** | Works on Slack Mobile | Needs responsive design |
+
+**Use Slack for internal team tools. Use Web UI for customer-facing apps.**
+
+---
+
+## What You'll Learn
+
+By completing this tutorial, you'll understand:
+
+**Concepts:**
+- How Slack bots integrate with ADK agents
+- Socket Mode (development) vs HTTP Mode (production)
+- Session state and conversation threading
+- Tool integration and execution flows
+
+**Skills:**
+- Configure Slack apps and OAuth scopes
+- Build event handlers for mentions and DMs
+- Create callable tools that agents execute
+- Deploy to Cloud Run with secrets
+- Monitor and troubleshoot production bots
+
+**Code:**
+- Working Slack bot with 100+ lines of production code
+- Two callable tools (knowledge base search, ticket creation)
+- Complete test suite (50 tests)
+- Ready-to-deploy Docker configuration
 
 ---
 
@@ -48,50 +137,129 @@ deployment best practices.
 
 ### What You'll Build
 
-In this tutorial, you'll build a **team support assistant Slack bot** using:
-
-- **Slack Bolt SDK** (Python)
-- **Google ADK** (Agent framework)
-- **Gemini 2.0 Flash** (LLM)
-- **Socket Mode** (Development)
-- **HTTP Mode** (Production)
-
-**Final Result**:
+In this tutorial, you'll build a **team support assistant Slack bot**:
 
 ```text
-┌─────────────────────────────────────────────────────────────┐
-│  Team Support Bot (@support-bot)                            │
-│  ├─ Responds in channels and DMs                            │
-│  ├─ Thread-based conversations                              │
-│  ├─ Rich Slack blocks formatting                            │
-│  ├─ Interactive buttons and menus                           │
-│  ├─ Knowledge base search                                   │
-│  ├─ Ticket creation                                         │
-│  └─ Team collaboration features                             │
-└─────────────────────────────────────────────────────────────┘
+┌──────────────────────────────────────────────┐
+│  Team Support Bot (@support-bot)             │
+│  ├─ Intelligent responses                    │
+│  ├─ Knowledge base search (tool)             │
+│  ├─ Support ticket creation (tool)           │
+│  ├─ Thread-aware conversations               │
+│  └─ Production deployment ready              │
+└──────────────────────────────────────────────┘
 ```
 
-### Why Slack + ADK?
+This bot will:
 
-| Feature                | Benefit                        |
-| ---------------------- | ------------------------------ |
-| **Native Integration** | Users stay in their workflow   |
-| **Thread Context**     | Natural conversation threading |
-| **Rich Formatting**    | Buttons, menus, blocks UI      |
-| **Team Collaboration** | Multiple users can interact    |
-| **Channel Visibility** | Transparent agent interactions |
-| **Mobile Support**     | Works on Slack mobile apps     |
+1. **Listen** for mentions like `@Support Bot how do I reset my
+   password?`
+2. **Search** your knowledge base for relevant articles
+3. **Create** support tickets when issues need human review
+4. **Respond** with formatted messages in Slack threads
 
-**When to use Slack + ADK:**
+### Architecture: Three Layers
 
-✅ Internal team tools and support  
-✅ DevOps and incident response bots  
-✅ HR and onboarding assistants  
-✅ IT helpdesk automation  
-✅ Knowledge base access
+```
+Layer 1: Slack Events  (Mentions, DMs, Reactions)
+         ↓
+Layer 2: Slack Bolt   (Routes to handlers, manages sessions)
+         ↓
+Layer 3: ADK Agent    (LLM, tool calling, decision logic)
+         ↓
+Layer 4: Tools        (Knowledge base, ticket system)
+```
 
-❌ Public-facing customer support → Use web UI (Tutorial 30)  
-❌ Data visualization dashboards → Use Streamlit (Tutorial 32)
+**In this tutorial, you focus on Layers 2-4.** We provide the Slack
+event handlers (Layer 1) as runnable code.
+
+---
+
+## Key Mental Models
+
+### Mental Model 1: Socket Mode vs HTTP Mode
+
+Understanding the **connection model** is crucial:
+
+```
+┌─────────────────────────────────────────────────┐
+│ SOCKET MODE (Development)                       │
+├─────────────────────────────────────────────────┤
+│                                                 │
+│ Your Server → Slack (WebSocket Connection)     │
+│ (Keeps persistent connection open)             │
+│                                                 │
+│ ✅ No public URL needed                         │
+│ ✅ Works on local machine                       │
+│ ✅ Easy development                             │
+│ ❌ Only one connection at a time                │
+│ ❌ Not suitable for production                  │
+│                                                 │
+└─────────────────────────────────────────────────┘
+
+┌─────────────────────────────────────────────────┐
+│ HTTP MODE (Production)                          │
+├─────────────────────────────────────────────────┤
+│                                                 │
+│ Slack → Your Public HTTPS URL                  │
+│ (HTTP webhooks, stateless)                     │
+│                                                 │
+│ ✅ Scales horizontally                          │
+│ ✅ Production-grade reliability                 │
+│ ✅ Auto-load balancing in Cloud Run             │
+│ ❌ Needs public HTTPS URL                       │
+│ ❌ More complex setup                           │
+│                                                 │
+└─────────────────────────────────────────────────┘
+```
+
+**Decision Rule**: Use Socket Mode while learning. Switch to HTTP Mode
+when deploying to production.
+
+### Mental Model 2: Agent Tool Execution
+
+How does the ADK agent use your tools?
+
+```
+User: "What's the vacation policy?"
+  ↓
+Bot Handler (receives @mention)
+  ↓
+Sends text to ADK Agent
+  ↓
+Agent (with system prompt): "I should use search_knowledge_base"
+  ↓
+Calls: search_knowledge_base("vacation policy")
+  ↓
+Tool returns: {"status": "success", "article": {...}}
+  ↓
+Agent writes response: "Our PTO policy is 15 days per year..."
+  ↓
+Bot sends response back to Slack
+```
+
+**Key insight**: Tools return structured dicts with `status`, `report`,
+and data fields. The agent reads these and decides what to do next.
+
+### Mental Model 3: Session State Management
+
+Conversation history needs to persist across messages:
+
+```
+Thread in Slack:
+├─ User: "What's our password policy?"
+│  Bot:   "Here's the password reset guide..."
+│
+├─ User: "How do I request a reset?"
+│  Bot:   "You need to request via IT..."
+│  (Bot remembers previous context!)
+│
+└─ User: "Create a ticket for me"
+   Bot:   "Done! Ticket TKT-ABC created"
+```
+
+**Implementation**: Use `channel_id + thread_ts` as unique session key.
+Store session state in memory (development) or database (production).
 
 ---
 
@@ -122,291 +290,72 @@ Get from [Google AI Studio](https://makersuite.google.com/app/apikey)
 
 ## Quick Start (15 Minutes)
 
-### Step 1: Create Slack App
+:::tip Learning Approach
 
-**1. Go to [api.slack.com/apps](https://api.slack.com/apps)**
+We provide a **working implementation** in
+`tutorial_implementation/tutorial33/` that you can run immediately, then
+study to understand how it works.
 
-**2. Click "Create New App"**
+:::
 
-**3. Choose "From scratch"**
-
-- App Name: `Support Bot`
-- Workspace: Select your workspace
-
-**4. Configure Bot Token Scopes**
-
-Go to **OAuth & Permissions** → **Bot Token Scopes**, add:
-
-```text
-app_mentions:read      # Respond to @mentions
-chat:write            # Send messages
-channels:history      # Read channel messages
-channels:read         # View channel info
-groups:history        # Read private channel messages
-groups:read           # View private channels
-im:history            # Read DM messages
-im:read               # View DMs
-im:write              # Send DMs
-users:read            # Read user info
-```
-
-**5. Enable Socket Mode**
-
-Go to **Socket Mode** → Enable → Create app-level token:
-
-- Token Name: `socket_token`
-- Scope: `connections:write`
-- Save token: `xapp-1-...`
-
-**6. Enable Events**
-
-Go to **Event Subscriptions** → Enable → Subscribe to bot events:
-
-```text
-app_mention           # When bot is @mentioned
-message.channels      # Messages in channels
-message.groups        # Messages in private channels
-message.im            # Direct messages
-```
-
-**7. Install App**
-
-Go to **Install App** → **Install to Workspace** → Allow
-
-Save the **Bot User OAuth Token**: `xoxb-...`
-
----
-
-### Step 2: Create Bot Project
+### Step 1: Get the Implementation
 
 ```bash
-# Create directory
-mkdir support-bot
-cd support-bot
-
-# Create virtual environment
-python -m venv venv
-source venv/bin/activate  # Windows: venv\Scripts\activate
-
-# Install dependencies
-pip install slack-bolt google-genai python-dotenv
+cd tutorial_implementation/tutorial33
+pwd  # You should be in .../adk_training/tutorial_implementation/tutorial33
 ```
 
----
-
-### Step 3: Create Bot
-
-Create `bot.py`:
-
-```python
-"""
-Support Bot - Slack + ADK Integration
-Responds to mentions and DMs with intelligent assistance
-"""
-
-import os
-import re
-from slack_bolt import App
-from slack_bolt.adapter.socket_mode import SocketModeHandler
-from google import genai
-from dotenv import load_dotenv
-
-# Load environment variables
-load_dotenv()
-
-# Initialize Slack app
-app = App(token=os.environ.get("SLACK_BOT_TOKEN"))
-
-# Initialize Gemini client
-# Create ADK agent for Slack bot
-from google.adk.agents import Agent
-
-agent = Agent(
-    model="gemini-2.0-flash-exp",
-    name="support_bot",
-    instruction="""You are a helpful team support assistant for a tech company.
-
-Your responsibilities:
-- Answer questions about company policies, procedures, and tools
-- Help with technical troubleshooting
-- Provide quick access to documentation
-- Be friendly, concise, and professional
-- Use Slack formatting (bold, italic, code blocks) when helpful
-
-Guidelines:
-- Keep responses under 3 paragraphs
-- Use bullet points for lists
-- Link to relevant documentation when possible
-- Escalate complex issues to human support
-- Be empathetic and encouraging
-
-Slack formatting tips:
-- Use *bold* for emphasis
-- Use `code` for technical terms
-- Use > for quotes
-- Keep it conversational and clear""",
-    tool_config={
-        "function_calling_config": {
-            "mode": "AUTO"
-        }
-    }
-)
-
-# Store conversation sessions
-sessions = {}
-
-def get_session_id(channel_id: str, thread_ts: str = None) -> str:
-    """Generate session ID for conversation tracking."""
-    return f"{channel_id}:{thread_ts or 'main'}"
-
-def format_slack_message(text: str) -> str:
-    """Convert markdown to Slack formatting."""
-    # Simple conversions - extend as needed
-    text = text.replace("**", "*")  # Bold
-    text = text.replace("__", "_")  # Italic
-    return text
-
-@app.event("app_mention")
-def handle_mention(event, say, logger):
-    """Handle @mentions of the bot."""
-    try:
-        # Get message details
-        user = event["user"]
-        text = event["text"]
-        channel = event["channel"]
-        thread_ts = event.get("thread_ts", event["ts"])
-
-        # Remove bot mention from text
-        text = re.sub(r'<@[A-Z0-9]+>', '', text).strip()
-
-        if not text:
-            say(
-                text="Hi! How can I help you?",
-                thread_ts=thread_ts
-            )
-            return
-
-        # Generate response using ADK Agent
-        # ADK Agent maintains conversation context automatically
-        full_response = agent(text)
-
-        # Format for Slack
-        formatted_response = format_slack_message(full_response)
-
-        # Send response in thread
-        say(
-            text=formatted_response,
-            thread_ts=thread_ts
-        )
-
-    except Exception as e:
-        logger.error(f"Error handling mention: {e}")
-        say(
-            text="Sorry, I encountered an error. Please try again!",
-            thread_ts=event.get("thread_ts", event["ts"])
-        )
-
-@app.event("message")
-def handle_dm(event, say, logger):
-    """Handle direct messages."""
-    # Only respond to DMs (not channel messages)
-    if event.get("channel_type") != "im":
-        return
-
-    # Ignore bot messages
-    if event.get("bot_id"):
-        return
-
-    try:
-        text = event["text"]
-        channel = event["channel"]
-
-        # Generate response using ADK Agent
-        # Agent maintains conversation history automatically
-        full_response = agent(text)
-
-        # Format and send
-        formatted_response = format_slack_message(full_response)
-        say(text=formatted_response)
-
-    except Exception as e:
-        logger.error(f"Error handling DM: {e}")
-        say(text="Sorry, I encountered an error. Please try again!")
-
-@app.command("/support")
-def handle_support_command(ack, say, command):
-    """Handle /support slash command."""
-    ack()
-
-    text = command.get("text", "")
-
-    if not text:
-        say(
-            text="Hi! Use `/support [your question]` to ask me anything!\n\n" +
-                 "Examples:\n" +
-                 "• `/support How do I reset my password?`\n" +
-                 "• `/support Where is the API documentation?`"
-        )
-        return
-
-    try:
-        # Call agent directly for slash command
-        full_response = agent(text)
-
-        formatted_response = format_slack_message(full_response)
-        say(text=formatted_response)
-
-    except Exception as e:
-        say(text=f"Sorry, I encountered an error: {str(e)}")
-
-# Start app
-if __name__ == "__main__":
-    # Socket Mode for development
-    handler = SocketModeHandler(app, os.environ["SLACK_APP_TOKEN"])
-    print("⚡️ Support Bot is running!")
-    handler.start()
-```
-
----
-
-### Step 4: Configure Environment
-
-Create `.env`:
+### Step 2: Install and Test
 
 ```bash
-# Slack tokens
-SLACK_BOT_TOKEN=xoxb-your-bot-token-here
-SLACK_APP_TOKEN=xapp-your-app-token-here
-
-# Google AI
-GOOGLE_API_KEY=your-gemini-api-key-here
+make setup   # Install dependencies and package
+make test    # Run 50 tests to verify everything works
 ```
 
----
+### Step 3: Configure Slack Tokens
 
-### Step 5: Run the Bot
+Go to [api.slack.com/apps](https://api.slack.com/apps) and create a new
+app:
+
+1. **Click "Create New App"** → **"From scratch"**
+2. **OAuth & Permissions**: Add these scopes:
+   - `app_mentions:read` (receive @mentions)
+   - `chat:write` (send messages)
+   - `channels:history`, `groups:history`, `im:history` (read messages)
+
+3. **Install to Workspace**: Get your **Bot Token** (starts with `xoxb-`)
+4. **Socket Mode**: Enable it and create app-level token (starts with
+   `xapp-`)
+
+Save these tokens to `support_bot/.env`:
 
 ```bash
-# Activate venv
-source venv/bin/activate
-
-# Run bot
-python bot.py
-
-# Output: ⚡️ Support Bot is running!
+cp support_bot/.env.example support_bot/.env
+# Edit support_bot/.env with your tokens
 ```
 
----
+### Step 4: Run the Bot
 
-### Step 6: Test in Slack
+```bash
+make slack-dev
+```
 
-**1. In any channel**: `@Support Bot what's the company vacation policy?`
+You'll see: `✅ Bot is running! Listening for mentions...`
 
-**2. In DM**: Just message the bot directly!
+### Step 5: Test in Slack
 
-**3. Slash command**: `/support how do I file an expense report?`
+Try these in any Slack channel or DM:
 
-🎉 **Your Slack bot is alive!**
+- `@Support Bot what's the vacation policy?`
+- `@Support Bot how do I reset my password?`
+- `@Support Bot I need to file an expense report`
+
+**The bot will:**
+1. Search the knowledge base 🔍
+2. Find matching articles 📚
+3. Respond with formatted answers ✅
+
+🎉 **You're done with Quick Start!**
 
 ---
 
@@ -1659,6 +1608,170 @@ logger.info(f"Using session: {session_id}")
 
 ---
 
+## Common Pitfalls & How to Avoid Them
+
+### ❌ Pitfall 1: Forgetting to Enable Event Subscriptions
+
+**The Problem:**
+You create the Slack app, install it, but bot never responds to @mentions.
+
+**Root Cause:**
+Events aren't subscribed in Slack app settings.
+
+**Solution:**
+```
+Go to: OAuth & Permissions → Event Subscriptions
+□ Enable Events
+□ Subscribe to bot events:
+  ✓ app_mention
+  ✓ message.channels
+  ✓ message.im
+```
+
+### ❌ Pitfall 2: Using Wrong Token for Socket Mode
+
+**The Problem:**
+```
+Error: "invalid_auth"
+```
+
+**Root Cause:**
+You used `SLACK_BOT_TOKEN` instead of `SLACK_APP_TOKEN` for Socket Mode.
+
+**Solution:**
+- Socket Mode needs `SLACK_APP_TOKEN` (starts with `xapp-`)
+- HTTP webhooks need `SLACK_BOT_TOKEN` (starts with `xoxb-`)
+- Both go in `.env` file
+
+### ❌ Pitfall 3: Tool Functions Don't Match ADK Format
+
+**The Problem:**
+```
+Agent: "I should call search_knowledge_base"
+Result: ERROR - Tool not found
+```
+
+**Root Cause:**
+Tool functions must return `{'status': 'success', 'report': '...'}` format.
+
+**Solution:**
+```python
+def my_tool(param: str) -> Dict[str, Any]:
+    try:
+        result = do_something(param)
+        return {
+            'status': 'success',
+            'report': 'Human-readable message',
+            'data': result  # Optional
+        }
+    except Exception as e:
+        return {
+            'status': 'error',
+            'error': str(e),
+            'report': 'Error message for user'
+        }
+```
+
+### ❌ Pitfall 4: Session State Lost Between Messages
+
+**The Problem:**
+```
+User: "What's the vacation policy?"
+Bot:   "15 days PTO per year..."
+
+User: "How do I request it?"
+Bot:   "I don't know what you're asking about" 😞
+```
+
+**Root Cause:**
+Each message creates a new session instead of reusing the thread session.
+
+**Solution:**
+```python
+# ✅ Use thread_ts as part of session key
+session_id = f"{channel_id}:{thread_ts}"
+
+# Store conversation in persistent storage
+if session_id not in sessions:
+    sessions[session_id] = []
+
+sessions[session_id].append({
+    "role": "user",
+    "content": message_text
+})
+```
+
+### ❌ Pitfall 5: Agent Never Calls Tools
+
+**The Problem:**
+```
+User: "Search for password policy"
+Agent: "I don't have information about password policies"
+```
+
+**Root Cause:**
+- Tools not properly registered
+- System prompt doesn't encourage tool use
+- Function names don't match tool names
+
+**Solution:**
+```python
+# ✅ Register tools correctly
+root_agent = Agent(
+    name="support_bot",
+    model="gemini-2.5-flash",
+    tools=[
+        search_knowledge_base,  # ✅ Pass function directly
+        create_support_ticket
+    ]
+)
+
+# ✅ Encourage tool use in instructions
+instruction="""
+When users ask about policies, use search_knowledge_base.
+When they report issues, use create_support_ticket.
+Always use tools when relevant!
+"""
+```
+
+### ❌ Pitfall 6: Credentials Leaked in Code
+
+**The Problem:**
+```python
+SLACK_BOT_TOKEN = "xoxb-secret123"  # ❌ Don't do this!
+```
+
+**Root Cause:**
+Hardcoding secrets in source code exposes them to git history.
+
+**Solution:**
+```python
+# ✅ Always use environment variables
+import os
+from dotenv import load_dotenv
+
+load_dotenv()
+token = os.environ.get("SLACK_BOT_TOKEN")
+
+# Add to .gitignore
+echo ".env" >> .gitignore
+```
+
+### ✅ Best Practice: Test Locally Before Deploying
+
+```bash
+# 1. Test in Socket Mode locally
+make slack-dev
+
+# 2. Run full test suite
+make slack-test
+
+# 3. Only then deploy to production
+make slack-deploy
+```
+
+---
+
 ## Next Steps
 
 ### You've Mastered Slack + ADK! 🎉
@@ -1694,22 +1807,29 @@ Compare all integration approaches (Slack, Web, Streamlit, etc.)
 
 ## 🚀 Ready to Code?
 
-**[View Working Implementation →](./../../tutorial_implementation/tutorial33)**
+**[View Working Implementation on GitHub →](https://github.com/raphaelmansuy/adk_training/tree/main/tutorial_implementation/tutorial33)**
 
 A complete, tested implementation is available with:
 - ✅ Root agent with tools exported
-- ✅ Knowledge base search tool
+- ✅ Knowledge base search tool (with 5 company knowledge articles)
 - ✅ Support ticket creation tool
 - ✅ 50 comprehensive tests (100% passing)
-- ✅ Ready for Slack Bolt integration
-- ✅ Production-ready structure
+- ✅ Slack Bolt Socket Mode integration ready
+- ✅ Production-ready structure with Cloud Run deployment
 
 **Quick Start**: 
 ```bash
 cd tutorial_implementation/tutorial33
-pip install -e .
-make test  # Run 50 tests
-make dev   # Start ADK web interface
+make setup  # Install dependencies and package
+make test   # Run 50 tests
+make dev    # Start ADK web interface at localhost:8000
+```
+
+**Or clone and explore directly:**
+```bash
+git clone https://github.com/raphaelmansuy/adk_training.git
+cd adk_training/tutorial_implementation/tutorial33
+make setup && make test
 ```
 
 ---
