@@ -84,20 +84,27 @@ if "file_name" not in st.session_state:
     st.session_state.file_name = None
 
 if "adk_session_id" not in st.session_state:
-    # Create ADK session properly - this initializes it in the session service
-    adk_session = session_service.create_session_sync(
-        app_name="data_analysis_assistant",
-        user_id="streamlit_user"
-    )
-    st.session_state.adk_session_id = adk_session.id
+    # Create ADK session ID lazily - will be created on first runner use
+    # Using async create_session to avoid deprecation warning
+    async def init_adk_session():
+        adk_session = await session_service.create_session(
+            app_name="data_analysis_assistant",
+            user_id="streamlit_user"
+        )
+        return adk_session.id
+    
+    st.session_state.adk_session_id = asyncio.run(init_adk_session())
 
 if "viz_session_id" not in st.session_state:
-    # Create visualization session
-    viz_session = viz_session_service.create_session_sync(
-        app_name="visualization_assistant",
-        user_id="streamlit_user"
-    )
-    st.session_state.viz_session_id = viz_session.id
+    # Create visualization session using async method
+    async def init_viz_session():
+        viz_session = await viz_session_service.create_session(
+            app_name="visualization_assistant",
+            user_id="streamlit_user"
+        )
+        return viz_session.id
+    
+    st.session_state.viz_session_id = asyncio.run(init_viz_session())
 
 if "use_code_execution" not in st.session_state:
     st.session_state.use_code_execution = False  # Default to False for stability
@@ -246,6 +253,7 @@ Users can request visualizations by asking for specific chart types."""
         # Use ADK multi-agent system with code execution
         with st.chat_message("assistant"):
             message_placeholder = st.empty()
+            spinner_placeholder = st.empty()
             full_response = ""
             has_visualization = False
             response_text = ""  # Initialize before try block to avoid scope issues
@@ -262,47 +270,50 @@ User Question: {prompt}"""
                     parts=[Part.from_text(text=context_message)]
                 )
                 
-                # Use visualization runner directly to ensure CSV data reaches the agent
-                async def collect_events():
-                    """Collect and process all events from agent execution."""
-                    response_parts = ""
-                    has_visualization = False
-                    visualization_data = []
-                    
-                    async for event in viz_runner.run_async(
-                        user_id="streamlit_user",
-                        session_id=st.session_state.viz_session_id,
-                        new_message=message
-                    ):
-                        # Check for content in events
-                        if event.content and event.content.parts:
-                            for part in event.content.parts:
-                                # Handle inline data (visualizations/images)
-                                if hasattr(part, 'inline_data') and part.inline_data:
-                                    has_visualization = True
-                                    visualization_data.append(part.inline_data)
-                                    response_parts += "\n📊 Visualization generated\n"
+                # Show loading indicator
+                with spinner_placeholder:
+                    with st.spinner("🤖 Analyzing your data..."):
+                        # Use visualization runner directly to ensure CSV data reaches the agent
+                        async def collect_events():
+                            """Collect and process all events from agent execution."""
+                            response_parts = ""
+                            has_visualization = False
+                            visualization_data = []
+                            
+                            async for event in viz_runner.run_async(
+                                user_id="streamlit_user",
+                                session_id=st.session_state.viz_session_id,
+                                new_message=message
+                            ):
+                                # Check for content in events
+                                if event.content and event.content.parts:
+                                    for part in event.content.parts:
+                                        # Handle inline data (visualizations/images)
+                                        if hasattr(part, 'inline_data') and part.inline_data:
+                                            has_visualization = True
+                                            visualization_data.append(part.inline_data)
+                                            response_parts += "\n📊 Visualization generated\n"
+                                        
+                                        # Handle executable code generation
+                                        if part.executable_code:
+                                            # Code was generated by visualization agent
+                                            pass
+                                        
+                                        # Handle code execution results
+                                        if part.code_execution_result:
+                                            # Code executed successfully
+                                            if part.code_execution_result.outcome == "SUCCESS":
+                                                pass  # Result may be in inline_data
+                                        
+                                        # Handle text responses (don't skip if we already found inline_data)
+                                        if part.text and not part.text.isspace():
+                                            response_parts += part.text
                                 
-                                # Handle executable code generation
-                                if part.executable_code:
-                                    # Code was generated by visualization agent
-                                    pass
-                                
-                                # Handle code execution results
-                                if part.code_execution_result:
-                                    # Code executed successfully
-                                    if part.code_execution_result.outcome == "SUCCESS":
-                                        pass  # Result may be in inline_data
-                                
-                                # Handle text responses (don't skip if we already found inline_data)
-                                if part.text and not part.text.isspace():
-                                    response_parts += part.text
-                        
-                        # Update display with collected text
-                        if response_parts:
-                            message_placeholder.markdown(response_parts + "▌")
-                    
-                    return response_parts, has_visualization, visualization_data
+                                # Update display with collected text
+                                if response_parts:
+                                    message_placeholder.markdown(response_parts + "▌")
+                            
+                            return response_parts, has_visualization, visualization_data
                 
                 # Run async collection
                 response_text, has_viz, viz_data = asyncio.run(collect_events())
@@ -333,7 +344,7 @@ User Question: {prompt}"""
                                     image_bytes = viz.data
                                 
                                 image = Image.open(BytesIO(image_bytes))
-                                st.image(image, use_container_width=True)
+                                st.image(image, width='stretch')
                         except Exception as e:
                             st.warning(f"Could not display visualization: {str(e)}")
                 
@@ -353,6 +364,7 @@ User Question: {prompt}"""
         # Use direct Gemini API for faster response (legacy mode)
         with st.chat_message("assistant"):
             message_placeholder = st.empty()
+            spinner_placeholder = st.empty()
             full_response = ""
             
             try:
@@ -372,31 +384,35 @@ Your responsibilities:
 
 Always base your responses on the actual data provided."""
                 
-                response = client.models.generate_content_stream(
-                    model="gemini-2.0-flash",
-                    contents=[
-                        Content(role="user", parts=[Part.from_text(text=prompt)])
-                    ],
-                    config=GenerateContentConfig(
-                        system_instruction=system_instruction,
-                        temperature=0.7,
-                        max_output_tokens=2048,
-                    ),
-                )
-                
-                # Stream response
-                for chunk in response:
-                    if chunk.text:
-                        full_response += chunk.text
-                        message_placeholder.markdown(full_response + "▌")
+                with spinner_placeholder:
+                    with st.spinner("💬 Generating insights..."):
+                        response = client.models.generate_content_stream(
+                            model="gemini-2.0-flash",
+                            contents=[
+                                Content(role="user", parts=[Part.from_text(text=prompt)])
+                            ],
+                            config=GenerateContentConfig(
+                                system_instruction=system_instruction,
+                                temperature=0.7,
+                                max_output_tokens=2048,
+                            ),
+                        )
+                        
+                        # Stream response
+                        for chunk in response:
+                            if chunk.text:
+                                full_response += chunk.text
+                                message_placeholder.markdown(full_response + "▌")
                 
                 # Final message
                 message_placeholder.markdown(full_response)
+                spinner_placeholder.empty()
             
             except Exception as e:
                 error_msg = f"❌ Error generating response: {str(e)}"
                 st.error(error_msg)
                 full_response = error_msg
+                spinner_placeholder.empty()
             
             # Add response to history
             st.session_state.messages.append({

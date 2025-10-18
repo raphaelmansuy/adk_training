@@ -8,8 +8,11 @@ A production-ready Streamlit application that integrates Google ADK agents for i
 - **🔄 Direct ADK Integration**: No HTTP overhead - agent runs in-process with Streamlit
 - **📁 CSV Upload**: Load and analyze any CSV file
 - **🧠 Gemini 2.0 Flash**: State-of-the-art language model for analysis
-- **📈 Data Visualization**: Built-in charts and statistics
-- **⚡ Real-time Streaming**: Stream responses as they're generated
+- **📈 Dynamic Visualizations**: Python code execution for matplotlib/plotly charts
+- **✨ Proactive Analysis**: Agent suggests analyses and visualizations automatically
+- **⚡ Real-time Streaming**: Stream responses and visualization generation as they happen
+- **🎯 Smart Routing**: Automatic selection between analysis tools and code execution
+- **⏳ Better UX**: Loading indicators and status messages while processing
 - **🔒 Secure**: Never commits secrets, uses environment variables
 
 ## 📋 Prerequisites
@@ -59,18 +62,28 @@ The app opens at `http://localhost:8501` 🎉
 
 1. **Upload CSV**: Use the sidebar to upload your data
 2. **Review Data**: See columns, types, and statistics
-3. **Ask Questions**: Chat with the AI about your data
-4. **Get Insights**: Receive analysis and recommendations
+3. **Choose Mode**: 
+   - **Smart Mode** (recommended): Uses ADK Code Execution for visualizations
+   - **Chat Mode**: Uses direct Gemini API for text analysis
+4. **Ask Questions**: Chat with the AI about your data
+5. **Get Insights**: Receive analysis, visualizations, and recommendations
 
-### Example Questions
+### Code Execution Mode (NEW!)
 
+Enable "Use Code Execution for Visualizations" in the sidebar to unlock advanced features:
+
+✨ **Proactive Agent**: The AI automatically suggests analyses and visualizations
+📊 **Dynamic Charts**: matplotlib and plotly charts generated via Python code execution
+⚡ **Real-time Display**: Charts appear as they're generated with loading indicators
+🎯 **Smart Routing**: Agent intelligently chooses between tools and code execution
+
+**Example requests that trigger visualizations:**
 ```
-"What are the key insights from this data?"
-"Show me summary statistics for each column"
-"What is the average value of the price column?"
-"Are there any patterns or outliers?"
-"Correlations between revenue and profit?"
-"Summarize the main characteristics"
+"Show me a pie chart of categories"
+"Create a line plot of trends over time"
+"Visualize the distribution of values"
+"Compare these metrics with scatter plots"
+"Generate a comprehensive dashboard"
 ```
 
 ### Sample Data
@@ -245,6 +258,41 @@ Each tool returns consistent format:
     "data": {...},  # Specific to tool
 }
 ```
+
+## 🏛️ Architecture
+
+### Dual-Runner Pattern for Data Passing
+
+Tutorial 32 implements a sophisticated multi-runner architecture to solve the context-passing problem:
+
+**The Challenge**: Multi-agent coordination through AgentTool delegation loses context data (like CSV data).
+
+**The Solution**: Direct runner for visualization agents that bypasses multi-agent routing.
+
+### Key Components
+
+1. **viz_runner**: Direct visualization_agent without routing
+   - Receives full CSV data in context
+   - Executes Python code via BuiltInCodeExecutor
+   - Returns matplotlib/plotly charts as inline_data
+   - Independent session service
+
+2. **runner**: Multi-agent root_agent with tool delegation
+   - Routes to analysis_agent for statistics
+   - Routes to visualization_agent via AgentTool for simple viz
+   - Good for text-based analysis
+
+### Data Flow for Visualizations
+
+1. User requests visualization
+2. App prepares context_message with CSV data
+3. viz_runner sends directly to visualization_agent
+4. visualization_agent loads: df = pd.read_csv(StringIO(csv_data))
+5. Agent generates Python code with matplotlib/plotly
+6. BuiltInCodeExecutor runs code and generates PNG
+7. Chart returned as Part.inline_data
+8. app.py extracts inline_data and displays with st.image()
+9. User sees visualization in Streamlit UI
 
 ## 🚀 Deployment
 
