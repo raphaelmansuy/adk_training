@@ -62,9 +62,27 @@ management, and ADK agent integration.
 
 ## Overview
 
-### What You'll Build
+### 🌟 What's New in This Version
 
-In this tutorial, you'll build a **smart data analysis assistant** using:
+**Latest Improvements (v2.0)**:
+
+- ✅ **Code Execution Mode**: Visualizations via Python code execution with matplotlib/plotly
+- ✅ **Direct Visualization Runner**: Bypasses multi-agent routing for context preservation
+- ✅ **Proactive Agents**: Automatically suggests analyses and visualizations
+- ✅ **Better UX**: Loading spinners and status indicators while processing
+- ✅ **Dual Modes**: Code execution (advanced) vs Chat (simple)
+- ✅ **Image Display**: Inline chart rendering in Streamlit UI
+- ✅ **Fixed Deprecations**: Async method support, use_container_width → width
+
+### Why These Improvements Matter
+
+| Issue                          | Solution                          | Benefit                              |
+| ------------------------------ | ---------------------------------- | ------------------------------------ |
+| **Context loss in multi-agent** | Direct visualization runner        | Charts display correctly             |
+| **No visualization support**    | BuiltInCodeExecutor integration    | Dynamic matplotlib/plotly charts     |
+| **Passive agent behavior**      | Enhanced instructions              | Agent suggests analyses proactively  |
+| **No user feedback**            | Streamlit spinners                 | Better UX during processing          |
+| **Streamlit deprecations**      | Updated to latest best practices   | Cleaner warnings in terminal         |
 
 - **Streamlit** (Python UI framework)
 - **Google ADK** (Direct in-process integration)
