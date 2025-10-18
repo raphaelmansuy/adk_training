@@ -18,7 +18,6 @@ learning_objectives:
 implementation_link: "https://github.com/raphaelmansuy/adk_training/tree/main/tutorial_implementation/tutorial33"
 ---
 
-:::info VERIFIED WITH LATEST SOURCES
 
 This tutorial has been verified against official Slack Bolt Python SDK
 (v1.26.0 - verified October 2025), Google ADK patterns, and production
@@ -186,14 +185,14 @@ Understanding the **connection model** is crucial:
 │ SOCKET MODE (Development)                       │
 ├─────────────────────────────────────────────────┤
 │                                                 │
-│ Your Server → Slack (WebSocket Connection)     │
-│ (Keeps persistent connection open)             │
+│ Your Server → Slack (WebSocket Connection)      │
+│ (Keeps persistent connection open)              │
 │                                                 │
-│ ✅ No public URL needed                         │
-│ ✅ Works on local machine                       │
-│ ✅ Easy development                             │
-│ ❌ Only one connection at a time                │
-│ ❌ Not suitable for production                  │
+│ ✅ No public URL needed                         
+│ ✅ Works on local machine                       
+│ ✅ Easy development                             
+│ ❌ Only one connection at a time                
+│ ❌ Not suitable for production                  
 │                                                 │
 └─────────────────────────────────────────────────┘
 
@@ -201,14 +200,14 @@ Understanding the **connection model** is crucial:
 │ HTTP MODE (Production)                          │
 ├─────────────────────────────────────────────────┤
 │                                                 │
-│ Slack → Your Public HTTPS URL                  │
-│ (HTTP webhooks, stateless)                     │
+│ Slack → Your Public HTTPS URL                   │
+│ (HTTP webhooks, stateless)                      │
 │                                                 │
-│ ✅ Scales horizontally                          │
-│ ✅ Production-grade reliability                 │
-│ ✅ Auto-load balancing in Cloud Run             │
-│ ❌ Needs public HTTPS URL                       │
-│ ❌ More complex setup                           │
+│ ✅ Scales horizontally                          
+│ ✅ Production-grade reliability                 
+│ ✅ Auto-load balancing in Cloud Run             
+│ ❌ Needs public HTTPS URL                       
+│ ❌ More complex setup                           
 │                                                 │
 └─────────────────────────────────────────────────┘
 ```
@@ -365,43 +364,43 @@ Try these in any Slack channel or DM:
 
 ```text
 ┌─────────────────────────────────────────────────────────────┐
-│                    SLACK WORKSPACE                           │
-│  ┌──────────────────────────────────────────────────────┐  │
-│  │  Channels & DMs                                      │  │
-│  │  ├─ @mention events                                  │  │
-│  │  ├─ Message events                                   │  │
-│  │  └─ Slash commands                                   │  │
-│  └──────────────────────┬───────────────────────────────┘  │
+│                    SLACK WORKSPACE                          │
+│  ┌──────────────────────────────────────────────────────┐   │
+│  │  Channels & DMs                                      │   │
+│  │  ├─ @mention events                                  │   │
+│  │  ├─ Message events                                   │   │
+│  │  └─ Slash commands                                   │   │
+│  └──────────────────────┬───────────────────────────────┘   │
 └───────────────────────┬─┴───────────────────────────────────┘
                         │
                         │ Socket Mode (WebSocket) or HTTP Mode
                         │
 ┌───────────────────────▼─────────────────────────────────────┐
-│            BOT SERVER (Python Process)                       │
-│  ┌──────────────────────────────────────────────────────┐  │
-│  │  Slack Bolt App                                      │  │
-│  │  ├─ Event handlers (@app.event)                      │  │
-│  │  │  ├─ app_mention                                   │  │
-│  │  │  └─ message                                       │  │
-│  │  ├─ Command handlers (@app.command)                  │  │
-│  │  └─ Session management                               │  │
-│  └──────────────────────┬───────────────────────────────┘  │
+│            BOT SERVER (Python Process)                      │
+│  ┌──────────────────────────────────────────────────────┐   │
+│  │  Slack Bolt App                                      │   │
+│  │  ├─ Event handlers (@app.event)                      │   │
+│  │  │  ├─ app_mention                                   │   │
+│  │  │  └─ message                                       │   │
+│  │  ├─ Command handlers (@app.command)                  │   │
+│  │  └─ Session management                               │   │
+│  └──────────────────────┬───────────────────────────────┘   │
 │                         │ (In-Process Call)                 │
-│  ┌──────────────────────▼───────────────────────────────┐  │
-│  │  Google ADK Agent                                    │  │
-│  │  ├─ Session per thread                               │  │
-│  │  ├─ Tool calling                                     │  │
-│  │  └─ Response streaming                               │  │
-│  └──────────────────────┬───────────────────────────────┘  │
+│  ┌──────────────────────▼───────────────────────────────┐   │
+│  │  Google ADK Agent                                    │   │
+│  │  ├─ Session per thread                               │   │
+│  │  ├─ Tool calling                                     │   │
+│  │  └─ Response streaming                               │   │
+│  └──────────────────────┬───────────────────────────────┘   │
 └───────────────────────┬─┴───────────────────────────────────┘
                         │
                         │ HTTPS
                         │
 ┌───────────────────────▼─────────────────────────────────────┐
-│              GEMINI 2.0 FLASH API                            │
-│  ├─ Conversation understanding                               │
-│  ├─ Tool calling                                             │
-│  └─ Response generation                                      │
+│              GEMINI 2.0 FLASH API                           │
+│  ├─ Conversation understanding                              │
+│  ├─ Tool calling                                            │
+│  └─ Response generation                                     │
 └─────────────────────────────────────────────────────────────┘
 ```
 

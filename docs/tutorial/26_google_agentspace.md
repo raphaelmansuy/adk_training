@@ -85,27 +85,27 @@ This tutorial has been verified against official Google Cloud documentation.
 
 ```text
 ┌─────────────────────────────────────────────────────────┐
-│                  GEMINI ENTERPRISE                       │
-│         (formerly Google AgentSpace)                     │
-│                  (Cloud Platform Layer)                  │
-│                                                           │
-│  ┌──────────────┐  ┌──────────────┐  ┌──────────────┐  │
-│  │ Pre-built    │  │ Custom       │  │ ADK-built    │  │
-│  │ Agents       │  │ Agents       │  │ Agents       │  │
-│  │ (Google)     │  │ (Designer)   │  │ (Deployed)   │  │
-│  └──────────────┘  └──────────────┘  └──────────────┘  │
-│                                                           │
+│                  GEMINI ENTERPRISE                      │
+│         (formerly Google AgentSpace)                    │
+│                  (Cloud Platform Layer)                 │
+│                                                         │
+│  ┌──────────────┐  ┌──────────────┐  ┌──────────────┐   │
+│  │ Pre-built    │  │ Custom       │  │ ADK-built    │   │
+│  │ Agents       │  │ Agents       │  │ Agents       │   │
+│  │ (Google)     │  │ (Designer)   │  │ (Deployed)   │   │
+│  └──────────────┘  └──────────────┘  └──────────────┘   │
+│                                                         │
 │  ┌─────────────────────────────────────────────────┐    │
 │  │        Governance & Orchestration               │    │
 │  │  - Access control  - Usage tracking             │    │
 │  │  - Compliance      - Cost management            │    │
 │  └─────────────────────────────────────────────────┘    │
-│                                                           │
+│                                                         │
 │  ┌─────────────────────────────────────────────────┐    │
 │  │          Data Connectors                        │    │
 │  │  SharePoint · Drive · OneDrive · HubSpot · AEM  │    │
 │  └─────────────────────────────────────────────────┘    │
-│                                                           │
+│                                                         │
 └─────────────────────────────────────────────────────────┘
          ▲                                           ▲
          │                                           │

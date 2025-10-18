@@ -1,0 +1,19 @@
+[build-system]
+requires = ["setuptools>=64", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "tutorial34"
+version = "0.1.0"
+description = "Tutorial 34: Google Cloud Pub/Sub + Event-Driven Agents"
+requires-python = ">=3.9"
+dependencies = [
+    "google-adk>=1.15.1",
+    "google-cloud-pubsub>=2.23.0",
+    "google-genai>=1.0.0",
+]
+
+[tool.pytest.ini_options]
+markers = [
+    "integration: marks tests as integration tests (deselect with '-m \"not integration\"')",
+]

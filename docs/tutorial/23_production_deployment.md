@@ -38,48 +38,48 @@
 ┌──────────────────────────────────────────────────────────────────┐
 │ 1. QUICK MVP / MOVING FAST?                                      │
 ├──────────────────────────────────────────────────────────────────┤
-│ Setup: 5 minutes | Cost: ~$40/mo | Security: Auto ✅            │
-│ → Use: CLOUD RUN ✅                                              │
-│ Best for: Startups, MVPs, most production apps                  │
-│ Deploy: adk deploy cloud_run --project ID --region us-central1  │
+│ Setup: 5 minutes | Cost: ~$40/mo | Security: Auto ✅
+│ → Use: CLOUD RUN ✅
+│ Best for: Startups, MVPs, most production apps                   │
+│ Deploy: adk deploy cloud_run --project ID --region us-central1   │
 └──────────────────────────────────────────────────────────────────┘
 
 ┌──────────────────────────────────────────────────────────────────┐
 │ 2. NEED COMPLIANCE (FedRAMP, HIPAA, PCI-DSS)?                    │
 ├──────────────────────────────────────────────────────────────────┤
-│ Setup: 10 minutes | Cost: ~$50/mo | Security: Auto ✅✅         │
-│ → Use: AGENT ENGINE ✅✅                                         │
-│ Best for: Enterprise, government, compliance-heavy              │
-│ Why: Only platform with FedRAMP compliance                      │
-│ Deploy: adk deploy agent_engine --project ID --region us-center │
+│ Setup: 10 minutes | Cost: ~$50/mo | Security: Auto ✅✅
+│ → Use: AGENT ENGINE ✅✅
+│ Best for: Enterprise, government, compliance-heavy               │
+│ Why: Only platform with FedRAMP compliance                       │
+│ Deploy: adk deploy agent_engine --project ID --region us-center  │
 └──────────────────────────────────────────────────────────────────┘
 
 ┌──────────────────────────────────────────────────────────────────┐
 │ 3. HAVE KUBERNETES / NEED FULL CONTROL?                          │
 ├──────────────────────────────────────────────────────────────────┤
-│ Setup: 20 minutes | Cost: $200-500/mo | Security: Configure ⚙️  │
-│ → Use: GKE ✅                                                    │
-│ Best for: Complex deployments, existing Kubernetes shops       │
-│ Deploy: kubectl apply -f deployment.yaml                        │
+│ Setup: 20 minutes | Cost: $200-500/mo | Security: Configure ⚙️
+│ → Use: GKE ✅
+│ Best for: Complex deployments, existing Kubernetes shops         │
+│ Deploy: kubectl apply -f deployment.yaml                         │
 └──────────────────────────────────────────────────────────────────┘
 
 ┌──────────────────────────────────────────────────────────────────┐
 │ 4. NEED CUSTOM AUTH (LDAP, KERBEROS)?                            │
 ├──────────────────────────────────────────────────────────────────┤
-│ Setup: 2 hours | Cost: ~$60/mo | Security: Custom + Platform ⚙️ │
-│ → Use: TUTORIAL 23 + CLOUD RUN ⚙️                               │
-│ Best for: Custom authentication requirements                    │
-│ Why: Platform doesn't support these auth methods natively      │
-│ Note: Most users don't need this - use Cloud Run IAM instead   │
+│ Setup: 2 hours | Cost: ~$60/mo | Security: Custom + Platform ⚙️
+│ → Use: TUTORIAL 23 + CLOUD RUN ⚙️
+│ Best for: Custom authentication requirements                     │
+│ Why: Platform doesn't support these auth methods natively        │
+│ Note: Most users don't need this - use Cloud Run IAM instead     │
 └──────────────────────────────────────────────────────────────────┘
 
 ┌──────────────────────────────────────────────────────────────────┐
 │ 5. JUST DEVELOPING LOCALLY?                                      │
 ├──────────────────────────────────────────────────────────────────┤
-│ Setup: < 1 min | Cost: Free | Security: Add before deploy ⚡    │
-│ → Use: LOCAL DEV ⚡                                              │
-│ Best for: Development, prototyping, testing                     │
-│ Deploy: adk api_server                                          │
+│ Setup: < 1 min | Cost: Free | Security: Add before deploy ⚡
+│ → Use: LOCAL DEV ⚡                                               │
+│ Best for: Development, prototyping, testing                      │
+│ Deploy: adk api_server                                           │
 └──────────────────────────────────────────────────────────────────┘
 ```
 
