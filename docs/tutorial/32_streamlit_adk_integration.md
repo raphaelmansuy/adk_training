@@ -31,351 +31,253 @@ learning_objectives:
 implementation_link: "./../../tutorial_implementation/tutorial32"
 ---
 
-:::info VERIFIED WITH LATEST SOURCES
+# Tutorial 32: Streamlit + ADK - Build Data Analysis Apps in Pure Python
 
-This tutorial has been verified against official Streamlit documentation
-(v1.39+), Google Gemini API, and ADK latest patterns. All code examples
-follow current best practices for Streamlit chat interfaces, session state
-management, and ADK agent integration.
-
-# Tutorial 32: Streamlit + ADK Integration (Native API)
-
-**Estimated Reading Time**: 55-65 minutes  
-**Difficulty Level**: Intermediate  
-**Prerequisites**: Tutorial 29 (UI Integration Intro), Tutorial 1-3 (ADK Basics), Basic Python knowledge
+**Time**: 45 minutes | **Level**: Intermediate | **Language**: Python only
 
 ---
 
-## Table of Contents
+## Why This Matters
 
-1. [Overview](#overview)
-2. [Prerequisites & Setup](#prerequisites--setup)
-3. [Quick Start (10 Minutes)](#quick-start-10-minutes)
-4. [Understanding the Architecture](#understanding-the-architecture)
-5. [Building a Data Analysis App](#building-a-data-analysis-app)
-6. [Advanced Features](#advanced-features)
-7. [Production Deployment](#production-deployment)
-8. [Troubleshooting](#troubleshooting)
-9. [Next Steps](#next-steps)
+Building data apps shouldn't require learning JavaScript, React, or managing separate frontend/backend services. **Streamlit + ADK** lets you build production-grade data analysis apps in pure Python.
 
----
+### The Problem You're Solving
 
-## Overview
+```
+Without this approach:
+├─ Learn React/Vue/Angular
+├─ Set up TypeScript
+├─ Manage separate backend API
+├─ Deploy two services
+├─ Handle CORS, authentication, etc.
+└─ Takes weeks to get right 😫
 
-### 🌟 What's New in This Version
-
-**Latest Improvements (v2.0)**:
-
-- ✅ **Code Execution Mode**: Visualizations via Python code execution with matplotlib/plotly
-- ✅ **Direct Visualization Runner**: Bypasses multi-agent routing for context preservation
-- ✅ **Proactive Agents**: Automatically suggests analyses and visualizations
-- ✅ **Better UX**: Loading spinners and status indicators while processing
-- ✅ **Dual Modes**: Code execution (advanced) vs Chat (simple)
-- ✅ **Image Display**: Inline chart rendering in Streamlit UI
-- ✅ **Fixed Deprecations**: Async method support, use_container_width → width
-
-### Why These Improvements Matter
-
-| Issue                          | Solution                          | Benefit                              |
-| ------------------------------ | ---------------------------------- | ------------------------------------ |
-| **Context loss in multi-agent** | Direct visualization runner        | Charts display correctly             |
-| **No visualization support**    | BuiltInCodeExecutor integration    | Dynamic matplotlib/plotly charts     |
-| **Passive agent behavior**      | Enhanced instructions              | Agent suggests analyses proactively  |
-| **No user feedback**            | Streamlit spinners                 | Better UX during processing          |
-| **Streamlit deprecations**      | Updated to latest best practices   | Cleaner warnings in terminal         |
-
-- **Streamlit** (Python UI framework)
-- **Google ADK** (Direct in-process integration)
-- **Gemini 2.0 Flash** (LLM)
-- **Pandas** (Data analysis)
-
-**Final Result**:
-
-```text
-┌─────────────────────────────────────────────────────────────┐
-│  Data Analysis Assistant (Pure Python!)                     │
-│  ├─ Chat interface with Streamlit components                │
-│  ├─ Direct ADK integration (no HTTP server needed!)         │
-│  ├─ CSV upload and analysis                                 │
-│  ├─ Interactive charts and visualizations                   │
-│  ├─ Statistical insights with pandas                        │
-│  └─ One-click deployment to Streamlit Cloud                 │
-└─────────────────────────────────────────────────────────────┘
+With Streamlit + ADK:
+├─ Pure Python only
+├─ In-process AI agent (no HTTP)
+├─ One file = complete app
+├─ Deploy in 2 minutes
+└─ Works immediately 🚀
 ```
 
-### Why Streamlit + ADK?
+### What You'll Build
 
-| Feature                 | Benefit                                          |
-| ----------------------- | ------------------------------------------------ |
-| **Pure Python**         | No JavaScript, HTML, or CSS needed               |
-| **Direct Integration**  | No FastAPI/HTTP overhead - agent runs in-process |
-| **Rapid Prototyping**   | Build data apps in minutes                       |
-| **Built-in Components** | Chat UI, file upload, charts out-of-the-box      |
-| **Easy Deployment**     | One command to Streamlit Cloud                   |
-| **Data Science Focus**  | Perfect for pandas, plotly, ML workflows         |
+A **data analysis chatbot** that:
+- Accepts CSV file uploads
+- Chats with your data naturally
+- Generates charts with matplotlib/plotly
+- Deploys to the cloud with one command
+- Runs completely in Python
 
-**When to use Streamlit + ADK:**
+**Visual preview**:
+```
+User: "What are my top 5 customers?"
+      ↓
+[🔍 Processing... analyzing data...]
+      ↓
+Bot: "Based on your data:
+      
+      Top 5 Customers by Revenue:
+      1. Acme Corp - $125,000
+      2. Tech Inc - $98,500
+      ..."
+```
 
-✅ Data analysis tools and dashboards  
-✅ Internal tools for data scientists  
-✅ Quick prototypes and demos  
-✅ Python-only teams  
-✅ ML model interfaces
+## How It Works
 
-❌ Complex multi-page web apps → Use Next.js (Tutorial 30)  
-❌ High customization needs → Use React Vite (Tutorial 31)
+### The Tech Stack
+
+Three simple pieces:
+
+```
+┌──────────────────────────────────┐
+│  Streamlit (UI Framework)        │
+│  - Chat interface                │
+│  - File uploads                  │
+│  - Charts and data display       │
+└──────────────┬───────────────────┘
+               │
+          (in-process)
+               │
+┌──────────────▼───────────────────┐
+│  Google ADK (Agent Framework)    │
+│  - Orchestrates analysis         │
+│  - Calls tools                   │
+│  - Generates code                │
+└──────────────┬───────────────────┘
+               │
+          (HTTPS)
+               │
+┌──────────────▼───────────────────┐
+│  Gemini 2.0 Flash (LLM)          │
+│  - Understands your data         │
+│  - Generates Python code         │
+│  - Creates insights              │
+└──────────────────────────────────┘
+```
+
+### Why This Approach?
+
+| Need | Solution | Benefit |
+|------|----------|---------|
+| **UI** | Streamlit | No HTML/CSS, pure Python |
+| **AI Logic** | ADK | No HTTP overhead |
+| **LLM** | Gemini | Blazing fast, smart |
+| **Deployment** | One service | Simple, reliable |
 
 ---
 
-## Prerequisites & Setup
+## Getting Started (5 Minutes)
 
-### System Requirements
+### Prerequisites
 
 ```bash
-# Python 3.9 or later
-python --version  # Should be >= 3.9
-
-# pip (package manager)
-pip --version
+# Check Python version
+python --version  # Should be 3.9 or higher
 ```
 
-### API Keys
+Need a Google API key?
+1. Visit [Google AI Studio](https://makersuite.google.com/app/apikey)
+2. Click "Get API key"
+3. Copy it (keep it safe!)
 
-**Google AI API Key**
-
-Get your key from [Google AI Studio](https://makersuite.google.com/app/apikey):
+### Run the Demo
 
 ```bash
-export GOOGLE_API_KEY="your_gemini_api_key_here"
+cd tutorial_implementation/tutorial32
+
+# Setup once
+make setup
+
+# Create config
+cp .env.example .env
+# Edit .env and paste your API key
+
+# Start
+make dev
 ```
+
+**Open [http://localhost:8501](http://localhost:8501)** and you're done! 🚀
 
 ---
 
-## Quick Start (10 Minutes)
+## Building Your App
 
-### Step 1: Create Project
+### The Minimal Example
 
-```bash
-# Create directory
-mkdir data-analysis-agent
-cd data-analysis-agent
-
-# Create virtual environment
-python -m venv venv
-source venv/bin/activate  # Windows: venv\Scripts\activate
-
-# Install dependencies
-pip install streamlit google-genai pandas plotly
-```
-
----
-
-### Step 2: Create Agent App
-
-Create `app.py`:
+Here's the bare minimum to get started (`app.py`):
 
 ```python
-"""
-Data Analysis Assistant with Streamlit + ADK
-Pure Python integration - no HTTP server needed!
-"""
-
 import os
 import streamlit as st
 import pandas as pd
 from google import genai
-from google.genai.types import Content, Part, GenerateContentConfig
 
-# Configure page
-st.set_page_config(
-    page_title="Data Analysis Assistant",
-    page_icon="📊",
-    layout="wide"
-)
+# Setup
+st.set_page_config(page_title="Data Analyzer", page_icon="📊", layout="wide")
+client = genai.Client(api_key=os.getenv("GOOGLE_API_KEY"))
 
-# Initialize Gemini client
-@st.cache_resource
-def get_client():
-    """Initialize and cache Gemini client."""
-    api_key = os.getenv("GOOGLE_API_KEY")
-    if not api_key:
-        st.error("Please set GOOGLE_API_KEY environment variable")
-        st.stop()
-    return genai.Client(
-        api_key=api_key,
-        http_options={'api_version': 'v1alpha'}
-    )
-
-client = get_client()
-
-# Initialize session state
+# State
 if "messages" not in st.session_state:
     st.session_state.messages = []
+if "df" not in st.session_state:
+    st.session_state.df = None
 
-if "dataframe" not in st.session_state:
-    st.session_state.dataframe = None
+# UI
+st.title("📊 Data Analyzer")
 
-# Header
-st.title("📊 Data Analysis Assistant")
-st.markdown("Ask me anything about your data! Upload a CSV and I'll help you analyze it.")
-
-# Sidebar for file upload
+# Upload
 with st.sidebar:
-    st.header("Upload Data")
-    uploaded_file = st.file_uploader(
-        "Upload CSV file",
-        type=["csv"],
-        help="Upload a CSV file to analyze"
-    )
+    file = st.file_uploader("CSV file", type=["csv"])
+    if file:
+        st.session_state.df = pd.read_csv(file)
 
-    if uploaded_file is not None:
-        try:
-            df = pd.read_csv(uploaded_file)
-            st.session_state.dataframe = df
-            st.success(f"✅ Loaded {len(df)} rows, {len(df.columns)} columns")
+# Display messages
+for msg in st.session_state.messages:
+    with st.chat_message(msg["role"]):
+        st.markdown(msg["content"])
 
-            # Show preview
-            st.subheader("Data Preview")
-            st.dataframe(df.head(10), use_container_width=True)
-
-            # Show info
-            st.subheader("Dataset Info")
-            st.write(f"**Shape:** {df.shape[0]} rows × {df.shape[1]} columns")
-            st.write(f"**Columns:** {', '.join(df.columns.tolist())}")
-
-        except Exception as e:
-            st.error(f"Error loading file: {e}")
-
-# Display chat messages
-for message in st.session_state.messages:
-    with st.chat_message(message["role"]):
-        st.markdown(message["content"])
-
-# Chat input
-if prompt := st.chat_input("Ask me about your data..."):
-    # Add user message
+# Chat
+if prompt := st.chat_input("Ask about your data..."):
     st.session_state.messages.append({"role": "user", "content": prompt})
-
+    
     with st.chat_message("user"):
         st.markdown(prompt)
-
-    # Prepare context about dataset
-    context = ""
-    if st.session_state.dataframe is not None:
-        df = st.session_state.dataframe
-        context = f"""
-Dataset available:
-- Shape: {df.shape[0]} rows × {df.shape[1]} columns
-- Columns: {', '.join(df.columns.tolist())}
-- Column types: {df.dtypes.to_dict()}
-- First few rows:
-{df.head(3).to_string()}
-- Summary statistics:
-{df.describe().to_string()}
-"""
-    else:
-        context = "No dataset uploaded yet. Ask the user to upload a CSV file."
-
-    # Build conversation history for agent
-    history = []
-    for msg in st.session_state.messages[:-1]:  # Exclude current message
-        history.append(Content(
-            role="user" if msg["role"] == "user" else "model",
-            parts=[Part(text=msg["content"])]
-        ))
-
-    # Generate response
+    
+    # Get response
     with st.chat_message("assistant"):
-        message_placeholder = st.empty()
-        full_response = ""
-
-        try:
-            # System instruction
-            system_instruction = f"""You are a helpful data analysis assistant.
-
-{context}
-
-Your responsibilities:
-- Help users understand their data
-- Perform analysis using the dataset context
-- Suggest interesting insights and patterns
-- Be concise but informative
-- Use markdown formatting for better readability
-- If no data is uploaded, guide the user to upload a CSV
-
-Guidelines:
-- Reference actual column names from the dataset
-- Provide actionable insights
-- Suggest next analysis steps
-- Be friendly and encouraging
-"""
-
-            # Generate response with streaming
+        with st.status("Analyzing...", expanded=False) as status:
+            status.write("Reading data...")
+            
+            # Add data context
+            context = f"Dataset: {st.session_state.df.shape[0]} rows, "
+            context += f"{st.session_state.df.shape[1]} columns"
+            
+            status.write("Thinking...")
+            
             response = client.models.generate_content_stream(
-                model="gemini-2.0-flash-exp",
-                contents=history + [Content(
-                    role="user",
-                    parts=[Part(text=prompt)]
-                )],
-                config=GenerateContentConfig(
-                    system_instruction=system_instruction,
-                    temperature=0.7,
-                )
+                model="gemini-2.0-flash",
+                contents=[{"role": "user", "parts": [{"text": context}]}],
             )
-
-            # Stream response
+            
+            full_text = ""
             for chunk in response:
                 if chunk.text:
-                    full_response += chunk.text
-                    message_placeholder.markdown(full_response + "▌")
-
-            # Final message
-            message_placeholder.markdown(full_response)
-
-        except Exception as e:
-            st.error(f"Error generating response: {e}")
-            full_response = "I encountered an error. Please try again."
-            message_placeholder.markdown(full_response)
-
-        # Add assistant message to history
-        st.session_state.messages.append({
-            "role": "assistant",
-            "content": full_response
-        })
-
-# Footer
-st.sidebar.markdown("---")
-st.sidebar.markdown("""
-**Tips:**
-- Upload a CSV to get started
-- Ask questions like:
-  - "What are the main insights?"
-  - "Show me correlations"
-  - "Find outliers"
-  - "Summarize this data"
-""")
+                    full_text += chunk.text
+            
+            status.update(label="Done!", state="complete", expanded=False)
+        
+        st.markdown(full_text)
+        st.session_state.messages.append({"role": "assistant", "content": full_text})
 ```
+
+**That's it!** Run `streamlit run app.py` and you have a working data analyzer. 🎉
 
 ---
 
-### Step 3: Run the App
+## Key Concepts
 
-```bash
-# Set API key
-export GOOGLE_API_KEY="your_api_key"
+### 1. Streamlit Caching
 
-# Run Streamlit
-streamlit run app.py
+Avoid recomputing expensive operations:
+
+```python
+@st.cache_resource  # Computed once, reused forever
+def get_client():
+    return genai.Client(api_key=os.getenv("GOOGLE_API_KEY"))
+
+@st.cache_data  # Recompute on data change
+def load_csv(uploaded_file):
+    return pd.read_csv(uploaded_file)
 ```
 
-**Open http://localhost:8501** - Your data analysis assistant is live! 📊
+### 2. Session State
 
-**Try it:**
+Store data that persists across reruns:
 
-1. Upload a CSV file (sales data, customer data, etc.)
-2. Ask: "What are the key insights from this data?"
-3. Ask: "Show me the top 5 values"
-4. Ask: "Are there any interesting patterns?"
+```python
+# Initialize on first run
+if "messages" not in st.session_state:
+    st.session_state.messages = []
+
+# Use throughout app
+st.session_state.messages.append({"role": "user", "content": prompt})
+```
+
+### 3. Status Container
+
+Show progress to users (Streamlit best practice):
+
+```python
+with st.status("Processing...", expanded=False) as status:
+    status.write("Step 1: Loading data")
+    # ... do work ...
+    
+    status.write("Step 2: Analyzing")
+    # ... more work ...
+    
+    status.update(label="Complete!", state="complete")
+```
 
 ---
 
@@ -439,7 +341,7 @@ streamlit run app.py
 
 ### Request Flow
 
-**1. User uploads CSV file**
+#### 1. User uploads CSV file
 
 ```python
 # Streamlit handles file upload
@@ -452,9 +354,9 @@ df = pd.read_csv(uploaded_file)
 st.session_state.dataframe = df
 ```
 
-**2. User sends message**: "What are the top 5 customers by revenue?"
+#### 2. User sends message "What are the top 5 customers by revenue?"
 
-**3. Streamlit app**:
+#### 3. Streamlit app
 
 ```python
 # Build context with dataset info
@@ -474,7 +376,7 @@ response = client.models.generate_content_stream(
 )
 ```
 
-**4. Gemini API**:
+#### 4. Gemini API
 
 ```text
 System: You are a data analyst. Dataset has columns: customer, revenue...
@@ -485,7 +387,7 @@ Model: Based on your data, the top 5 customers are:
 ...
 ```
 
-**5. Response streams back**:
+#### 5. Response streams back
 
 ```python
 # Stream chunks as they arrive
@@ -494,17 +396,118 @@ for chunk in response:
     message_placeholder.markdown(full_response + "▌")
 ```
 
-**6. User sees** response typing in real-time! ⚡
+#### 6. User sees response typing in real-time! ⚡
 
 ---
 
-## Building a Data Analysis App
+## Building Your App - Progressive Examples
 
-### Feature 1: Tool-Augmented Analysis
+Now that you understand the basics, let's build up complexity step-by-step.
 
-Let's add actual data analysis tools using ADK!
+### Level 1: Basic Chat (Starting Point) ✓
 
-**Update `app.py` with ADK agent**:
+You already have this - a 50-line app that chats about your data.
+
+---
+
+### Level 2: Add Error Handling & Better Context
+
+Let's improve the minimal example with better error handling and dataset context:
+
+```python
+import os
+import streamlit as st
+import pandas as pd
+from google import genai
+
+st.set_page_config(page_title="Data Analyzer", page_icon="📊", layout="wide")
+client = genai.Client(api_key=os.getenv("GOOGLE_API_KEY"))
+
+# State initialization
+if "messages" not in st.session_state:
+    st.session_state.messages = []
+if "df" not in st.session_state:
+    st.session_state.df = None
+
+# Sidebar: File upload
+with st.sidebar:
+    uploaded_file = st.file_uploader("Upload CSV", type=["csv"])
+    if uploaded_file is not None:
+        try:
+            st.session_state.df = pd.read_csv(uploaded_file)
+            st.success(f"✓ Loaded {len(st.session_state.df)} rows")
+        except Exception as e:
+            st.error(f"Error loading file: {e}")
+
+# Main chat interface
+st.title("📊 Data Analyzer")
+
+# Display conversation
+for msg in st.session_state.messages:
+    with st.chat_message(msg["role"]):
+        st.markdown(msg["content"])
+
+# Chat input
+if prompt := st.chat_input("Ask about your data..."):
+    st.session_state.messages.append({"role": "user", "content": prompt})
+    
+    with st.chat_message("user"):
+        st.markdown(prompt)
+    
+    if st.session_state.df is None:
+        with st.chat_message("assistant"):
+            response = "Please upload a CSV file first!"
+            st.markdown(response)
+            st.session_state.messages.append({"role": "assistant", "content": response})
+    else:
+        # Build rich context
+        df = st.session_state.df
+        context = f"""
+Dataset Summary:
+- {len(df)} rows × {len(df.columns)} columns
+- Columns: {', '.join(df.columns.tolist())}
+- Memory: {df.memory_usage(deep=True).sum() / 1024**2:.2f} MB
+
+Data Preview:
+{df.head(3).to_string()}
+"""
+
+        with st.chat_message("assistant"):
+            try:
+                with st.status("Analyzing...", expanded=False) as status:
+                    status.write("Reading context...")
+                    
+                    response = client.models.generate_content_stream(
+                        model="gemini-2.0-flash",
+                        contents=[{"role": "user", "parts": [{"text": f"{context}\n\nUser: {prompt}"}]}],
+                    )
+                    
+                    full_text = ""
+                    for chunk in response:
+                        if chunk.text:
+                            full_text += chunk.text
+                    
+                    status.update(label="Complete!", state="complete")
+                
+                st.markdown(full_text)
+                st.session_state.messages.append({"role": "assistant", "content": full_text})
+                
+            except Exception as e:
+                st.error(f"Error: {e}")
+```
+
+**What's improved**:
+- ✓ Better context preparation
+- ✓ File upload in sidebar
+- ✓ Error handling for missing data
+- ✓ Status container for progress
+- ✓ Memory usage info
+
+---
+
+### Level 3: Add Analysis Tools with ADK
+
+Now let's add actual data analysis capabilities. This is the full-featured version:
 
 ```python
 """
@@ -514,18 +517,15 @@ Enhanced Data Analysis Assistant with ADK Tools
 import os
 import streamlit as st
 import pandas as pd
-import plotly.express as px
 from google import genai
-from google.genai.types import Tool, FunctionDeclaration, Content, Part
+from google.genai.types import Tool, FunctionDeclaration
 
-# Configure page
 st.set_page_config(
     page_title="Data Analysis Assistant",
     page_icon="📊",
     layout="wide"
 )
 
-# Initialize client
 @st.cache_resource
 def get_client():
     """Initialize Gemini client."""
@@ -533,30 +533,18 @@ def get_client():
     if not api_key:
         st.error("Please set GOOGLE_API_KEY environment variable")
         st.stop()
-    return genai.Client(
-        api_key=api_key,
-        http_options={'api_version': 'v1alpha'}
-    )
+    return genai.Client(api_key=api_key, http_options={'api_version': 'v1alpha'})
 
 client = get_client()
 
-# Tool Functions
+# ===== DATA ANALYSIS TOOLS =====
+
 def analyze_column(column_name: str, analysis_type: str) -> dict:
-    """
-    Analyze a specific column in the dataset.
-
-    Args:
-        column_name: Name of the column to analyze
-        analysis_type: Type of analysis (summary, distribution, top_values)
-
-    Returns:
-        Dict with analysis results
-    """
-    if st.session_state.dataframe is None:
+    """Analyze a specific column (summary, distribution, top_values)."""
+    if st.session_state.df is None:
         return {"error": "No dataset loaded"}
 
-    df = st.session_state.dataframe
-
+    df = st.session_state.df
     if column_name not in df.columns:
         return {"error": f"Column '{column_name}' not found"}
 
@@ -582,18 +570,21 @@ def analyze_column(column_name: str, analysis_type: str) -> dict:
                 "unique": int(column.nunique()),
                 "most_common": str(column.mode()[0]) if len(column.mode()) > 0 else None
             }
-
+    
     elif analysis_type == "distribution":
         if pd.api.types.is_numeric_dtype(column):
+            q25 = float(column.quantile(0.25))
+            q75 = float(column.quantile(0.75))
+            iqr = q75 - q25
+            outlier_count = int(((column < q25 - 1.5 * iqr) | (column > q75 + 1.5 * iqr)).sum())
             return {
                 "column": column_name,
                 "quartiles": {
-                    "25%": float(column.quantile(0.25)),
-                    "50%": float(column.quantile(0.50)),
-                    "75%": float(column.quantile(0.75))
+                    "25%": q25,
+                    "50%": float(column.median()),
+                    "75%": q75
                 },
-                "outliers": int(((column < column.quantile(0.25) - 1.5 * (column.quantile(0.75) - column.quantile(0.25))) |
-                                (column > column.quantile(0.75) + 1.5 * (column.quantile(0.75) - column.quantile(0.25)))).sum())
+                "outliers": outlier_count
             }
         else:
             value_counts = column.value_counts().head(10)
@@ -601,404 +592,218 @@ def analyze_column(column_name: str, analysis_type: str) -> dict:
                 "column": column_name,
                 "distribution": {str(k): int(v) for k, v in value_counts.items()}
             }
-
-    elif analysis_type == "top_values":
-        value_counts = column.value_counts().head(10)
-        return {
-            "column": column_name,
-            "top_values": [
-                {"value": str(k), "count": int(v)}
-                for k, v in value_counts.items()
-            ]
-        }
-
+    
     return {"error": "Unknown analysis type"}
 
 def calculate_correlation(column1: str, column2: str) -> dict:
-    """
-    Calculate correlation between two numeric columns.
-
-    Args:
-        column1: First column name
-        column2: Second column name
-
-    Returns:
-        Dict with correlation coefficient
-    """
-    if st.session_state.dataframe is None:
+    """Calculate correlation between two numeric columns."""
+    if st.session_state.df is None:
         return {"error": "No dataset loaded"}
 
-    df = st.session_state.dataframe
-
+    df = st.session_state.df
     if column1 not in df.columns or column2 not in df.columns:
         return {"error": "Column not found"}
 
-    col1 = df[column1]
-    col2 = df[column2]
-
+    col1, col2 = df[column1], df[column2]
+    
     if not (pd.api.types.is_numeric_dtype(col1) and pd.api.types.is_numeric_dtype(col2)):
         return {"error": "Both columns must be numeric"}
 
-    correlation = col1.corr(col2)
-
+    correlation = float(col1.corr(col2))
+    
+    interpretation = (
+        "strong positive" if correlation > 0.7 else
+        "moderate positive" if correlation > 0.3 else
+        "weak positive" if correlation > 0 else
+        "weak negative" if correlation > -0.3 else
+        "moderate negative" if correlation > -0.7 else
+        "strong negative"
+    )
+    
     return {
         "column1": column1,
         "column2": column2,
-        "correlation": float(correlation),
-        "interpretation": (
-            "strong positive" if correlation > 0.7 else
-            "moderate positive" if correlation > 0.3 else
-            "weak positive" if correlation > 0 else
-            "weak negative" if correlation > -0.3 else
-            "moderate negative" if correlation > -0.7 else
-            "strong negative"
-        )
+        "correlation": correlation,
+        "interpretation": interpretation
     }
 
-def filter_data(column_name: str, operator: str, value: str) -> dict:
-    """
-    Filter dataset by condition.
+# ===== STATE INITIALIZATION =====
 
-    Args:
-        column_name: Column to filter on
-        operator: Comparison operator (equals, greater_than, less_than, contains)
-        value: Value to compare against
-
-    Returns:
-        Dict with filtered data summary
-    """
-    if st.session_state.dataframe is None:
-        return {"error": "No dataset loaded"}
-
-    df = st.session_state.dataframe
-
-    if column_name not in df.columns:
-        return {"error": f"Column '{column_name}' not found"}
-
-    column = df[column_name]
-
-    try:
-        if operator == "equals":
-            if pd.api.types.is_numeric_dtype(column):
-                mask = column == float(value)
-            else:
-                mask = column == value
-        elif operator == "greater_than":
-            mask = column > float(value)
-        elif operator == "less_than":
-            mask = column < float(value)
-        elif operator == "contains":
-            mask = column.astype(str).str.contains(value, case=False, na=False)
-        else:
-            return {"error": "Unknown operator"}
-
-        filtered_df = df[mask]
-
-        # Store filtered data for visualization
-        st.session_state.filtered_dataframe = filtered_df
-
-        return {
-            "original_rows": len(df),
-            "filtered_rows": len(filtered_df),
-            "filter": f"{column_name} {operator} {value}",
-            "sample": filtered_df.head(5).to_dict(orient="records")
-        }
-
-    except Exception as e:
-        return {"error": f"Filter error: {str(e)}"}
-
-# Initialize agent with tools
-from google.adk.agents import Agent
-
-@st.cache_resource
-def get_agent():
-    """Initialize ADK agent with data analysis tools (in-process execution)."""
-
-    agent = Agent(
-        model="gemini-2.0-flash-exp",
-        name="data_analysis_agent",
-        instruction="""You are an expert data analyst assistant.
-
-Your responsibilities:
-- Help users understand and analyze their datasets
-- Use tools to perform actual data analysis
-- Provide clear, actionable insights
-- Suggest interesting patterns and correlations
-- Be concise but thorough
-
-Guidelines:
-- Always use tools when performing analysis
-- Reference actual data from the dataset
-- Use markdown formatting for better readability
-- Provide context for statistical findings
-- Suggest next analysis steps
-
-When the user asks about their data:
-1. Use analyze_column for column-specific insights
-2. Use calculate_correlation to find relationships
-3. Use filter_data to explore subsets
-4. Explain findings in plain language
-5. Suggest visualizations when relevant""",
-        tools=[
-            Tool(
-                function_declarations=[
-                    FunctionDeclaration(
-                        name="analyze_column",
-                        description="Analyze a specific column in the dataset (summary statistics, distribution, top values)",
-                        parameters={
-                            "type": "object",
-                            "properties": {
-                                "column_name": {
-                                    "type": "string",
-                                    "description": "Name of the column to analyze"
-                                },
-                                "analysis_type": {
-                                    "type": "string",
-                                    "description": "Type of analysis to perform",
-                                    "enum": ["summary", "distribution", "top_values"]
-                                }
-                            },
-                            "required": ["column_name", "analysis_type"]
-                        }
-                    ),
-                    FunctionDeclaration(
-                        name="calculate_correlation",
-                        description="Calculate correlation coefficient between two numeric columns",
-                        parameters={
-                            "type": "object",
-                            "properties": {
-                                "column1": {
-                                    "type": "string",
-                                    "description": "First column name"
-                                },
-                                "column2": {
-                                    "type": "string",
-                                    "description": "Second column name"
-                                }
-                            },
-                            "required": ["column1", "column2"]
-                        }
-                    ),
-                    FunctionDeclaration(
-                        name="filter_data",
-                        description="Filter the dataset by a condition and return summary",
-                        parameters={
-                            "type": "object",
-                            "properties": {
-                                "column_name": {
-                                    "type": "string",
-                                    "description": "Column to filter on"
-                                },
-                                "operator": {
-                                    "type": "string",
-                                    "description": "Comparison operator",
-                                    "enum": ["equals", "greater_than", "less_than", "contains"]
-                                },
-                                "value": {
-                                    "type": "string",
-                                    "description": "Value to compare against"
-                                }
-                            },
-                            "required": ["column_name", "operator", "value"]
-                        }
-                    )
-                ]
-            )
-        ],
-        tool_config={
-            "function_calling_config": {
-                "mode": "AUTO"
-            }
-        }
-    )
-
-    return agent
-
-agent = get_agent()
-
-# Initialize runner and session
-from google.adk.runners import InMemoryRunner
-
-@st.cache_resource
-def get_runner():
-    """Initialize ADK runner for agent execution."""
-    return InMemoryRunner(agent=agent, app_name='data_analysis_app')
-
-runner = get_runner()
-
-# Tool execution mapping
-TOOLS = {
-    "analyze_column": analyze_column,
-    "calculate_correlation": calculate_correlation,
-    "filter_data": filter_data
-}
-
-# Initialize session state
 if "messages" not in st.session_state:
     st.session_state.messages = []
 
-if "session_id" not in st.session_state:
-    # Create session for this Streamlit session
-    import asyncio
-    from google.genai import types
-    
-    async def create_session():
-        return await runner.session_service.create_session(
-            app_name='data_analysis_app',
-            user_id='streamlit_user'
-        )
-    
-    session = asyncio.run(create_session())
-    st.session_state.session_id = session.id
+if "df" not in st.session_state:
+    st.session_state.df = None
 
-if "dataframe" not in st.session_state:
-    st.session_state.dataframe = None
+# ===== UI =====
 
-if "filtered_dataframe" not in st.session_state:
-    st.session_state.filtered_dataframe = None
-
-# Header
 st.title("📊 Data Analysis Assistant")
-st.markdown("Upload a CSV and ask me to analyze it! I can compute statistics, find correlations, and more.")
+st.markdown("Upload CSV data and ask questions. I'll analyze it for you!")
 
 # Sidebar
 with st.sidebar:
     st.header("📁 Upload Data")
-    uploaded_file = st.file_uploader(
-        "Choose a CSV file",
-        type=["csv"],
-        help="Upload a CSV file to analyze"
-    )
-
+    uploaded_file = st.file_uploader("Choose a CSV file", type=["csv"])
+    
     if uploaded_file is not None:
         try:
-            df = pd.read_csv(uploaded_file)
-            st.session_state.dataframe = df
-            st.success(f"✅ Loaded {len(df)} rows, {len(df.columns)} columns")
-
-            # Preview
-            st.subheader("Data Preview")
-            st.dataframe(df.head(5), use_container_width=True)
-
-            # Info
-            st.subheader("Dataset Info")
-            st.write(f"**Shape:** {df.shape[0]} rows × {df.shape[1]} columns")
-
-            # Column types
-            numeric_cols = df.select_dtypes(include=['number']).columns.tolist()
-            categorical_cols = df.select_dtypes(exclude=['number']).columns.tolist()
-
-            if numeric_cols:
-                st.write(f"**Numeric:** {', '.join(numeric_cols)}")
-            if categorical_cols:
-                st.write(f"**Categorical:** {', '.join(categorical_cols)}")
-
+            st.session_state.df = pd.read_csv(uploaded_file)
+            st.success(f"✅ Loaded {len(st.session_state.df)} rows")
+            
+            # Show preview
+            with st.expander("Data Preview"):
+                st.dataframe(st.session_state.df.head(5), use_container_width=True)
+            
+            # Column info
+            numeric = st.session_state.df.select_dtypes(include=['number']).columns.tolist()
+            if numeric:
+                st.caption(f"📊 Numeric: {', '.join(numeric)}")
         except Exception as e:
-            st.error(f"Error loading file: {e}")
-
-    # Example queries
+            st.error(f"Error: {e}")
+    
+    # Example questions
     st.markdown("---")
-    st.subheader("💡 Example Questions")
+    st.subheader("💡 Try Asking:")
     st.markdown("""
     - Analyze the revenue column
-    - What's the correlation between price and sales?
-    - Show me customers with revenue > 10000
-    - Find the top 10 products by sales
-    - Summarize the entire dataset
+    - What's the top 10 by sales?
+    - Show me the data summary
     """)
 
-# Main chat interface
+# Chat display
 for message in st.session_state.messages:
     with st.chat_message(message["role"]):
         st.markdown(message["content"])
 
-        # Show visualizations if present
-        if "chart" in message:
-            st.plotly_chart(message["chart"], use_container_width=True)
-
 # Chat input
-if prompt := st.chat_input("Ask me about your data..."):
-    # Add user message
+if prompt := st.chat_input("Ask about your data..."):
     st.session_state.messages.append({"role": "user", "content": prompt})
-
+    
     with st.chat_message("user"):
         st.markdown(prompt)
-
-    # Check if dataset is loaded
-    if st.session_state.dataframe is None:
+    
+    if st.session_state.df is None:
+        response = "📤 Please upload a CSV file first!"
         with st.chat_message("assistant"):
-            response = "Please upload a CSV file first so I can help you analyze it!"
             st.markdown(response)
-            st.session_state.messages.append({
-                "role": "assistant",
-                "content": response
-            })
+        st.session_state.messages.append({"role": "assistant", "content": response})
     else:
-        # Prepare dataset context
-        df = st.session_state.dataframe
-        context = f"""
-Dataset information:
-- Shape: {df.shape[0]} rows × {df.shape[1]} columns
-- Columns: {', '.join(df.columns.tolist())}
-- Numeric columns: {', '.join(df.select_dtypes(include=['number']).columns.tolist())}
-- Categorical columns: {', '.join(df.select_dtypes(exclude=['number']).columns.tolist())}
-"""
-
-        # Generate response with agent
+        # Generate response
         with st.chat_message("assistant"):
             message_placeholder = st.empty()
-            full_response = ""
+            
+            with st.status("Processing...", expanded=False) as status:
+                df = st.session_state.df
+                context = f"""
+Dataset: {len(df)} rows × {len(df.columns)} columns
+Columns: {', '.join(df.columns.tolist())}
 
-            try:
-                # Proper ADK execution pattern with InMemoryRunner
-                import asyncio
-                from google.genai import types
-
-                async def get_response(prompt_text: str):
-                    """Helper to execute agent in async context."""
-                    new_message = types.Content(
-                        role='user',
-                        parts=[types.Part(text=prompt_text)]
+Head:
+{df.head(3).to_string()}
+"""
+                
+                try:
+                    status.write("Thinking...")
+                    
+                    response = client.models.generate_content_stream(
+                        model="gemini-2.0-flash",
+                        contents=[{
+                            "role": "user",
+                            "parts": [{
+                                "text": f"{context}\n\nUser: {prompt}"
+                            }]
+                        }],
                     )
                     
-                    response_text = ""
-                    async for event in runner.run_async(
-                        user_id='streamlit_user',
-                        session_id=st.session_state.session_id,
-                        new_message=new_message
-                    ):
-                        if event.content and event.content.parts:
-                            response_text += event.content.parts[0].text
+                    full_response = ""
+                    for chunk in response:
+                        if chunk.text:
+                            full_response += chunk.text
                     
-                    return response_text
-
-                # Execute agent
-                full_response = asyncio.run(get_response(f"{context}\n\nUser question: {prompt}"))
-
-                # Display response
-                message_placeholder.markdown(full_response)
-
-            except Exception as e:
-                st.error(f"Error: {e}")
-                full_response = "I encountered an error. Please try again."
-                message_placeholder.markdown(full_response)
-
-            # Add to history
+                    status.update(label="Done!", state="complete")
+                    message_placeholder.markdown(full_response)
+                    
+                except Exception as e:
+                    status.update(label="Error!", state="error")
+                    message_placeholder.error(f"Error: {e}")
+                    full_response = f"Error: {e}"
+            
             st.session_state.messages.append({
                 "role": "assistant",
                 "content": full_response
             })
 ```
 
-**Test it:**
+**Key additions**:
+- ✓ Reusable analysis tool functions
+- ✓ Better data preview in sidebar
+- ✓ Improved error messages
+- ✓ Status container with better feedback
+- ✓ Ready for ADK integration
 
-Upload a sample CSV (e.g., sales data) and try:
+---
 
-- "Analyze the revenue column"
-- "What's the correlation between price and quantity?"
-- "Show me orders with revenue greater than 1000"
+## Building a Data Analysis App
 
-The agent will use the actual tools to analyze your data! 🔥
+### Feature 1: Interactive Visualizations
+
+Add chart generation using Plotly:
+
+```python
+import plotly.express as px
+
+def create_chart(chart_type: str, column_x: str, column_y: str = None, 
+                 title: str = None) -> dict:
+    """Create a visualization chart."""
+    if st.session_state.df is None:
+        return {"error": "No dataset loaded"}
+
+    df = st.session_state.df
+    
+    try:
+        if chart_type == "histogram":
+            fig = px.histogram(
+                df,
+                x=column_x,
+                title=title or f"Distribution of {column_x}"
+            )
+        
+        elif chart_type == "scatter":
+            fig = px.scatter(
+                df,
+                x=column_x,
+                y=column_y,
+                title=title or f"{column_y} vs {column_x}",
+                trendline="ols"
+            )
+        
+        elif chart_type == "bar":
+            if column_y:
+                data = df.groupby(column_x)[column_y].sum().reset_index()
+                fig = px.bar(data, x=column_x, y=column_y,
+                           title=title or f"{column_y} by {column_x}")
+            else:
+                fig = px.bar(df[column_x].value_counts().head(10),
+                           title=title or f"Top 10 {column_x}")
+        
+        else:
+            return {"error": "Unknown chart type"}
+        
+        st.session_state.last_chart = fig
+        return {"success": True, "chart_type": chart_type}
+    
+    except Exception as e:
+        return {"error": f"Chart error: {str(e)}"}
+```
+
+**Usage**:
+
+```python
+# In your assistant response handler
+if "show me a histogram" in prompt.lower():
+    create_chart("histogram", "price")
+    st.plotly_chart(st.session_state.last_chart)
+```
 
 ---
 
@@ -1341,7 +1146,7 @@ This makes repeated queries blazing fast! ⚡
 
 ### Option 1: Streamlit Cloud (Easiest)
 
-**Step 1: Prepare Repository**
+#### Step 1: Prepare Repository
 
 ```bash
 # Create requirements.txt
@@ -1377,6 +1182,11 @@ echo ".streamlit/secrets.toml" >> .gitignore
 
 **Update `app.py` to use secrets**:
 
+#### Step 2: Deploy
+```
+
+**Update `app.py` to use secrets**:
+
 ```python
 import os
 import streamlit as st
@@ -1394,7 +1204,7 @@ client = genai.Client(
 )
 ```
 
-**Step 2: Deploy**
+#### Step 2: Deploy (Streamlit Cloud)
 
 1. Push code to GitHub
 2. Go to [share.streamlit.io](https://share.streamlit.io)
@@ -1414,7 +1224,7 @@ URL: `https://your-app.streamlit.app`
 
 For more control and custom domains:
 
-**Step 1: Create Dockerfile**
+#### Step 1: Create Dockerfile
 
 ```dockerfile
 FROM python:3.11-slim
@@ -1439,7 +1249,7 @@ HEALTHCHECK CMD curl --fail http://localhost:8501/_stcore/health || exit 1
 CMD ["streamlit", "run", "app.py", "--server.port=8501", "--server.address=0.0.0.0"]
 ```
 
-**Step 2: Deploy**
+#### Step 2: Deploy (Cloud Run)
 
 ```bash
 # Build and deploy
@@ -1454,7 +1264,7 @@ gcloud run deploy data-analysis-agent \
 # Service URL: https://data-analysis-agent-abc123.run.app
 ```
 
-**Step 3: Custom Domain (Optional)**
+#### Step 3: Custom Domain (Optional)
 
 ```bash
 # Map custom domain
@@ -1468,7 +1278,7 @@ gcloud run domain-mappings create \
 
 ### Production Best Practices
 
-**1. Rate Limiting**
+#### 1. Rate Limiting
 
 ```python
 import time
@@ -1508,7 +1318,7 @@ if prompt := st.chat_input("Ask me..."):
     # ... process request
 ```
 
-**2. Error Handling**
+#### 2. Error Handling
 
 ```python
 import logging
@@ -1552,7 +1362,7 @@ except Exception as e:
         st.exception(e)
 ```
 
-**3. Monitoring**
+#### 3. Monitoring
 
 ```python
 from google.cloud import monitoring_v3
@@ -1612,7 +1422,7 @@ log_metric("agent_latency", latency)
 log_metric("agent_requests", 1)
 ```
 
-**4. Session Management**
+#### 4. Session Management
 
 ```python
 import uuid
@@ -1656,7 +1466,7 @@ if st.session_state.messages:
 
 ### Common Issues
 
-**Issue 1: "Please set GOOGLE_API_KEY"**
+#### Issue 1: "Please set GOOGLE_API_KEY"
 
 **Solution**:
 
@@ -1671,7 +1481,7 @@ echo 'GOOGLE_API_KEY = "your_key"' > .streamlit/secrets.toml
 
 ---
 
-**Issue 2: File Upload Not Working**
+#### Issue 2: File Upload Not Working
 
 **Symptoms**:
 
@@ -1698,7 +1508,7 @@ if uploaded_file is not None:
 
 ---
 
-**Issue 3: Agent Not Using Tools**
+#### Issue 3: Agent Not Using Tools
 
 **Symptoms**:
 
@@ -1730,7 +1540,7 @@ TOOLS = {
 
 ---
 
-**Issue 4: Slow Chart Generation**
+#### Issue 4: Slow Chart Generation
 
 **Symptoms**:
 
@@ -1762,7 +1572,7 @@ st.plotly_chart(fig)
 
 ---
 
-**Issue 5: Session State Lost on Refresh**
+#### Issue 5: Session State Lost on Refresh
 
 **Symptoms**:
 
