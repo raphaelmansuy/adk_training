@@ -4,7 +4,7 @@
 
 from __future__ import annotations
 
-from pydantic import BaseModel, Field, ConfigDict
+from pydantic import BaseModel, Field
 from google.adk.agents import LlmAgent
 from google.adk.tools import AgentTool
 
@@ -15,8 +15,6 @@ from google.adk.tools import AgentTool
 
 class EntityExtraction(BaseModel):
     """Extracted entities from document content."""
-    
-    model_config = ConfigDict(extra='forbid')
     
     dates: list[str] = Field(
         default_factory=list,
@@ -39,8 +37,6 @@ class EntityExtraction(BaseModel):
 class DocumentSummary(BaseModel):
     """Concise summary of document content."""
     
-    model_config = ConfigDict(extra='forbid')
-    
     main_points: list[str] = Field(
         description="Top 3-5 main points from the document"
     )
@@ -55,8 +51,6 @@ class DocumentSummary(BaseModel):
 class FinancialMetrics(BaseModel):
     """Financial metrics extracted from documents."""
     
-    model_config = ConfigDict(extra='forbid')
-    
     revenue: str = Field(default="", description="Total revenue")
     profit: str = Field(default="", description="Total profit")
     margin: str = Field(default="", description="Profit margin")
@@ -69,8 +63,6 @@ class FinancialMetrics(BaseModel):
 
 class MarketingMetrics(BaseModel):
     """Marketing metrics extracted from documents."""
-    
-    model_config = ConfigDict(extra='forbid')
     
     engagement_rate: str = Field(default="", description="Engagement rate")
     conversion_rate: str = Field(default="", description="Conversion rate")
@@ -86,8 +78,6 @@ class MarketingMetrics(BaseModel):
 class Deal(BaseModel):
     """Sales deal information."""
     
-    model_config = ConfigDict(extra='forbid')
-    
     customer: str = Field(default="", description="Customer name")
     deal_value: str = Field(default="", description="Deal value/amount")
     stage: str = Field(default="", description="Deal stage (open, negotiating, closed, etc.)")
@@ -100,8 +90,6 @@ class Deal(BaseModel):
 
 class FinancialAnalysisOutput(BaseModel):
     """Structured output for financial document analysis."""
-    
-    model_config = ConfigDict(extra='forbid')
     
     summary: DocumentSummary
     entities: EntityExtraction
@@ -121,8 +109,6 @@ class FinancialAnalysisOutput(BaseModel):
 class TechnicalAnalysisOutput(BaseModel):
     """Structured output for technical document analysis."""
     
-    model_config = ConfigDict(extra='forbid')
-    
     summary: DocumentSummary
     entities: EntityExtraction
     technologies: list[str] = Field(
@@ -139,8 +125,6 @@ class TechnicalAnalysisOutput(BaseModel):
 
 class SalesAnalysisOutput(BaseModel):
     """Structured output for sales document analysis."""
-    
-    model_config = ConfigDict(extra='forbid')
     
     summary: DocumentSummary
     entities: EntityExtraction
@@ -160,8 +144,6 @@ class SalesAnalysisOutput(BaseModel):
 
 class MarketingAnalysisOutput(BaseModel):
     """Structured output for marketing document analysis."""
-    
-    model_config = ConfigDict(extra='forbid')
     
     summary: DocumentSummary
     entities: EntityExtraction
@@ -193,8 +175,10 @@ financial_agent = LlmAgent(
         "- Main financial points and summary\n"
         "- Financial metrics: revenue, profit, margins, growth rates\n"
         "- Fiscal periods mentioned (Q1, Q2, 2024, etc.)\n"
-        "- Key recommendations for financial improvement"
+        "- Key recommendations for financial improvement\n\n"
+        "Return your analysis using the set_model_response tool with the required JSON structure."
     ),
+    output_schema=FinancialAnalysisOutput,
 )
 
 technical_agent = LlmAgent(
@@ -208,8 +192,10 @@ technical_agent = LlmAgent(
         "- Technical summary and main points\n"
         "- Technologies and frameworks mentioned\n"
         "- System components and services discussed\n"
-        "- Technical recommendations for improvement"
+        "- Technical recommendations for improvement\n\n"
+        "Return your analysis using the set_model_response tool with the required JSON structure."
     ),
+    output_schema=TechnicalAnalysisOutput,
 )
 
 sales_agent = LlmAgent(
@@ -223,8 +209,10 @@ sales_agent = LlmAgent(
         "- Sales summary and main points\n"
         "- Customer deals with values and stages\n"
         "- Total pipeline value\n"
-        "- Sales recommendations for growth"
+        "- Sales recommendations for growth\n\n"
+        "Return your analysis using the set_model_response tool with the required JSON structure."
     ),
+    output_schema=SalesAnalysisOutput,
 )
 
 marketing_agent = LlmAgent(
@@ -238,8 +226,10 @@ marketing_agent = LlmAgent(
         "- Marketing summary and main campaigns\n"
         "- Engagement rates, conversion rates, reach metrics\n"
         "- Campaign costs and revenue generated\n"
-        "- Marketing recommendations for optimization"
+        "- Marketing recommendations for optimization\n\n"
+        "Return your analysis using the set_model_response tool with the required JSON structure."
     ),
+    output_schema=MarketingAnalysisOutput,
 )
 
 

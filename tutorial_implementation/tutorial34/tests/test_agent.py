@@ -88,13 +88,12 @@ class TestSubAgentConfiguration:
         assert "financial" in financial_agent.description.lower()
 
     def test_financial_agent_output_schema(self):
-        """Test financial_agent is configured for text generation."""
-        from pubsub_agent.agent import financial_agent
+        """Test financial_agent is configured with FinancialAnalysisOutput schema."""
+        from pubsub_agent.agent import financial_agent, FinancialAnalysisOutput
 
-        # Sub-agents return text, not JSON schema output
-        # Text responses are more flexible and avoid Gemini API limitations
-        assert hasattr(financial_agent, 'instruction')
-        assert "financial" in financial_agent.instruction.lower()
+        # Sub-agents enforce JSON output using Pydantic schemas
+        assert hasattr(financial_agent, 'output_schema')
+        assert financial_agent.output_schema == FinancialAnalysisOutput
 
     def test_technical_agent_import(self):
         """Test that technical_agent can be imported."""
@@ -110,12 +109,12 @@ class TestSubAgentConfiguration:
         assert "technical" in technical_agent.description.lower()
 
     def test_technical_agent_output_schema(self):
-        """Test technical_agent is configured for text generation."""
-        from pubsub_agent.agent import technical_agent
+        """Test technical_agent is configured with TechnicalAnalysisOutput schema."""
+        from pubsub_agent.agent import technical_agent, TechnicalAnalysisOutput
 
-        # Sub-agents return text, not JSON schema output
-        assert hasattr(technical_agent, 'instruction')
-        assert "technical" in technical_agent.instruction.lower()
+        # Sub-agents enforce JSON output using Pydantic schemas
+        assert hasattr(technical_agent, 'output_schema')
+        assert technical_agent.output_schema == TechnicalAnalysisOutput
 
     def test_sales_agent_import(self):
         """Test that sales_agent can be imported."""
@@ -131,12 +130,12 @@ class TestSubAgentConfiguration:
         assert "sales" in sales_agent.description.lower()
 
     def test_sales_agent_output_schema(self):
-        """Test sales_agent is configured for text generation."""
-        from pubsub_agent.agent import sales_agent
+        """Test sales_agent is configured with SalesAnalysisOutput schema."""
+        from pubsub_agent.agent import sales_agent, SalesAnalysisOutput
 
-        # Sub-agents return text, not JSON schema output
-        assert hasattr(sales_agent, 'instruction')
-        assert "sales" in sales_agent.instruction.lower()
+        # Sub-agents enforce JSON output using Pydantic schemas
+        assert hasattr(sales_agent, 'output_schema')
+        assert sales_agent.output_schema == SalesAnalysisOutput
 
     def test_marketing_agent_import(self):
         """Test that marketing_agent can be imported."""
@@ -152,12 +151,12 @@ class TestSubAgentConfiguration:
         assert "marketing" in marketing_agent.description.lower()
 
     def test_marketing_agent_output_schema(self):
-        """Test marketing_agent is configured for text generation."""
-        from pubsub_agent.agent import marketing_agent
+        """Test marketing_agent is configured with MarketingAnalysisOutput schema."""
+        from pubsub_agent.agent import marketing_agent, MarketingAnalysisOutput
 
-        # Sub-agents return text, not JSON schema output
-        assert hasattr(marketing_agent, 'instruction')
-        assert "marketing" in marketing_agent.instruction.lower()
+        # Sub-agents enforce JSON output using Pydantic schemas
+        assert hasattr(marketing_agent, 'output_schema')
+        assert marketing_agent.output_schema == MarketingAnalysisOutput
 
 
 class TestAgentToolsAsSubAgents:
@@ -363,20 +362,23 @@ class TestAgentIntegration:
             pytest.fail(f"Agent instantiation failed: {e}")
 
     def test_sub_agents_have_output_schemas(self):
-        """Test that sub-agents are configured for text generation."""
+        """Test that sub-agents are configured with JSON output schemas."""
         from pubsub_agent.agent import (
             financial_agent,
             technical_agent,
             sales_agent,
-            marketing_agent
+            marketing_agent,
+            FinancialAnalysisOutput,
+            TechnicalAnalysisOutput,
+            SalesAnalysisOutput,
+            MarketingAnalysisOutput
         )
 
-        agents = [financial_agent, technical_agent, sales_agent, marketing_agent]
-        for agent in agents:
-            # Sub-agents return descriptive text responses
-            # Text is more flexible than JSON and avoids Gemini API limitations
-            assert hasattr(agent, 'instruction'), f"{agent.name} missing instruction"
-            assert len(agent.instruction) > 50, f"{agent.name} instruction too short"
+        # Verify each sub-agent has its corresponding output schema
+        assert financial_agent.output_schema == FinancialAnalysisOutput
+        assert technical_agent.output_schema == TechnicalAnalysisOutput
+        assert sales_agent.output_schema == SalesAnalysisOutput
+        assert marketing_agent.output_schema == MarketingAnalysisOutput
 
     def test_coordinator_routing_strategy(self):
         """Test coordinator has proper routing instructions."""
