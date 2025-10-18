@@ -1,0 +1,38 @@
+[build-system]
+requires = ["setuptools>=68.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "data-viz-agent"
+version = "0.1.0"
+description = "Advanced data visualization with ADK Code Execution"
+readme = "README.md"
+requires-python = ">=3.9"
+license = {text = "MIT"}
+authors = [{name = "ADK Training Team"}]
+keywords = ["adk", "code-execution", "data-visualization", "gemini", "agent"]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.9",
+]
+
+dependencies = [
+    "google-adk>=1.16.0",
+    "google-genai>=1.41.0",
+    "pandas>=2.0.0",
+    "matplotlib>=3.8.0",
+    "numpy>=1.21.0",
+    "python-dotenv>=1.0.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=7.0.0",
+    "pytest-cov>=4.0.0",
+]
+
+[tool.setuptools]
+packages = ["data_viz_agent"]

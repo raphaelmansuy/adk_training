@@ -1,10 +1,14 @@
 """
 Data Analysis Agent with ADK
-Provides tools for analyzing datasets
+Multi-agent system: analysis tools + visualization code execution
 """
 
 from typing import Any, Dict
 from google.adk.agents import Agent
+from google.adk.tools.agent_tool import AgentTool
+
+# Import visualization agent
+from .visualization_agent import visualization_agent
 
 
 def analyze_column(column_name: str, analysis_type: str = "summary", data_context: str = "") -> Dict[str, Any]:
@@ -141,33 +145,67 @@ def get_dataset_summary(data_context: str = "") -> Dict[str, Any]:
         }
 
 
-# Create the root agent
-root_agent = Agent(
-    name="data_analysis_agent",
+# Create the analysis agent with traditional tools
+analysis_agent = Agent(
+    name="analysis_agent",
     model="gemini-2.0-flash",
-    description="Intelligent data analysis assistant for exploring and understanding datasets",
-    instruction="""You are an expert data analyst assistant. Your role is to help users understand and analyze their datasets.
+    description="Data analysis and insights agent with statistical tools",
+    instruction="""You are an expert data analyst. Your role is to help users understand their datasets 
+and provide insights through analysis.
 
-When users ask about their data:
-1. Understand what analysis they need
-2. Ask clarifying questions if needed
-3. Provide clear, actionable insights
-4. Suggest interesting patterns or correlations
-5. Recommend next steps for further analysis
+When users ask about data analysis:
+1. Use available tools to analyze the data
+2. Provide clear, actionable insights
+3. Suggest patterns and correlations
+4. Recommend visualizations when relevant
+5. Guide users to deeper exploration
+
+Available tools:
+- analyze_column: Get statistics about specific columns
+- calculate_correlation: Find relationships between variables
+- filter_data: Explore data subsets and patterns
+- get_dataset_summary: Get overview of the dataset""",
+    tools=[analyze_column, calculate_correlation, filter_data, get_dataset_summary],
+)
+
+
+# Create the root coordinator agent using multi-agent pattern
+# This solves the "one built-in tool per agent" limitation by separating concerns
+root_agent = Agent(
+    name="data_analysis_coordinator",
+    model="gemini-2.0-flash",
+    description="Intelligent data analysis assistant with visualization and analysis capabilities",
+    instruction="""You are an expert data analyst and visualization specialist. Your role is to help users 
+understand and explore their datasets through analysis and visualization.
+
+When users interact with you:
+1. For analysis questions (statistics, correlations, patterns):
+   - Use the analysis_agent to compute insights
+   - Explain the findings clearly
+   
+2. For visualization requests (plots, charts, graphs):
+   - Immediately delegate to the visualization_agent
+   - The visualization_agent will execute Python code to generate the chart
+   - Do NOT ask clarifying questions about visualizations
+   - Do NOT describe what you will do - just delegate
+   
+3. For general questions:
+   - Provide context and recommendations
+   - Suggest both analysis and visualization approaches
 
 Guidelines:
 - Be concise but thorough
 - Use clear language and examples
 - Reference actual data characteristics
 - Provide context for findings
-- Suggest visualizations when relevant
+- When users ask about data, suggest both analyses and visualizations
+- For visualization requests, ALWAYS immediately delegate to visualization_agent without questions
 
-Available tools:
-- analyze_column: Analyze specific columns for insights
-- calculate_correlation: Find relationships between variables
-- filter_data: Explore data subsets
-- get_dataset_summary: Get overview of available data
-
-When the user provides data context, use it to make informed suggestions about what analyses would be most valuable.""",
-    tools=[analyze_column, calculate_correlation, filter_data, get_dataset_summary],
+Remember: The visualization_agent specializes in creating publication-quality charts 
+using Python code execution. The analysis_agent specializes in statistical insights. 
+Do NOT ask clarifying questions about visualizations!""",
+    tools=[
+        AgentTool(agent=analysis_agent),
+        AgentTool(agent=visualization_agent),
+    ],
 )

@@ -13,10 +13,15 @@ class TestAgentConfiguration:
         assert root_agent is not None
     
     def test_agent_has_correct_name(self):
-        """Test that agent has correct name."""
+        """Test that agent has correct name.
+        
+        Note: After multi-agent refactor, the root agent is now a coordinator
+        that delegates to specialized sub-agents (analysis and visualization).
+        """
         from data_analysis_agent import root_agent
         
-        assert root_agent.name == "data_analysis_agent"
+        # The coordinator agent has a different name but the pattern is correct
+        assert root_agent.name in ["data_analysis_agent", "data_analysis_coordinator"]
     
     def test_agent_has_correct_model(self):
         """Test that agent uses the correct model."""
@@ -47,11 +52,18 @@ class TestAgentConfiguration:
         assert len(root_agent.tools) > 0
     
     def test_agent_tools_count(self):
-        """Test that agent has expected number of tools."""
+        """Test that agent has expected number of tools.
+        
+        Note: After multi-agent refactor, the root agent now has 2 AgentTools
+        (analysis_agent and visualization_agent) instead of 4 direct tools.
+        This is the correct pattern as it allows the visualization_agent
+        to have BuiltInCodeExecutor while analysis_agent has traditional tools.
+        """
         from data_analysis_agent import root_agent
         
-        # Should have 4 tools: analyze_column, calculate_correlation, filter_data, get_dataset_summary
-        assert len(root_agent.tools) >= 4
+        # Now we have AgentTools instead of direct tools
+        # 2 AgentTools: analysis_agent and visualization_agent
+        assert len(root_agent.tools) >= 2
 
 
 class TestAgentTools:

@@ -1,0 +1,16 @@
+Date,Product,Quantity,Price,Revenue,Region,Customer
+2024-01-01,Product A,5,100,500,North,Alice
+2024-01-02,Product B,3,150,450,South,Bob
+2024-01-03,Product A,7,100,700,East,Charlie
+2024-01-04,Product C,2,200,400,West,Diana
+2024-01-05,Product B,4,150,600,North,Eve
+2024-01-06,Product A,6,100,600,South,Frank
+2024-01-07,Product C,3,200,600,East,Grace
+2024-01-08,Product B,5,150,750,West,Henry
+2024-01-09,Product A,8,100,800,North,Iris
+2024-01-10,Product C,4,200,800,South,Jack
+2024-01-11,Product B,6,150,900,East,Kate
+2024-01-12,Product A,4,100,400,West,Leo
+2024-01-13,Product C,5,200,1000,North,Mia
+2024-01-14,Product B,7,150,1050,South,Noah
+2024-01-15,Product A,9,100,900,East,Olive

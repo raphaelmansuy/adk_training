@@ -8,6 +8,7 @@ streamlit>=1.39.0
 pandas>=2.0.0
 plotly>=5.24.0
 numpy>=1.21.0
+Pillow>=10.0.0
 
 # Environment and utilities
 python-dotenv>=1.0.0
