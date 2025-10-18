@@ -1,0 +1,20 @@
+[build-system]
+requires = ["setuptools>=64", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "tutorial33"
+version = "0.1.0"
+description = "Tutorial 33: Slack Bot Integration with ADK"
+requires-python = ">=3.9"
+dependencies = [
+    "google-adk>=1.16.0",
+    "slack-bolt>=1.26.0",
+    "python-dotenv>=1.0.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=7.0.0",
+    "pytest-cov>=4.0.0",
+]

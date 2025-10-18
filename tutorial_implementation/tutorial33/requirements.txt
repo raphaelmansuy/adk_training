@@ -1,0 +1,13 @@
+# Core dependencies
+google-adk>=1.16.0
+slack-bolt>=1.26.0
+google-genai>=1.45.0
+python-dotenv>=1.0.0
+
+# Optional: Production dependencies
+gunicorn>=21.0.0  # For production deployment
+Flask>=3.0.0      # For HTTP mode production deployment
+
+# Testing
+pytest>=7.0.0
+pytest-cov>=4.0.0
