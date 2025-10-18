@@ -4,7 +4,7 @@
 
 from __future__ import annotations
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, ConfigDict
 from google.adk.agents import LlmAgent
 from google.adk.tools import AgentTool
 
@@ -15,6 +15,8 @@ from google.adk.tools import AgentTool
 
 class EntityExtraction(BaseModel):
     """Extracted entities from document content."""
+    
+    model_config = ConfigDict(extra='forbid')
     
     dates: list[str] = Field(
         default_factory=list,
@@ -37,6 +39,8 @@ class EntityExtraction(BaseModel):
 class DocumentSummary(BaseModel):
     """Concise summary of document content."""
     
+    model_config = ConfigDict(extra='forbid')
+    
     main_points: list[str] = Field(
         description="Top 3-5 main points from the document"
     )
@@ -48,6 +52,48 @@ class DocumentSummary(BaseModel):
     )
 
 
+class FinancialMetrics(BaseModel):
+    """Financial metrics extracted from documents."""
+    
+    model_config = ConfigDict(extra='forbid')
+    
+    revenue: str = Field(default="", description="Total revenue")
+    profit: str = Field(default="", description="Total profit")
+    margin: str = Field(default="", description="Profit margin")
+    growth_rate: str = Field(default="", description="Growth rate")
+    other_metrics: list[str] = Field(
+        default_factory=list,
+        description="Other relevant financial metrics"
+    )
+
+
+class MarketingMetrics(BaseModel):
+    """Marketing metrics extracted from documents."""
+    
+    model_config = ConfigDict(extra='forbid')
+    
+    engagement_rate: str = Field(default="", description="Engagement rate")
+    conversion_rate: str = Field(default="", description="Conversion rate")
+    reach: str = Field(default="", description="Audience reach")
+    cost: str = Field(default="", description="Campaign cost")
+    revenue: str = Field(default="", description="Campaign revenue")
+    other_metrics: list[str] = Field(
+        default_factory=list,
+        description="Other relevant marketing metrics"
+    )
+
+
+class Deal(BaseModel):
+    """Sales deal information."""
+    
+    model_config = ConfigDict(extra='forbid')
+    
+    customer: str = Field(default="", description="Customer name")
+    deal_value: str = Field(default="", description="Deal value/amount")
+    stage: str = Field(default="", description="Deal stage (open, negotiating, closed, etc.)")
+    notes: str = Field(default="", description="Additional deal notes")
+
+
 # ============================================================================
 # Document Type-Specific Output Schemas
 # ============================================================================
@@ -55,9 +101,11 @@ class DocumentSummary(BaseModel):
 class FinancialAnalysisOutput(BaseModel):
     """Structured output for financial document analysis."""
     
+    model_config = ConfigDict(extra='forbid')
+    
     summary: DocumentSummary
     entities: EntityExtraction
-    financial_metrics: dict = Field(
+    financial_metrics: FinancialMetrics = Field(
         description="Key financial metrics (revenue, profit, margins, etc.)"
     )
     fiscal_periods: list[str] = Field(
@@ -72,6 +120,8 @@ class FinancialAnalysisOutput(BaseModel):
 
 class TechnicalAnalysisOutput(BaseModel):
     """Structured output for technical document analysis."""
+    
+    model_config = ConfigDict(extra='forbid')
     
     summary: DocumentSummary
     entities: EntityExtraction
@@ -90,9 +140,11 @@ class TechnicalAnalysisOutput(BaseModel):
 class SalesAnalysisOutput(BaseModel):
     """Structured output for sales document analysis."""
     
+    model_config = ConfigDict(extra='forbid')
+    
     summary: DocumentSummary
     entities: EntityExtraction
-    deals: list[dict] = Field(
+    deals: list[Deal] = Field(
         default_factory=list,
         description="Deal information (customer, value, stage)"
     )
@@ -109,13 +161,15 @@ class SalesAnalysisOutput(BaseModel):
 class MarketingAnalysisOutput(BaseModel):
     """Structured output for marketing document analysis."""
     
+    model_config = ConfigDict(extra='forbid')
+    
     summary: DocumentSummary
     entities: EntityExtraction
     campaigns: list[str] = Field(
         default_factory=list,
         description="Marketing campaigns mentioned"
     )
-    metrics: dict = Field(
+    metrics: MarketingMetrics = Field(
         description="Marketing metrics (engagement, conversion, reach)"
     )
     recommendations: list[str] = Field(
@@ -135,9 +189,12 @@ financial_agent = LlmAgent(
     instruction=(
         "You are an expert financial analyst. Analyze the provided financial document "
         "and extract all relevant information including metrics, periods, and recommendations. "
-        "Return results in valid JSON format matching the specified schema."
+        "Provide a comprehensive analysis with:\n"
+        "- Main financial points and summary\n"
+        "- Financial metrics: revenue, profit, margins, growth rates\n"
+        "- Fiscal periods mentioned (Q1, Q2, 2024, etc.)\n"
+        "- Key recommendations for financial improvement"
     ),
-    output_schema=FinancialAnalysisOutput,
 )
 
 technical_agent = LlmAgent(
@@ -147,9 +204,12 @@ technical_agent = LlmAgent(
     instruction=(
         "You are an expert technical analyst. Analyze the provided technical document "
         "and extract technologies, components, and technical recommendations. "
-        "Return results in valid JSON format matching the specified schema."
+        "Provide a comprehensive analysis with:\n"
+        "- Technical summary and main points\n"
+        "- Technologies and frameworks mentioned\n"
+        "- System components and services discussed\n"
+        "- Technical recommendations for improvement"
     ),
-    output_schema=TechnicalAnalysisOutput,
 )
 
 sales_agent = LlmAgent(
@@ -159,9 +219,12 @@ sales_agent = LlmAgent(
     instruction=(
         "You are an expert sales analyst. Analyze the provided sales document "
         "and extract deal information, pipeline value, and sales recommendations. "
-        "Return results in valid JSON format matching the specified schema."
+        "Provide a comprehensive analysis with:\n"
+        "- Sales summary and main points\n"
+        "- Customer deals with values and stages\n"
+        "- Total pipeline value\n"
+        "- Sales recommendations for growth"
     ),
-    output_schema=SalesAnalysisOutput,
 )
 
 marketing_agent = LlmAgent(
@@ -171,9 +234,12 @@ marketing_agent = LlmAgent(
     instruction=(
         "You are an expert marketing analyst. Analyze the provided marketing document "
         "and extract campaign information, metrics, and marketing recommendations. "
-        "Return results in valid JSON format matching the specified schema."
+        "Provide a comprehensive analysis with:\n"
+        "- Marketing summary and main campaigns\n"
+        "- Engagement rates, conversion rates, reach metrics\n"
+        "- Campaign costs and revenue generated\n"
+        "- Marketing recommendations for optimization"
     ),
-    output_schema=MarketingAnalysisOutput,
 )
 
 
