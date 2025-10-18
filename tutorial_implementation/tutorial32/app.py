@@ -252,10 +252,6 @@ Users can request visualizations by asking for specific chart types."""
     if st.session_state.use_code_execution:
         # Use ADK multi-agent system with code execution
         with st.chat_message("assistant"):
-            message_placeholder = st.empty()
-            spinner_placeholder = st.empty()
-            full_response = ""
-            has_visualization = False
             response_text = ""  # Initialize before try block to avoid scope issues
             
             try:
@@ -270,9 +266,15 @@ User Question: {prompt}"""
                     parts=[Part.from_text(text=context_message)]
                 )
                 
-                # Show loading indicator
-                with spinner_placeholder:
-                    with st.spinner("🤖 Analyzing your data..."):
+                # Show process status with detailed steps
+                with st.status("🔍 Processing your request...", expanded=False) as status:
+                    try:
+                        # Step 1: Prepare
+                        status.write("📋 Preparing context and data...")
+                        
+                        # Step 2: Execute
+                        status.write("⚙️ Executing analysis...")
+                        
                         # Use visualization runner directly to ensure CSV data reaches the agent
                         async def collect_events():
                             """Collect and process all events from agent execution."""
@@ -308,21 +310,28 @@ User Question: {prompt}"""
                                         # Handle text responses (don't skip if we already found inline_data)
                                         if part.text and not part.text.isspace():
                                             response_parts += part.text
-                                
-                                # Update display with collected text
-                                if response_parts:
-                                    message_placeholder.markdown(response_parts + "▌")
                             
                             return response_parts, has_visualization, visualization_data
-                
-                # Run async collection
-                response_text, has_viz, viz_data = asyncio.run(collect_events())
+                        
+                        # Run async collection
+                        response_text, has_viz, viz_data = asyncio.run(collect_events())
+                        
+                        # Step 3: Render
+                        if has_viz:
+                            status.write("📊 Rendering visualizations...")
+                        
+                        # Complete
+                        status.update(label="✅ Analysis complete!", state="complete", expanded=False)
+                    
+                    except Exception as status_error:
+                        status.update(label="❌ Error during processing", state="error", expanded=True)
+                        raise status_error
                 
                 # Display final response
                 if response_text:
-                    message_placeholder.markdown(response_text)
+                    st.markdown(response_text)
                 else:
-                    message_placeholder.markdown("✓ Request processed")
+                    st.markdown("✓ Request processed successfully")
                     response_text = "✓ Analysis and visualization complete"
                 
                 # Display any visualizations
@@ -346,12 +355,12 @@ User Question: {prompt}"""
                                 image = Image.open(BytesIO(image_bytes))
                                 st.image(image, width='stretch')
                         except Exception as e:
-                            st.warning(f"Could not display visualization: {str(e)}")
+                            st.warning(f"⚠️ Could not display visualization: {str(e)}")
                 
             except Exception as e:
                 error_msg = f"❌ Error with code execution: {str(e)}"
-                st.error(error_msg)
-                message_placeholder.markdown(error_msg)
+                with st.status("❌ Processing failed", state="error", expanded=True):
+                    st.error(error_msg)
                 response_text = error_msg
             
             # Add response to history
@@ -363,8 +372,6 @@ User Question: {prompt}"""
     else:
         # Use direct Gemini API for faster response (legacy mode)
         with st.chat_message("assistant"):
-            message_placeholder = st.empty()
-            spinner_placeholder = st.empty()
             full_response = ""
             
             try:
@@ -384,8 +391,10 @@ Your responsibilities:
 
 Always base your responses on the actual data provided."""
                 
-                with spinner_placeholder:
-                    with st.spinner("💬 Generating insights..."):
+                with st.status("💬 Generating insights...", expanded=False) as status:
+                    try:
+                        status.write("� Preparing analysis request...")
+                        
                         response = client.models.generate_content_stream(
                             model="gemini-2.0-flash",
                             contents=[
@@ -398,21 +407,28 @@ Always base your responses on the actual data provided."""
                             ),
                         )
                         
+                        status.write("🔍 Analyzing data...")
+                        
                         # Stream response
                         for chunk in response:
                             if chunk.text:
                                 full_response += chunk.text
-                                message_placeholder.markdown(full_response + "▌")
+                        
+                        status.write("✨ Rendering results...")
+                        status.update(label="✅ Analysis complete!", state="complete", expanded=False)
+                    
+                    except Exception as status_error:
+                        status.update(label="❌ Error during analysis", state="error", expanded=True)
+                        raise status_error
                 
                 # Final message
-                message_placeholder.markdown(full_response)
-                spinner_placeholder.empty()
+                st.markdown(full_response)
             
             except Exception as e:
                 error_msg = f"❌ Error generating response: {str(e)}"
-                st.error(error_msg)
+                with st.status("❌ Analysis failed", state="error", expanded=True):
+                    st.error(error_msg)
                 full_response = error_msg
-                spinner_placeholder.empty()
             
             # Add response to history
             st.session_state.messages.append({

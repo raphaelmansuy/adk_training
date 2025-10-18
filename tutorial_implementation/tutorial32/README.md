@@ -44,6 +44,7 @@ cp .env.example .env
 ```
 
 **Get your API key:**
+
 1. Visit [Google AI Studio](https://makersuite.google.com/app/apikey)
 2. Click "Get API key"
 3. Copy the key into your `.env` file
@@ -62,7 +63,7 @@ The app opens at `http://localhost:8501` 🎉
 
 1. **Upload CSV**: Use the sidebar to upload your data
 2. **Review Data**: See columns, types, and statistics
-3. **Choose Mode**: 
+3. **Choose Mode**:
    - **Smart Mode** (recommended): Uses ADK Code Execution for visualizations
    - **Chat Mode**: Uses direct Gemini API for text analysis
 4. **Ask Questions**: Chat with the AI about your data
@@ -78,6 +79,7 @@ Enable "Use Code Execution for Visualizations" in the sidebar to unlock advanced
 🎯 **Smart Routing**: Agent intelligently chooses between tools and code execution
 
 **Example requests that trigger visualizations:**
+
 ```
 "Show me a pie chart of categories"
 "Create a line plot of trends over time"
@@ -272,6 +274,7 @@ Tutorial 32 implements a sophisticated multi-runner architecture to solve the co
 ### Key Components
 
 1. **viz_runner**: Direct visualization_agent without routing
+
    - Receives full CSV data in context
    - Executes Python code via BuiltInCodeExecutor
    - Returns matplotlib/plotly charts as inline_data
@@ -299,11 +302,13 @@ Tutorial 32 implements a sophisticated multi-runner architecture to solve the co
 ### Streamlit Cloud (Easiest)
 
 1. **Create `secrets.toml`**:
+
    ```toml
    GOOGLE_API_KEY = "your_production_key"
    ```
 
 2. **Push to GitHub**:
+
    ```bash
    git push origin main
    ```
@@ -333,12 +338,14 @@ gcloud run deploy data-analysis-agent \
 ## 🔐 Security Best Practices
 
 ✅ **What we do:**
+
 - Use `.env.example` as template (never commit real keys)
 - Load secrets from environment variables
 - Use `python-dotenv` for local development
 - Validate all inputs
 
 ❌ **What we don't do:**
+
 - Commit `.env` files
 - Hardcode API keys
 - Log sensitive information
@@ -349,6 +356,7 @@ gcloud run deploy data-analysis-agent \
 ### "Please set GOOGLE_API_KEY"
 
 **Solution**:
+
 ```bash
 # Create .env from template
 cp .env.example .env
@@ -364,6 +372,7 @@ echo $GOOGLE_API_KEY
 ### App won't start
 
 **Check dependencies**:
+
 ```bash
 # Reinstall everything
 make clean
@@ -376,6 +385,7 @@ streamlit run app.py --logger.level=debug
 ### Tests fail
 
 **Run with verbose output**:
+
 ```bash
 pytest tests/ -vv --tb=long
 
@@ -386,6 +396,7 @@ pytest tests/test_agent.py::TestAgentTools::test_analyze_column_tool -vv
 ### Slow responses
 
 **Streamlit caching**:
+
 ```python
 @st.cache_data
 def process_data(df):
@@ -407,11 +418,13 @@ def process_data(df):
 ### Extend the App
 
 1. **Add more tools**:
+
    - Visualization generation
    - Statistical tests
    - Machine learning predictions
 
 2. **Enhance UI**:
+
    - Custom CSS styling
    - Export reports
    - Data validation
