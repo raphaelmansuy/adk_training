@@ -2,23 +2,25 @@
 
 **Build production-ready AI agents tutorials that solve real problems.**
 
-You're here because AI agents are transforming software development, and you want practical skills you can use at work tomorrow. This training hub gives you exactly that—no fluff, just working code and proven patterns from 29 completed tutorials.
+You're here because AI agents are transforming software development, and you want practical skills you can use at work tomorrow. This training hub gives you exactly that—no fluff, just working code and proven patterns from 33 completed tutorials.
 
 ## What You'll Gain
 
 **Professionally:**
+
 - Ship AI features faster with reusable agent patterns
 - Architect multi-agent systems that scale
 - Debug and test AI agents like traditional software
 - Deploy to production with confidence
 
 **Practically:**
-- 29 working implementations you can run today
+
+- 33 working implementations you can run today
 - Copy-paste code patterns for common scenarios
 - Testing frameworks you can adapt to your projects
-- Integration examples for Next.js, React, and more
+- Integration examples for Next.js, React, Streamlit, Slack, and more
 
-**Completion Status: 30/34 tutorials ready to use (88%)**
+**Completion Status: 33/34 tutorials ready to use (97%)**
 
 > Built by developers, for developers. Every tutorial has working code, not just theory.
 
@@ -69,7 +71,7 @@ Think of it as the missing framework between "ChatGPT API call" and "production 
 │   ├── 20_yaml_configuration.md   # ✅ COMPLETED - Configuration management
 │   ├── 21_multimodal_image.md     # ✅ COMPLETED - Image processing
 │   ├── 22_model_selection.md      # ✅ COMPLETED - Model optimization
-│   ├── 23_production_deployment.md # 📝 DRAFT - Production deployment
+│   ├── 23_production_deployment.md # ✅ COMPLETED - Production deployment
 │   ├── 24_advanced_observability.md # ✅ COMPLETED - Advanced monitoring
 │   ├── 25_best_practices.md       # ✅ COMPLETED - Best practices
 │   ├── 26_google_agentspace.md    # ✅ COMPLETED - Gemini Enterprise platform
@@ -78,10 +80,10 @@ Think of it as the missing framework between "ChatGPT API call" and "production 
 │   ├── 29_ui_integration_intro.md # ✅ COMPLETED - UI integration overview
 │   ├── 30_nextjs_adk_integration.md # ✅ COMPLETED - Next.js integration
 │   ├── 31_react_vite_adk_integration.md # ✅ COMPLETED - React/Vite integration
-│   ├── 32_streamlit_adk_integration.md # 📝 DRAFT - Streamlit integration
-│   ├── 33_slack_adk_integration.md # 📝 DRAFT - Slack integration
+│   ├── 32_streamlit_adk_integration.md # ✅ COMPLETED - Streamlit integration
+│   ├── 33_slack_adk_integration.md # ✅ COMPLETED - Slack integration
 │   └── 34_pubsub_adk_integration.md # 📝 DRAFT - PubSub integration
-├── tutorial_implementation/       # ✅ 30 working implementations
+├── tutorial_implementation/       # ✅ 33 working implementations
 │   ├── tutorial01/                # Hello World Agent
 │   ├── tutorial02/                # Function Tools
 │   ├── tutorial03/                # OpenAPI Tools
@@ -104,6 +106,7 @@ Think of it as the missing framework between "ChatGPT API call" and "production 
 │   ├── tutorial20/                # YAML Configuration
 │   ├── tutorial21/                # Multimodal Image
 │   ├── tutorial22/                # Model Selection
+│   ├── tutorial23/                # Production Deployment
 │   ├── tutorial24/                # Advanced Observability
 │   ├── tutorial25/                # Best Practices
 │   ├── tutorial26/                # Google AgentSpace
@@ -111,16 +114,9 @@ Think of it as the missing framework between "ChatGPT API call" and "production 
 │   ├── tutorial28/                # Using Other LLMs
 │   ├── tutorial29/                # UI Integration Intro
 │   ├── tutorial30/                # Next.js ADK Integration
-│   └── tutorial31/                # React Vite ADK Integration
-├── research/                      # Integration research and examples
-│   ├── adk_ui_integration/        # UI framework integrations
-│   ├── adk-java/                  # Java ADK implementation
-│   ├── adk-python/                # Python ADK source and examples
-│   ├── adk-web/                   # Web components
-│   └── ag-ui/                     # AG UI framework
-├── test_tutorials/                # Automated testing framework
-├── agent-starter-pack/            # Ready-to-use agent templates
-└── how-to-build-ai-agent/         # Step-by-step agent building guide
+│   ├── tutorial31/                # React Vite ADK Integration
+│   ├── tutorial32/                # Streamlit ADK Integration
+│   └── tutorial33/                # Slack ADK Integration
 ```
 
 ## 🚀 Get Started (5 minutes)
@@ -175,6 +171,7 @@ Start with [Tutorial 01](docs/tutorial/01_hello_world_agent.md) (30 min) to unde
 **For:** Senior engineers and architects
 
 Complete all 30 tutorials, focusing on:
+
 - Multi-agent orchestration patterns
 - Production observability and testing
 - Enterprise deployment strategies
@@ -188,8 +185,8 @@ See the complete tutorial list in the [Project Structure](#🏗️-project-struc
 
 ## 🎓 Tutorials Overview
 
-| Tutorial | Topic                        | Status       | Complexity   | Time  |
-| -------- | ---------------------------- | ------------ | ------------ | ----- |
+| Tutorial                                                                                         | Topic                        | Status       | Complexity   | Time  |
+| ------------------------------------------------------------------------------------------------ | ---------------------------- | ------------ | ------------ | ----- |
 | [01](https://github.com/raphaelmansuy/adk_training/tree/main/tutorial_implementation/tutorial01) | Hello World Agent            | ✅ Completed | Beginner     | 30min |
 | [02](https://github.com/raphaelmansuy/adk_training/tree/main/tutorial_implementation/tutorial02) | Function Tools               | ✅ Completed | Beginner     | 45min |
 | [03](https://github.com/raphaelmansuy/adk_training/tree/main/tutorial_implementation/tutorial03) | OpenAPI Tools                | ✅ Completed | Beginner     | 1hr   |
@@ -212,7 +209,7 @@ See the complete tutorial list in the [Project Structure](#🏗️-project-struc
 | [20](https://github.com/raphaelmansuy/adk_training/tree/main/tutorial_implementation/tutorial20) | YAML Configuration           | ✅ Completed | Intermediate | 1hr   |
 | [21](https://github.com/raphaelmansuy/adk_training/tree/main/tutorial_implementation/tutorial21) | Multimodal Image             | ✅ Completed | Advanced     | 1hr   |
 | [22](https://github.com/raphaelmansuy/adk_training/tree/main/tutorial_implementation/tutorial22) | Model Selection              | ✅ Completed | Advanced     | 1.5hr |
-| 23       | Production Deployment        | 📝 Draft     | Advanced     | 1.5hr |
+| [23](https://github.com/raphaelmansuy/adk_training/tree/main/tutorial_implementation/tutorial23) | Production Deployment        | ✅ Completed | Advanced     | 1.5hr |
 | [24](https://github.com/raphaelmansuy/adk_training/tree/main/tutorial_implementation/tutorial24) | Advanced Observability       | ✅ Completed | Advanced     | 1hr   |
 | [25](https://github.com/raphaelmansuy/adk_training/tree/main/tutorial_implementation/tutorial25) | Best Practices               | ✅ Completed | Advanced     | 1.5hr |
 | [26](https://github.com/raphaelmansuy/adk_training/tree/main/tutorial_implementation/tutorial26) | Google AgentSpace            | ✅ Completed | Advanced     | 2hr   |
@@ -220,14 +217,14 @@ See the complete tutorial list in the [Project Structure](#🏗️-project-struc
 | [28](https://github.com/raphaelmansuy/adk_training/tree/main/tutorial_implementation/tutorial28) | Using Other LLMs             | ✅ Completed | Advanced     | 2hr   |
 | [29](https://github.com/raphaelmansuy/adk_training/tree/main/tutorial_implementation/tutorial29) | UI Integration Intro         | ✅ Completed | Intermediate | 1.5hr |
 | [30](https://github.com/raphaelmansuy/adk_training/tree/main/tutorial_implementation/tutorial30) | Next.js ADK Integration      | ✅ Completed | Advanced     | 2hr   |
-| [31](https://github.com/raphaelmansuy/adk_training/tree/main/tutorial_implementation/tutorial31) | React Vite ADK Integration   | ✅ Completed | Advanced     | 1.5hr   |
-| 32       | Streamlit ADK Integration    | 📝 Draft     | Advanced     | 2hr   |
-| 33       | Slack ADK Integration        | 📝 Draft     | Advanced     | 2hr   |
-| 34       | PubSub ADK Integration       | 📝 Draft     | Advanced     | 2hr   |
+| [31](https://github.com/raphaelmansuy/adk_training/tree/main/tutorial_implementation/tutorial31) | React Vite ADK Integration   | ✅ Completed | Advanced     | 1.5hr |
+| [32](https://github.com/raphaelmansuy/adk_training/tree/main/tutorial_implementation/tutorial32) | Streamlit ADK Integration    | ✅ Completed | Advanced     | 2hr   |
+| [33](https://github.com/raphaelmansuy/adk_training/tree/main/tutorial_implementation/tutorial33) | Slack ADK Integration        | ✅ Completed | Advanced     | 2hr   |
+| 34                                                                                               | PubSub ADK Integration       | 📝 Draft     | Advanced     | 2hr   |
 
 ## 📊 Project Completion Status
 
-### ✅ Completed Tutorials (30/34)
+### ✅ Completed Tutorials (33/34)
 
 The following tutorials have been fully implemented with working code, comprehensive tests, and verified functionality:
 
@@ -264,6 +261,7 @@ The following tutorials have been fully implemented with working code, comprehen
 - **Tutorial 20**: YAML Configuration - Configuration-driven agent development
 - **Tutorial 21**: Multimodal Image - Image processing and vision capabilities
 - **Tutorial 22**: Model Selection - Model optimization and selection strategies
+- **Tutorial 23**: Production Deployment - Enterprise deployment strategies and patterns
 - **Tutorial 24**: Advanced Observability - Enhanced monitoring patterns
 - **Tutorial 25**: Best Practices - Production-ready agent development patterns
 - **Tutorial 26**: Google AgentSpace - Enterprise agent platform deployment
@@ -275,6 +273,8 @@ The following tutorials have been fully implemented with working code, comprehen
 - **Tutorial 29**: UI Integration Intro - Frontend integration patterns
 - **Tutorial 30**: Next.js ADK Integration - React web applications with CopilotKit
 - **Tutorial 31**: React Vite ADK Integration - Custom React frontend with AG-UI protocol
+- **Tutorial 32**: Streamlit ADK Integration - Data science applications with Streamlit
+- **Tutorial 33**: Slack ADK Integration - Slack bot development and integration
 
 **All completed tutorials include:**
 
@@ -285,19 +285,13 @@ The following tutorials have been fully implemented with working code, comprehen
 - ✅ Documentation and usage examples
 - ✅ Integration with ADK web interface
 
-### 📝 Draft Tutorials (4/34)
+### 📝 Draft Tutorials (1/34)
 
-The following tutorials have detailed documentation but require implementation:
+The following tutorial has detailed documentation but requires implementation:
 
-**Advanced Features (Tutorials 22-26):**
+**Event-Driven Systems:**
 
-- Model optimization, enterprise deployment, best practices
-- Google AgentSpace platform integration
-
-**UI Integration (Tutorials 31-34):**
-
-- React/Vite and Streamlit integration patterns
-- Enterprise messaging (Slack) and event-driven systems (PubSub)
+- **Tutorial 34**: PubSub ADK Integration - Google Cloud Pub/Sub event-driven architectures
 
 **Next Steps for Draft Tutorials:**
 
@@ -327,11 +321,11 @@ Your feedback makes this better for everyone.
 
 ## 👨‍💻 About
 
-Created by **Raphaël MANSUY** ([LinkedIn](https://linkedin.com/in/raphaelmansuy)), CTO and AI educator who teaches at University of Oxford. Built from real-world experience deploying AI agents in production.
+Created by **Raphaël MANSUY** ([LinkedIn](https://linkedin.com/in/raphaelmansuy)), CTO and AI educator. Built from real-world experience deploying AI agents in production.
 
 Why I built this: Most AI agent tutorials show toy examples. I wanted practical patterns that work in production.
 
-##  Resources
+## Resources
 
 - **[Official ADK Docs](https://google.github.io/adk-docs/)** - Google's documentation
 - **[ADK Source Code](https://github.com/google/adk-python)** - When docs aren't enough
