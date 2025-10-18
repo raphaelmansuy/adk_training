@@ -274,7 +274,7 @@ function CommunitySection() {
         </p>
         <GitHubStats />
         <div className={styles.progressContainer}>
-          <ProgressIndicator completed={30} total={34} label="Tutorial Implementation Progress" />
+          <ProgressIndicator completed={33} total={34} label="Tutorial Implementation Progress" />
           <ProgressIndicator completed={68} total={100} label="Test Coverage Target" />
         </div>
       </div>
