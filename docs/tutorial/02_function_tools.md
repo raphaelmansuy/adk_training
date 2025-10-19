@@ -447,6 +447,12 @@ adk web
 
 Open `http://localhost:8000` and select "finance_assistant" from the dropdown.
 
+### Demo in Action
+
+Here's what your finance assistant looks like in action:
+
+![Tutorial 02 Demo - Function Tools Finance Assistant](/img/tutorial02_cap01.gif)
+
 ### Alternative: Parallel Execution Demo
 
 For an advanced demo showcasing ADK's automatic parallel tool execution, try the parallel demo:
