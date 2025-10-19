@@ -480,6 +480,12 @@ Final Output: Publication-ready article!
 
 ## Step 4: Run the Publishing System
 
+### Demo in Action
+
+Here's what your multi-agent publishing system looks like in action:
+
+![Tutorial 06 Demo - Multi-Agent Systems Content Publisher](/img/tutorial06_cap01.gif)
+
 ### Using the Working Implementation
 
 ```bash
