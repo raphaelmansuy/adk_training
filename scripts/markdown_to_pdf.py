@@ -29,18 +29,28 @@ Features:
     - Pygments-powered code highlighting with 40+ language support
     - Hyperlink support with proper path resolution
     - Image and GIF support (automatic embedding)
+    - Mermaid diagram rendering to PNG with 2X resolution
     - Table of contents generation from headings
     - A4 page size with professional layout
     - Metadata preserved in PDF
+
+Requirements:
+    - Python 3.8+
+    - Node.js and npm (for mermaid-cli diagram rendering)
 """
 
 import argparse
 import sys
 from pathlib import Path
-from typing import Optional
+from typing import Optional, Dict
 import logging
 from datetime import datetime
 import re
+import subprocess
+import tempfile
+import shutil
+import uuid
+import os
 
 # First, try to import frontmatter and markdown
 try:
@@ -98,6 +108,8 @@ class MarkdownToPdfConverter:
             markdown_file: Path to markdown file
         """
         self.markdown_file = Path(markdown_file).resolve()  # Convert to absolute path
+        self.temp_dir = None  # Will be created when needed for mermaid rendering
+        self.mermaid_diagrams: Dict[str, str] = {}  # Map of mermaid code to rendered image path
 
     def validate_file(self) -> None:
         """Validate that markdown file exists and is readable."""
@@ -165,8 +177,8 @@ class MarkdownToPdfConverter:
             
             logger.info(f"Processing image src: {src}")
             
-            # Skip if already absolute URL (http, https, data URI)
-            if src.startswith(('http://', 'https://', 'data:')):
+            # Skip if already absolute URL (http, https, data URI, or file URI)
+            if src.startswith(('http://', 'https://', 'data:', 'file://')):
                 logger.debug(f"✓ Keeping absolute URL: {src}")
                 return full_tag
             
@@ -231,6 +243,158 @@ class MarkdownToPdfConverter:
         content = re.sub(r'\n\s*\n\s*\n+', '\n\n', content)
         return content
 
+    def extract_mermaid_diagrams(self, content: str) -> str:
+        """
+        Extract mermaid diagrams from markdown and render them to PNG.
+        Replaces mermaid code blocks with image references.
+
+        Args:
+            content: Markdown content with mermaid code blocks
+
+        Returns:
+            Markdown content with mermaid blocks replaced by image references
+        """
+        # Pattern to match mermaid code blocks: ```mermaid ... ```
+        mermaid_pattern = r'```mermaid\n(.*?)\n```'
+        
+        def replace_mermaid_block(match):
+            """Replace each mermaid block with an image reference."""
+            mermaid_code = match.group(1)
+            
+            try:
+                # Render mermaid diagram to PNG
+                png_path = self.render_mermaid_to_png(mermaid_code)
+                
+                if png_path and Path(png_path).exists():
+                    # Create file URI for the image
+                    file_uri = Path(png_path).as_uri()
+                    logger.info(f"✅ Rendered mermaid diagram to: {png_path}")
+                    
+                    # Return markdown image syntax
+                    return f'![Mermaid Diagram]({file_uri} "Auto-generated Mermaid Diagram")'
+                else:
+                    logger.warning("⚠️  Failed to render mermaid diagram, keeping original")
+                    return match.group(0)  # Return original block if rendering failed
+            except Exception as e:
+                logger.warning(f"⚠️  Error rendering mermaid diagram: {e}")
+                logger.debug(f"Mermaid code:\n{mermaid_code}")
+                return match.group(0)  # Return original block on error
+        
+        # Replace all mermaid blocks
+        updated_content = re.sub(mermaid_pattern, replace_mermaid_block, content, flags=re.DOTALL)
+        return updated_content
+
+    def check_mmdc_available(self) -> bool:
+        """
+        Check if mermaid-cli (mmdc) is available.
+        
+        Returns:
+            True if mmdc is available, False otherwise
+        """
+        try:
+            result = subprocess.run(
+                ['mmdc', '--version'],
+                capture_output=True,
+                text=True,
+                timeout=5,
+                check=False
+            )
+            return result.returncode == 0
+        except (FileNotFoundError, subprocess.TimeoutExpired):
+            return False
+
+    def render_mermaid_to_png(self, mermaid_code: str) -> Optional[str]:
+        """
+        Render a mermaid diagram to PNG with 2X resolution.
+
+        Args:
+            mermaid_code: Mermaid diagram code
+
+        Returns:
+            Path to rendered PNG file, or None if rendering failed
+        """
+        try:
+            # Create temp directory if needed
+            if self.temp_dir is None:
+                self.temp_dir = tempfile.mkdtemp(prefix='mermaid_', suffix='_pdf')
+                logger.info(f"📁 Created temporary directory for mermaid: {self.temp_dir}")
+            
+            # Generate unique filename for this diagram
+            diagram_id = str(uuid.uuid4())[:8]
+            mmd_file = Path(self.temp_dir) / f"diagram_{diagram_id}.mmd"
+            png_file = Path(self.temp_dir) / f"diagram_{diagram_id}.png"
+            
+            # Write mermaid code to temporary file
+            with open(mmd_file, 'w', encoding='utf-8') as f:
+                f.write(mermaid_code)
+            
+            logger.debug(f"📝 Created mermaid file: {mmd_file}")
+            
+            # Try to use mmdc directly first, then fall back to npx
+            # This avoids the long startup time of npx on first run
+            mmdc_cmd = None
+            
+            if self.check_mmdc_available():
+                # Use mmdc directly if available
+                mmdc_cmd = ['mmdc']
+                logger.debug("🔍 Using locally installed mmdc")
+            else:
+                logger.debug("⏳ mmdc not found locally, will use npx (may take time on first run)")
+                # Fall back to npx, but use --yes to skip prompts
+                mmdc_cmd = ['npx', '--yes', '@mermaid-js/mermaid-cli']
+            
+            # Build full command with mermaid-cli arguments
+            # Scale factor of 2 renders at 2X resolution (e.g., 192 DPI instead of 96 DPI)
+            cmd = mmdc_cmd + [
+                '-i', str(mmd_file),
+                '-o', str(png_file),
+                '-s', '2',  # Scale factor for 2X resolution
+            ]
+            
+            logger.debug(f"🔨 Running: {' '.join(cmd)}")
+            logger.info("🎨 Rendering mermaid diagram (this may take a moment)...")
+            
+            # Run mmdc command with a generous timeout (2 minutes for npx first-run)
+            result = subprocess.run(
+                cmd,
+                capture_output=True,
+                text=True,
+                timeout=120,  # 2 minute timeout for npx download on first run
+                check=False,  # Don't raise exception on non-zero exit
+                env={**os.environ, 'npm_config_yes': 'true'}  # Set npm config to auto-yes
+            )
+            
+            if result.returncode != 0:
+                logger.warning(f"⚠️  mmdc returned exit code {result.returncode}")
+                if result.stderr:
+                    logger.debug(f"stderr: {result.stderr}")
+                if result.stdout:
+                    logger.debug(f"stdout: {result.stdout}")
+                return None
+            
+            # Verify output file was created
+            if png_file.exists():
+                file_size = png_file.stat().st_size / 1024
+                logger.info(f"✅ Successfully rendered mermaid diagram to PNG ({file_size:.1f} KB)")
+                return str(png_file)
+            else:
+                logger.warning(f"⚠️  PNG file was not created: {png_file}")
+                return None
+                
+        except subprocess.TimeoutExpired:
+            logger.warning("⚠️  Mermaid rendering timeout (120s) - diagram skipped")
+            logger.info("💡 Tip: Install @mermaid-js/mermaid-cli globally to speed up rendering:")
+            logger.info("   npm install -g @mermaid-js/mermaid-cli")
+            return None
+        except FileNotFoundError as e:
+            logger.warning(f"⚠️  Command not found: {e}")
+            logger.info("💡 Install Node.js and npm to render mermaid diagrams")
+            return None
+        except Exception as e:
+            logger.error(f"❌ Error rendering mermaid diagram: {e}")
+            logger.debug(f"Mermaid code:\n{mermaid_code}")
+            return None
+
     def convert_markdown_to_html(self) -> str:
         """
         Convert markdown content to HTML with proper code highlighting.
@@ -242,6 +406,10 @@ class MarkdownToPdfConverter:
         try:
             # First, clean Docusaurus directives
             cleaned_content = self.clean_docusaurus_directives(self.markdown_content)
+
+            # Extract and render mermaid diagrams
+            logger.info("🎨 Processing mermaid diagrams...")
+            cleaned_content = self.extract_mermaid_diagrams(cleaned_content)
 
             # Convert markdown to HTML with extensions
             html_content = markdown(
@@ -860,6 +1028,16 @@ p, li, td, th, blockquote {
 </html>"""
         return html_doc
 
+    def cleanup_temp_files(self) -> None:
+        """Clean up temporary files created during mermaid rendering."""
+        if self.temp_dir and Path(self.temp_dir).exists():
+            try:
+                shutil.rmtree(self.temp_dir)
+                logger.info(f"🧹 Cleaned up temporary directory: {self.temp_dir}")
+                self.temp_dir = None
+            except Exception as e:
+                logger.warning(f"⚠️  Failed to clean up temporary directory: {e}")
+
     def generate_pdf(self, output_path: Optional[Path] = None) -> Path:
         """
         Generate PDF from markdown file.
@@ -870,39 +1048,37 @@ p, li, td, th, blockquote {
         Returns:
             Path to generated PDF file
         """
-        # Parse frontmatter
-        self.parse_frontmatter()
-
-        # Convert markdown to HTML
-        html_content = self.convert_markdown_to_html()
-
-        # Build complete HTML document
-        complete_html = self.build_html_document(html_content)
-
-        # Generate CSS
-        css_content = self.generate_print_optimized_css()
-
-        # Determine output path
-        if output_path is None:
-            output_pdf = self.markdown_file.with_suffix('.pdf')
-        else:
-            output_path = Path(output_path)
-            if output_path.is_dir():
-                output_pdf = output_path / self.markdown_file.with_suffix('.pdf').name
-            else:
-                output_pdf = output_path
-
-        logger.info(f"📝 Generating PDF: {output_pdf}")
-
         try:
+            # Parse frontmatter
+            self.parse_frontmatter()
+
+            # Convert markdown to HTML
+            html_content = self.convert_markdown_to_html()
+
+            # Build complete HTML document
+            complete_html = self.build_html_document(html_content)
+
+            # Generate CSS
+            css_content = self.generate_print_optimized_css()
+
+            # Determine output path
+            if output_path is None:
+                output_pdf = self.markdown_file.with_suffix('.pdf')
+            else:
+                output_path = Path(output_path)
+                if output_path.is_dir():
+                    output_pdf = output_path / self.markdown_file.with_suffix('.pdf').name
+                else:
+                    output_pdf = output_path
+
+            logger.info(f"📝 Generating PDF: {output_pdf}")
+
             # Render HTML to PDF
             HTML(string=complete_html).write_pdf(
                 target=str(output_pdf),
                 stylesheets=[CSS(string=css_content)],
                 optimize_images=True,
                 jpeg_quality=95,
-                pdf_tags=True,
-                custom_metadata=True,
             )
             logger.info(f"✅ PDF generated successfully: {output_pdf}")
             logger.info(f"📊 File size: {output_pdf.stat().st_size / 1024:.1f} KB")
@@ -910,6 +1086,9 @@ p, li, td, th, blockquote {
         except Exception as e:
             logger.error(f"❌ Error generating PDF: {e}")
             raise
+        finally:
+            # Always clean up temporary files
+            self.cleanup_temp_files()
 
 
 def main() -> None:
