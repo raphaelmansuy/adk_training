@@ -30,6 +30,8 @@ learning_objectives:
 implementation_link: "/tutorial_implementation/tutorial15"
 ---
 
+import Comments from '@site/src/components/Comments';
+
 :::info UPDATED - ADK WEB FOCUSED APPROACH
 
 **This tutorial has been streamlined to focus on the working method for Live API: ADK Web Interface.**
@@ -987,3 +989,4 @@ You've mastered the Live API for real-time voice interactions:
 ---
 
 **🎉 Tutorial 15 Complete!** You now know how to build real-time voice assistants with the Live API. Continue to Tutorial 16 to learn about MCP integration for extended capabilities.
+<Comments />

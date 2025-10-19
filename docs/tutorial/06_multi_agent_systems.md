@@ -27,6 +27,8 @@ learning_objectives:
 implementation_link: "https://github.com/raphaelmansuy/adk_training/tree/main/tutorial_implementation/tutorial06"
 ---
 
+import Comments from '@site/src/components/Comments';
+
 # Tutorial 06: Multi-Agent Systems - Agents Working Together
 
 ## Overview
@@ -783,3 +785,4 @@ GOOGLE_API_KEY=your-api-key-here
 ```
 
 Congratulations! You've mastered multi-agent orchestration! 🎯🚀📰
+<Comments />

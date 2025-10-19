@@ -26,6 +26,8 @@ learning_objectives:
 implementation_link: "https://github.com/raphaelmansuy/adk_training/tree/main/tutorial_implementation/tutorial11"
 ---
 
+import Comments from '@site/src/components/Comments';
+
 # Tutorial 11: Built-in Tools & Grounding
 
 **Goal**: Learn how to use Gemini 2.0+'s built-in tools for web grounding, location services, and enterprise search - enabling your agents to access current information from the internet.
@@ -2155,3 +2157,4 @@ You've mastered ADK's complete builtin tools ecosystem:
 ---
 
 **🎉 Tutorial 11 Complete!** You now know how to build agents with web grounding capabilities. Continue to Tutorial 12 to learn about advanced reasoning with planners and thinking configuration.
+<Comments />

@@ -30,6 +30,8 @@ learning_objectives:
 implementation_link: "https://github.com/raphaelmansuy/adk_training/tree/main/tutorial_implementation/tutorial13"
 ---
 
+import Comments from '@site/src/components/Comments';
+
 ## Overview
 
 **Goal**: Enable your agents to write and execute Python code for calculations, data analysis, and complex computations using Gemini 2.0+'s built-in code execution capability.
@@ -1298,3 +1300,4 @@ You've mastered code execution for AI agents:
 **🎉 Tutorial 13 Complete!** You now know how to build agents that can
 write and execute code for accurate calculations. Continue to Tutorial 14
 to learn about streaming responses.
+<Comments />

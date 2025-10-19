@@ -30,6 +30,8 @@ learning_objectives:
 implementation_link: "https://github.com/raphaelmansuy/adk_training/tree/main/tutorial_implementation/tutorial04"
 ---
 
+import Comments from '@site/src/components/Comments';
+
 # Tutorial 04: Sequential Workflows - Build Agent Pipelines
 
 ## Overview
@@ -532,3 +534,4 @@ GOOGLE_API_KEY=your-api-key-here
 ```
 
 Congratulations! You've mastered sequential workflows! 🎯📝
+<Comments />

@@ -26,6 +26,8 @@ learning_objectives:
 implementation_link: "https://github.com/raphaelmansuy/adk_training/tree/main/tutorial_implementation/tutorial09"
 ---
 
+import Comments from '@site/src/components/Comments';
+
 # Tutorial 09: Callbacks & Guardrails - Control Flow and Monitoring
 
 ## Overview
@@ -1167,3 +1169,4 @@ Run `make test` to see all callback patterns in action!
 ---
 
 **Congratulations!** You now understand how to use callbacks for guardrails, monitoring, and control flow in production agents. This enables safe, compliant, and observable AI systems.
+<Comments />

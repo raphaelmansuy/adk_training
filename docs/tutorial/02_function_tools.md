@@ -18,6 +18,8 @@ learning_objectives:
 implementation_link: "https://github.com/raphaelmansuy/adk_training/tree/main/tutorial_implementation/tutorial02"
 ---
 
+import Comments from '@site/src/components/Comments';
+
 # Tutorial 02: Function Tools - Give Your Agent Superpowers
 
 > **💡 Working Implementation**: See the complete, tested code at [`tutorial_implementation/tutorial02/`](https://github.com/raphaelmansuy/adk_training/tree/main/tutorial_implementation/tutorial02/)
@@ -998,3 +1000,4 @@ GOOGLE_API_KEY=your-api-key-here
 ```
 
 Congratulations! Your agent now has superpowers! 🚀💰
+<Comments />

@@ -26,6 +26,8 @@ learning_objectives:
 implementation_link: "https://github.com/raphaelmansuy/adk_training/tree/main/tutorial_implementation/tutorial03"
 ---
 
+import Comments from '@site/src/components/Comments';
+
 # Tutorial 03: OpenAPI Tools - Connect Your Agent to Web APIs
 
 ## Overview
@@ -843,3 +845,4 @@ async def api_call_with_retry():
 ## Next Steps
 
 🚀 **Tutorial 04: Sequential Workflows** - Learn to orchestrate multiple agents in ordered pipelines
+<Comments />

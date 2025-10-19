@@ -26,6 +26,8 @@ learning_objectives:
 implementation_link: "https://github.com/raphaelmansuy/adk_training/tree/main/tutorial_implementation/tutorial05"
 ---
 
+import Comments from '@site/src/components/Comments';
+
 # Tutorial 05: Parallel Processing - Run Multiple Agents Simultaneously
 
 ## Overview
@@ -658,3 +660,4 @@ GOOGLE_API_KEY=your-api-key-here
 ```
 
 Congratulations! You've mastered parallel processing and the fan-out/gather pattern! 🚀✈️
+<Comments />
