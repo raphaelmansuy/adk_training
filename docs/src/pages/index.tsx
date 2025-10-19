@@ -180,10 +180,10 @@ function StatsSection() {
       <div className="container">
         <div className={styles.statsGrid}>
           <div className={styles.statItem}>
-            <AnimatedCounter end={34} label="Tutorials Planned" />
+            <AnimatedCounter end={34} label="Tutorials Complete" />
           </div>
           <div className={styles.statItem}>
-            <AnimatedCounter end={30} label="Currently Available" />
+            <AnimatedCounter end={34} label="Working Implementations" />
           </div>
           <div className={styles.statItem}>
             <AnimatedCounter end={68} label="Test Cases" />
@@ -352,8 +352,8 @@ function CommunitySection() {
         </p>
         <GitHubStats />
         <div className={styles.progressContainer}>
-          <ProgressIndicator completed={33} total={34} label="Tutorial Implementation Progress" />
-          <ProgressIndicator completed={68} total={100} label="Test Coverage Target" />
+          <ProgressIndicator completed={34} total={34} label="Tutorial Implementation" />
+          <ProgressIndicator completed={68} total={100} label="Test Cases" />
         </div>
       </div>
     </section>
