@@ -537,6 +537,23 @@ const config: Config = {
           label: 'Mental Models',
           position: 'left',
         },
+        {
+          type: 'dropdown',
+          label: '📚 Today I Learn',
+          position: 'left',
+          items: [
+            {
+              label: 'TIL Guidelines & Template',
+              to: '/docs/til/til_template',
+              description: 'How to create your own TIL articles',
+            },
+            {
+              label: 'Context Compaction (Oct 19)',
+              to: '/docs/til/til_context_compaction_20250119',
+              description: 'Reduce token usage in long conversations with ADK 1.16',
+            },
+          ],
+        },
         {to: '/blog', label: 'Blog', position: 'left'},
         {
           href: 'https://github.com/raphaelmansuy/adk_training',
