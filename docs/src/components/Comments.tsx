@@ -15,9 +15,9 @@ export default function Comments(): JSX.Element {
       </p>
       <Giscus
         repo="raphaelmansuy/adk_training"
-        repoId="R_kgDOLxxxxx" // TODO: Replace with actual repo ID from https://giscus.app/
+        repoId="R_UmVwb3NpdG9yeToxMDcyMTgzMjY4"
         category="General"
-        categoryId="DIC_kwDOLxxxxx" // TODO: Replace with actual category ID from https://giscus.app/
+        categoryId="DIC_kwDOGh4L_oAN_V_v"
         mapping="pathname"
         strict="0"
         reactionsEnabled="1"
