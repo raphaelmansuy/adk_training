@@ -25,6 +25,8 @@ learning_objectives:
 implementation_link: "https://github.com/raphaelmansuy/adk_training/tree/main/tutorial_implementation/tutorial20"
 ---
 
+import Comments from '@site/src/components/Comments';
+
 # Tutorial 20: Agent Configuration with YAML
 
 **Goal**: Master declarative agent configuration using YAML files to define agents, tools, and behaviors without writing Python code, enabling rapid prototyping and configuration management.
@@ -1133,3 +1135,4 @@ You've mastered YAML agent configuration:
 ---
 
 **🎉 Tutorial 20 Complete!** You now know how to configure agents with YAML. Continue to Tutorial 21 to learn about multimodal capabilities and image generation.
+<Comments />

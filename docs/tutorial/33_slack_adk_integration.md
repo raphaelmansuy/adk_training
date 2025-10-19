@@ -18,6 +18,8 @@ learning_objectives:
 implementation_link: "https://github.com/raphaelmansuy/adk_training/tree/main/tutorial_implementation/tutorial33"
 ---
 
+import Comments from '@site/src/components/Comments';
+
 
 This tutorial has been verified against official Slack Bolt Python SDK
 (v1.26.0 - verified October 2025), Google ADK patterns, and production
@@ -1840,3 +1842,4 @@ make setup && make test
 ---
 
 **Questions or feedback?** Open an issue on the [ADK Training Repository](https://github.com/google/adk-training).
+<Comments />

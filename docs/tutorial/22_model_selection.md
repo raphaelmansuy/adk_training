@@ -27,6 +27,8 @@ learning_objectives:
 implementation_link: "https://github.com/raphaelmansuy/adk_training/tree/main/tutorial_implementation/tutorial22"
 ---
 
+import Comments from '@site/src/components/Comments';
+
 :::info Verified Against Official Sources
 
 This tutorial has been verified against official Google AI documentation and ADK source code.
@@ -1350,3 +1352,4 @@ You've mastered model selection and optimization:
 ---
 
 **🎉 Tutorial 22 Complete!** You now know how to select and optimize models for your use cases. Continue to Tutorial 23 to learn about production deployment strategies.
+<Comments />

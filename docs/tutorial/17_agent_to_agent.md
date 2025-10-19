@@ -33,6 +33,8 @@ learning_objectives:
 implementation_link: "https://github.com/raphaelmansuy/adk_training/tree/main/tutorial_implementation/tutorial17"
 ---
 
+import Comments from '@site/src/components/Comments';
+
 :::info FULLY WORKING A2A IMPLEMENTATION - TESTED & VERIFIED
 
 **This tutorial features a complete, tested A2A implementation using the official Google ADK.**
@@ -1411,3 +1413,4 @@ fi
 └─────────────────┘                             │    accessible   │
                                                 └─────────────────┘
 ```
+<Comments />

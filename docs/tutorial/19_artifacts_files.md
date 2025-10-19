@@ -26,6 +26,8 @@ learning_objectives:
 implementation_link: "https://github.com/raphaelmansuy/adk_training/tree/main/tutorial_implementation/tutorial19"
 ---
 
+import Comments from '@site/src/components/Comments';
+
 :::info Verified Against Official Sources
 
 This tutorial has been verified against the official ADK Python source code
@@ -1565,3 +1567,4 @@ You've mastered artifacts and file management:
 ---
 
 **🎉 Tutorial 19 Complete!** You now know how to manage files and artifacts with versioning. Continue to Tutorial 20 to learn about YAML configuration.
+<Comments />

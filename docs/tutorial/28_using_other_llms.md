@@ -31,6 +31,8 @@ learning_objectives:
 implementation_link: "https://github.com/raphaelmansuy/adk_training/tree/main/tutorial_implementation/tutorial28"
 ---
 
+import Comments from '@site/src/components/Comments';
+
 # Tutorial 28: Using Other LLMs with LiteLLM
 
 **Goal**: Use OpenAI, Claude, Ollama, and other LLMs in your ADK agents via LiteLLM
@@ -1308,3 +1310,4 @@ export GOOGLE_CLOUD_LOCATION='us-central1'
 ---
 
 **Congratulations!** You can now use OpenAI, Claude, Ollama, and other LLMs in your ADK agents, and you understand when to use native Gemini vs. LiteLLM providers.
+<Comments />
