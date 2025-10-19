@@ -316,179 +316,140 @@ Create `subscriber.py`:
 ```python
 """
 Document Processor Subscriber
-Processes documents using ADK agent
+Processes documents using ADK agent coordinator
 """
 
 import os
+import sys
 import json
+import asyncio
+import logging
 from google.cloud import pubsub_v1
-from google import genai
-from concurrent import futures
+from google.adk import Runner
+from google.adk.sessions import InMemorySessionService
+from google.genai import types
+from pubsub_agent.agent import root_agent
 
-# Initialize Pub/Sub subscriber
-project_id = os.environ.get("GCP_PROJECT", "my-agent-pipeline")
+# Suppress noisy debug messages from libraries
+logging.getLogger('google.auth').setLevel(logging.WARNING)
+logging.getLogger('google.cloud').setLevel(logging.WARNING)
+logging.getLogger('google.genai').setLevel(logging.WARNING)
+logging.getLogger('absl').setLevel(logging.ERROR)
+
+project_id = os.environ.get("GCP_PROJECT")
 subscription_id = "document-processor"
 
 subscriber = pubsub_v1.SubscriberClient()
 subscription_path = subscriber.subscription_path(project_id, subscription_id)
 
-# Initialize Gemini client
-# Create processing agent using ADK
-from google.adk.agents import Agent
+async def process_document_with_agent(document_id: str, content: str):
+    """Process document using the ADK root_agent coordinator."""
+    try:
+        # Create a runner for the agent with required session service
+        session_service = InMemorySessionService()
+        runner = Runner(
+            app_name="pubsub_processor",
+            agent=root_agent,
+            session_service=session_service
+        )
+        
+        # Create a session for this document processing
+        session = await session_service.create_session(
+            app_name="pubsub_processor",
+            user_id="pubsub_subscriber"
+        )
+        
+        # Prepare the message for the agent
+        prompt_text = f"""Analyze this document and route it to the appropriate analyzer:
 
-agent = Agent(
-    model="gemini-2.0-flash-exp",
-    name="document_processor",
-    instruction="""You are an expert document analysis agent.
+Document ID: {document_id}
 
-Your responsibilities:
-- Analyze documents and extract key information
-- Summarize content clearly and concisely
-- Identify important entities (dates, numbers, people)
-- Classify document type and purpose
-- Flag any issues or anomalies
-
-Guidelines:
-- Be thorough but concise
-- Use structured output (JSON when possible)
-- Highlight critical information
-- Provide actionable insights
-- Note confidence levels for classifications"""
-)
-
-# Note: ADK handles function calling configuration automatically
-# tool_config={
-#     "function_calling_config": {
-            "mode": "AUTO"
-        }
-    }
-)
-
-# Initialize runner for agent execution
-from google.adk.runners import InMemoryRunner
-
-runner = InMemoryRunner(agent=agent, app_name='document_processor')
-
-def process_document(message_data: dict) -> dict:
-    """
-    Process a document using ADK agent.
-
-    Args:
-        message_data: Document data from Pub/Sub message
-
-    Returns:
-        Processing results
-    """
-    document_id = message_data.get("document_id")
-    content = message_data.get("content")
-    document_type = message_data.get("document_type")
-
-    print(f"Processing document {document_id}...")
-
-    # Create prompt
-    prompt = f"""Analyze this {document_type} document:
-
+Content:
 {content}
 
-Provide:
-1. Summary (2-3 sentences)
-2. Key information extracted
-3. Document classification
-4. Sentiment analysis
-5. Action items or recommendations
-
-Format as JSON."""
-
-    try:
-        # Proper ADK execution pattern with InMemoryRunner
-        import asyncio
-        from google.genai import types
-
-        async def get_response(prompt: str, session_id: str):
-            """Helper to execute agent in async context."""
-            # Create session for this document
-            session = await runner.session_service.create_session(
-                app_name='document_processor',
-                user_id='system'
-            )
-
-            new_message = types.Content(role='user', parts=[types.Part(text=prompt)])
-
-            response_text = ""
-            async for event in runner.run_async(
-                user_id='system',
-                session_id=session.id,
-                new_message=new_message
-            ):
-                if event.content and event.content.parts:
-                    response_text += event.content.parts[0].text
-
-            return response_text
-
-        full_response = asyncio.run(get_response(prompt, document_id))
-
-        result = {
-            "document_id": document_id,
-            "status": "completed",
-            "analysis": full_response,
-            "processed_by": "gemini-2.0-flash-exp"
-        }
-
-        print(f"✅ Completed processing {document_id}")
-        return result
-
+Analyze the document type and extract relevant information."""
+        
+        # Create a proper Content object for the agent
+        prompt = types.Content(
+            role="user",
+            parts=[types.Part(text=prompt_text)]
+        )
+        
+        # Run the agent and collect the result
+        final_result = None
+        async for event in runner.run_async(
+            user_id="pubsub_subscriber",
+            session_id=session.id,
+            new_message=prompt
+        ):
+            # Events are streamed, capture the final one
+            final_result = event
+        
+        return final_result
+        
     except Exception as e:
-        print(f"❌ Error processing {document_id}: {e}")
-        return {
-            "document_id": document_id,
-            "status": "error",
-            "error": str(e)
-        }
+        print(f"❌ Agent processing error: {e}")
+        raise
 
-def callback(message: pubsub_v1.subscriber.message.Message) -> None:
-    """
-    Callback for processing Pub/Sub messages.
-
-    Args:
-        message: Pub/Sub message
-    """
+def process_message(message):
+    """Process Pub/Sub message with async agent processing."""
     try:
-        # Parse message data
-        message_data = json.loads(message.data.decode("utf-8"))
+        data = json.loads(message.data.decode("utf-8"))
+        document_id = data.get("document_id")
+        content = data.get("content")
 
-        print(f"Received message: {message.message_id}")
-        print(f"Document ID: {message_data.get('document_id')}")
+        print(f"\n📄 Processing: {document_id}")
 
-        # Process document
-        result = process_document(message_data)
+        # Run the async agent processing
+        result = asyncio.run(process_document_with_agent(document_id, content))
 
-        # Log result
-        print(f"Result: {result['status']}")
+        if result:
+            # Extract text from the event's content
+            response_text = ""
+            if hasattr(result, 'content') and result.content and result.content.parts:
+                for part in result.content.parts:
+                    if part.text:
+                        response_text += part.text
+            
+            if response_text:
+                # Clean up the response text for display
+                display_text = response_text.strip()[:200]
+                print(f"✅ Success: {document_id}")
+                print(f"   └─ {display_text}...")
+            else:
+                print(f"✅ Completed {document_id} (no text response)")
+        else:
+            print(f"✅ Completed {document_id}")
 
-        # Acknowledge message (removes from queue)
+        # Acknowledge message (remove from queue)
         message.ack()
 
     except Exception as e:
-        print(f"Error in callback: {e}")
-        # Nack message (will be redelivered)
+        print(f"❌ Error: {document_id} - {str(e)[:100]}")
         message.nack()
 
-# Subscribe
-print(f"Listening for messages on {subscription_path}...")
+# Subscribe and process
+print("\n" + "="*70)
+print("🚀 Document Processing Coordinator")
+print("="*70)
+print(f"Subscription: {subscription_id}")
+print(f"Project:      {project_id or '(not set - local mode)'}")
+print(f"Agent:        root_agent (multi-analyzer coordinator)")
+print("="*70)
+print("Waiting for messages...\n")
 
 streaming_pull_future = subscriber.subscribe(
     subscription_path,
-    callback=callback
+    callback=process_message
 )
 
-print("🚀 Document processor is running! Press Ctrl+C to stop.")
-
-# Block until interrupted
 try:
     streaming_pull_future.result()
 except KeyboardInterrupt:
     streaming_pull_future.cancel()
-    print("\n✋ Stopped processor")
+    print("\n" + "="*70)
+    print("✋ Processor stopped")
+    print("="*70)
 ```
 
 ---
