@@ -175,6 +175,8 @@ const config: Config = {
           'Agent Testing and Evaluation',
           'Cloud Run Deployment',
           'Vertex AI Agent Engine',
+          'Google Cloud Pub/Sub Integration',
+          'Event-Driven Agent Architectures',
         ],
         hasCourseInstance: {
           '@type': 'CourseInstance',
