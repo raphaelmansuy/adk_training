@@ -109,7 +109,7 @@ estimated_time: "5 min read"
 
 - **Total Lines of Implementation Code**: 50,000+
 - **Average File Size**: ~150 lines
-- **Code Duplication**: <5%
+- **Code Duplication**: {"<"}5%
 - **Documentation Ratio**: 1:1 (docs to code)
 
 ### Testing
