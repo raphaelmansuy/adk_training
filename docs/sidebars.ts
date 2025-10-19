@@ -93,6 +93,24 @@ const sidebars: SidebarsConfig = {
         'pubsub_adk_integration',
       ],
     },
+    {
+      type: 'category',
+      label: 'Today I Learn (TIL)',
+      collapsed: true,
+      description: 'Quick daily learning pieces on specific ADK features',
+      items: [
+        {
+          type: 'doc',
+          id: 'til/TIL_TEMPLATE',
+          label: '📋 TIL Guidelines & Template',
+        },
+        {
+          type: 'doc',
+          id: 'til/til_context_compaction_20250119',
+          label: 'TIL: Context Compaction (Jan 19)',
+        },
+      ],
+    },
   ],
 };
 
