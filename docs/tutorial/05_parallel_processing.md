@@ -341,6 +341,12 @@ Final Output: complete travel itinerary
 
 ## Step 4: Run the Travel Planner
 
+### Demo in Action
+
+Here's what your parallel processing travel planner looks like in action:
+
+![Tutorial 05 Demo - Parallel Processing Travel Planner](/img/tutorial05_cap01.gif)
+
 ### Using the Working Implementation
 
 ```bash
