@@ -82,6 +82,12 @@ make dev
 
 Then open `http://localhost:8000` in your browser and select "hello_agent"!
 
+### Quick Demo
+
+Here's what your agent looks like in action:
+
+![Tutorial 01 Demo - Hello World Agent](/img/tutorial01_cap01.gif)
+
 ## Step-by-Step Setup (Alternative)
 
 If you prefer to build it yourself, follow these steps:
