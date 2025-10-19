@@ -31,6 +31,8 @@ learning_objectives:
 implementation_link: "https://github.com/raphaelmansuy/adk_training/tree/main/tutorial_implementation/tutorial30"
 ---
 
+import Comments from '@site/src/components/Comments';
+
 :::tip Working Implementation Available
 
 **A complete, tested implementation of this tutorial is available!**
@@ -566,8 +568,6 @@ First, create a theme toggle component. Create `components/ThemeToggle.tsx`:
 "use client";
 
 import { useEffect, useState } from "react";
-
-import Comments from '@site/src/components/Comments';
 
 export function ThemeToggle() {
   const [theme, setTheme] = useState<"light" | "dark">("light");
