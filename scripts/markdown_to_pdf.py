@@ -1,4 +1,13 @@
-#!/usr/bin/env python3
+#!/usr/bin/env -S uv run --script
+# /// script
+# requires-python = ">=3.8"
+# dependencies = [
+#   "python-frontmatter>=1.0.0",
+#   "markdown>=3.4.0",
+#   "weasyprint>=60.0",
+#   "pillow>=10.0.0",
+# ]
+# ///
 """
 Markdown to PDF Converter with YAML Frontmatter Support
 
@@ -6,12 +15,12 @@ Converts Markdown files (with YAML frontmatter) to high-quality, print-optimized
 Respects Docusaurus rendering configuration and creates professional documents.
 
 Usage:
-    python markdown_to_pdf.py <markdown_file> [--output <output_path>]
-    python markdown_to_pdf.py --help
+    ./markdown_to_pdf.py <markdown_file> [--output <output_path>]
+    ./markdown_to_pdf.py --help
 
 Example:
-    python markdown_to_pdf.py docs/docs/01_hello_world_agent.md
-    python markdown_to_pdf.py docs/docs/til/til_context_compaction_20250119.md --output ~/Desktop/
+    ./markdown_to_pdf.py docs/docs/01_hello_world_agent.md
+    ./markdown_to_pdf.py docs/docs/til/til_context_compaction_20250119.md --output ~/Desktop/
 
 Features:
     - Parses YAML frontmatter (title, author, date, tags, etc.)
@@ -33,15 +42,40 @@ import logging
 from datetime import datetime
 import re
 
+# First, try to import frontmatter and markdown
 try:
     import frontmatter
     from markdown import markdown
-    from weasyprint import HTML, CSS
-    from datetime import datetime
 except ImportError as e:
     print(f"❌ Missing required dependencies: {e}")
     print("\nPlease install required packages:")
-    print("  pip install python-frontmatter markdown weasyprint pillow")
+    print("  uv run --script <script_name>")
+    sys.exit(1)
+
+# Then, try to import WeasyPrint with special error handling for macOS system libraries
+try:
+    from weasyprint import HTML, CSS
+except (ImportError, OSError) as e:
+    error_msg = str(e)
+    print(f"❌ WeasyPrint import failed: {e}")
+    
+    # Check for WeasyPrint system library issues on macOS
+    if "libgobject-2.0" in error_msg or "cannot load library" in error_msg or "dlopen" in error_msg:
+        print("\n📌 WeasyPrint requires system libraries on macOS.")
+        print("\n✨ Solutions:")
+        print("\n  1️⃣  Using Homebrew (recommended):")
+        print("     brew install weasyprint")
+        print("     # Then run the script again")
+        print("\n  2️⃣  Set library path manually:")
+        print("     export DYLD_FALLBACK_LIBRARY_PATH=/opt/homebrew/lib:$DYLD_FALLBACK_LIBRARY_PATH")
+        print("     ./scripts/markdown_to_pdf.py <markdown_file>")
+        print("\n  3️⃣  Using Macports:")
+        print("     sudo port install py-pip pango libffi")
+        print("     pip install weasyprint")
+        print("\n📖 Reference: https://doc.courtbouillon.org/weasyprint/stable/first_steps.html#troubleshooting")
+    else:
+        print("\nPlease install required packages:")
+        print("  pip install python-frontmatter markdown weasyprint pillow")
     sys.exit(1)
 
 
