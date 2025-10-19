@@ -25,6 +25,8 @@ learning_objectives:
 implementation_link: "https://github.com/raphaelmansuy/adk_training/tree/main/tutorial_implementation/tutorial08"
 ---
 
+import Comments from '@site/src/components/Comments';
+
 # Tutorial 08: State Memory - Managing Conversation Context and Data
 
 > **💡 [View the complete working implementation and test suite here.](https://github.com/raphaelmansuy/adk_training/tree/main/tutorial_implementation/tutorial08/README.md)**
@@ -851,3 +853,4 @@ root_agent = Agent(
 ---
 
 **Congratulations!** You now understand how to build agents with persistent memory and context-aware state management. This enables truly personalized, production-ready agents.
+<Comments />

@@ -38,6 +38,8 @@ learning_objectives:
 implementation_link: "https://github.com/raphaelmansuy/adk_training/tree/main/tutorial_implementation/tutorial12"
 ---
 
+import Comments from '@site/src/components/Comments';
+
 # Tutorial 12: Planners & Thinking Configuration
 
 **Goal**: Master advanced reasoning capabilities using Built-in Planners, Thinking Configuration, and structured Plan-ReAct patterns for complex problem-solving.
@@ -1326,3 +1328,4 @@ You've mastered advanced reasoning with planners and thinking configuration:
 ---
 
 **🎉 Tutorial 12 Complete!** You now know how to build agents with advanced reasoning capabilities. Continue to Tutorial 13 to learn about code execution.
+<Comments />

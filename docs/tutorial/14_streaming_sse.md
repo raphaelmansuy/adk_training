@@ -30,6 +30,8 @@ learning_objectives:
 implementation_link: "https://github.com/raphaelmansuy/adk_training/tree/main/tutorial_implementation/tutorial14"
 ---
 
+import Comments from '@site/src/components/Comments';
+
 :::info IMPLEMENTATION NOTES
 
 **This tutorial demonstrates real ADK streaming APIs with a working implementation
@@ -1426,3 +1428,4 @@ You've mastered streaming responses with SSE:
 **🎉 Tutorial 14 Complete!** You now know how to implement streaming responses
 for better user experience. Continue to Tutorial 15 to learn about bidirectional
 streaming with the Live API.
+<Comments />

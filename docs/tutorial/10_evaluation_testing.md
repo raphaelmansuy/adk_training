@@ -31,6 +31,8 @@ learning_objectives:
 implementation_link: "https://github.com/raphaelmansuy/adk_training/tree/main/tutorial_implementation/tutorial10"
 ---
 
+import Comments from '@site/src/components/Comments';
+
 # Tutorial 10: Evaluation & Testing - Quality Assurance for Agents
 
 ## Overview
@@ -2514,3 +2516,4 @@ You've now completed the entire ADK tutorial series:
 10. ✅ **Evaluation & Testing** - Quality assurance
 
 **You're now ready to build production-ready AI agents with Google ADK!** 🎉
+<Comments />

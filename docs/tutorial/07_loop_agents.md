@@ -26,6 +26,8 @@ learning_objectives:
 implementation_link: "https://github.com/raphaelmansuy/adk_training/tree/main/tutorial_implementation/tutorial07"
 ---
 
+import Comments from '@site/src/components/Comments';
+
 # Tutorial 07: Loop Agents - Iterative Refinement with Critic/Refiner Patterns
 
 ## Overview
@@ -613,3 +615,4 @@ make dev    # Start development server
 ```
 
 Congratulations! You've mastered iterative refinement with loop agents! 🎯[FLOW]📝
+<Comments />

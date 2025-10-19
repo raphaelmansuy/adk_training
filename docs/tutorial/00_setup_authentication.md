@@ -30,6 +30,8 @@ learning_objectives:
 implementation_link: "https://github.com/raphaelmansuy/adk_training/tree/main/tutorial_implementation/tutorial00"
 ---
 
+import Comments from '@site/src/components/Comments';
+
 :::info Verified Against Official Sources
 
 This tutorial has been verified against official Google documentation and ADK
@@ -848,4 +850,4 @@ python -c "from google.genai import Client; print('Setup successful!')"
 - [ADK Platform Integration Guide](https://github.com/google/adk-python)
 - [Google AI Studio](https://aistudio.google.com)
 - [Google Cloud Console](https://console.cloud.google.com)
-
+<Comments />
