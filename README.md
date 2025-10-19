@@ -171,18 +171,55 @@ Start with [Tutorial 01](docs/tutorial/01_hello_world_agent.md) (30 min) to unde
 
 **For:** Senior engineers and architects
 
-Complete all 30 tutorials, focusing on:
+Complete all 34 tutorials, focusing on:
 
 - Multi-agent orchestration patterns
 - Production observability and testing
 - Enterprise deployment strategies
 - UI integration with Next.js/React
+- Advanced integrations (MCP, A2A, streaming, audio)
 
 **You'll gain:** Deep expertise in agent architecture and the patterns to make critical design decisions.
 
-## 📚 All Tutorials (30 Ready, 4 Coming Soon)
+## � Today I Learn (TIL) - Quick Daily Insights
 
-See the complete tutorial list in the [Project Structure](#🏗️-project-structure) section above, or browse the [interactive documentation](https://raphaelmansuy.github.io/adk_training/).
+Introducing **Today I Learn (TIL)** - short, focused articles on specific ADK
+features and patterns. Perfect for learning one concept at a time!
+
+**What are TILs?**
+
+- ✅ **Focused** - One feature, one pattern, one solution
+- ✅ **Quick** - 5-10 minute read
+- ✅ **Practical** - Working code examples with full implementations
+- ✅ **Dated** - Published daily with specific ADK versions
+- ✅ **Standalone** - Complete on their own
+
+### Featured TILs
+
+#### Context Compaction (October 19, 2025)
+
+Learn how to automatically summarize conversation history to reduce token usage
+in long-running agent conversations. Perfect for production systems handling
+extended user interactions.
+
+- **Time**: 8 minutes
+- **ADK Version**: 1.16+
+- **Implementation**: Full working code with tests
+- **Read**: [TIL: Context Compaction →](./docs/til/til_context_compaction_20250119.md)
+
+### TIL Guidelines
+
+Want to create your own TIL? See our comprehensive guide:
+
+- [TIL Template & Guidelines →](./docs/til/TIL_TEMPLATE.md)
+- **New TIL every week** - Stay current with ADK features
+- **Your submissions welcome** - Contribute your own TILs
+
+---
+
+## 📚 All Tutorials (34/34 Complete)
+
+See the complete tutorial list in the [Project Structure](#project-structure) section above, or browse the [interactive documentation](https://raphaelmansuy.github.io/adk_training/).
 
 ## 🎓 Tutorials Overview
 
