@@ -21,12 +21,12 @@ This tutorial implements an **event-driven document processing pipeline**:
 
 ```text
 ┌─────────────────────────────────────────────────────────────┐
-│  Publisher                                                    │
+│  Publisher                                                  │
 │  └─ Sends documents to Pub/Sub topic                        │
 └─────────────────────┬───────────────────────────────────────┘
                       │
 ┌─────────────────────▼───────────────────────────────────────┐
-│  Google Cloud Pub/Sub                                        │
+│  Google Cloud Pub/Sub                                       │
 │  └─ Buffers and distributes messages                        │
 └─────────────────────┬───────────────────────────────────────┘
                       │
@@ -34,95 +34,142 @@ This tutorial implements an **event-driven document processing pipeline**:
       │               │               │
 ┌─────▼──────┐  ┌────▼────┐  ┌───────▼──────┐
 │ Summarizer │  │Extractor│  │  Classifier  │
-│ Subscriber │  │Subscriber│  │  Subscriber  │
+│ Subscriber │  │Subscriber  │  Subscriber  │
 └────────────┘  └─────────┘  └──────────────┘
       │               │               │
       └───────────────┼───────────────┘
                       │
 ┌─────────────────────▼───────────────────────────────────────┐
-│  Results Storage                                             │
+│  Results Storage                                            │
 │  └─ Save processed results and status                       │
 └─────────────────────────────────────────────────────────────┘
 ```
 
 ## Components
 
+### Multi-Agent Architecture
+
+This tutorial implements a **coordinator + specialized agents** pattern:
+
+```
+┌──────────────────────────────────────┐
+│   root_agent (Coordinator)           │
+│   - Routes documents to specialists  │
+│   - Determines document type         │
+│   - Orchestrates sub-agent calls     │
+└──────────────────────────────────────┘
+         │      │       │       │
+         ▼      ▼       ▼       ▼
+    ┌─────────┬─────────┬──────────┬──────────┐
+    │Financial│Technical│ Sales    │Marketing │
+    │Analyzer │Analyzer │Analyzer  │ Analyzer │
+    └─────────┴─────────┴──────────┴──────────┘
+         │      │       │       │
+         └──────┴───────┴───────┘
+              │
+       Returns Structured JSON
+       (Pydantic Models)
+```
+
 ### `pubsub_agent/agent.py`
 
-The main document processing agent with three tool functions:
+Defines a coordinator agent that routes documents to specialized analyzers:
 
-#### 1. `summarize_content(content: str)`
+#### Coordinator Agent: `root_agent`
 
-Summarizes document content by extracting key lines.
-
-```python
-from pubsub_agent.agent import summarize_content
-
-result = summarize_content("Your document text here...")
-print(result)
-# {
-#     'status': 'success',
-#     'report': 'Content summarized successfully',
-#     'summary': 'Summary text...',
-#     'original_length': 150,
-#     'summary_length': 45
-# }
-```
-
-#### 2. `extract_entities(content: str)`
-
-Extracts structured entities from documents:
-
-- **Dates**: Patterns like `2024-10-08`, `10/15/2024`
-- **Currency**: Patterns like `$1,200.50`
-- **Percentages**: Patterns like `35%`
-- **Numbers**: Integer values in text
-
-```python
-from pubsub_agent.agent import extract_entities
-
-result = extract_entities("Revenue: $1.2M (35% growth) on 2024-10-08")
-print(result)
-# {
-#     'status': 'success',
-#     'entities': {
-#         'dates': ['2024-10-08'],
-#         'currency': ['$1.2M'],
-#         'percentages': ['35%'],
-#         'numbers': [...]
-#     },
-#     'entity_count': 3
-# }
-```
-
-#### 3. `classify_document(content: str)`
-
-Classifies documents by type and topic:
-
-```python
-from pubsub_agent.agent import classify_document
-
-result = classify_document("Q4 financial report with revenue and profit metrics...")
-print(result)
-# {
-#     'status': 'success',
-#     'primary_type': 'financial',
-#     'confidence_scores': {'financial': 3},
-#     'content_length': 150
-# }
-```
-
-### `root_agent`
-
-The main ADK agent configured for processing documents in event-driven pipelines:
+The main ADK agent that intelligently routes documents:
 
 ```python
 from pubsub_agent.agent import root_agent
 
 # Agent properties
-root_agent.name  # "pubsub_processor"
-root_agent.model  # "gemini-2.0-flash"
-root_agent.description  # "Event-driven document processing agent"
+root_agent.name           # "pubsub_processor"
+root_agent.model          # "gemini-2.5-flash"
+root_agent.description    # "Event-driven document processing coordinator"
+root_agent.tools          # [financial_tool, technical_tool, sales_tool, marketing_tool]
+```
+
+#### Specialized Sub-Agents
+
+Each sub-agent is configured with a Pydantic output schema for structured JSON responses:
+
+1. **Financial Analyzer** - Analyzes financial reports, earnings, budgets
+   - Extracts: revenue, profit, margins, growth rates, fiscal periods
+   - Returns: `FinancialAnalysisOutput` (Pydantic model)
+
+2. **Technical Analyzer** - Analyzes technical docs, architecture, specifications
+   - Extracts: technologies, components, deployment info
+   - Returns: `TechnicalAnalysisOutput` (Pydantic model)
+
+3. **Sales Analyzer** - Analyzes sales pipelines, deals, forecasts
+   - Extracts: customer deals, pipeline value, stages
+   - Returns: `SalesAnalysisOutput` (Pydantic model)
+
+4. **Marketing Analyzer** - Analyzes marketing campaigns, engagement metrics
+   - Extracts: campaigns, engagement rates, conversion rates
+   - Returns: `MarketingAnalysisOutput` (Pydantic model)
+
+#### Using the Coordinator
+
+The agent automatically routes documents based on content analysis:
+
+```python
+from google.adk.agents import Runner
+from pubsub_agent.agent import root_agent
+import asyncio
+
+async def process_document(content: str):
+    runner = Runner(root_agent)
+    result = await runner.run_async(
+        user_id="processor",
+        session_id="session_001",
+        new_message=f"Analyze this document:\n{content}"
+    )
+    return result
+
+# Example financial document
+financial_doc = "Q4 2024 Financial Report: Revenue $1.2M, Profit 33%"
+result = asyncio.run(process_document(financial_doc))
+# Agent automatically routes to financial_analyzer
+# Returns structured JSON with revenue, profit, recommendations
+```
+
+#### Output Schemas
+
+All sub-agents enforce structured JSON output using Pydantic models:
+
+```python
+from pubsub_agent.agent import (
+    FinancialAnalysisOutput,
+    TechnicalAnalysisOutput,
+    SalesAnalysisOutput,
+    MarketingAnalysisOutput,
+    EntityExtraction,
+    DocumentSummary
+)
+
+# Example: FinancialAnalysisOutput structure
+{
+    "summary": {
+        "main_points": [...],
+        "key_insight": "...",
+        "summary": "..."
+    },
+    "entities": {
+        "dates": ["2024-10-08"],
+        "currency_amounts": ["$1.2M"],
+        "percentages": ["35%"],
+        "numbers": [...]
+    },
+    "financial_metrics": {
+        "revenue": "$1.2M",
+        "profit": "$400K",
+        "margin": "33%",
+        "growth_rate": "15%"
+    },
+    "fiscal_periods": ["Q4 2024"],
+    "recommendations": [...]
+}
 ```
 
 ## Usage Examples
@@ -140,29 +187,63 @@ pytest tests/test_agent.py -v
 make test-cov
 ```
 
-### Testing Tool Functions Locally
+### Testing the Coordinator Agent Locally
 
 ```python
-from pubsub_agent.agent import summarize_content, extract_entities, classify_document
+import asyncio
+from google.adk import Runner
+from google.adk.sessions import InMemorySessionService
+from google.genai import types
+from pubsub_agent.agent import root_agent
 
-# Test summarization
-document = """
-Q4 2024 Sales Report
-Date: 2024-10-08
+async def test_agent():
+    session_service = InMemorySessionService()
+    runner = Runner(
+        app_name="document_analyzer",
+        agent=root_agent,
+        session_service=session_service
+    )
+    
+    # Create a session for this test
+    session = await session_service.create_session(
+        app_name="document_analyzer",
+        user_id="test_user"
+    )
+    
+    # Send a test prompt and stream the events
+    prompt_content = types.Content(
+        role="user",
+        parts=[types.Part(text="Analyze this document: [test content]")]
+    )
+    
+    final_result = None
+    async for event in runner.run_async(
+        user_id="test_user",
+        session_id=session.id,
+        new_message=prompt_content
+    ):
+        # Events are streamed as the agent processes
+        final_result = event
+    
+    # Print the final result
+    print("Agent response:", final_result)
+    return final_result
 
-Revenue: $1,200,000
-Expenses: $800,000
-Profit: $400,000 (33% margin)
-"""
+# Run the test
+asyncio.run(test_agent())
+```
 
-summary = summarize_content(document)
-print(f"Summary: {summary['summary']}")
+### Using the ADK Web Interface
 
-entities = extract_entities(document)
-print(f"Entities: {entities['entities']}")
+For interactive testing with the web UI:
 
-classification = classify_document(document)
-print(f"Type: {classification['primary_type']}")
+```bash
+# Start the ADK web server
+adk web
+
+# Visit http://localhost:8000 in your browser
+# Select "pubsub_processor" coordinator agent from the dropdown
+# Type your document analysis request
 ```
 
 ## Google Cloud Setup (Optional)
@@ -301,7 +382,7 @@ export GCP_PROJECT="my-agent-pipeline"
 
 Create `publisher.py`:
 
-```pythonpython
+```python
 import os
 import json
 from google.cloud import pubsub_v1
@@ -328,11 +409,30 @@ def publish_document(document_id: str, content: str):
     print(f"✅ Published {document_id} (message ID: {message_id})")
     return message_id
 
-# Example
+# Example: Publish various document types
 if __name__ == "__main__":
+    # Financial document
     publish_document(
-        "DOC-001",
-        "Q4 2024 Financial Report: Revenue $1.2M, Profit 33%"
+        "DOC-FINANCIAL-001",
+        "Q4 2024 Financial Report: Revenue $1.2M, Profit 33%, Growth 15%"
+    )
+    
+    # Technical document
+    publish_document(
+        "DOC-TECH-001",
+        "API Architecture: Using REST with PostgreSQL database, deployed on Kubernetes"
+    )
+    
+    # Sales document
+    publish_document(
+        "DOC-SALES-001",
+        "Sales Pipeline: Acme Corp $500K deal (negotiating), TechStart $250K (open)"
+    )
+    
+    # Marketing document
+    publish_document(
+        "DOC-MARKETING-001",
+        "Campaign Results: 45% engagement, 3.2% conversion, 100K reach, $5K cost"
     )
 ```
 
@@ -341,15 +441,27 @@ if __name__ == "__main__":
 python publisher.py
 ```
 
-### 5. Process Documents
+### 5. Process Documents with Coordinator Agent
 
-Create `subscriber.py`:
+The `subscriber.py` uses the coordinator agent to automatically route and analyze documents:
 
 ```python
 import os
+import sys
 import json
+import asyncio
+import logging
 from google.cloud import pubsub_v1
-from pubsub_agent.agent import summarize_content, extract_entities, classify_document
+from google.adk import Runner
+from google.adk.sessions import InMemorySessionService
+from google.genai import types
+from pubsub_agent.agent import root_agent
+
+# Suppress noisy debug messages from libraries
+logging.getLogger('google.auth').setLevel(logging.WARNING)
+logging.getLogger('google.cloud').setLevel(logging.WARNING)
+logging.getLogger('google.genai').setLevel(logging.WARNING)
+logging.getLogger('absl').setLevel(logging.ERROR)
 
 project_id = os.environ.get("GCP_PROJECT")
 subscription_id = "document-processor"
@@ -357,55 +469,112 @@ subscription_id = "document-processor"
 subscriber = pubsub_v1.SubscriberClient()
 subscription_path = subscriber.subscription_path(project_id, subscription_id)
 
+async def process_document_with_agent(document_id: str, content: str):
+    """Process document using the ADK root_agent coordinator."""
+    # Initialize runner with app_name, agent, and session service
+    session_service = InMemorySessionService()
+    runner = Runner(
+        app_name="pubsub_processor",
+        agent=root_agent,
+        session_service=session_service
+    )
+    
+    # Create a session for this document processing
+    session = await session_service.create_session(
+        app_name="pubsub_processor",
+        user_id="pubsub_subscriber"
+    )
+    
+    prompt = f"""Analyze this document and route it to the appropriate analyzer:
+
+Document ID: {document_id}
+
+Content:
+{content}
+
+Analyze the document type and extract relevant information."""
+    
+    # Create a proper Content object for the agent
+    message_content = types.Content(
+        role="user",
+        parts=[types.Part(text=prompt)]
+    )
+    
+    # Agent automatically routes based on document type
+    # Note: run_async returns AsyncGenerator, iterate through events
+    final_result = None
+    async for event in runner.run_async(
+        user_id="pubsub_subscriber",
+        session_id=session.id,
+        new_message=message_content
+    ):
+        final_result = event
+    
+    return final_result
+
 def process_message(message):
-    """Process Pub/Sub message."""
+    """Process Pub/Sub message with async agent processing."""
     try:
         data = json.loads(message.data.decode("utf-8"))
         document_id = data.get("document_id")
         content = data.get("content")
 
-        print(f"\n🔄 Processing {document_id}...")
+        print(f"\n� Processing: {document_id}")
 
-        # Use agent's tools
-        summary = summarize_content(content)
-        entities = extract_entities(content)
-        classification = classify_document(content)
+        # Run the async agent processing
+        result = asyncio.run(process_document_with_agent(document_id, content))
 
-        result = {
-            "document_id": document_id,
-            "summary": summary,
-            "entities": entities,
-            "classification": classification
-        }
-
-        print(f"✅ Completed {document_id}")
-        print(f"   Type: {classification['primary_type']}")
-        print(f"   Summary: {summary['summary'][:50]}...")
+        if result:
+            # Extract text from the event's content
+            response_text = ""
+            if hasattr(result, 'content') and result.content and result.content.parts:
+                for part in result.content.parts:
+                    if part.text:
+                        response_text += part.text
+            
+            if response_text:
+                # Clean up the response text for display
+                display_text = response_text.strip()[:200]
+                print(f"✅ Success: {document_id}")
+                print(f"   └─ {display_text}...")
+            else:
+                print(f"✅ Completed {document_id} (no text response)")
+        else:
+            print(f"✅ Completed {document_id}")
 
         # Acknowledge message (remove from queue)
         message.ack()
 
     except Exception as e:
-        print(f"❌ Error: {e}")
+        print(f"❌ Error: {document_id} - {str(e)[:100]}")
         message.nack()
 
 # Subscribe and process
+print("\n" + "="*70)
+print("🚀 Document Processing Coordinator")
+print("="*70)
+print(f"Subscription: {subscription_id}")
+print(f"Project:      {project_id or '(not set - local mode)'}")
+print(f"Agent:        root_agent (multi-analyzer coordinator)")
+print("="*70)
+print("Waiting for messages...\n")
+
 streaming_pull_future = subscriber.subscribe(
     subscription_path,
     callback=process_message
 )
 
-print(f"🚀 Processor running. Waiting for messages...")
-
 try:
     streaming_pull_future.result()
 except KeyboardInterrupt:
     streaming_pull_future.cancel()
-    print("\n✋ Stopped")
+    print("\n" + "="*70)
+    print("✋ Processor stopped")
+    print("="*70)
 ```
 
 ```bash
-# Terminal 1 - Subscribe
+# Terminal 1 - Subscribe and process
 python subscriber.py
 
 # Terminal 2 - Publish (in another terminal)
