@@ -1,0 +1,14 @@
+# PDF Generation Requirements
+# Install with: pip install -r scripts/requirements-pdf.txt
+
+# Markdown and frontmatter parsing
+python-frontmatter>=1.0.1
+markdown>=3.4.0
+
+# Syntax highlighting with Pygments
+Pygments>=2.15.0
+
+# PDF rendering with print optimization
+weasyprint>=60.0
+Pillow>=9.0.0
+
