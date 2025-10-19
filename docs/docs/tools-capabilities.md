@@ -668,10 +668,10 @@ def timed_tool(*args, **kwargs):
 
 ### 🎓 Hands-On Tutorials
 
-- **[Tutorial 02: Function Tools](../tutorial/02_function_tools.md)**: Build custom Python function tools
-- **[Tutorial 03: OpenAPI Tools](../tutorial/03_openapi_tools.md)**: Connect to REST APIs automatically
-- **[Tutorial 11: Built-in Tools & Grounding](../tutorial/11_built_in_tools_grounding.md)**: Use Google search, maps, and code execution
-- **[Tutorial 16: MCP Integration](../tutorial/16_mcp_integration.md)**: Standardized tool protocols
+- **[Tutorial 02: Function Tools](02_function_tools.md)**: Build custom Python function tools
+- **[Tutorial 03: OpenAPI Tools](03_openapi_tools.md)**: Connect to REST APIs automatically
+- **[Tutorial 11: Built-in Tools & Grounding](11_built_in_tools_grounding.md)**: Use Google search, maps, and code execution
+- **[Tutorial 16: MCP Integration](16_mcp_integration.md)**: Standardized tool protocols
 
 ## 🎯 Key Takeaways
 

@@ -255,8 +255,7 @@ Savings:  $7,000/month just from enabling compaction!
 
 💡 **Tip 3 - Verify it's working**: Monitor token growth in responses. You should
 see 50-60 tokens/turn after compaction kicks in, not the initial ~180/turn.
-Check [verification analysis](../../log/20251019_compaction_verification.md) for
-real session examples.
+See the implementation for real session examples.
 
 ### When NOT to Use It
 

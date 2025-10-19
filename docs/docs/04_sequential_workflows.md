@@ -498,7 +498,7 @@ And you understand how to build ANY sequential workflow!
 - **Code Workflows**: Write → Review → Refactor → Test
 - **Customer Service**: Classify → Route → Respond → Follow-up
 
-**🔗 Related**: Combine sequential workflows with [Tutorial 06: Multi-Agent Systems](../tutorial/06_multi_agent_systems.md) for complex agent hierarchies.
+**🔗 Related**: Combine sequential workflows with [Tutorial 06: Multi-Agent Systems](06_multi_agent_systems.md) for complex agent hierarchies.
 
 ## Next Steps
 

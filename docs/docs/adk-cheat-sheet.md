@@ -711,7 +711,7 @@ api_key = get_secret('api-key')
 - **Official Docs**: [google.github.io/adk-docs](https://google.github.io/adk-docs)
 - **API Reference**: [google.github.io/adk-docs/api](https://google.github.io/adk-docs/api)
 - **GitHub**: [github.com/google/adk-python](https://github.com/google/adk-python)
-- **Tutorials**: [Tutorial Index](../tutorial/)
+- **Tutorials**: [Tutorial Index]()
 - **Glossary**: [ADK Glossary](glossary.md)
 
 **Last Updated**: October 2025 | **ADK Version**: 1.15

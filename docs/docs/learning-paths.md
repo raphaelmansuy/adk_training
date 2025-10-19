@@ -7,7 +7,7 @@ sidebar_label: Learning Paths
 
 **🎯 Purpose**: Structured learning progression from ADK fundamentals to production mastery.
 
-**📚 Source of Truth**: [docs/tutorial/](https://github.com/raphaelmansuy/adk_training/tree/main/docs/tutorial/) + [tutorial_implementation/](https://github.com/raphaelmansuy/adk_training/tree/main/tutorial_implementation/) + [research/](https://github.com/raphaelmansuy/adk_training/tree/main/research/) (ADK 1.15)
+**📚 Source of Truth**: [do](https://github.com/raphaelmansuy/adk_training/tree/main/do) + [tutorial_implementation/](https://github.com/raphaelmansuy/adk_training/tree/main/tutorial_implementation/) + [research/](https://github.com/raphaelmansuy/adk_training/tree/main/research/) (ADK 1.15)
 
 ---
 
@@ -15,7 +15,7 @@ sidebar_label: Learning Paths
 
 ### Phase 1: Core Concepts (Days 1-3)
 
-**📖 Tutorials**: [01_hello_world_agent.md](../tutorial/01_hello_world_agent.md), [02_function_tools.md](../tutorial/02_function_tools.md)
+**📖 Tutorials**: [01_hello_world_agent.md](01_hello_world_agent.md), [02_function_tools.md](02_function_tools.md)
 
 **🎯 Goals**:
 
@@ -33,7 +33,7 @@ sidebar_label: Learning Paths
 
 ### Phase 2: Workflow Patterns (Days 4-7)
 
-**📖 Tutorials**: [03_openapi_tools.md](../tutorial/03_openapi_tools.md), [04_sequential_workflows.md](../tutorial/04_sequential_workflows.md), [05_parallel_processing.md](../tutorial/05_parallel_processing.md)
+**📖 Tutorials**: [03_openapi_tools.md](03_openapi_tools.md), [04_sequential_workflows.md](04_sequential_workflows.md), [05_parallel_processing.md](05_parallel_processing.md)
 
 **🎯 Goals**:
 
@@ -55,7 +55,7 @@ sidebar_label: Learning Paths
 
 ### Phase 3: Advanced Patterns (Days 8-14)
 
-**📖 Tutorials**: [06_multi_agent_systems.md](../tutorial/06_multi_agent_systems.md), [07_loop_agents.md](../tutorial/07_loop_agents.md), [08_state_memory.md](../tutorial/08_state_memory.md)
+**📖 Tutorials**: [06_multi_agent_systems.md](06_multi_agent_systems.md), [07_loop_agents.md](07_loop_agents.md), [08_state_memory.md](08_state_memory.md)
 
 **🎯 Goals**:
 
@@ -73,7 +73,7 @@ sidebar_label: Learning Paths
 
 ### Phase 4: Production Foundations (Days 15-21)
 
-**📖 Tutorials**: [09_callbacks_guardrails.md](../tutorial/09_callbacks_guardrails.md), [10_evaluation_testing.md](../tutorial/10_evaluation_testing.md), [11_built_in_tools_grounding.md](../tutorial/11_built_in_tools_grounding.md)
+**📖 Tutorials**: [09_callbacks_guardrails.md](09_callbacks_guardrails.md), [10_evaluation_testing.md](10_evaluation_testing.md), [11_built_in_tools_grounding.md](11_built_in_tools_grounding.md)
 
 **🎯 Goals**:
 
@@ -95,7 +95,7 @@ sidebar_label: Learning Paths
 
 ### Phase 5: Real-Time & Streaming (Days 22-28)
 
-**📖 Tutorials**: [12_planners_thinking.md](../tutorial/12_planners_thinking.md), [13_code_execution.md](../tutorial/13_code_execution.md), [14_streaming_sse.md](../tutorial/14_streaming_sse.md), [15_live_api_audio.md](../tutorial/15_live_api_audio.md)
+**📖 Tutorials**: [12_planners_thinking.md](12_planners_thinking.md), [13_code_execution.md](13_code_execution.md), [14_streaming_sse.md](14_streaming_sse.md), [15_live_api_audio.md](15_live_api_audio.md)
 
 **🎯 Goals**:
 
@@ -113,7 +113,7 @@ sidebar_label: Learning Paths
 
 ### Phase 6: Enterprise Integration (Days 29-42)
 
-**📖 Tutorials**: [16_mcp_integration.md](../tutorial/16_mcp_integration.md), [17_agent_to_agent.md](../tutorial/17_agent_to_agent.md), [18_events_observability.md](../tutorial/18_events_observability.md), [19_artifacts_files.md](../tutorial/19_artifacts_files.md)
+**📖 Tutorials**: [16_mcp_integration.md](16_mcp_integration.md), [17_agent_to_agent.md](17_agent_to_agent.md), [18_events_observability.md](18_events_observability.md), [19_artifacts_files.md](19_artifacts_files.md)
 
 **🎯 Goals**:
 
@@ -135,7 +135,7 @@ sidebar_label: Learning Paths
 
 ### Phase 7: Production Mastery (Days 43-56)
 
-**📖 Tutorials**: [20_yaml_configuration.md](../tutorial/20_yaml_configuration.md), [21_multimodal_image.md](../tutorial/21_multimodal_image.md), [22_model_selection.md](../tutorial/22_model_selection.md), [23_production_deployment.md](../tutorial/23_production_deployment.md)
+**📖 Tutorials**: [20_yaml_configuration.md](20_yaml_configuration.md), [21_multimodal_image.md](21_multimodal_image.md), [22_model_selection.md](22_model_selection.md), [23_production_deployment.md](23_production_deployment.md)
 
 **🎯 Goals**:
 
@@ -153,7 +153,7 @@ sidebar_label: Learning Paths
 
 ### Phase 8: Advanced Topics (Days 57+)
 
-**📖 Tutorials**: [24_advanced_observability.md](../tutorial/24_advanced_observability.md) through [34_pubsub_adk_integration.md](../tutorial/34_pubsub_adk_integration.md)
+**📖 Tutorials**: [24_advanced_observability.md](24_advanced_observability.md) through [34_pubsub_adk_integration.md](34_pubsub_adk_integration.md)
 
 **🎯 Goals**:
 
