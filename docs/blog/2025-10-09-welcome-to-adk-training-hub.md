@@ -70,7 +70,7 @@ All completed tutorials include:
 
 ## Getting Started
 
-1. **Start with the Basics**: Begin with [Tutorial 01: Hello World Agent](/docs/tutorial/01_hello_world_agent)
+1. **Start with the Basics**: Begin with [Tutorial 01: Hello World Agent](/docs/hello_world_agent)
 2. **Understand the Patterns**: Read the [Mental Models Overview](/docs/overview)
 3. **Follow the Learning Path**: Progress through tutorials in recommended order
 4. **Build Real Projects**: Use the working implementations as starting points
@@ -95,7 +95,7 @@ Google Agent Development Kit represents a paradigm shift in AI development:
 
 Whether you're building the next generation of AI applications or researching cutting-edge agent architectures, ADK Training Hub provides the knowledge and tools you need to succeed.
 
-**Ready to start building?** Head to the [tutorials section](/docs/tutorial/01_hello_world_agent) and begin your ADK journey today.
+**Ready to start building?** Head to the [tutorials section](/docs/hello_world_agent) and begin your ADK journey today.
 
 ## About the Creator
 
