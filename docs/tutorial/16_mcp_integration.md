@@ -716,6 +716,8 @@ for updates.
 ```javascript
 // custom-mcp-server.js
 import { Server } from "@modelcontextprotocol/sdk/server/index.js";
+
+import Comments from '@site/src/components/Comments';
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
 
 // Create server
@@ -2364,3 +2366,4 @@ You've mastered MCP integration and authentication for extended agent capabiliti
 
 **🎉 Tutorial 16 Complete!** You now know how to extend your agents with MCP tool
 servers. Continue to Tutorial 17 to learn about agent-to-agent communication.
+<Comments />

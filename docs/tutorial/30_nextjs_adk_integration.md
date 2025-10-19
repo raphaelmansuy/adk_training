@@ -567,6 +567,8 @@ First, create a theme toggle component. Create `components/ThemeToggle.tsx`:
 
 import { useEffect, useState } from "react";
 
+import Comments from '@site/src/components/Comments';
+
 export function ThemeToggle() {
   const [theme, setTheme] = useState<"light" | "dark">("light");
 
@@ -2932,3 +2934,4 @@ Master advanced features: multi-agent UI, custom protocols, enterprise patterns
 ---
 
 **Questions or feedback?** Open an issue on the [ADK Training Repository](https://github.com/google/adk-training).
+<Comments />

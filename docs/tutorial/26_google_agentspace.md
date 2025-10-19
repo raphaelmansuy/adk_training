@@ -27,6 +27,8 @@ learning_objectives:
 implementation_link: "https://github.com/raphaelmansuy/adk_training/tree/main/tutorial_implementation/tutorial26"
 ---
 
+import Comments from '@site/src/components/Comments';
+
 :::info Product Rebranding
 
 **Note**: Google AgentSpace was rebranded as **Gemini Enterprise** in late 2024. This tutorial uses the current product name and pricing (verified October 2025).
@@ -1115,3 +1117,4 @@ You've learned how to deploy and manage agents at enterprise scale with Google A
 ---
 
 **Congratulations!** You now understand how to scale ADK agents to enterprise production with Gemini Enterprise. You can deploy custom agents, use pre-built agents (Deep Research, NotebookLM, Idea Generation), manage governance with RBAC and compliance features, and monitor operations at scale through the Cloud Console.
+<Comments />

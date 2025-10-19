@@ -266,6 +266,8 @@ Example event messages:
 ```tsx
 import { CopilotChat } from "@copilotkit/react-ui";
 
+import Comments from '@site/src/components/Comments';
+
 // Drop-in chat UI with zero configuration
 <CopilotChat />;
 ```
@@ -1646,3 +1648,4 @@ You now have a comprehensive understanding of ADK UI integration. The next tutor
 ---
 
 **Questions or feedback?** Open an issue on the [ADK Training Repository](https://github.com/google/adk-training).
+<Comments />

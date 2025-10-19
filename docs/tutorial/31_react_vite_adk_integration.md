@@ -253,6 +253,8 @@ Update `vite.config.ts`:
 
 ```typescript
 import { defineConfig } from "vite";
+
+import Comments from '@site/src/components/Comments';
 import react from "@vitejs/plugin-react";
 
 // https://vitejs.dev/config/
@@ -1715,3 +1717,4 @@ Master advanced features: multi-agent UI, custom protocols
 ---
 
 **Questions or feedback?** Open an issue on the [ADK Training Repository](https://github.com/google/adk-training).
+<Comments />

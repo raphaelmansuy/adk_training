@@ -31,6 +31,8 @@ learning_objectives:
 implementation_link: "./../../tutorial_implementation/tutorial32"
 ---
 
+import Comments from '@site/src/components/Comments';
+
 # Tutorial 32: Streamlit + ADK - Build Data Analysis Apps in Pure Python
 
 **Time**: 45 minutes | **Level**: Intermediate | **Language**: Python only
@@ -2496,3 +2498,4 @@ Master advanced CopilotKit features for enterprise apps
 ---
 
 **Questions or feedback?** Open an issue on the [ADK Training Repository](https://github.com/google/adk-training).
+<Comments />

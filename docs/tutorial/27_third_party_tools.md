@@ -30,6 +30,8 @@ learning_objectives:
 implementation_link: "https://github.com/raphaelmansuy/adk_training/tree/main/tutorial_implementation/tutorial27"
 ---
 
+import Comments from '@site/src/components/Comments';
+
 # Tutorial 27: Third-Party Framework Tools Integration
 
 **Goal**: Integrate tools from LangChain and CrewAI frameworks into ADK agents
@@ -1207,3 +1209,4 @@ You've learned how to integrate tools from LangChain, CrewAI, and other framewor
 ---
 
 **Congratulations!** You can now leverage 100+ tools from LangChain and CrewAI in your ADK agents, and understand when to use tool-level vs. protocol-level integration.
+<Comments />

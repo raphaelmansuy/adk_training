@@ -31,6 +31,8 @@ learning_objectives:
 implementation_link: "https://github.com/raphaelmansuy/adk_training/tree/main/tutorial_implementation/tutorial25"
 ---
 
+import Comments from '@site/src/components/Comments';
+
 :::info API Verification
 
 **Source Verified**: Official ADK Python SDK v1.16.0+
@@ -1361,3 +1363,4 @@ You've completed the comprehensive ADK training series!
 5. **Optimize**: Continuously improve your agents
 
 **Congratulations on completing this exceptional high-stakes mission! You now possess comprehensive knowledge of the Google GenAI Agent Development Kit. Go build amazing agent systems!** 🚀
+<Comments />

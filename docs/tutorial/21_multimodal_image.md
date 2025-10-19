@@ -26,6 +26,8 @@ learning_objectives:
 implementation_link: "https://github.com/raphaelmansuy/adk_training/tree/main/tutorial_implementation/tutorial21"
 ---
 
+import Comments from '@site/src/components/Comments';
+
 :::tip WORKING IMPLEMENTATION AVAILABLE
 
 **A complete, tested implementation of this tutorial is available!**
@@ -1211,3 +1213,4 @@ make dev            # Start interactive agent
 ```
 
 :::
+<Comments />

@@ -28,6 +28,8 @@ learning_objectives:
 implementation_link: "https://github.com/raphaelmansuy/adk_training/tree/main/tutorial_implementation/tutorial18"
 ---
 
+import Comments from '@site/src/components/Comments';
+
 ## 🚀 Working Implementation
 
 A complete, tested implementation of this tutorial is available in the repository:
@@ -1064,3 +1066,4 @@ You've mastered events and observability:
 ---
 
 **🎉 Tutorial 18 Complete!** You now know how to implement comprehensive observability for production agents. Continue to Tutorial 19 to learn about artifact management.
+<Comments />

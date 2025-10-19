@@ -30,6 +30,8 @@ learning_objectives:
 implementation_link: "https://github.com/raphaelmansuy/adk_training/tree/main/tutorial_implementation/tutorial24"
 ---
 
+import Comments from '@site/src/components/Comments';
+
 ## 🚀 Working Implementation
 
 A complete, tested implementation of this tutorial is available in the repository:
@@ -929,3 +931,4 @@ make deploy  # Cloud Run with Cloud Trace enabled
 ---
 
 **🎉 Tutorial 24 Complete!** You now know advanced observability patterns. Continue to Tutorial 25 for best practices and the completion of the series!
+<Comments />

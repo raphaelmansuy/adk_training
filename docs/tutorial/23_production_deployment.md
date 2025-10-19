@@ -1,3 +1,5 @@
+import Comments from '@site/src/components/Comments';
+
 # 23. Production Deployment Strategies
 
 **Goal**: Understand ADK deployment options and implement production-grade agents with custom authentication, monitoring, and reliability patterns.
@@ -1152,3 +1154,5 @@ GET  /docs              # OpenAPI docs
 ---
 
 **🎉 Tutorial 23 Complete!** You're now ready to deploy agents to production. Proceed to Tutorial 24 for advanced observability.
+
+<Comments />

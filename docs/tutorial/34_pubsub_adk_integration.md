@@ -24,6 +24,8 @@ learning_objectives:
 implementation_link: "https://github.com/raphaelmansuy/adk_training/tree/main/tutorial_implementation/tutorial34"
 ---
 
+import Comments from '@site/src/components/Comments';
+
 
 This tutorial implements a real event-driven document processing system using
 Google Cloud Pub/Sub and ADK agents. It demonstrates a coordinator + specialist
@@ -662,3 +664,4 @@ millions of documents while maintaining structured, validated output.
 
 **Questions or feedback?** Open an issue on the
 [ADK Training Repository](https://github.com/raphaelmansuy/adk_training).
+<Comments />
