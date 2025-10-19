@@ -31,6 +31,8 @@ learning_objectives:
 implementation_link: "https://github.com/raphaelmansuy/adk_training/tree/main/tutorial_implementation/tutorial16"
 ---
 
+import Comments from '@site/src/components/Comments';
+
 # Tutorial 16: Model Context Protocol (MCP) Integration
 
 **Goal**: Integrate external tools and services into your agents using the Model
@@ -716,8 +718,6 @@ for updates.
 ```javascript
 // custom-mcp-server.js
 import { Server } from "@modelcontextprotocol/sdk/server/index.js";
-
-import Comments from '@site/src/components/Comments';
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
 
 // Create server
