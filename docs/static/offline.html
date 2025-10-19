@@ -1,0 +1,295 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#25c2a0" />
+    <meta name="description" content="You are offline. Some features may be unavailable." />
+    <title>Offline - ADK Training Hub</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      html,
+      body {
+        width: 100%;
+        height: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+          'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+          sans-serif;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        min-height: 100vh;
+      }
+
+      .offline-container {
+        background: white;
+        border-radius: 12px;
+        padding: 48px 32px;
+        max-width: 600px;
+        width: 90%;
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
+        text-align: center;
+        animation: slideUp 0.6s ease-out;
+      }
+
+      @keyframes slideUp {
+        from {
+          opacity: 0;
+          transform: translateY(30px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      .offline-icon {
+        font-size: 64px;
+        margin-bottom: 24px;
+        animation: pulse 2s infinite;
+      }
+
+      @keyframes pulse {
+        0%,
+        100% {
+          opacity: 1;
+        }
+        50% {
+          opacity: 0.6;
+        }
+      }
+
+      h1 {
+        color: #2d3748;
+        font-size: 28px;
+        margin-bottom: 16px;
+        font-weight: 700;
+      }
+
+      .subtitle {
+        color: #718096;
+        font-size: 18px;
+        margin-bottom: 32px;
+        line-height: 1.6;
+      }
+
+      .offline-info {
+        background: #edf2f7;
+        border-left: 4px solid #25c2a0;
+        padding: 16px;
+        margin-bottom: 32px;
+        border-radius: 4px;
+        text-align: left;
+      }
+
+      .offline-info p {
+        color: #2d3748;
+        font-size: 14px;
+        line-height: 1.8;
+        margin: 8px 0;
+      }
+
+      .offline-info strong {
+        color: #1a202c;
+      }
+
+      .action-buttons {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+        margin-bottom: 24px;
+      }
+
+      .btn {
+        padding: 12px 24px;
+        border-radius: 6px;
+        font-size: 16px;
+        font-weight: 600;
+        border: none;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        text-decoration: none;
+        display: inline-block;
+      }
+
+      .btn-primary {
+        background: #25c2a0;
+        color: white;
+      }
+
+      .btn-primary:hover {
+        background: #20b08f;
+        transform: translateY(-2px);
+        box-shadow: 0 8px 16px rgba(37, 194, 160, 0.3);
+      }
+
+      .btn-secondary {
+        background: #edf2f7;
+        color: #2d3748;
+      }
+
+      .btn-secondary:hover {
+        background: #e2e8f0;
+        transform: translateY(-2px);
+      }
+
+      .cached-content {
+        text-align: left;
+        margin-top: 32px;
+        padding-top: 32px;
+        border-top: 1px solid #e2e8f0;
+      }
+
+      .cached-content h2 {
+        color: #2d3748;
+        font-size: 16px;
+        margin-bottom: 16px;
+      }
+
+      .cached-list {
+        list-style: none;
+      }
+
+      .cached-list li {
+        padding: 8px 0;
+        color: #4a5568;
+        font-size: 14px;
+      }
+
+      .cached-list a {
+        color: #25c2a0;
+        text-decoration: none;
+      }
+
+      .cached-list a:hover {
+        text-decoration: underline;
+      }
+
+      .footer-note {
+        margin-top: 24px;
+        color: #a0aec0;
+        font-size: 12px;
+        line-height: 1.6;
+      }
+
+      @media (max-width: 640px) {
+        .offline-container {
+          padding: 32px 24px;
+        }
+
+        h1 {
+          font-size: 24px;
+        }
+
+        .subtitle {
+          font-size: 16px;
+        }
+
+        .offline-icon {
+          font-size: 48px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="offline-container">
+      <div class="offline-icon">📡</div>
+
+      <h1>You're Offline</h1>
+
+      <p class="subtitle">
+        It looks like you've lost your connection. But don't worry—you can still browse
+        previously visited content!
+      </p>
+
+      <div class="offline-info">
+        <p>
+          <strong>📚 What you can do:</strong>
+        </p>
+        <p>• Review previously cached tutorials and documentation</p>
+        <p>• Continue reading content you've already loaded</p>
+        <p>• Check your internet connection and try again</p>
+      </div>
+
+      <div class="action-buttons">
+        <button class="btn btn-primary" onclick="goHome()">Go to Home Page</button>
+        <button class="btn btn-secondary" onclick="goBack()">Go Back</button>
+      </div>
+
+      <div class="cached-content">
+        <h2>💾 Recently Cached Pages</h2>
+        <ul class="cached-list">
+          <li>
+            <a href="/adk_training/">
+              🏠 ADK Training Hub - Home
+            </a>
+          </li>
+          <li>
+            <a href="/adk_training/docs/hello_world_agent">
+              🚀 Tutorial 01 - Hello World Agent
+            </a>
+          </li>
+          <li>
+            <a href="/adk_training/docs/overview">
+              🧠 Mental Models &amp; Patterns
+            </a>
+          </li>
+          <li>
+            <a href="/adk_training/blog">
+              📝 Blog Posts
+            </a>
+          </li>
+        </ul>
+      </div>
+
+      <p class="footer-note">
+        💡 Tip: The ADK Training Hub is a Progressive Web App (PWA). You can install it on
+        your device for a faster, more app-like experience!
+      </p>
+    </div>
+
+    <script>
+      function goHome() {
+        window.location.href = '/adk_training/';
+      }
+
+      function goBack() {
+        if (window.history.length > 1) {
+          window.history.back();
+        } else {
+          goHome();
+        }
+      }
+
+      // Check if connection is restored
+      window.addEventListener('online', function () {
+        // Optional: Show a notification that connection is restored
+        console.log('Connection restored');
+      });
+
+      // Try to update the page in background if connection is restored
+      document.addEventListener('visibilitychange', function () {
+        if (!document.hidden) {
+          // Page became visible, try to reload
+          fetch(window.location.href, { method: 'HEAD', cache: 'no-store' })
+            .then(function () {
+              // Connection restored, offer to reload
+              console.log('Attempting to reload...');
+            })
+            .catch(function () {
+              // Still offline
+              console.log('Still offline');
+            });
+        }
+      });
+    </script>
+  </body>
+</html>
