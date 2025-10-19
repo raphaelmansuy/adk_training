@@ -343,6 +343,12 @@ GOOGLE_API_KEY=your_api_key_here
 
 ## Running the Agent
 
+### Demo in Action
+
+Here's what your Chuck Norris agent looks like in action:
+
+![Tutorial 03 Demo - OpenAPI Tools Chuck Norris Agent](/img/tutorial03_01cap.gif)
+
 ### Method 1: Web UI (Recommended)
 
 ```bash

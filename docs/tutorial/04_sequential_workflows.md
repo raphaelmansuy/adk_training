@@ -284,6 +284,12 @@ Final Output: formatted blog post
 
 ## Step 4: Run the Pipeline
 
+### Demo in Action
+
+Here's what your sequential workflow pipeline looks like in action:
+
+![Tutorial 04 Demo - Sequential Workflows Blog Pipeline](/img/tutorial04_cap01.gif)
+
 Navigate to parent directory and launch:
 
 ```bash
