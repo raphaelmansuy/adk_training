@@ -262,6 +262,84 @@ function FeaturesSection() {
   );
 }
 
+function TILSection() {
+  return (
+    <section className={styles.tilSection}>
+      <div className="container">
+        <Heading as="h2" className={styles.sectionTitle}>
+          Today I Learn (TIL)
+        </Heading>
+        <p className={styles.sectionSubtitle}>
+          Quick, focused learning articles on specific ADK features and patterns. 
+          5-10 minute reads with working implementations.
+        </p>
+        <div className={styles.tilGrid}>
+          <div className={styles.tilCard}>
+            <div className={styles.tilBadge}>New</div>
+            <div className={styles.tilDate}>Oct 19, 2025</div>
+            <h3 className={styles.tilTitle}>Context Compaction with ADK 1.16</h3>
+            <p className={styles.tilDescription}>
+              Automatically summarize conversation history to reduce token usage by 80-90%. 
+              Learn how LLM-based event compaction works and when to use it in production.
+            </p>
+            <div className={styles.tilMeta}>
+              <span className={styles.tilTag}>ADK 1.16+</span>
+              <span className={styles.tilTag}>8 min read</span>
+              <span className={styles.tilTag}>intermediate</span>
+            </div>
+            <div className={styles.tilActions}>
+              <Link className={styles.tilLink} to="/docs/til/til_context_compaction_20250119">
+                📖 Read Article
+              </Link>
+              <Link 
+                className={styles.tilCodeLink} 
+                to="https://github.com/raphaelmansuy/adk_training/tree/main/til_implementation/til_context_compaction_20250119"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                💻 View Code
+              </Link>
+            </div>
+          </div>
+
+          <div className={styles.tilCard}>
+            <div className={styles.tilBadgeComing}>Coming Soon</div>
+            <div className={styles.tilDate}>Suggested Topics</div>
+            <h3 className={styles.tilTitle}>Build Your Own TIL</h3>
+            <p className={styles.tilDescription}>
+              More TIL articles coming weekly! Suggested topics include Context Caching, 
+              Streaming Responses, Error Handling Patterns, Multi-Tool Best Practices, and more.
+            </p>
+            <div className={styles.tilMeta}>
+              <span className={styles.tilTag}>Community Driven</span>
+              <span className={styles.tilTag}>Open Source</span>
+            </div>
+            <div className={styles.tilActions}>
+              <Link className={styles.tilLink} to="/docs/til/TIL_TEMPLATE">
+                📝 TIL Template
+              </Link>
+              <Link 
+                className={styles.tilCodeLink}
+                to="https://github.com/raphaelmansuy/adk_training/issues/new?template=til-proposal.md"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                💡 Suggest Topic
+              </Link>
+            </div>
+          </div>
+        </div>
+        <div className={styles.tilFooter}>
+          <p>🎯 Each TIL includes a complete working implementation with tests</p>
+          <Link className={styles.tilViewAll} to="/docs/til/til_index">
+            View All TIL Articles →
+          </Link>
+        </div>
+      </div>
+    </section>
+  );
+}
+
 function CommunitySection() {
   return (
     <section className={styles.communitySection}>
@@ -448,6 +526,7 @@ export default function Home(): ReactNode {
         <StatsSection />
         <LearningPaths />
         <FeaturesSection />
+        <TILSection />
         {/* <TestimonialsSection /> - Commented out until we have real testimonials */}
         <CommunitySection />
         <GetStartedSection />

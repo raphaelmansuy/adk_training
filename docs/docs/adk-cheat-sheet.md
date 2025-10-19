@@ -1,165 +1,334 @@
 ---
 id: adk-cheat-sheet
-title: ADK Cheat Sheet - Quick Reference Guide
-description: Comprehensive cheat sheet for Google Agent Development Kit - commands, patterns, configurations, and best practices at your fingertips.
+title: ADK Cheat Sheet - Complete Reference
+description: >
+  Complete, actionable ADK reference with decision trees, copy-paste patterns,
+  state management, workflows, and production checklists. Everything you need.
 sidebar_label: ADK Cheat Sheet
 keywords:
-  [
-    "ADK cheat sheet",
-    "quick reference",
-    "commands",
-    "patterns",
-    "best practices",
-    "troubleshooting",
-  ]
+  - ADK cheat sheet
+  - quick reference
+  - agent patterns
+  - state management
+  - workflows
+  - best practices
+  - production deployment
 ---
 
-**🎯 Purpose**: Everything you need to know about Google ADK in one comprehensive reference.
+# ADK Cheat Sheet - Complete Reference
 
-**📚 Source of Truth**: [google/adk-python](https://github.com/google/adk-python) (ADK 1.15)
+**Source**: [google/adk-python](https://github.com/google/adk-python) (ADK 1.16+)
+
+**Last Updated**: October 2025
 
 ---
 
-## 🚀 Quick Start
+## 1️⃣ Agent Creation (5 Minutes)
 
-### Installation & Setup
-
-```bash
-# Install ADK
-pip install google-adk
-
-# Verify installation
-adk --version
-
-# Set up environment
-export GOOGLE_API_KEY="your-key-here"
-export GOOGLE_GENAI_USE_VERTEXAI=false  # or true for Vertex AI
-```
-
-### Basic Agent Creation
+### Minimal Agent
 
 ```python
 from google.adk.agents import Agent
 
-# Minimal agent
-agent = Agent(
-    name="my_agent",
+root_agent = Agent(
+    name="assistant",
     model="gemini-2.0-flash",
-    instruction="You are a helpful assistant.",
+    instruction="You are a helpful assistant."
 )
+```
 
-# Run agent
-from google.adk.runners import Runner
-runner = Runner()
-result = await runner.run_async("Hello!", agent=agent)
-print(result.content.parts[0].text)
+### Agent with Description
+
+```python
+root_agent = Agent(
+    name="calculator",
+    model="gemini-2.0-flash",
+    description="Performs mathematical calculations",
+    instruction="Use tools to compute calculations accurately."
+)
+```
+
+### Agent with Tools
+
+```python
+def add_numbers(a: int, b: int) -> dict:
+    """Add two numbers together."""
+    return {
+        "status": "success",
+        "result": a + b,
+        "report": f"{a} + {b} = {a + b}"
+    }
+
+root_agent = Agent(
+    name="calculator",
+    model="gemini-2.0-flash",
+    instruction="Help users with calculations.",
+    tools=[add_numbers]
+)
+```
+
+### Agent with Output Key (Auto-save)
+
+```python
+root_agent = Agent(
+    name="analyzer",
+    model="gemini-2.0-flash",
+    instruction="Analyze the provided data.",
+    output_key="analysis_result"  # Saves response to state
+)
 ```
 
 ---
 
-## 🛠️ Agent Patterns
+## 2️⃣ Running Agents
 
-### LLM Agent (Basic Conversational)
+### CLI (Web Interface - Recommended for Development)
 
-```python
-agent = Agent(
-    name="chatbot",
-    model="gemini-2.0-flash",
-    description="Conversational assistant",
-    instruction="Be helpful and friendly.",
-)
+```bash
+# Start dev UI with agent dropdown
+adk web
+
+# Select agent from dropdown UI on http://localhost:8000
 ```
 
-### Tool-Enabled Agent
+### Programmatic Execution
 
 ```python
-def calculate_sum(a: int, b: int) -> dict:
-    """Add two numbers."""
-    return {"status": "success", "result": a + b}
+from google.adk.runners import Runner
+from google.genai import types
 
-agent = Agent(
-    name="calculator",
-    model="gemini-2.0-flash",
-    instruction="Use tools to help users.",
-    tools=[calculate_sum],
-)
+async def run_agent_example():
+    runner = Runner(agent=root_agent)
+    session = await runner.session_service.create_session(
+        app_name="my_app",
+        user_id="user_123"
+    )
+
+    new_message = types.Content(
+        role="user",
+        parts=[types.Part(text="Hello!")]
+    )
+
+    async for event in runner.run_async(
+        user_id="user_123",
+        session_id=session.id,
+        new_message=new_message
+    ):
+        if event.content and event.content.parts:
+            print(event.content.parts[0].text)
 ```
 
-### Sequential Workflow
+---
+
+## 3️⃣ Workflow Decision Tree
+
+**Choose the right workflow type:**
+
+```
+┌─────────────────────────────────────────┐
+│   Multiple tasks needed?                │
+└────────────────┬────────────────────────┘
+                 │
+        ┌────────┴────────┐
+        │                 │
+    ❌ NO           ✅ YES
+        │                 │
+        │         ┌───────┴────────┐
+        │         │                │
+        │    Order matters?   No order
+        │     │         │      │
+        │   YES      NO    YES   NO
+        │     │       │     │     │
+        ▼     ▼       ▼     ▼     ▼
+     Agent  Need      Loop  Para-  Agent
+           Iter?   Agent  llel    w/
+                          Agent  tools
+                          ✅
+     ✅    NO ✅
+          │
+          YES
+          │
+          ▼
+        Loop
+        Agent
+        ✅
+```
+
+---
+
+## 4️⃣ Workflow Patterns
+
+### Sequential Agent (One After Another)
+
+**Use when**: Tasks MUST happen in order, each needs previous output
 
 ```python
 from google.adk.agents import SequentialAgent
 
-workflow = SequentialAgent(
-    name="content_pipeline",
-    sub_agents=[researcher, writer, editor],
-    description="Research → Write → Edit pipeline",
+research = Agent(
+    name="research",
+    instruction="Research the topic.",
+    output_key="findings"
 )
+
+write = Agent(
+    name="write",
+    instruction="Write article based on: {findings}",
+    output_key="article"
+)
+
+pipeline = SequentialAgent(
+    name="BlogPipeline",
+    sub_agents=[research, write],
+    description="Research then write blog"
+)
+
+root_agent = pipeline
 ```
 
-### Parallel Processing
+### Parallel Agent (Simultaneous Execution)
+
+**Use when**: Tasks are independent, speed matters
 
 ```python
 from google.adk.agents import ParallelAgent
 
-parallel_agent = ParallelAgent(
-    name="research_team",
-    sub_agents=[web_searcher, data_analyzer, expert_consultant],
-    description="Concurrent research tasks",
+search_flights = Agent(name="flights", instruction="...")
+search_hotels = Agent(name="hotels", instruction="...")
+find_activities = Agent(name="activities", instruction="...")
+
+travel_search = ParallelAgent(
+    name="TravelSearch",
+    sub_agents=[search_flights, search_hotels, find_activities],
+    description="Search flights, hotels, activities in parallel"
 )
+
+root_agent = travel_search
 ```
 
 ### Loop Agent (Iterative Refinement)
 
+**Use when**: Quality over speed, need iteration (write → critique → improve)
+
 ```python
 from google.adk.agents import LoopAgent
 
-refinement_agent = LoopAgent(
-    sub_agents=[writer, critic],
-    max_iterations=3,
-    description="Iterative content improvement",
+write_draft = Agent(name="writer", instruction="Write essay...")
+
+def exit_loop(tool_context):
+    """Call when done."""
+    tool_context.actions.end_of_agent = True
+    return {"status": "success"}
+
+critic = Agent(
+    name="critic",
+    instruction="Critique the draft. If perfect say: APPROVE",
+    output_key="feedback"
 )
+
+improve = Agent(
+    name="improver",
+    instruction="Improve based on feedback: {feedback}. "
+                "If feedback says APPROVE, call exit_loop.",
+    tools=[exit_loop],
+    output_key="improved_draft"
+)
+
+refinement_loop = LoopAgent(
+    sub_agents=[critic, improve],
+    max_iterations=5
+)
+
+root_agent = refinement_loop
+```
+
+### Fan-Out/Gather (Parallel + Sequential)
+
+**Use when**: Gather data from multiple sources, then synthesize
+
+```python
+from google.adk.agents import ParallelAgent, SequentialAgent
+
+# PARALLEL: Gather from multiple sources
+parallel_search = ParallelAgent(
+    name="DataGathering",
+    sub_agents=[web_searcher, database_lookup, api_query]
+)
+
+# SEQUENTIAL: Synthesize results
+synthesizer = Agent(
+    name="synthesizer",
+    instruction="Combine the gathered data into summary"
+)
+
+# COMBINE: Parallel gather + Sequential synthesis
+fan_out_gather = SequentialAgent(
+    name="FanOutGather",
+    sub_agents=[parallel_search, synthesizer]
+)
+
+root_agent = fan_out_gather
 ```
 
 ---
 
-## 🔧 Tool Patterns
+## 5️⃣ Tool Patterns
 
-### Function Tool
+### Function Tool (Most Common)
 
 ```python
-def my_tool(param: str, tool_context) -> dict:
+def search_database(query: str, tool_context) -> dict:
     """
-    Tool description for LLM.
+    Search database for information.
 
     Args:
-        param: Parameter description
+        query: Search query string
+
+    Returns:
+        Dict with status, report, and data
     """
     try:
-        # Your logic here
-        result = process_data(param)
+        results = db.search(query)
         return {
             "status": "success",
-            "report": "Human-readable success message",
-            "data": result
+            "report": f"Found {len(results)} results",
+            "data": results,
+            "result_count": len(results)
         }
     except Exception as e:
         return {
             "status": "error",
             "error": str(e),
-            "report": "Human-readable error message"
+            "report": f"Search failed: {str(e)}"
         }
+
+agent = Agent(..., tools=[search_database])
 ```
 
-### OpenAPI Tool
+### Tool Return Format (Standard)
+
+```python
+# ✅ CORRECT
+{
+    "status": "success" or "error",     # Required
+    "report": "Human-readable message",  # Required
+    "data": actual_result,               # Optional
+    "count": 42                          # Optional custom fields
+}
+
+# ❌ WRONG
+{
+    "result": "just_the_data",          # Missing status/report
+    "error_code": 500                   # Not structured
+}
+```
+
+### OpenAPI Tool (REST APIs)
 
 ```python
 from google.adk.tools.openapi_toolset import OpenAPIToolset
 
-# From OpenAPI spec URL
-toolset = OpenAPIToolset(spec="https://api.example.com/openapi.json")
-
-# With authentication
+# From OpenAPI spec
 toolset = OpenAPIToolset(
     spec="https://api.example.com/openapi.json",
     auth_config={"type": "bearer", "token": "your-token"}
@@ -168,244 +337,268 @@ toolset = OpenAPIToolset(
 agent = Agent(..., tools=[toolset])
 ```
 
-### MCP Tool
+### MCP Tool (Filesystem, Database)
 
 ```python
 from google.adk.tools.mcp_toolset import MCPToolset
 
 # Filesystem access
-filesystem_tools = MCPToolset(
-    server="filesystem",
-    path="/allowed/path"
-)
+fs_tools = MCPToolset(server="filesystem", path="/allowed/path")
 
-# Database access
+# PostgreSQL database
 db_tools = MCPToolset(
     server="postgresql",
-    connection_string="postgresql://..."
+    connection_string="postgresql://user:pass@host/db"
 )
 
-agent = Agent(..., tools=[filesystem_tools, db_tools])
+agent = Agent(..., tools=[fs_tools, db_tools])
 ```
 
 ### Built-in Tools
 
 ```python
 from google.adk.tools.google_search_tool import GoogleSearchTool
-from google.adk.tools.google_maps_grounding_tool import GoogleMapsGroundingTool
 from google.adk.tools.code_execution_tool import CodeExecutionTool
 
 agent = Agent(
     ...,
     tools=[
-        GoogleSearchTool(),
-        GoogleMapsGroundingTool(),
-        CodeExecutionTool(),
+        GoogleSearchTool(),        # Web search
+        CodeExecutionTool(),       # Python execution
     ]
 )
 ```
 
 ---
 
-## 📊 State Management
+## 6️⃣ State Management
 
-### State Scopes
+### State Scopes Quick Reference
 
-```python
-# Session state (current conversation)
-tool_context.state['current_topic'] = 'python'
+| Scope | Persistence | Use Case | Example |
+|-------|-------------|----------|---------|
+| `None` (session) | SessionService dependent | Current task | `state['counter'] = 5` |
+| `user:` | Persistent across sessions | User preferences | `state['user:language'] = 'en'` |
+| `app:` | Global, all users | App settings | `state['app:version'] = '1.0'` |
+| `temp:` | **Never persisted** | Temp calculations | `state['temp:score'] = 85` |
 
-# User state (persistent across sessions)
-tool_context.state['user:language'] = 'en'
-tool_context.state['user:difficulty'] = 'intermediate'
-
-# App state (global across all users)
-tool_context.state['app:version'] = '1.0'
-
-# Temp state (discarded after invocation)
-tool_context.state['temp:calculation'] = 42
-```
-
-### Output Key (Auto-save Response)
+### Using State in Tools
 
 ```python
-agent = Agent(
-    ...,
-    output_key="last_response"  # Auto-saves to state
-)
+def save_preference(language: str, tool_context) -> dict:
+    # Persistent user preference
+    tool_context.state['user:language'] = language
 
-# Response available in state
-response = tool_context.state['last_response']
-```
+    # Session-level data
+    tool_context.state['current_language'] = language
 
-### Memory Service
+    # Temporary data
+    tool_context.state['temp:calculation'] = len(language)
 
-```python
-from google.adk.memory import VertexAiMemoryBankService
+    return {"status": "success", "report": "Preferences saved"}
 
-memory_service = VertexAiMemoryBankService(
-    project="your-project",
-    location="us-central1",
-    agent_engine_id="123456789"
-)
+def get_user_history(tool_context) -> dict:
+    # Read user's persistent data
+    language = tool_context.state.get('user:language', 'en')
+    history = tool_context.state.get('user:history', [])
 
-runner = Runner(agent=agent, memory_service=memory_service)
-
-# Memory automatically saved after interactions
-```
-
----
-
-## 🌐 Environment Variables
-
-### Google Cloud (Vertex AI)
-
-```bash
-export GOOGLE_CLOUD_PROJECT="your-project-id"
-export GOOGLE_CLOUD_LOCATION="us-central1"
-export GOOGLE_GENAI_USE_VERTEXAI=true
-```
-
-### API Keys
-
-```bash
-export GOOGLE_API_KEY="your-gemini-api-key"
-export ANTHROPIC_API_KEY="your-claude-key"  # For other LLMs
-export OPENAI_API_KEY="your-gpt-key"       # For other LLMs
-```
-
-### Application Settings
-
-```bash
-export MODEL="gemini-2.0-flash"
-export TEMPERATURE="0.7"
-export MAX_TOKENS="2048"
-export LOG_LEVEL="INFO"
-```
-
----
-
-## 🚀 CLI Commands
-
-### Development
-
-```bash
-# Start web interface
-adk web
-
-# Start web interface with specific agent
-adk web my_agent
-
-# Run agent from CLI
-adk run my_agent
-
-# API server mode
-adk api_server
-adk api_server --port 8090
-```
-
-### Deployment
-
-```bash
-# Cloud Run deployment
-adk deploy cloud_run \
-  --project your-project \
-  --region us-central1 \
-  --service-name my-agent
-
-# Agent Engine deployment
-adk deploy agent_engine \
-  --project your-project \
-  --region us-central1 \
-  --agent-name my-production-agent
-
-# GKE deployment
-adk deploy gke \
-  --project your-project \
-  --cluster my-cluster \
-  --service-name my-agent
-```
-
-### Testing & Debugging
-
-```bash
-# Run tests
-pytest tests/
-
-# With coverage
-pytest tests/ --cov=src --cov-report=html
-
-# Specific test
-pytest tests/test_agent.py::TestAgent::test_basic_functionality
-
-# Debug mode
-adk web --debug
-```
-
----
-
-## 🔍 Debugging & Monitoring
-
-### Events Tab (Web UI)
-
-- View agent execution flow
-- Track state changes
-- Monitor tool calls
-- Debug errors
-
-### Logging
-
-```python
-import logging
-
-# Configure logging
-logging.basicConfig(level=logging.INFO)
-
-# In agent code
-logger = logging.getLogger(__name__)
-logger.info("Agent started", extra={"user_id": "123"})
-```
-
-### Callbacks for Monitoring
-
-```python
-def logging_callback(callback_context):
-    print(f"Agent: {callback_context.agent.name}")
-    print(f"Event: {callback_context.event_type}")
-    if callback_context.error:
-        print(f"Error: {callback_context.error}")
-
-agent = Agent(
-    ...,
-    before_agent_callback=logging_callback,
-    after_agent_callback=logging_callback,
-    before_tool_callback=logging_callback,
-    after_tool_callback=logging_callback,
-)
-```
-
-### Health Checks
-
-```python
-# Add to FastAPI server
-from fastapi import FastAPI
-
-app = FastAPI()
-
-@app.get("/health")
-async def health_check():
     return {
-        "status": "healthy",
-        "timestamp": "2025-01-01T00:00:00Z",
-        "version": "1.0.0"
+        "status": "success",
+        "report": f"User language: {language}",
+        "data": {"language": language, "history": history}
+    }
+```
+
+### State in Agent Instructions
+
+```python
+agent = Agent(
+    name="personalized_assistant",
+    instruction=(
+        "You are helping a user.\n"
+        "User's preferred language: {user:language}\n"
+        "Current topic: {current_topic}\n"
+        "\n"
+        "Respond in their preferred language and about the topic."
+    )
+)
+```
+
+### State Best Practices
+
+```python
+# ✅ DO: Use appropriate scopes
+state['user:preferences'] = {...}      # User-level persistent
+state['current_task'] = 'pending'       # Session-level
+state['temp:calculation'] = 42          # Temporary only
+
+# ❌ DON'T: Wrong scopes
+state['preferences'] = {...}            # Should be user:preferences
+state['user:temp_var'] = x              # Should be temp:temp_var
+
+# ✅ DO: Safe reads with defaults
+language = state.get('user:language', 'en')
+
+# ❌ DON'T: Unsafe access
+language = state['user:language']  # Fails if not set!
+
+# ✅ DO: Check before updating
+if 'user:history' not in state:
+    state['user:history'] = []
+state['user:history'].append(item)
+
+# ✅ DO: Use output_key for auto-save
+agent = Agent(..., output_key="task_result")
+# Response auto-saved to state['task_result']
+```
+
+---
+
+## 7️⃣ Common Patterns & Examples
+
+### Retry Logic
+
+```python
+from typing import Any
+import time
+
+def retry_api_call(
+    endpoint: str,
+    retries: int = 3,
+    tool_context = None
+) -> dict:
+    """Call API with retry logic."""
+    for attempt in range(retries):
+        try:
+            response = requests.get(endpoint, timeout=5)
+            response.raise_for_status()
+            return {
+                "status": "success",
+                "report": f"Success on attempt {attempt + 1}",
+                "data": response.json()
+            }
+        except requests.RequestException as e:
+            if attempt == retries - 1:
+                return {
+                    "status": "error",
+                    "error": str(e),
+                    "report": f"Failed after {retries} attempts"
+                }
+            time.sleep(2 ** attempt)  # Exponential backoff
+    return {"status": "error", "report": "Unknown error"}
+```
+
+### Caching
+
+```python
+from functools import lru_cache
+import time
+
+@lru_cache(maxsize=128)
+def get_cached_data(key: str) -> str:
+    """Cached data lookup."""
+    # Expensive operation
+    return fetch_from_api(key)
+
+def cache_operation(query: str, tool_context) -> dict:
+    """Tool with TTL-based caching."""
+    cache_key = f"search:{query}"
+    
+    # Check if in cache
+    if cache_key in tool_context.state:
+        cached_value, timestamp = tool_context.state[cache_key]
+        if time.time() - timestamp < 300:  # 5 minute TTL
+            return {
+                "status": "success",
+                "report": "Result from cache",
+                "data": cached_value
+            }
+    
+    # Fresh lookup
+    result = search_api(query)
+    tool_context.state[cache_key] = (result, time.time())
+    
+    return {
+        "status": "success",
+        "report": "Fresh result",
+        "data": result
+    }
+```
+
+### Validation
+
+```python
+def validate_input(user_input: str, tool_context) -> dict:
+    """Validate and sanitize user input."""
+    # Length check
+    if not user_input or len(user_input) > 1000:
+        return {
+            "status": "error",
+            "report": "Input must be 1-1000 characters"
+        }
+
+    # Check for injection patterns
+    dangerous_patterns = ['DROP TABLE', '<script>', '{{', ']]']
+    for pattern in dangerous_patterns:
+        if pattern.lower() in user_input.lower():
+            return {
+                "status": "error",
+                "report": "Input contains invalid patterns"
+            }
+
+    # Sanitize
+    clean_input = user_input.strip()
+
+    return {
+        "status": "success",
+        "report": "Input validated",
+        "data": clean_input
     }
 ```
 
 ---
 
-## 🧪 Testing Patterns
+## 8️⃣ Environment Setup
 
-### Unit Tests
+### Authentication
+
+```bash
+# Google AI Studio (Development)
+export GOOGLE_GENAI_USE_VERTEXAI=false
+export GOOGLE_API_KEY="your-api-key"
+
+# Vertex AI (Production)
+export GOOGLE_GENAI_USE_VERTEXAI=true
+export GOOGLE_CLOUD_PROJECT="your-project-id"
+export GOOGLE_CLOUD_LOCATION="us-central1"
+
+# Verify
+gcloud auth application-default login
+```
+
+### Model Selection
+
+```python
+# Fast responses, lower cost
+Agent(model="gemini-2.0-flash")
+
+# High quality, reasoning
+Agent(model="gemini-2.0-flash-thinking")
+
+# Previous generation
+Agent(model="gemini-1.5-flash")
+Agent(model="gemini-1.5-pro")
+
+# Other LLMs (if supported)
+Agent(model="claude-3.5-sonnet")  # Anthropic
+Agent(model="gpt-4-turbo")         # OpenAI
+```
+
+---
+
+## 9️⃣ Testing & Debugging
+
+### Unit Test Template
 
 ```python
 import pytest
@@ -415,303 +608,234 @@ from google.adk.runners import Runner
 class TestMyAgent:
     @pytest.fixture
     def agent(self):
-        return Agent(name="test_agent", model="gemini-2.0-flash")
+        return Agent(
+            name="test_agent",
+            model="gemini-2.0-flash",
+            instruction="Test instruction"
+        )
 
     @pytest.mark.asyncio
     async def test_basic_response(self, agent):
-        runner = Runner()
-        result = await runner.run_async("Hello", agent=agent)
-        assert "hello" in result.content.parts[0].text.lower()
+        runner = Runner(agent=agent)
+        session = await runner.session_service.create_session(
+            app_name="test_app",
+            user_id="test_user"
+        )
+        
+        from google.genai import types
+        message = types.Content(
+            role="user",
+            parts=[types.Part(text="Hello")]
+        )
+        
+        responses = []
+        async for event in runner.run_async(
+            user_id="test_user",
+            session_id=session.id,
+            new_message=message
+        ):
+            if event.content and event.content.parts:
+                responses.append(event.content.parts[0].text)
+        
+        assert len(responses) > 0
+        assert "hello" in responses[-1].lower()
 ```
 
-### Tool Testing
-
-```python
-def test_calculator_tool():
-    # Mock tool context
-    class MockContext:
-        def __init__(self):
-            self.state = {}
-
-    context = MockContext()
-    result = calculate_sum(2, 3, context)
-
-    assert result["status"] == "success"
-    assert result["result"] == 5
-```
-
-### Integration Tests
-
-```python
-@pytest.mark.asyncio
-async def test_full_workflow():
-    # Test complete agent workflows
-    runner = Runner()
-    result = await runner.run_async(
-        "Calculate 2 + 3 and explain the result",
-        agent=calculator_agent
-    )
-    # Assertions on final result
-```
-
----
-
-## 📈 Performance Optimization
-
-### Model Selection
-
-```python
-# Fast responses
-agent = Agent(model="gemini-2.0-flash")
-
-# High quality
-agent = Agent(model="gemini-2.0-flash-thinking")
-
-# Cost effective
-agent = Agent(model="gemini-1.5-flash")
-```
-
-### Parallel Execution
-
-```python
-# Use ParallelAgent for independent tasks
-parallel_agent = ParallelAgent(
-    sub_agents=[task1, task2, task3]  # Runs simultaneously
-)
-```
-
-### Caching
-
-```python
-# Implement caching in tools
-@cachetools.ttl_cache(maxsize=100, ttl=300)  # 5-minute cache
-def expensive_api_call(param):
-    # Expensive operation
-    return result
-```
-
-### Rate Limiting
-
-```python
-from fastapi import Request, HTTPException
-import time
-
-# Simple rate limiter
-request_counts = {}
-
-@app.middleware("http")
-async def rate_limit(request: Request, call_next):
-    client_ip = request.client.host
-    current_time = time.time()
-
-    # Reset every minute
-    if client_ip not in request_counts:
-        request_counts[client_ip] = (current_time, 0)
-
-    last_time, count = request_counts[client_ip]
-    if current_time - last_time > 60:
-        request_counts[client_ip] = (current_time, 1)
-    elif count >= 100:  # 100 requests per minute
-        raise HTTPException(status_code=429, detail="Rate limit exceeded")
-    else:
-        request_counts[client_ip] = (last_time, count + 1)
-
-    return await call_next(request)
-```
-
----
-
-## 🚨 Common Issues & Solutions
-
-### Issue: "State not persisting"
-
-**Solution**: Use persistent SessionService
-
-```python
-from google.adk.sessions import DatabaseSessionService
-runner = Runner(session_service=DatabaseSessionService())
-```
-
-### Issue: "Tool not being called"
-
-**Solution**: Check tool docstring and parameter names
-
-```python
-def my_tool(query: str) -> dict:  # Correct
-    """Search for information."""  # Descriptive docstring
-```
-
-### Issue: "Agent gives wrong answers"
-
-**Solution**: Improve instructions and add grounding
-
-```python
-agent = Agent(
-    instruction="Use tools for factual information. Always verify claims.",
-    tools=[GoogleSearchTool()]
-)
-```
-
-### Issue: "Slow responses"
-
-**Solution**: Use faster models and parallel processing
-
-```python
-agent = Agent(model="gemini-2.0-flash")  # Fast model
-# Or use ParallelAgent for concurrent tasks
-```
-
-### Issue: "Memory errors"
-
-**Solution**: Reduce context length and use streaming
-
-```python
-agent = Agent(
-    model="gemini-2.0-flash",
-    generate_content_config={"max_output_tokens": 1024}
-)
-```
-
-### Issue: "Authentication failures"
-
-**Solution**: Check environment variables and permissions
+### Run Tests
 
 ```bash
-export GOOGLE_API_KEY="your-key"
-export GOOGLE_CLOUD_PROJECT="your-project"
-gcloud auth application-default login
+# All tests
+pytest tests/ -v
+
+# With coverage
+pytest tests/ --cov=src --cov-report=html
+
+# Specific test
+pytest tests/test_agent.py::TestMyAgent::test_basic_response -v
+
+# Show print statements
+pytest tests/ -s
+```
+
+### Debugging in Web UI
+
+1. Start: `adk web`
+2. Open: `http://localhost:8000`
+3. Select agent from dropdown
+4. Type message
+5. Click "Events" tab to see:
+   - Agent execution flow
+   - Tool calls
+   - State changes
+   - Errors
+
+---
+
+## 🔟 CLI Commands
+
+### Development
+
+```bash
+adk web                    # Start dev UI
+adk web --debug           # Debug mode
+adk web --port 8080       # Custom port
+```
+
+### Deployment
+
+```bash
+# Cloud Run
+adk deploy cloud_run \
+  --project my-project \
+  --region us-central1 \
+  --service-name my-agent
+
+# Vertex AI Agent Engine
+adk deploy agent_engine \
+  --project my-project \
+  --region us-central1
+
+# GKE
+adk deploy gke \
+  --project my-project \
+  --cluster my-cluster
 ```
 
 ---
 
-## 🔒 Security Best Practices
+## 1️⃣1️⃣ Production Checklist
 
-### Input Validation
+### Before Deployment
 
-```python
-def safe_tool(user_input: str, tool_context) -> dict:
-    # Validate input
-    if not user_input or len(user_input) > 1000:
-        return {"status": "error", "report": "Invalid input"}
-
-    # Sanitize input
-    clean_input = sanitize(user_input)
-
-    # Process safely
-    return {"status": "success", "result": process(clean_input)}
-```
-
-### Guardrails
-
-```python
-def content_filter(context):
-    """Block inappropriate content."""
-    if contains_profanity(context.query):
-        context.block("Inappropriate content detected")
-    return context
-
-agent = Agent(
-    ...,
-    before_agent_callback=content_filter,
-)
-```
-
-### Secrets Management
-
-```python
-# Use Secret Manager for production
-from google.cloud import secretmanager
-
-def get_secret(secret_id: str) -> str:
-    client = secretmanager.SecretManagerServiceClient()
-    project = os.environ['GOOGLE_CLOUD_PROJECT']
-    name = f"projects/{project}/secrets/{secret_id}/versions/latest"
-    response = client.access_secret_version(request={"name": name})
-    return response.payload.data.decode('UTF-8')
-
-api_key = get_secret('api-key')
-```
-
----
-
-## 📋 Production Checklist
-
-### Pre-Deployment
-
-- [ ] All tests passing (unit, integration, evaluation)
-- [ ] Security review completed
-- [ ] Performance benchmarks meet SLAs
-- [ ] Error handling tested
+- [ ] All tests passing (100% critical)
+- [ ] Error handling for all tool failures
+- [ ] Input validation on all tools
 - [ ] Rate limiting configured
-- [ ] Monitoring and alerting setup
-- [ ] Secrets stored in Secret Manager
-- [ ] Documentation updated
+- [ ] Secrets in Secret Manager (NOT hardcoded)
+- [ ] Logging and monitoring setup
+- [ ] Performance benchmarks meet SLAs
+- [ ] Security review completed
+- [ ] Documentation complete
 
-### Production Deployment
+### During Deployment
 
 - [ ] Staged rollout (dev → staging → prod)
 - [ ] Health checks configured
 - [ ] Auto-scaling enabled
-- [ ] Backup and recovery tested
-- [ ] Rollback plan documented
+- [ ] Alerts configured
+- [ ] Rollback plan ready
 - [ ] On-call rotation scheduled
 
-### Post-Deployment
+### After Deployment
 
-- [ ] Monitor metrics for anomalies
-- [ ] Review error logs
+- [ ] Monitor error rates
+- [ ] Check response times
+- [ ] Review logs for issues
+- [ ] Measure SLI/SLO compliance
 - [ ] Collect user feedback
-- [ ] Measure against SLIs/SLOs
-- [ ] Document lessons learned
-- [ ] Plan optimization iterations
+- [ ] Plan optimizations
 
 ---
 
-## 🎯 Best Practices
+## 1️⃣2️⃣ Best Practices Checklists
 
 ### Agent Design
 
-- **Single Responsibility**: One agent, one clear purpose
-- **Descriptive Names**: `content_writer` not `agent1`
-- **Clear Instructions**: Specific, actionable prompts
-- **Error Handling**: Graceful failure with helpful messages
+- [ ] Single responsibility (one clear purpose)
+- [ ] Descriptive name (`content_writer` not `agent1`)
+- [ ] Clear, specific instructions (not vague)
+- [ ] Error handling with helpful messages
+- [ ] Appropriate model for task (balance speed/quality)
 
 ### Tool Development
 
-- **Structured Returns**: Always return `{"status": "success/error", "report": "...", "data": ...}`
-- **Docstrings**: Clear descriptions for LLM understanding
-- **Validation**: Check inputs and handle edge cases
-- **Idempotent**: Safe to call multiple times
+- [ ] Returns `{"status", "report", "data"}`
+- [ ] Docstring explains what tool does
+- [ ] Validates all inputs
+- [ ] Handles errors gracefully
+- [ ] Idempotent (safe to call multiple times)
 
 ### State Management
 
-- **Appropriate Scopes**: `user:` for preferences, `temp:` for calculations
-- **Descriptive Keys**: `user:preferred_language` not `lang`
-- **Default Values**: `state.get('key', 'default')`
-- **Clean Up**: Remove unnecessary state data
+- [ ] Uses correct scope (`user:`, `temp:`, `app:`)
+- [ ] Descriptive key names
+- [ ] Safe reads with `.get()` and defaults
+- [ ] Cleans up old/unused state
 
 ### Performance
 
-- **Parallel When Possible**: Use ParallelAgent for independent tasks
-- **Caching**: Cache expensive operations
-- **Streaming**: Use for long responses
-- **Model Selection**: Balance speed vs quality vs cost
+- [ ] Use `ParallelAgent` for independent tasks
+- [ ] Cache expensive operations
+- [ ] Use streaming for long outputs
+- [ ] Choose appropriate model (flash vs pro)
+- [ ] Monitor response times
 
 ### Security
 
-- **Input Validation**: Sanitize all user inputs
-- **Rate Limiting**: Prevent abuse
-- **Secrets**: Never hardcode credentials
-- **Monitoring**: Log suspicious activity
+- [ ] Validate all user inputs
+- [ ] Sanitize before use
+- [ ] Never hardcode secrets
+- [ ] Use Secret Manager for production
+- [ ] Log security events
 
 ---
 
-## 📚 Quick Links
+## 1️⃣3️⃣ Quick Troubleshooting
+
+| Problem | Solution |
+|---------|----------|
+| Agent doesn't use tool | Check docstring and parameter names |
+| State not persisting | Use persistent SessionService |
+| Slow responses | Use `gemini-2.0-flash`, enable caching |
+| Memory errors | Reduce context, use streaming |
+| Tool not found | Check `adk web` - make sure agent is discoverable |
+| Import errors | Run `pip install -e .` in tutorial dir |
+| Auth fails | Check `GOOGLE_API_KEY` and `GOOGLE_CLOUD_PROJECT` |
+
+---
+
+## 1️⃣4️⃣ Comparison Tables
+
+### Agent Types
+
+| Type | Execution | Use Case |
+|------|-----------|----------|
+| `Agent` | Single LLM call | Basic tasks, conversations |
+| `SequentialAgent` | One after another | Pipelines, step-by-step |
+| `ParallelAgent` | All simultaneous | Independent tasks, speed |
+| `LoopAgent` | Repeated until done | Refinement, iteration |
+
+### Tool Types
+
+| Type | Use | Complexity |
+|------|-----|-----------|
+| Function | Python functions | Low |
+| OpenAPI | REST APIs | Medium |
+| MCP | Standard protocol | High |
+| Built-in | Google tools | Low |
+
+### State Scopes
+
+| Scope | Persistence | Speed | Sharing |
+|-------|-------------|-------|---------|
+| None | Session-dependent | Fast | Agents in invocation |
+| `user:` | Across sessions | Medium | Per user |
+| `app:` | Global | Slow | All users |
+| `temp:` | Never | Fast | Invocation only |
+
+---
+
+## 1️⃣5️⃣ Quick Links & Resources
 
 - **Official Docs**: [google.github.io/adk-docs](https://google.github.io/adk-docs)
-- **API Reference**: [google.github.io/adk-docs/api](https://google.github.io/adk-docs/api)
 - **GitHub**: [github.com/google/adk-python](https://github.com/google/adk-python)
-- **Tutorials**: [Tutorial Index]()
+- **API Reference**: [google/adk-python API docs](https://github.com/google/adk-python)
+- **Tutorials**: [Tutorial Index](tutorial_index.md)
+- **Mental Models**: [Agent Architecture](agent-architecture.md)
 - **Glossary**: [ADK Glossary](glossary.md)
 
-**Last Updated**: October 2025 | **ADK Version**: 1.15
+---
+
+**Version**: ADK 1.16+ | **Updated**: October 2025
+
+**Pro Tip**: Bookmark this page! Use Ctrl/Cmd+F to search for patterns you need.
