@@ -101,13 +101,18 @@ const sidebars: SidebarsConfig = {
       items: [
         {
           type: 'doc',
-          id: 'til/til_template',
-          label: '📋 TIL Guidelines & Template',
+          id: 'til/til_index',
+          label: '� TIL Index',
         },
         {
           type: 'doc',
           id: 'til/til_context_compaction_20250119',
           label: 'TIL: Context Compaction (Oct 19)',
+        },
+        {
+          type: 'doc',
+          id: 'til/til_template',
+          label: '📋 TIL Guidelines & Template',
         },
       ],
     },
