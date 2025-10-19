@@ -29,6 +29,8 @@ learning_objectives:
 implementation_link: "https://github.com/raphaelmansuy/adk_training/tree/main/tutorial_implementation/tutorial31"
 ---
 
+import Comments from '@site/src/components/Comments';
+
 :::info CUSTOM IMPLEMENTATION
 
 **This tutorial demonstrates a custom React frontend implementation using AG-UI protocol directly, WITHOUT CopilotKit.**
@@ -253,8 +255,6 @@ Update `vite.config.ts`:
 
 ```typescript
 import { defineConfig } from "vite";
-
-import Comments from '@site/src/components/Comments';
 import react from "@vitejs/plugin-react";
 
 // https://vitejs.dev/config/

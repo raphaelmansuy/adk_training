@@ -3,6 +3,8 @@ id: ui_integration_intro
 status: "completed"
 ---
 
+import Comments from '@site/src/components/Comments';
+
 # Tutorial 29: Introduction to UI Integration & AG-UI Protocol
 
 :::tip Working Implementation Available
@@ -265,8 +267,6 @@ Example event messages:
 
 ```tsx
 import { CopilotChat } from "@copilotkit/react-ui";
-
-import Comments from '@site/src/components/Comments';
 
 // Drop-in chat UI with zero configuration
 <CopilotChat />;
