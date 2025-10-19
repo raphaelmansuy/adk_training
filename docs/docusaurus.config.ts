@@ -261,12 +261,12 @@ const config: Config = {
       'classic',
       {
         docs: {
-          path: path.resolve(__dirname, './tutorial'), // Absolute path to tutorial directory
+          path: path.resolve(__dirname, './docs'), // Absolute path to docs directory (contains til/ subdirectory)
           sidebarPath: './sidebars.ts',
           // Please change this to your repo.
           // Remove this to remove the "edit this page" links.
           editUrl:
-            'https://github.com/raphaelmansuy/adk_training/edit/main/docs/tutorial/',
+            'https://github.com/raphaelmansuy/adk_training/edit/main/docs/docs/',
         },
         blog: {
           showReadingTime: true,
