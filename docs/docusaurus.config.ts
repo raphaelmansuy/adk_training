@@ -75,7 +75,43 @@ const config: Config = {
 
   // Structured data for rich snippets
   headTags: [
-    // Performance optimizations for Core Web Vitals
+    // ========================================
+    // Mobile & Viewport Configuration (PWA)
+    // ========================================
+    {
+      tagName: 'meta',
+      attributes: {
+        name: 'viewport',
+        content: 'width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=yes, maximum-scale=5',
+      },
+    },
+    {
+      tagName: 'meta',
+      attributes: {
+        name: 'mobile-web-app-capable',
+        content: 'yes',
+      },
+    },
+    // ========================================
+    // Security Headers for PWA
+    // ========================================
+    {
+      tagName: 'meta',
+      attributes: {
+        'http-equiv': 'X-UA-Compatible',
+        content: 'IE=edge',
+      },
+    },
+    {
+      tagName: 'meta',
+      attributes: {
+        'http-equiv': 'Content-Security-Policy',
+        content: "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdn.jsdelivr.net https://www.google-analytics.com https://www.googletagmanager.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; img-src 'self' data: https:; font-src 'self' https://fonts.gstatic.com; connect-src 'self' https: wss:; frame-ancestors 'self'; base-uri 'self'; form-action 'self';",
+      },
+    },
+    // ========================================
+    // Performance Optimizations for Core Web Vitals
+    // ========================================
     {
       tagName: 'link',
       attributes: {
@@ -91,14 +127,36 @@ const config: Config = {
         crossorigin: 'anonymous',
       },
     },
+    {
+      tagName: 'link',
+      attributes: {
+        rel: 'dns-prefetch',
+        href: 'https://www.google-analytics.com',
+      },
+    },
+    {
+      tagName: 'link',
+      attributes: {
+        rel: 'dns-prefetch',
+        href: 'https://www.googletagmanager.com',
+      },
+    },
     // Preload critical resources
     {
       tagName: 'link',
       attributes: {
         rel: 'preload',
-        href: '/img/ADK-512-color.svg',
+        href: '/adk_training/img/ADK-512-color.svg',
         as: 'image',
         type: 'image/svg+xml',
+      },
+    },
+    {
+      tagName: 'link',
+      attributes: {
+        rel: 'prefetch',
+        href: '/adk_training/offline.html',
+        as: 'document',
       },
     },
     // Organization schema
@@ -293,23 +351,62 @@ const config: Config = {
           'appInstalled',
           'standalone',
           'queryString',
+          'mobile', // Also activate offline mode for mobile users
         ],
+        // Custom service worker for advanced caching strategies
+        swCustom: path.resolve(__dirname, 'src/swCustom.js'),
+        // Inject manifest into precache
+        injectManifestConfig: {
+          // Add offline page to precache
+          manifestTransforms: [
+            (manifestEntries) => {
+              const manifest = manifestEntries.map((entry) => ({
+                ...entry,
+              }));
+              // Ensure offline.html is always cached
+              manifest.push({
+                url: '/adk_training/offline.html',
+                revision: null,
+              });
+              return { manifest };
+            },
+          ],
+          // Modify URL prefix for baseUrl compatibility
+          modifyURLPrefix: {
+            '/': '/adk_training/',
+          },
+          // Pattern matching for precaching
+          globPatterns: [
+            '**/*.{js,css,html,png,jpg,jpeg,gif,svg,woff,woff2,ttf,eot,ico}',
+          ],
+          globIgnores: [
+            '**/node_modules/**/*',
+            '**/build/**/*',
+            '**/.git/**/*',
+          ],
+          // Maximum size for precached files
+          maximumFileSizeToCacheInBytes: 5 * 1024 * 1024, // 5MB
+        },
         pwaHead: [
+          // Favicon
           {
             tagName: 'link',
             rel: 'icon',
-            href: '/img/favicon.ico',
+            href: '/adk_training/img/favicon.ico',
           },
+          // Web App Manifest
           {
             tagName: 'link',
             rel: 'manifest',
-            href: '/manifest.json',
+            href: '/adk_training/manifest.json',
           },
+          // Theme color for browser UI
           {
             tagName: 'meta',
             name: 'theme-color',
             content: '#25c2a0',
           },
+          // iOS/Safari support
           {
             tagName: 'meta',
             name: 'apple-mobile-web-app-capable',
@@ -318,28 +415,58 @@ const config: Config = {
           {
             tagName: 'meta',
             name: 'apple-mobile-web-app-status-bar-style',
-            content: '#000',
+            content: 'black-translucent',
+          },
+          {
+            tagName: 'meta',
+            name: 'apple-mobile-web-app-title',
+            content: 'ADK Hub',
           },
           {
             tagName: 'link',
             rel: 'apple-touch-icon',
-            href: '/img/ADK-192.png',
+            href: '/adk_training/img/ADK-192.png',
           },
-          {
-            tagName: 'link',
-            rel: 'mask-icon',
-            href: '/img/favicon.ico',
-            color: '#25c2a0',
-          },
+          // Windows/Microsoft support
           {
             tagName: 'meta',
             name: 'msapplication-TileImage',
-            content: '/img/ADK-144.png',
+            content: '/adk_training/img/ADK-144.png',
           },
           {
             tagName: 'meta',
             name: 'msapplication-TileColor',
-            content: '#000',
+            content: '#25c2a0',
+          },
+          {
+            tagName: 'meta',
+            name: 'msapplication-config',
+            content: '/adk_training/browserconfig.xml',
+          },
+          // Mask icon for Safari (with color)
+          {
+            tagName: 'link',
+            rel: 'mask-icon',
+            href: '/adk_training/img/favicon.ico',
+            color: '#25c2a0',
+          },
+          // Mobile viewport optimization
+          {
+            tagName: 'meta',
+            name: 'viewport',
+            content: 'width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=yes',
+          },
+          // Disable tap highlight on mobile
+          {
+            tagName: 'meta',
+            name: 'apple-mobile-web-app-status-bar-style',
+            content: 'default',
+          },
+          // Support for standalone mode
+          {
+            tagName: 'meta',
+            name: 'mobile-web-app-capable',
+            content: 'yes',
           },
         ],
       },
