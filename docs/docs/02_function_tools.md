@@ -665,7 +665,7 @@ def calculate_monthly_savings(
     }
 
 
-parallel_finance_agent = Agent(
+root_agent = Agent(
     name="parallel_finance_assistant",
     model="gemini-2.5-flash",  # Supports parallel tool calling!
     description="Financial assistant with parallel computation",
