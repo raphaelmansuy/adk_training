@@ -102,12 +102,17 @@ const sidebars: SidebarsConfig = {
         {
           type: 'doc',
           id: 'til/til_index',
-          label: '� TIL Index',
+          label: '🎯 TIL Index',
         },
         {
           type: 'doc',
           id: 'til/til_context_compaction_20250119',
           label: 'TIL: Context Compaction (Oct 19)',
+        },
+        {
+          type: 'doc',
+          id: 'til/til_pause_resume_20251020',
+          label: 'TIL: Pause & Resume (Oct 20)',
         },
         {
           type: 'doc',

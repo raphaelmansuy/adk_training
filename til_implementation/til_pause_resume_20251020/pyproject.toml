@@ -1,0 +1,24 @@
+[build-system]
+requires = ["setuptools>=65.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "pause-resume-til"
+version = "0.1.0"
+description = "TIL: Pause and Resume Invocations with Google ADK 1.16.0 - Demonstrates agent state checkpointing and resumable invocations"
+requires-python = ">=3.9"
+dependencies = [
+    "google-adk>=1.16.0",
+    "python-dotenv>=1.0.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=7.0.0",
+    "pytest-cov>=4.0.0",
+    "pytest-asyncio>=0.21.0",
+]
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["pause_resume_agent*"]
