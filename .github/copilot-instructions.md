@@ -72,6 +72,79 @@ pytest tests/ -v        # Detailed test output
 make clean              # Remove cache files and artifacts
 ```
 
+## Today I Learn (TIL) - Quick Feature Learning
+
+### TIL Locations
+
+**Documentation**: `/docs/til/`
+- `til_index.md` - Index of all available TILs
+- `til_context_compaction_20250119.md` - Context Compaction feature
+- `til_pause_resume_20251020.md` - Pause and Resume Invocations
+- `TIL_TEMPLATE.md` - Guidelines for creating new TILs
+
+**Implementations**: `/til_implementation/`
+- `til_context_compaction_20250119/` - Full working example with tests
+- `til_pause_resume_20251020/` - Full working example with tests
+
+### TIL Structure
+
+Each TIL has two components:
+
+1. **Documentation** (`docs/til/til_[feature]_[YYYYMMDD].md`)
+   - Docusaurus frontmatter (id, title, sidebar_label, tags, etc.)
+   - Quick problem statement (why it matters)
+   - 5-10 minute read format
+   - Working code examples
+   - Key concepts (3-5 main ideas)
+   - Use cases and best practices
+   - Link to working implementation
+
+2. **Implementation** (`til_implementation/til_[feature]_[YYYYMMDD]/`)
+   - Agent module with root_agent export
+   - 3-5 tools demonstrating the feature
+   - Complete test suite (~19 tests)
+   - Makefile (setup, test, dev, demo, clean)
+   - README with detailed documentation
+   - `.env.example` for configuration
+
+### Creating a New TIL
+
+1. **Create Documentation**
+   - Copy `docs/til/TIL_TEMPLATE.md`
+   - Add frontmatter with proper metadata
+   - Write 5-10 minute focused guide
+   - Include working code examples
+   - Reference the implementation
+
+2. **Create Implementation**
+   - Create `til_implementation/til_[feature]_[YYYYMMDD]/`
+   - Use pattern from existing TILs (context compaction or pause/resume)
+   - Include agent, tools, tests, Makefile, README
+   - Ensure all tests pass
+
+3. **Register in Docusaurus**
+   - Add entry to `docs/sidebars.ts` under TIL category
+   - Update `docs/til/til_index.md` with new TIL info
+   - Set correct `sidebar_position` (incremental)
+
+### TIL Naming Convention
+
+- Files: `til_[feature_name]_[YYYYMMDD].md`
+- Directories: `til_[feature_name]_[YYYYMMDD]/`
+- IDs: `til_[feature_name]_[YYYYMMDD]`
+- Examples:
+  - `til_context_compaction_20250119.md`
+  - `til_pause_resume_20251020.md`
+
+### TIL Best Practices
+
+- **Quick reads**: Aim for 5-10 minutes (500-800 words in doc)
+- **Working examples**: Always include copy-paste ready code
+- **One feature focus**: Don't mix multiple features in one TIL
+- **Link to implementation**: Reference the working example
+- **Test coverage**: Implementation should have ~15-20 tests
+- **Dated**: Include publication date for reference tracking
+
 ## Integration Points
 
 ### UI Frameworks
