@@ -105,17 +105,23 @@ The state is:
 
 When resuming, the framework restores the previous state:
 
+```mermaid
+flowchart TD
+    A["Resume Request<br/>with invocation_id"] --> B["Retrieve Session<br/>& Invocation ID"]
+    B --> C["Load Previous<br/>Invocation Events"]
+    C --> D["Find Agent States<br/>in Event History"]
+    D --> E["Validate App<br/>Resumability"]
+    E --> F["Determine User Message<br/>New or Previous"]
+    F --> G["Restore Agent States<br/>to InvocationContext"]
+    G --> H["Resume Agent Execution<br/>from Last Checkpoint"]
+    H --> I["Continue Event Stream"]
 ```
-Resume Request with invocation_id
-        ↓
-Find Previous Events
-        ↓
-Extract agent_state from Checkpoint Event
-        ↓
-Restore to InvocationContext
-        ↓
-Agent Continues from Checkpoint
-```
+
+The restoration process:
+1. **Find** previous invocation events in session
+2. **Extract** agent_state from checkpoint events
+3. **Restore** to InvocationContext
+4. **Continue** agent execution with saved state
 
 #### 3. Configuration
 
@@ -157,44 +163,89 @@ If the system crashes after Stage 2, just resume with `invocation_id` from Stage
 
 **Scenario**: Agent prepares decision, waits for human approval
 
-```
-Agent: "I recommend action X"
-       [PAUSE - State saved]
-       ↓
-Human: Reviews and provides feedback
-       ↓
-resume(session, new_message=feedback, invocation_id=...)
-       ↓
-Agent: Continues execution with feedback
-       ↓
-Complete
+```mermaid
+sequenceDiagram
+    participant User
+    participant Agent
+    participant Storage as Session Storage
+    
+    User->>Agent: Start invocation
+    activate Agent
+    Agent->>Agent: Processing...
+    Note over Agent: Checkpoint: State saved
+    Agent->>Storage: Save Agent State
+    activate Storage
+    Agent-->>User: [PAUSE] Awaiting input
+    deactivate Agent
+    
+    User->>User: [Think & Provide Feedback]
+    
+    User->>Agent: Resume with feedback
+    activate Agent
+    Agent->>Storage: Retrieve saved state
+    Storage-->>Agent: State restored
+    deactivate Storage
+    Agent->>Agent: Continue from checkpoint
+    Agent-->>User: Resume execution
+    Agent->>Agent: Complete
+    deactivate Agent
+    User->>User: ✓ Done
 ```
 
 #### 3. Fault Tolerance
 
 **Scenario**: Production system with failures
 
-```
-Execution → Processing → [CHECKPOINT]
-                ↓
-         System Crash
-         (but state saved!)
-                ↓
-    [Recovery] Resume → Complete
+```mermaid
+timeline
+    title Fault Tolerance: System Failure and Recovery
+    section Normal Execution
+        Event 1: Agent initialization complete
+        Event 2: Processing data
+        Event 3: State checkpoint saved
+    section System Failure
+        ERROR: System crash detected
+        SAVED: All events preserved in storage
+        DOWN: System offline
+    section Recovery Phase
+        ALERT: Recovery initiated
+        RESTORED: Agent state loaded from checkpoint
+        RESUMED: Execution continues from last checkpoint
+        COMPLETE: Agent completes successfully
 ```
 
 #### 4. Multi-Agent Workflows
 
 **Scenario**: Sequential agent handoff with state preservation
 
-```
-Agent 1: Process initial request     [CHECKPOINT]
-              ↓
-Agent 2: Refine results              [CHECKPOINT]
-              ↓
-Agent 3: Generate final output       [CHECKPOINT]
-              ↓
-         Complete
+```mermaid
+flowchart TD
+    subgraph inv1["Invocation 1"]
+        direction LR
+        root["🚀 root_agent<br/>START"]
+        sub1["📋 sub_agent1<br/>Processing"]
+        chk1["💾 Checkpoint<br/>State Saved"]
+        pause["⏸️ PAUSE<br/>Handoff Point"]
+        root --> sub1 --> chk1 --> pause
+    end
+    
+    subgraph inv2["Invocation 2 Resume"]
+        direction LR
+        resume["▶️ RESUME<br/>Load State"]
+        sub1r["📋 sub_agent1<br/>Continued"]
+        sub2["🔄 sub_agent2<br/>Next Stage"]
+        done["✅ COMPLETE"]
+        resume --> sub1r --> sub2 --> done
+    end
+    
+    pause -.->|State Restored| resume
+    
+    style inv1 fill:#e8f4f8
+    style inv2 fill:#f0f8e8
+    style chk1 fill:#fff4e6
+    style pause fill:#ffe6e6
+    style resume fill:#f0e6ff
+    style done fill:#e6ffe6
 ```
 
 Each agent checkpoint includes full state for potential resumption.
@@ -257,33 +308,72 @@ await runner.run_async(
 
 ### Event Flow Example
 
-```
-Timeline of Events:
-─────────────────────────────────────────────
+Events flow through the session with checkpoints marked for potential resumption:
 
-1. User sends message
-   Event(author='user', content='...')
-   
-2. Agent processes
-   Event(author='agent', content='Processing...')
-   
-3. Agent checkpoint reached ✓
-   Event(author='agent', end_of_agent=True, agent_state={...})
-   
-   [PAUSE] - State saved to session storage
-   
-   [LATER] Resume request comes in
-   
-4. Restore checkpoint
-   Framework loads agent_state from Event 3
-   
-5. Agent continues
-   Event(author='agent', content='Continuing from checkpoint...')
-   
-6. Agent checkpoint reached ✓
-   Event(author='agent', end_of_agent=True, agent_state={...})
-   
-   Complete!
+```mermaid
+graph LR
+    A["👤 User Message<br/>author: user<br/>content: input"] --> B["🤖 Agent Processing<br/>author: agent<br/>content: ..."]
+    B --> C["✅ Checkpoint 1<br/>end_of_agent: True<br/>agent_state: {...}"]
+    C --> D["⏸️ PAUSE<br/>State Saved"]
+    D --> E["💾 Session Storage<br/>Events Persisted"]
+    
+    E --> F["⏳ Later...<br/>Resume Request<br/>+ invocation_id"]
+    
+    F --> G["📥 Restore State<br/>Load agent_state<br/>from Event 3"]
+    
+    G --> H["🔄 Resume Agent<br/>Execute from<br/>Checkpoint"]
+    
+    H --> I["✅ Checkpoint 2<br/>end_of_agent: True<br/>agent_state: {...}"]
+    
+    I --> J["✓ Complete"]
+    
+    style C fill:#fff4e6
+    style D fill:#ffe6e6
+    style E fill:#e8f4f8
+    style F fill:#f0e6ff
+    style G fill:#f0e6ff
+    style I fill:#e6ffe6
+    style J fill:#e6ffe6
+```
+
+Timeline visualization:
+
+```
+Session.events = [
+  Event 1: User Message (author: 'user')
+    content: { text: "Process this data" }
+    agent_state: None
+    |
+    |
+  Event 2: Agent Processing
+    |    author: 'agent'
+    |    content: { text: "Processing..." }
+    |
+    v
+  Event 3: Agent Complete [CHECKPOINT]
+    author: 'agent'
+    actions: { end_of_agent: True }
+    agent_state: { "state_key": "state_value" }
+    ---> SAVED IN SESSION STORAGE <---
+    |
+    | [PAUSE - Can Resume Here]
+    |
+    v
+  Event 4: Resume Point
+    [Later] Resumption with invocation_id
+    |
+    v
+  Event 5: Agent Continues
+    author: 'agent'
+    agent_state: RESTORED from Event 3
+    |
+    v
+  Event 6: Agent Complete [CHECKPOINT]
+    author: 'agent'
+    actions: { end_of_agent: True }
+    agent_state: { "agent2_state": "..." }
+    ---> SAVED IN SESSION STORAGE <---
+]
 ```
 
 ### Architecture Overview
@@ -349,6 +439,59 @@ async def test_pause_resume(resumable: bool):
    ```
 
 5. **Clean up old sessions** - Archive sessions to avoid accumulation over time
+
+### State Lifecycle
+
+Understanding the state transition flow is crucial for building reliable pause/resume workflows:
+
+```mermaid
+stateDiagram-v2
+    [*] --> Configure: App Initialization
+    
+    Configure --> Execution: Set is_resumable
+    
+    Execution --> Processing: Agent Starts
+    
+    Processing --> Checkpoint: Processing Complete
+    
+    Checkpoint --> SaveState: end_of_agent=True
+    
+    SaveState --> Decision: State Persisted
+    
+    Decision --> Continue: More Agents?
+    Decision --> Pause: [PAUSE]
+    
+    Continue --> Processing
+    
+    Pause --> Wait: State Saved<br/>Awaiting Resume
+    
+    Wait --> Resume: New Request<br/>with invocation_id
+    
+    Resume --> Restore: Load Session<br/>& Events
+    
+    Restore --> ExecuteFromCheckpoint: Restore State
+    
+    ExecuteFromCheckpoint --> Processing: Continue<br/>Execution
+    
+    Decision --> Complete: All Done
+    
+    Complete --> [*]: ✓ Finished
+    
+    note right of Checkpoint
+        Agent completes and emits
+        event with saved state
+    end note
+    
+    note right of Pause
+        State is now checkpointed
+        Can be resumed later
+    end note
+    
+    note right of Restore
+        Framework loads agent_state
+        from previous events
+    end note
+```
 
 ### Common Patterns
 
