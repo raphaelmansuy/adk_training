@@ -18,13 +18,16 @@
 ✅ Title: "TIL: Pause and Resume Invocations with Google ADK 1.16.0"
 
 ✅ Metadata Section:
+
 - Difficulty: Intermediate
 - Estimated Time: 10 minutes
 - Publication Date: 2025-10-20
 - ADK Version: 1.16.0+
-- Tags: til, quick-learn, pause-resume, adk-1.16, state-checkpointing, fault-tolerance, human-in-loop
+- Tags: til, quick-learn, pause-resume, adk-1.16, state-checkpointing,
+  fault-tolerance, human-in-loop
 
 ✅ Complete Document Content:
+
 - Why Pause/Resume matters
 - Quick example code
 - How it works (3 key concepts)
@@ -44,6 +47,7 @@
 ### Mermaid Diagrams Rendered
 
 ✅ 6 Mermaid diagrams successfully rendered to PNG:
+
 1. State Restoration Flow (93.4 KB)
 2. Human-in-the-Loop Approval (117.4 KB)
 3. Fault Tolerance Timeline (44.5 KB)
@@ -54,17 +58,20 @@
 ### Styling Features
 
 ✅ Professional Typography:
+
 - System font stack (SF Pro Display, Segoe UI, etc.)
 - Dracula syntax highlighting for code blocks
 - Proper margins (A4 size)
 - Header/footer with page numbers
 
 ✅ Code Highlighting:
+
 - 40+ language support via Pygments
 - Dracula color scheme for syntax highlighting
 - Proper font: JetBrains Mono, Fira Code, Monaco
 
 ✅ Layout Optimization:
+
 - Table of contents from headings
 - Proper page breaks
 - Professional metadata section
@@ -76,6 +83,7 @@
 **Rendering Engine**: WeasyPrint 60.0+
 
 **Features**:
+
 - YAML frontmatter parsing ✅
 - Markdown to HTML conversion ✅
 - Mermaid diagram rendering to PNG ✅
@@ -84,6 +92,7 @@
 - Professional PDF styling ✅
 
 **Metadata Preserved in PDF**:
+
 - Title
 - Author
 - Keywords
@@ -99,6 +108,7 @@
 ## Viewing the PDF
 
 The PDF can be opened with:
+
 - Adobe Reader
 - Mac Preview
 - Web browsers (Chrome, Firefox, Safari)
@@ -124,7 +134,9 @@ The PDF can be opened with:
 
 ```bash
 # Generate Context Compaction TIL
-python scripts/markdown_to_pdf.py docs/docs/til/til_context_compaction_20250119.md --output pdf/
+python scripts/markdown_to_pdf.py \
+  docs/docs/til/til_context_compaction_20250119.md \
+  --output pdf/
 
 # Generate all TILs at once
 python batch_generate_pdfs.py
@@ -133,6 +145,7 @@ python batch_generate_pdfs.py
 ### To Use in Documentation
 
 The PDF can now be:
+
 1. Shared directly with users
 2. Included in documentation packages
 3. Used for offline reference
