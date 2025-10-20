@@ -179,12 +179,34 @@ Every TIL includes:
 
 ---
 
+## Related Reading
+
+### Blog Posts on Related Topics
+
+Explore deeper insights and narrative discussions about patterns and features:
+
+- 📖 **[The Multi-Agent Pattern: Managing Complexity](/blog/multi-agent-pattern-complexity-management)**
+  - Understanding complex system structure (relates to pause/resume workflows)
+- 📖 **[Deploy AI Agents: Production Strategies](/blog/deploy-ai-agents)**
+  - Deployment with fault tolerance and state management
+- 📖 **[Multi-Agent Pattern Analysis](/blog/multi-agent-pattern-complexity-management)**
+  - Cognitive load management in agent systems
+
+**Recommended Learning Path:**
+
+1. 📚 Read the relevant TIL (5-10 minutes)
+2. 📖 Explore related blog post for deeper context (15-30 minutes)
+3. 🧪 Run the TIL working implementation (10-20 minutes)
+4. 📘 Dive into full tutorial for comprehensive mastery (1-2 hours)
+
+---
+
 ## Stay Updated
 
 ### RSS Feed
 
-Subscribe to the [ADK Training RSS Feed](/blog/rss.xml) to get notified when
-new TILs are published.
+Subscribe to the [ADK Training RSS Feed](/adk_training/blog/rss.xml)
+to get notified when new TILs are published.
 
 ### Social
 

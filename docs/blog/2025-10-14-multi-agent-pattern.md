@@ -1162,6 +1162,25 @@ costs.
 
 ---
 
+## See Also
+
+### Quick Reference
+
+**Related TILs for Implementation:**
+
+- **[TIL: Pause & Resume Invocations](/docs/til/til_pause_resume_20251020)** -
+  Implement state management in multi-agent handoffs
+- **[TIL: Context Compaction](/docs/til/til_context_compaction_20250119)** -
+  Manage token costs across orchestrator + sub-agent communication
+
+**Related Tutorials:**
+
+- [Tutorial 06: Multi-Agent Systems](/docs/multi_agent_systems)
+- [Tutorial 04: Sequential Workflows](/docs/sequential_workflows)
+- [Tutorial 05: Parallel Processing](/docs/parallel_processing)
+
+---
+
 *Learn more about multi-agent patterns in [Tutorial 06: Multi-Agent Systems](
 https://raphaelmansuy.github.io/adk_training/docs/multi_agent_systems) and
 [Tutorial 04: Sequential Workflows](
