@@ -52,6 +52,38 @@ Automatically summarize conversation history to reduce token usage in long-runni
 
 ---
 
+### Pause and Resume Invocations (October 20, 2025)
+
+**📖 [TIL: Pause and Resume Invocations with Google ADK 1.16](
+/docs/til/til_pause_resume_20251020)**
+
+Checkpoint agent state and resume execution later for long-running workflows,
+human-in-the-loop interactions, and fault tolerance.
+
+**Key Points:**
+
+- 🛡️ Fault tolerance - System failures don't cause work loss; resume from
+  checkpoint
+- 👤 Human-in-the-loop - Agent pauses to request feedback, then continues
+- ⏱️ Long-running tasks - Complex workflows can pause at natural break points
+- 🔄 Multi-agent handoff - State is preserved when handing off between agents
+- 💾 State persistence - Complete execution context is saved automatically
+
+**In 10 minutes you'll learn:**
+
+1. Why pause/resume invocations matter
+2. How state checkpointing works
+3. State restoration on resumption
+4. Configuration with ResumabilityConfig
+5. Real-world use cases (data processing, approvals, fault tolerance)
+6. Working implementation with tests
+
+**ADK Version:** 1.16+  
+**Complexity:** Intermediate  
+**Time:** ~10 minutes
+
+---
+
 ## Why TILs Instead of Full Tutorials?
 
 | Aspect | TIL | Full Tutorial |
@@ -79,6 +111,7 @@ Automatically summarize conversation history to reduce token usage in long-runni
 ## How to Use TILs
 
 ### For Learning
+
 1. Pick a TIL based on what you need today
 2. Read through (5-10 minutes)
 3. Run the working code example
@@ -86,12 +119,16 @@ Automatically summarize conversation history to reduce token usage in long-runni
 5. Check related tutorials for deeper learning
 
 ### For Teaching
+
 - Share specific TILs with your team when they need to learn a feature
 - Link in code reviews: "See TIL: [Feature Name]"
 - Combine multiple TILs to teach a workflow
 
 ### For Contributing
-Want to create a TIL? See the [TIL Template & Guidelines](/docs/til/til_template) for:
+
+Want to create a TIL? See the [TIL Template & Guidelines](
+/docs/til/til_template) for:
+
 - Structure and format
 - Best practices
 - Submission process
@@ -118,6 +155,7 @@ Every TIL includes:
 ## TIL vs Tutorials vs Blog Posts
 
 **TIL:**
+
 - Specific feature or pattern
 - 5-10 minutes
 - Working code example
@@ -125,6 +163,7 @@ Every TIL includes:
 - Dated for reference
 
 **Tutorial:**
+
 - Broader topic or workflow
 - 30-90 minutes
 - Full project structure
@@ -132,6 +171,7 @@ Every TIL includes:
 - Timeless reference
 
 **Blog Post:**
+
 - Opinion, experience, or analysis
 - Variable length
 - Personal insights
@@ -144,17 +184,20 @@ Every TIL includes:
 
 ### RSS Feed
 
-Subscribe to the [ADK Training RSS Feed](/blog/rss.xml) to get notified when new TILs are published.
+Subscribe to the [ADK Training RSS Feed](/blog/rss.xml) to get notified when
+new TILs are published.
 
 ### Social
 
 Follow for TIL announcements:
+
 - 🐦 [@raphaelmansuy on Twitter/X](https://twitter.com/raphaelmansuy)
 - 🐙 [GitHub Discussions](https://github.com/raphaelmansuy/adk_training/discussions)
 
 ### Weekly Schedule
 
 New TILs are typically published:
+
 - **Tuesdays** - Core ADK features
 - **Fridays** - Integration patterns and tips
 
@@ -167,6 +210,7 @@ Want to create a TIL for a feature you've learned about?
 **[📋 See TIL Template & Guidelines](/docs/til/til_template)**
 
 The template includes:
+
 - Complete structure
 - Best practices
 - DO's and DON'Ts
