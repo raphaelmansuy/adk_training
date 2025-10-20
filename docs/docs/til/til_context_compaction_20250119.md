@@ -3,7 +3,7 @@ id: til_context_compaction_20250119
 title: "TIL: Context Compaction with Google ADK 1.16"
 description: "Quick guide to using Context Compaction: automatically summarize conversation history to reduce token usage and costs with ADK 1.16's new LLM event summarization feature"
 sidebar_label: "TIL: Context Compaction (Oct 19)"
-sidebar_position: 2
+sidebar_position: 3
 tags: ["til", "quick-learn", "context-compaction", "adk-1.16", "token-optimization", "memory-management"]
 keywords: ["adk", "context compaction", "event summarization", "token reduction", "conversation memory"]
 status: "completed"
