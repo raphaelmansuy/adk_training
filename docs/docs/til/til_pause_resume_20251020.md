@@ -3,7 +3,7 @@ id: til_pause_resume_20251020
 title: "TIL: Pause and Resume Invocations with Google ADK 1.16.0"
 description: "Quick guide to using Pause and Resume Invocations: checkpoint agent state and resume execution later for long-running workflows, human-in-the-loop, and fault tolerance"
 sidebar_label: "TIL: Pause & Resume (Oct 20)"
-sidebar_position: 3
+sidebar_position: 2
 tags: ["til", "quick-learn", "pause-resume", "adk-1.16", "state-checkpointing", "fault-tolerance", "human-in-loop"]
 keywords: ["adk", "pause resume", "invocation", "checkpoint", "state persistence", "fault tolerance"]
 status: "completed"

@@ -3,7 +3,7 @@ id: til_template
 title: "TIL Template - How to Write a TIL"
 description: "Template and guidelines for creating 'Today I Learn' articles focused on specific ADK features"
 sidebar_label: "TIL Template"
-sidebar_position: 1
+sidebar_position: 4
 tags: ["template", "guidelines", "til"]
 status: "template"
 difficulty: "reference"
