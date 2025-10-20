@@ -25,44 +25,16 @@ Perfect for staying current with ADK features and integrating them into your pro
 
 ## Available TILs
 
-### Context Compaction (October 19, 2025)
-
-**📖 [TIL: Context Compaction with Google ADK 1.16](/docs/til/til_context_compaction_20250119)**
-
-Automatically summarize conversation history to reduce token usage in long-running agent conversations.
-
-**Key Points:**
-- 💰 Save 70-90% on tokens in long conversations
-- ⚡ Faster responses with smaller context
-- 🧠 Intelligent summarization preserves key information
-- 🔄 Perfect for 24-hour support agents and research assistants
-- ⏰ Completely automatic and transparent
-
-**In 8 minutes you'll learn:**
-1. Why context compaction matters
-2. How sliding window compaction works
-3. LLM-based summarization approach
-4. Configuration options
-5. Real-world cost savings
-6. Working implementation with tests
-
-**ADK Version:** 1.16+  
-**Complexity:** Intermediate  
-**Time:** ~8 minutes
-
----
-
 ### Pause and Resume Invocations (October 20, 2025)
 
-**📖 [TIL: Pause and Resume Invocations with Google ADK 1.16](
-/docs/til/til_pause_resume_20251020)**
+**📖 [TIL: Pause and Resume Invocations with Google ADK 1.16](/docs/til/til_pause_resume_20251020)**
 
 Checkpoint agent state and resume execution later for long-running workflows,
 human-in-the-loop interactions, and fault tolerance.
 
 **Key Points:**
 
-- 🛡️ Fault tolerance - System failures don't cause work loss; resume from
+- �️ Fault tolerance - System failures don't cause work loss; resume from
   checkpoint
 - 👤 Human-in-the-loop - Agent pauses to request feedback, then continues
 - ⏱️ Long-running tasks - Complex workflows can pause at natural break points
@@ -81,6 +53,33 @@ human-in-the-loop interactions, and fault tolerance.
 **ADK Version:** 1.16+  
 **Complexity:** Intermediate  
 **Time:** ~10 minutes
+
+---
+
+### Context Compaction (October 19, 2025)
+
+**📖 [TIL: Context Compaction with Google ADK 1.16](/docs/til/til_context_compaction_20250119)**
+
+Automatically summarize conversation history to reduce token usage in long-running agent conversations.
+
+**Key Points:**
+- � Save 70-90% on tokens in long conversations
+- ⚡ Faster responses with smaller context
+- 🧠 Intelligent summarization preserves key information
+- 🔄 Perfect for 24-hour support agents and research assistants
+- ⏰ Completely automatic and transparent
+
+**In 8 minutes you'll learn:**
+1. Why context compaction matters
+2. How sliding window compaction works
+3. LLM-based summarization approach
+4. Configuration options
+5. Real-world cost savings
+6. Working implementation with tests
+
+**ADK Version:** 1.16+  
+**Complexity:** Intermediate  
+**Time:** ~8 minutes
 
 ---
 
