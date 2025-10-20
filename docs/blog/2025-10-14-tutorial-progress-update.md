@@ -396,6 +396,23 @@ We're targeting **85% completion by November 2025**:
 - Production best practices guide
 - Performance optimization patterns
 
+---
+
+## See Also
+
+### Quick Reference for Getting Started
+
+**Today's Quick Lessons (TILs) complement the full tutorials:**
+
+- **[TIL: Pause & Resume Invocations](/docs/til/til_pause_resume_20251020)** -
+  Essential for Tutorial 08+ (state management and fault tolerance)
+- **[TIL: Context Compaction](/docs/til/til_context_compaction_20250119)** -
+  Complements Tutorial 08+ (memory optimization for long conversations)
+
+**All TILs** available at the [TIL Index](/docs/til/til_index)
+
+---
+
 ## Resources
 
 - **Documentation**: [https://raphaelmansuy.github.io/adk_training/](https://raphaelmansuy.github.io/adk_training/)
@@ -406,6 +423,7 @@ We're targeting **85% completion by November 2025**:
 ## Start Building Today
 
 Don't wait for all 34 tutorials. With 23 complete, you have everything you need to:
+
 - ✅ Build your first agent (Tutorial 01)
 - ✅ Create multi-agent systems (Tutorials 04-07)
 - ✅ Add production testing (Tutorial 10)

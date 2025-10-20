@@ -611,4 +611,23 @@ Pause and Resume Invocations in ADK v1.16.0 enable building **resilient, interac
 
 This feature is essential for production agents that need reliability, human oversight, or multi-step processing workflows.
 
+---
+
+## See Also
+
+### Related TILs
+
+- **[TIL: Context Compaction](/docs/til/til_context_compaction_20250119)** -
+  Reduce token usage in long-running paused workflows
+- **[Back to TIL Index](/docs/til/til_index)** - Browse all quick-learn guides
+
+### Related Blog Posts
+
+- **[Deploy AI Agents: Production Strategies](/blog/deploy-ai-agents)** -
+  Understand resilience and fault tolerance in production systems
+- **[The Multi-Agent Pattern: Managing Complexity](/blog/multi-agent-pattern-complexity-management)**
+  - Understand state management across complex workflows
+
+---
+
 <Comments />
