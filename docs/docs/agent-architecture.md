@@ -5,15 +5,29 @@ description: Understanding agent types, hierarchy patterns, and state vs memory 
 sidebar_label: Agent Architecture
 ---
 
-# Agent Architecture & State Management
+**Purpose**: Deep dive into agent composition, hierarchy patterns, and state
+management strategies in ADK.
 
-**🎯 Purpose**: Deep dive into agent composition, hierarchy patterns, and state management strategies in ADK.
+**Source of Truth**:
+[google/adk-python/src/google/adk/agents/](https://github.com/google/adk-python/tree/main/src/google/adk/agents/)
+(ADK 1.15) +
+[google/adk-python/src/google/adk/sessions/](https://github.com/google/adk-python/tree/main/src/google/adk/sessions/)
+(ADK 1.15)
 
-**📚 Source of Truth**: [google/adk-python/src/google/adk/agents/](https://github.com/google/adk-python/tree/main/src/google/adk/agents/) (ADK 1.15) + [google/adk-python/src/google/adk/sessions/](https://github.com/google/adk-python/tree/main/src/google/adk/sessions/) (ADK 1.15)
+## Table of Contents
 
----
+1. [Agent Types Deep Dive](#agent-types-deep-dive)
+   - LLM agents, workflow agents, and remote agents
+2. [Agent Hierarchy Model](#️-agent-hierarchy-model)
+   - Multi-level composition patterns
+3. [State vs Memory Management](#-state-vs-memory-management)
+   - Session, user, app, and temporary state
+4. [Agent Communication Patterns](#agent-communication-patterns)
+   - State transfer and data flow
+5. [Composition Best Practices](#-composition-best-practices)
+   - Design principles and optimization
 
-## 🤖 Agent Types Deep Dive
+## Agent Types Deep Dive
 
 ### LLM Agent (Thinker Pattern)
 
@@ -312,7 +326,7 @@ state['report_id'] = artifact_id
 
 ---
 
-## [FLOW] Agent Communication Patterns
+## Agent Communication Patterns
 
 ### Direct State Transfer
 

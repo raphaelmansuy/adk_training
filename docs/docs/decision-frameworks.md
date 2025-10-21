@@ -5,13 +5,31 @@ description: Strategic guidance for choosing the right agent patterns, tools, an
 sidebar_label: Decision Frameworks
 ---
 
-**🎯 Purpose**: Master strategic decision-making for ADK implementation - when to use which patterns, tools, and deployment strategies.
+**Purpose**: Master strategic decision-making for ADK implementation - when to
+use which patterns, tools, and deployment strategies.
 
-**📚 Source of Truth**: [google/adk-python/src/google/adk/](https://github.com/google/adk-python/tree/main/src/google/adk/) (ADK 1.15) + production case studies
+**Source of Truth**:
+[google/adk-python/src/google/adk/](https://github.com/google/adk-python/tree/main/src/google/adk/)
+(ADK 1.15) + production case studies
 
----
+## Table of Contents
 
-## [BRAIN] Pattern Selection Framework
+1. [Pattern Selection Framework](#pattern-selection-framework)
+   - Choose the right agent type
+2. [Tool Selection Matrix](#-tool-selection-matrix)
+   - Function vs OpenAPI vs MCP tools
+3. [Performance Optimization](#-performance-optimization)
+   - Cost vs speed trade-offs
+4. [Deployment Strategy](#-deployment-strategy-matrix)
+   - Choose local, cloud, or managed deployment
+5. [Security & Compliance](#-security--compliance)
+   - Protect agents and data
+6. [Monitoring & Observability](#-monitoring--observability)
+   - Track performance in production
+7. [Implementation Checklist](#-implementation-checklist)
+   - Step-by-step deployment guide
+
+## Pattern Selection Framework
 
 ### Agent Type Decision Tree
 

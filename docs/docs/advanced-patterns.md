@@ -5,13 +5,23 @@ description: Cutting-edge capabilities including streaming, MCP protocol, and ag
 sidebar_label: Advanced Patterns
 ---
 
-**🎯 Purpose**: Explore cutting-edge ADK capabilities for real-time interaction, standardized protocols, and distributed agent systems.
+**Purpose**: Explore cutting-edge ADK capabilities for real-time interaction,
+standardized protocols, and distributed agent systems.
 
-**📚 Source of Truth**: [google/adk-python/src/google/adk/agents/live_request_queue.py](https://github.com/google/adk-python/tree/main/src/google/adk/agents/live_request_queue.py) (ADK 1.15) + MCP/A2A implementations
+**Source of Truth**: 
+[google/adk-python/src/google/adk/agents/live_request_queue.py](https://github.com/google/adk-python/tree/main/src/google/adk/agents/live_request_queue.py) 
+(ADK 1.15) + MCP/A2A implementations
 
----
+## Table of Contents
 
-## 📺 Streaming & Real-Time Interaction
+1. [Streaming & Real-Time Interaction](#streaming--real-time-interaction)
+   - Live conversations with users
+2. [MCP Protocol](#-mcp-model-context-protocol)
+   - Universal tool standards
+3. [Agent-to-Agent Communication](#-a2a-agent-to-agent-communication)
+   - Distributed agent systems
+
+## Streaming & Real-Time Interaction
 
 ### SSE (Server-Sent Events)
 
@@ -149,4 +159,6 @@ agent = Agent(
 5. **Code Execution**: Built-in Python interpreter
 6. **Custom Planners**: Advanced reasoning strategies
 
-**🔗 Next**: Master [Decision Frameworks](decision-frameworks.md) for choosing the right patterns.
+**🔗 Next**: Master
+[Decision Frameworks](decision-frameworks.md) for choosing the right
+patterns.

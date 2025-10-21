@@ -5,15 +5,27 @@ description: Deploying ADK agents to production with observability, scaling, and
 sidebar_label: Production & Deployment
 ---
 
-# Production & Deployment
+**Purpose**: Deploy ADK agents to production with proper observability,
+scaling, and service management.
 
-**🎯 Purpose**: Deploy ADK agents to production with proper observability, scaling, and service management.
+**Source of Truth**:
+[google/adk-python/src/google/adk/cli/](https://github.com/google/adk-python/tree/main/src/google/adk/cli/)
+(ADK 1.15) + Official deployment guides
 
-**📚 Source of Truth**: [google/adk-python/src/google/adk/cli/](https://github.com/google/adk-python/tree/main/src/google/adk/cli/) (ADK 1.15) + Official deployment guides
+## Table of Contents
 
----
+1. [Deployment Environments](#deployment-environments)
+   - Choose local, serverless, managed, or custom
+2. [Observability & Monitoring](#observability--monitoring)
+   - Track, debug, and optimize production performance
+3. [Service Configuration](#-service-configuration)
+   - Storage, memory, and execution settings
+4. [Security & Best Practices](#-security--best-practices)
+   - Production safety and compliance
+5. [Performance Optimization](#-performance-optimization)
+   - Speed and cost optimization
 
-## 🏭 Deployment Environments
+## Deployment Environments
 
 ### Local Development
 
@@ -56,7 +68,7 @@ adk deploy gke agent_name
 
 ---
 
-## [CALLB] Observability & Monitoring
+## Observability & Monitoring
 
 ### Events (What Happened)
 

@@ -5,15 +5,46 @@ description: Quick reference for ADK patterns, configurations, and common implem
 sidebar_label: Reference Guide
 ---
 
-**🎯 Purpose**: Quick reference for common ADK patterns, configurations, and implementations.
+**Purpose**: Quick reference for common ADK patterns, configurations, and
+implementations.
 
-**📚 Source of Truth**: [google/adk-python/src/google/adk/](https://github.com/google/adk-python/tree/main/src/google/adk/) (ADK 1.15) + production examples
+**Source of Truth**:
+[google/adk-python/src/google/adk/](https://github.com/google/adk-python/tree/main/src/google/adk/)
+(ADK 1.15) + production examples
 
----
+## Table of Contents
 
-## 🤖 Agent Patterns
+1. [Agent Patterns](#agent-patterns)
+   - Build agents for different scenarios
+2. [Tool Implementations](#-tool-implementations)
+   - Integrate external services
+3. [State Management](#-state-management)
+   - Manage agent memory and data
+4. [Deployment Configurations](#-deployment-configurations)
+   - Deploy to production
+5. [Monitoring & Observability](#-monitoring--observability)
+   - Track agent performance
+6. [Testing Patterns](#-testing-patterns)
+   - Test agent behavior
+7. [Configuration Templates](#️-configuration-templates)
+   - Ready-to-use config
+8. [Common Issues & Solutions](#-common-issues--solutions)
+   - Troubleshoot problems
+9. [API Reference](#-api-reference)
+   - Core classes and methods
+10. [Quick Start Templates](#-quick-start-templates)
+    - Copy-paste examples
+11. [Additional Resources](#-additional-resources)
+    - Learn more
 
-### Basic LLM Agent
+Use this guide to find code patterns you need for common ADK tasks. Each
+section includes ready-to-use code examples.
+
+## Agent Patterns
+
+### Problem: Build an agent that takes user input and generates responses
+
+### Solution
 
 ```python
 from google.adk.agents import Agent

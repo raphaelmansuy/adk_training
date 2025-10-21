@@ -4,6 +4,7 @@
 
 This is a comprehensive training repository for Google Agent Development Kit (ADK), featuring 28 tutorials, mental models, research, and automated testing. The project teaches agent development from first principles to production deployment.
 
+
 ## Architecture Patterns
 
 ### Agent Hierarchy & Composition
@@ -345,3 +346,8 @@ help(SamplingCapability)
 - When generating multi-line shell commands using heredocs (e.g., << 'EOF' ... EOF), always ensure the closing EOF delimiter starts exactly at column 0 (no leading spaces or tabs). For indented code blocks, use <<- 'EOF' instead, and indent content/delimiter with tabs only (not spaces). Review and unindent the delimiter before suggesting execution.
 
 - VERY Important: Avoid using heredoc (<< 'EOF' ... EOF or similar) in shell commands for writing multi-line files (e.g., cat > file.py << 'EOF'), as it often causes terminal hangs/crashes in VSCode due to indentation issues. Instead, suggest pasting code directly into the editor, using echo 'multi-line code' | sed 's/^/  /' > file.py for simple cases, or tools like printf for escaped multi-line output.
+
+
+## Recommendation you must follow
+
+- Always read the documentation about how to write good documentation: docs/docs/skills/how_to_write_good_documentation.md and ensure that all your documentations follow the guidelines.
