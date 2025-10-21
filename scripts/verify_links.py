@@ -39,6 +39,7 @@ import time
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from pathlib import Path
 from typing import Dict, List, Tuple, Set, Optional
+from urllib.parse import urlparse
 
 try:
     from bs4 import BeautifulSoup
@@ -339,13 +340,38 @@ class LinkVerifier:
                 self.stats['skipped_links'] += 1
                 continue
 
+            # Determine if link is external. However, some absolute URLs
+            # point to the same published site (for example
+            # https://raphaelmansuy.github.io/adk_training/docs/01_hello_world_agent)
+            # which should be verified against the local build. Detect and
+            # treat those as internal links.
             is_external = self.is_external_link(href)
+            treated_as_internal = False
 
             if is_external:
-                self.stats['external_links'] += 1
-                if not self.skip_external:
-                    external_links_to_check.append((href, source_file))
-            else:
+                try:
+                    parsed = urlparse(href)
+                    # If the URL points to a github.io site for this repo and
+                    # its path starts with /adk_training, treat as internal
+                    if parsed.netloc.endswith('github.io') and parsed.path.startswith('/adk_training'):
+                        # Use the path part as an internal href
+                        href_path = parsed.path
+                        treated_as_internal = True
+                        self.stats['internal_links'] += 1
+                        if not self.only_external:
+                            self._verify_internal_link(href_path, source_file)
+                    else:
+                        # Real external URL
+                        self.stats['external_links'] += 1
+                        if not self.skip_external:
+                            external_links_to_check.append((href, source_file))
+                except Exception:
+                    # Fallback to treating as external
+                    self.stats['external_links'] += 1
+                    if not self.skip_external:
+                        external_links_to_check.append((href, source_file))
+
+            if (not is_external) and (not treated_as_internal):
                 self.stats['internal_links'] += 1
                 if not self.only_external:
                     self._verify_internal_link(href, source_file)

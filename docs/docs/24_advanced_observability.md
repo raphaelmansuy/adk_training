@@ -36,7 +36,7 @@ import Comments from '@site/src/components/Comments';
 
 A complete, tested implementation of this tutorial is available in the repository:
 
-**[View Tutorial 24 Implementation →](../../tutorial_implementation/tutorial24/)**
+ **[View Tutorial 24 Implementation →](https://github.com/raphaelmansuy/adk_training/tree/main/tutorial_implementation/tutorial24/)**
 
 The implementation includes:
 
@@ -923,7 +923,7 @@ make deploy  # Cloud Run with Cloud Trace enabled
 
 **Resources**:
 
-- [Tutorial Implementation](../../tutorial_implementation/tutorial24)
+- [Tutorial Implementation](https://github.com/raphaelmansuy/adk_training/tree/main/tutorial_implementation/tutorial24)
 - [ADK Plugin Documentation](https://github.com/google/adk-python)
 - [Cloud Trace](https://cloud.google.com/trace/docs)
 - [Observability Best Practices](https://cloud.google.com/architecture/observability)
