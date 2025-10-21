@@ -3,13 +3,11 @@ id: til_template
 title: "TIL Template - How to Write a TIL"
 description: "Template and guidelines for creating 'Today I Learn' articles focused on specific ADK features"
 sidebar_label: "TIL Template"
-sidebar_position: 4
+sidebar_position: 1
 tags: ["template", "guidelines", "til"]
 status: "template"
 difficulty: "reference"
 ---
-
-import Comments from '@site/src/components/Comments';
 
 # Today I Learn (TIL) Format Guide
 
@@ -112,20 +110,20 @@ code_example_here()
 
 See the full implementation with tests and configuration:
 
-\`\`\`bash
+```bash
 cd til_implementation/til_feature_name_20250119/
 make setup
 make test  # Run tests
 make dev   # Launch development UI
-\`\`\`
+```
 
 **Files included**:
 
-- \`agent.py\` - Complete working implementation
-- \`tests/\` - Comprehensive test suite
-- \`Makefile\` - Standard development commands
-- \`requirements.txt\` - Dependencies
-- \`.env.example\` - Configuration template
+- `agent.py` - Complete working implementation
+- `tests/` - Comprehensive test suite
+- `Makefile` - Standard development commands
+- `requirements.txt` - Dependencies
+- `.env.example` - Configuration template
 
 ## Configuration Reference
 
@@ -162,10 +160,10 @@ Key parameters for [feature]:
 
 Quick validation that everything works:
 
-\`\`\`bash
+```bash
 # From til_implementation/til_feature_name_20250119/
 make test
-\`\`\`
+```
 
 You should see all tests passing ✅
 

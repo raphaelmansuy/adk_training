@@ -76,21 +76,23 @@ make clean              # Remove cache files and artifacts
 
 ### TIL Locations
 
-**Documentation**: `/docs/til/`
+**Documentation**: `/docs/docs/til/`
 - `til_index.md` - Index of all available TILs
 - `til_context_compaction_20250119.md` - Context Compaction feature
 - `til_pause_resume_20251020.md` - Pause and Resume Invocations
+- `til_rubric_based_tool_use_quality_20251021.md` - Tool Use Quality evaluation
 - `TIL_TEMPLATE.md` - Guidelines for creating new TILs
 
 **Implementations**: `/til_implementation/`
 - `til_context_compaction_20250119/` - Full working example with tests
 - `til_pause_resume_20251020/` - Full working example with tests
+- `til_rubric_based_tool_use_quality_20251021/` - Full working example with tests
 
 ### TIL Structure
 
 Each TIL has two components:
 
-1. **Documentation** (`docs/til/til_[feature]_[YYYYMMDD].md`)
+1. **Documentation** (`docs/docs/til/til_[feature]_[YYYYMMDD].md`)
    - Docusaurus frontmatter (id, title, sidebar_label, tags, etc.)
    - Quick problem statement (why it matters)
    - 5-10 minute read format
@@ -110,7 +112,7 @@ Each TIL has two components:
 ### Creating a New TIL
 
 1. **Create Documentation**
-   - Copy `docs/til/TIL_TEMPLATE.md`
+   - Copy `docs/docs/til/TIL_TEMPLATE.md`
    - Add frontmatter with proper metadata
    - Write 5-10 minute focused guide
    - Include working code examples
@@ -124,7 +126,7 @@ Each TIL has two components:
 
 3. **Register in Docusaurus**
    - Add entry to `docs/sidebars.ts` under TIL category
-   - Update `docs/til/til_index.md` with new TIL info
+   - Update `docs/docs/til/til_index.md` with new TIL info
    - Set correct `sidebar_position` (incremental)
 
 ### TIL Naming Convention
