@@ -89,12 +89,12 @@ async def run_evaluation():
     # 2. Runs it against test cases in evalset.json
     # 3. LLM judge evaluates tool sequences against rubrics
     # 4. Reports pass/fail with scores
-    
+
     results = await AgentEvaluator.evaluate(
         agent_module="tool_use_evaluator",
         eval_dataset_file_path_or_dir="tool_use_quality.evalset.json",
     )
-    
+
     # Results include:
     # - Overall score (0.0-1.0)
     # - Per-rubric scores
@@ -114,6 +114,7 @@ asyncio.run(run_evaluation())
 5. ✅ Returns scores and detailed comparison
 
 **Expected output:**
+
 ```
 Summary: `EvalStatus.FAILED` for Metric: `rubric_based_tool_use_quality_v1`.
 Expected threshold: `0.7`, actual value: `0.25`.
@@ -138,19 +139,19 @@ Unlike final response evaluation, tool use quality focuses specifically
 on tool-related decisions:
 
 ```mermaid
-graph TB
+graph TD
     subgraph Traditional["Traditional Evaluation (Final Answer Only)"]
         Q1["Agent Response"] --> Q2{"Is Answer<br/>Correct?"}
         Q2 -->|Yes| Q3["✅ HIGH SCORE"]
         Q2 -->|No| Q4["❌ LOW SCORE"]
     end
-    
+
     subgraph ToolUse["Tool Use Quality Evaluation"]
         T1["Tool Sequence"] --> T2{"Proper<br/>Sequence?"}
         T2 -->|Yes| T3["✅ HIGH SCORE"]
         T2 -->|No| T4["❌ LOW SCORE<br/>(Even if answer correct)"]
     end
-    
+
     style Q3 fill:#a8e6a8,stroke:#6bbf6b,color:#000
     style Q4 fill:#ffb3b3,stroke:#ff6b6b,color:#000
     style T3 fill:#a8e6a8,stroke:#6bbf6b,color:#000
@@ -197,13 +198,13 @@ graph TB
     R2["🔄 Tool Sequencing<br/>35% Weight"] -->|Scores 0.0-1.0| Calc
     R3["⚡ Combination Efficiency<br/>15% Weight"] -->|Scores 0.0-1.0| Calc
     R4["🔧 Error Recovery<br/>10% Weight"] -->|Scores 0.0-1.0| Calc
-    
+
     Calc -->|Weighted Average| Final["📊 Final Score<br/>0.0 - 1.0"]
-    
+
     Final -->|≥ 0.8| Pass["✅ EXCELLENT<br/>Tool Quality"]
     Final -->|0.6 - 0.8| Fair["⚠️ GOOD<br/>Some Issues"]
     Final -->|< 0.6| Fail["❌ POOR<br/>Major Issues"]
-    
+
     style R1 fill:#d4f1f4,stroke:#76b8d4,color:#000
     style R2 fill:#d4f1f4,stroke:#76b8d4,color:#000
     style R3 fill:#d4f1f4,stroke:#76b8d4,color:#000
@@ -517,25 +518,25 @@ results = await AgentEvaluator.evaluate(
 **Complete evaluation workflow visualization:**
 
 ```mermaid
-graph LR
+graph TD
     Start["🚀 Start<br/>make evaluate"] -->|Create Test Cases| Step1["📝 Step 1<br/>Generate<br/>evalset.json"]
-    
+
     Step1 -->|3 test cases| Step2["⚙️ Step 2<br/>Load Test<br/>Configuration"]
-    
+
     Step2 -->|Rubric rules| Step3["🔍 Step 3<br/>Initialize<br/>AgentEvaluator"]
-    
+
     Step3 -->|Gemini Judge| Step4["⚡ Step 4<br/>Run Tests &<br/>Compare Sequences"]
-    
+
     Step4 -->|Tool calls| Step5["📊 Step 5<br/>Score Using<br/>Rubrics"]
-    
+
     Step5 -->|0.0-1.0 scores| Judge{"Score ≥<br/>Threshold?"}
-    
+
     Judge -->|✅ Yes| Result_Pass["✅ PASS<br/>Good Tool Usage"]
     Judge -->|❌ No| Result_Fail["❌ FAIL<br/>Needs Work"]
-    
+
     Result_Pass -->|Report| End["📈 End<br/>Review Results"]
     Result_Fail -->|Report| End
-    
+
     style Start fill:#e8f5e9,stroke:#4caf50,color:#000
     style Step1 fill:#d4f1f4,stroke:#76b8d4,color:#000
     style Step2 fill:#d4f1f4,stroke:#76b8d4,color:#000
@@ -605,31 +606,31 @@ IMPROVEMENT NEEDED: Optimize tool usage, not answer correctness
 **Visual comparison: Good vs Bad tool sequencing:**
 
 ```mermaid
-graph TB
+graph TD
     subgraph Good["✅ GOOD Tool Sequence (Score: 0.9)"]
         G1["1️⃣ get_customer<br/>customer_id"]
         G2["2️⃣ get_orders<br/>customer_id"]
         G3["3️⃣ calculate_refund<br/>orders data"]
         G4["4️⃣ process_refund<br/>amount"]
-        
+
         G1 -->|result| G2
         G2 -->|orders| G3
         G3 -->|amount| G4
         G4 -->|Refund Processed| G_Result["✅ Success<br/>Correct Flow"]
     end
-    
+
     subgraph Bad["❌ BAD Tool Sequence (Score: 0.35)"]
         B1["1️⃣ calculate_refund<br/>❌ No data yet!"]
         B2["2️⃣ get_customer<br/>customer_id"]
         B3["3️⃣ get_orders<br/>customer_id"]
         B4["4️⃣ process_refund<br/>wrong amount"]
-        
+
         B1 -->|Error| B2
         B2 -->|retry| B3
         B3 -->|orders| B4
         B4 -->|Refund Failed| B_Result["❌ Wrong Order<br/>Extra Calls"]
     end
-    
+
     style Good fill:#f0f9f0,stroke:#a8e6a8,color:#000
     style Bad fill:#fef5f5,stroke:#ffb3b3,color:#000
     style G_Result fill:#a8e6a8,stroke:#6bbf6b,color:#000

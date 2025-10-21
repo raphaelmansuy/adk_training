@@ -4,8 +4,25 @@ title: "TIL: Pause and Resume Invocations with Google ADK 1.16.0"
 description: "Quick guide to using Pause and Resume Invocations: checkpoint agent state and resume execution later for long-running workflows, human-in-the-loop, and fault tolerance"
 sidebar_label: "TIL: Pause & Resume (Oct 20)"
 sidebar_position: 2
-tags: ["til", "quick-learn", "pause-resume", "adk-1.16", "state-checkpointing", "fault-tolerance", "human-in-loop"]
-keywords: ["adk", "pause resume", "invocation", "checkpoint", "state persistence", "fault tolerance"]
+tags:
+  [
+    "til",
+    "quick-learn",
+    "pause-resume",
+    "adk-1.16",
+    "state-checkpointing",
+    "fault-tolerance",
+    "human-in-loop",
+  ]
+keywords:
+  [
+    "adk",
+    "pause resume",
+    "invocation",
+    "checkpoint",
+    "state persistence",
+    "fault tolerance",
+  ]
 status: "completed"
 difficulty: "intermediate"
 estimated_time: "10 minutes"
@@ -97,6 +114,7 @@ event = Event(
 ```
 
 The state is:
+
 - **Automatic**: Framework handles it transparently
 - **Serialized**: Converted to JSON for storage
 - **Complete**: Includes all agent execution context
@@ -118,6 +136,7 @@ flowchart TD
 ```
 
 The restoration process:
+
 1. **Find** previous invocation events in session
 2. **Extract** agent_state from checkpoint events
 3. **Restore** to InvocationContext
@@ -168,7 +187,7 @@ sequenceDiagram
     participant User
     participant Agent
     participant Storage as Session Storage
-    
+
     User->>Agent: Start invocation
     activate Agent
     Agent->>Agent: Processing...
@@ -177,9 +196,9 @@ sequenceDiagram
     activate Storage
     Agent-->>User: [PAUSE] Awaiting input
     deactivate Agent
-    
+
     User->>User: [Think & Provide Feedback]
-    
+
     User->>Agent: Resume with feedback
     activate Agent
     Agent->>Storage: Retrieve saved state
@@ -228,7 +247,7 @@ flowchart TD
         pause["⏸️ PAUSE<br/>Handoff Point"]
         root --> sub1 --> chk1 --> pause
     end
-    
+
     subgraph inv2["Invocation 2 Resume"]
         direction LR
         resume["▶️ RESUME<br/>Load State"]
@@ -237,9 +256,9 @@ flowchart TD
         done["✅ COMPLETE"]
         resume --> sub1r --> sub2 --> done
     end
-    
+
     pause -.->|State Restored| resume
-    
+
     style inv1 fill:#e8f4f8
     style inv2 fill:#f0f8e8
     style chk1 fill:#fff4e6
@@ -261,6 +280,7 @@ config = ResumabilityConfig(
 ```
 
 **That's all!** The framework handles:
+
 - State serialization
 - Checkpoint creation
 - State restoration on resume
@@ -289,6 +309,7 @@ class MyAgent(BaseAgent):
 #### Resumption with Optional New Input
 
 Resume with new user input:
+
 ```python
 await runner.run_async(
     session=session,
@@ -298,6 +319,7 @@ await runner.run_async(
 ```
 
 Or resume with previous input:
+
 ```python
 await runner.run_async(
     session=session,
@@ -316,17 +338,17 @@ graph LR
     B --> C["✅ Checkpoint 1<br/>end_of_agent: True<br/>agent_state: {...}"]
     C --> D["⏸️ PAUSE<br/>State Saved"]
     D --> E["💾 Session Storage<br/>Events Persisted"]
-    
+
     E --> F["⏳ Later...<br/>Resume Request<br/>+ invocation_id"]
-    
+
     F --> G["📥 Restore State<br/>Load agent_state<br/>from Event 3"]
-    
+
     G --> H["🔄 Resume Agent<br/>Execute from<br/>Checkpoint"]
-    
+
     H --> I["✅ Checkpoint 2<br/>end_of_agent: True<br/>agent_state: {...}"]
-    
+
     I --> J["✓ Complete"]
-    
+
     style C fill:#fff4e6
     style D fill:#ffe6e6
     style E fill:#e8f4f8
@@ -379,12 +401,14 @@ Session.events = [
 ### Architecture Overview
 
 **New Components**:
+
 - `ResumabilityConfig`: Configuration class
 - `BaseAgentState`: Abstract state base class
 - `LoopAgentState`, `SequentialAgentState`, `ParallelAgentState`: Specialized states
 - `Runner._setup_context_for_resumed_invocation()`: Resumption logic
 
 **Enhanced Components**:
+
 - `App`: Now accepts `resumability_config`
 - `InvocationContext`: Populates agent states from events
 - `EventActions`: Includes `agent_state` field
@@ -419,6 +443,7 @@ async def test_pause_resume(resumable: bool):
 ### Best Practices
 
 1. **Always enable ResumabilityConfig if you need pause/resume**
+
    ```python
    config = ResumabilityConfig(is_resumable=True)
    ```
@@ -426,10 +451,12 @@ async def test_pause_resume(resumable: bool):
 2. **Understand your checkpoint points** - Know where your agent naturally completes and saves state
 
 3. **Test resumption scenarios** - Test both:
+
    - Normal execution from start
    - Resumption from checkpoint
 
 4. **Handle state errors gracefully**
+
    ```python
    try:
        await runner.run_async(session, invocation_id=prev_id)
@@ -447,46 +474,46 @@ Understanding the state transition flow is crucial for building reliable pause/r
 ```mermaid
 stateDiagram-v2
     [*] --> Configure: App Initialization
-    
+
     Configure --> Execution: Set is_resumable
-    
+
     Execution --> Processing: Agent Starts
-    
+
     Processing --> Checkpoint: Processing Complete
-    
+
     Checkpoint --> SaveState: end_of_agent=True
-    
+
     SaveState --> Decision: State Persisted
-    
+
     Decision --> Continue: More Agents?
     Decision --> Pause: [PAUSE]
-    
+
     Continue --> Processing
-    
+
     Pause --> Wait: State Saved<br/>Awaiting Resume
-    
+
     Wait --> Resume: New Request<br/>with invocation_id
-    
+
     Resume --> Restore: Load Session<br/>& Events
-    
+
     Restore --> ExecuteFromCheckpoint: Restore State
-    
+
     ExecuteFromCheckpoint --> Processing: Continue<br/>Execution
-    
+
     Decision --> Complete: All Done
-    
+
     Complete --> [*]: ✓ Finished
-    
+
     note right of Checkpoint
         Agent completes and emits
         event with saved state
     end note
-    
+
     note right of Pause
         State is now checkpointed
         Can be resumed later
     end note
-    
+
     note right of Restore
         Framework loads agent_state
         from previous events
@@ -566,6 +593,7 @@ except Exception as e:
 See the companion implementation: [til_pause_resume_20251020](https://github.com/raphaelmansuy/adk_training/tree/main/til_implementation/til_pause_resume_20251020)
 
 **Features:**
+
 - ✅ Full agent implementation with checkpoint-aware tools
 - ✅ 19 comprehensive tests
 - ✅ Make commands for setup, test, dev, demo
