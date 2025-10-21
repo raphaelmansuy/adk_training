@@ -197,6 +197,13 @@ class LinkVerifier:
             if not path_part:
                 return True, "Anchor-only link"
 
+            # Strip baseUrl prefix if present (e.g., /adk_training/)
+            # This handles Docusaurus sites deployed with a base URL
+            if path_part.startswith('/adk_training/'):
+                path_part = '/' + path_part[len('/adk_training/'):]
+            elif path_part.startswith('adk_training/'):
+                path_part = path_part[len('adk_training/'):]
+
             # Resolve the target path
             if path_part.startswith('/'):
                 # Absolute path from build root

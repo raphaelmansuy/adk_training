@@ -33,7 +33,7 @@ You're here because AI agents are the future, and you need practical skills now.
 
 **New here?** Our **Today I Learn** series gives you focused, bite-sized lessons on specific ADK features and patterns. Perfect for learning one powerful concept at a time.
 
-🔗 **[→ Explore All TIL Articles](til_index)** — From context optimization to multi-agent systems.
+🔗 **[→ Explore All TIL Articles](til/til_index)** — From context optimization to multi-agent systems.
 
 ---
 
@@ -90,7 +90,7 @@ Pick the track that matches your timeline and goals:
 
 **Learn concepts fast:**
 
-- [Today I Learn Series](til_index) — Bite-sized lessons
+- [Today I Learn Series](til/til_index) — Bite-sized lessons
   - Context Compaction (Oct 19) — Token optimization techniques
   - And more...
 

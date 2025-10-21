@@ -11,7 +11,7 @@ import Comments from '@site/src/components/Comments';
 
 **A complete, tested implementation is available in the repository!**
 
-👉 [View Implementation](./../../tutorial_implementation/tutorial29)
+👉 [View Implementation](https://github.com/raphaelmansuy/adk_training/tree/main/tutorial_implementation/tutorial29)
 
 The implementation includes:
 - ✅ Python ADK agent with AG-UI protocol integration

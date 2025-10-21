@@ -351,3 +351,72 @@ help(SamplingCapability)
 ## Recommendation you must follow
 
 - Always read the documentation about how to write good documentation: docs/docs/skills/how_to_write_good_documentation.md and ensure that all your documentations follow the guidelines.
+
+## Running Expensive Builds (Docusaurus Build)
+
+The Docusaurus build process is resource-intensive and can take significant time. When rebuilding the documentation, use one of these patterns to run the build in a separate shell process so it doesn't block your main terminal or VSCode terminal:
+
+### Pattern 1: Run in Background and Wait (Simple)
+
+```bash
+# Start build in background and wait for completion
+(cd /Users/raphaelmansuy/Github/03-working/adk_training/docs && rm -rf build && npm run build 2>&1 | tail -100) &
+wait
+```
+
+This starts the build as a background job and waits for it to finish.
+
+### Pattern 2: Capture Exit Status with PIPESTATUS (Recommended for zsh)
+
+```bash
+# Run with pipefail to capture proper exit status, show last 100 lines
+(cd /Users/raphaelmansuy/Github/03-working/adk_training/docs && set -o pipefail; rm -rf build && npm run build 2>&1 | tail -100)
+
+# After completion, check exit codes:
+echo $pipestatus  # array of exit codes for each pipeline stage
+echo $status      # overall exit code (respects pipefail)
+```
+
+Use this pattern when you need to verify the build succeeded (exit status 0).
+
+### Pattern 3: Disown and Track Job (Advanced)
+
+```bash
+# Start build with disown to fully detach from current shell
+(cd /Users/raphaelmansuy/Github/03-working/adk_training/docs && set -o pipefail; rm -rf build && npm run build 2>&1 | tail -100) &!
+
+# Check running jobs
+jobs -l
+
+# Wait for specific job - e.g., job number 1
+wait %1
+```
+
+Use this pattern when you want to continue working in the main shell while build completes in the background.
+
+### Typical Build Workflow
+
+1. Open a separate terminal or background process
+2. Run: `(cd /Users/raphaelmansuy/Github/03-working/adk_training/docs && set -o pipefail; rm -rf build && npm run build 2>&1 | tail -100)`
+3. Wait for completion
+4. Check exit status: `echo $status` (should be 0)
+5. Once build completes, run: `python3 scripts/verify_links.py --skip-external` to validate links
+
+### Link Verification After Build
+
+After a successful Docusaurus build, verify all internal links:
+
+```bash
+# Quick internal link check (fast)
+python3 scripts/verify_links.py --skip-external
+
+# Full link verification including external URLs (slow, makes network requests)
+python3 scripts/verify_links.py
+
+# Export results to JSON for analysis
+python3 scripts/verify_links.py --json-output links_report.json
+```
+
+See `scripts/verify_links.py` for full documentation and options.
+
+##
