@@ -188,7 +188,7 @@ Here's the typical workflow:
                 └──────────┘                         └─────────────┘
 ```
 
-**The Agent Workflow Explained
+**The Agent Workflow Explained**
 
 ```mermaid
 graph TD
@@ -224,13 +224,19 @@ graph TD
 
 A powerful aspect of Google's ecosystem is **framework flexibility**. You can:
 
-- Build with ADK, LangChain, LangGraph, Crew.ai, or custom frameworks
-- Deploy any of these to Vertex AI Agent Engine
-- Mix frameworks in the same system using A2A Protocol
-- Never be locked into a single vendor or framework
+- **Develop with choice**: Build agents using ADK (Python or Java), or use
+  LangChain, LangGraph, Crew.ai, and custom implementations
+- **Integrate third-party tools**: ADK natively supports tools from LangChain
+  and CrewAI ecosystems via wrapper utilities
+- **Deploy any framework**: Deploy agents built with any supported framework to
+  Vertex AI Agent Engine for production scaling
+- **Connect agents across systems**: Mix frameworks using A2A Protocol for
+  agent-to-agent communication
+- **Avoid vendor lock-in**: Never be locked into a single vendor or framework
 
-This is revolutionary because it means your team can use what they're most productive
-with while still getting enterprise deployment, scaling, and governance.
+This is revolutionary because it means your team can use what they're most
+productive with while still getting enterprise deployment, scaling, and
+governance.
 
 ## The Enterprise Portal: Agent Delivery Platform
 
@@ -244,10 +250,14 @@ access, and interact with deployed agents.
 for enterprise employees to discover and use AI agents without technical setup or
 development knowledge.
 
+![Gemini Enterprise Portal - Agent Gallery and Chat Interface](/img/blog/gemini-enterprise-portal.png)
+*Official screenshot showing the Gemini Enterprise Portal agent gallery and
+chat interface*
+
 #### Portal Capabilities
 
 ```mermaid
-graph TB
+graph LR
     A["Gemini Enterprise Portal"] --> B["User Interface"]
     A --> C["Agent Management"]
     A --> D["Data Connectivity"]
@@ -606,23 +616,23 @@ Here's how you'd architect a production agent system:
 
 ```mermaid
 graph TB
-    A["User Request"] -->|1. Submit| B["Vertex AI Agents"]
-    B -->|2. Orchestrate| C["Router Agent"]
+    A["User Request"] -->|1 Submit| B["Vertex AI Agents"]
+    B -->|2 Orchestrate| C["Router Agent"]
 
-    C -->|3. Plan Steps| D["Step 1: Analyze"]
-    C -->|3. Plan Steps| E["Step 2: Process"]
-    C -->|3. Plan Steps| F["Step 3: Recommend"]
+    C -->|3 Plan Steps| D["Step 1: Analyze"]
+    C -->|3 Plan Steps| E["Step 2: Process"]
+    C -->|3 Plan Steps| F["Step 3: Recommend"]
 
-    D -->|4. Call Model| G["Gemini Enterprise"]
-    E -->|4. Call Model| G
-    F -->|4. Call Model| G
+    D -->|4 Call Model| G["Gemini Enterprise"]
+    E -->|4 Call Model| G
+    F -->|4 Call Model| G
 
-    G -->|5. Process in\nVPC-SC protected\ninfrastructure| H["Gemini Enterprise\nEndpoint"]
-    H -->|6. Return Result| G
+    G -->|5 Process in\nVPC-SC protected\ninfrastructure| H["Gemini Enterprise\nEndpoint"]
+    H -->|6 Return Result| G
 
-    G -->|7. Return Response| C
-    C -->|8. Aggregate| I["Final Result"]
-    I -->|9. Return| J["Response to User"]
+    G -->|7 Return Response| C
+    C -->|8 Aggregate| I["Final Result"]
+    I -->|9 Return| J["Response to User"]
 
     K["Audit Log"] -.->|Complete tracking| G
     L["Compliance Monitor"] -.->|Data policies| G
