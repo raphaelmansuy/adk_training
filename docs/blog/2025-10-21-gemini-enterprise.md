@@ -1,7 +1,11 @@
 ---
 slug: gemini-enterprise-vs-agent-engine
 title: "Gemini Enterprise: Why Your AI Agents Need Enterprise-Grade Capabilities"
-authors: [adk-team]
+authors:
+  - name: Raphael Mansuy
+    title: Creator & Maintainer
+    url: https://github.com/raphaelmansuy
+    image_url: https://github.com/raphaelmansuy.png
 tags:
   - gemini
   - enterprise
@@ -471,7 +475,7 @@ Best for:      Developers testing locally
 | Data residency | ✓ Yes | ✓ Yes | ✓ Yes |
 | Open source | ✗ No | ✓ Yes | ✓ Yes |
 | Full customization | ✗ Limited | ✓ Yes | ✓ Yes |
-| Setup time | 1-2w | 4-8w | <1w |
+| Setup time | 1-2w | 4-8w | &lt;1w |
 | Ops burden | Minimal | High | Low |
 
 ## Gemini Enterprise vs. Vertex AI Agents: The Real Difference
