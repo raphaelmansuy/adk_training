@@ -118,9 +118,12 @@ Vertex AI Agent Builder. Use these to jumpstart your agent development.
 
 **5. Agent2Agent (A2A) Protocol** [⁶]
 
-An open standard that enables agents built with different frameworks and from
-different vendors to communicate and collaborate. This means you can build
-interoperable multi-agent systems without vendor lock-in.
+An open protocol (co-founded by Google but community-managed) that enables
+agents built with different frameworks and from different vendors to
+communicate and collaborate. Unlike ADK and Agent Builder which are Google
+products, A2A is an open standard under Apache 2.0 license managed by the
+open-source community. This means you can build interoperable multi-agent
+systems without vendor lock-in.
 
 ### Gemini Enterprise Integration
 
