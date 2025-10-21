@@ -106,6 +106,11 @@ const sidebars: SidebarsConfig = {
         },
         {
           type: 'doc',
+          id: 'til/til_rubric_based_tool_use_quality_20251021',
+          label: 'TIL: Tool Use Quality (Oct 21)',
+        },
+        {
+          type: 'doc',
           id: 'til/til_pause_resume_20251020',
           label: 'TIL: Pause & Resume (Oct 20)',
         },

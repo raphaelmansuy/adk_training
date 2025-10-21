@@ -423,9 +423,9 @@ Enable it once, save money forever. ✨
 
 ### Related TILs
 
-- **[TIL: Pause and Resume Invocations](/docs/til/til_pause_resume_20251020)** -
+- **[TIL: Pause and Resume Invocations](til_pause_resume_20251020)** -
   Combine checkpointing with context compaction for complete state management
-- **[Back to TIL Index](/docs/til/til_index)** - Browse all quick-learn guides
+- **[Back to TIL Index](til_index)** - Browse all quick-learn guides
 
 ### Related Blog Posts
 

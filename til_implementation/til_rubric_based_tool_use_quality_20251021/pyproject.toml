@@ -1,0 +1,16 @@
+[build-system]
+requires = ["setuptools>=45", "wheel", "setuptools_scm[toml]>=6.2"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "tool-use-quality-evaluator"
+version = "0.1.0"
+description = "TIL implementation for Tool Use Quality Evaluation with ADK"
+requires-python = ">=3.10"
+dependencies = [
+    "google-adk>=1.16.0",
+    "python-dotenv>=1.0.0",
+]
+
+[tool.setuptools.packages.find]
+where = ["."]
