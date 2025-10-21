@@ -454,14 +454,14 @@ Enable it once, save money forever. ✨
 
 ### Related ADK Tutorials
 
-- **[Tutorial 01: Hello World Agent](/01_hello_world_agent)** -
+- **[Tutorial 01: Hello World Agent](/hello_world_agent)** -
   Start here if new to ADK; context compaction applies to all agents
 
-- **[Tutorial 08: State & Memory](/08_state_memory)** -
+- **[Tutorial 08: State & Memory](/state_memory)** -
   Learn broader memory patterns beyond compaction; understand session state
   management
 
-- **[Tutorial 13: Events & Observability](/13_events_observability)** -
+- **[Tutorial 18: Events & Observability](/events_observability)** -
   Understand ADK event system and how compaction interacts with event
   streaming
 
