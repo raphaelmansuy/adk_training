@@ -1,0 +1,11 @@
+# Link Verification Requirements
+# Install with: pip install -r scripts/requirements-links.txt
+
+# HTML parsing
+beautifulsoup4>=4.11.0
+
+# HTTP requests
+requests>=2.28.0
+
+# Colored terminal output
+colorama>=0.4.6
