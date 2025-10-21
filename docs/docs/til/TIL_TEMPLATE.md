@@ -9,6 +9,8 @@ status: "template"
 difficulty: "reference"
 ---
 
+import Comments from '@site/src/components/Comments';
+
 # Today I Learn (TIL) Format Guide
 
 ## What is a TIL?
