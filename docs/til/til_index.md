@@ -25,6 +25,33 @@ Perfect for staying current with ADK features and integrating them into your pro
 
 ## Available TILs
 
+### Tool Use Quality (October 21, 2025)
+
+**📖 [TIL: Evaluating Tool Use Quality with Google ADK 1.16](/docs/til/til_rubric_based_tool_use_quality_20251021)**
+
+Evaluate how well your agents select and use tools to accomplish tasks.
+
+**Key Points:**
+- 🎯 Catch tool selection mistakes (wrong tool when better option exists)
+- 🔄 Evaluate tool sequencing (are tools called in logical order?)
+- ⚡ Identify inefficiencies (unnecessary calls or missing combinations)
+- 📊 Separate tool quality from answer quality
+- 🔍 Perfect for production workflows where tool usage matters
+
+**In 8 minutes you'll learn:**
+1. Difference between tool use quality and final answer quality
+2. Why tool sequencing matters
+3. Rubric-based evaluation framework
+4. Configuration and best practices
+5. Real-world examples (data analysis, customer support, research)
+6. Working implementation with tests
+
+**ADK Version:** 1.16+  
+**Complexity:** Intermediate  
+**Time:** ~8 minutes
+
+---
+
 ### Context Compaction (October 19, 2025)
 
 **📖 [TIL: Context Compaction with Google ADK 1.16](/docs/til/til_context_compaction_20250119)**

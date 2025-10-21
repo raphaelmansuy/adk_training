@@ -1,0 +1,188 @@
+{
+  "eval_set_id": "tool_use_quality_evaluation",
+  "name": "Tool Use Quality Evaluation",
+  "description": "Evaluation of agent tool sequencing and quality",
+  "eval_cases": [
+    {
+      "eval_id": "good_sequence_complete_pipeline",
+      "conversation": [
+        {
+          "invocation_id": "inv-001",
+          "user_content": {
+            "parts": [
+              {
+                "text": "Analyze the sales dataset and apply a prediction model"
+              }
+            ],
+            "role": "user"
+          },
+          "final_response": {
+            "parts": [
+              {
+                "text": "I've analyzed the sales dataset, extracted features, validated quality, and applied the prediction model. The model achieved 87% accuracy on the features."
+              }
+            ],
+            "role": "model"
+          },
+          "intermediate_data": {
+            "tool_uses": [
+              {
+                "id": "call-001",
+                "name": "analyze_data",
+                "args": {
+                  "dataset": "sales_dataset"
+                }
+              },
+              {
+                "id": "call-002",
+                "name": "extract_features",
+                "args": {
+                  "data": {
+                    "type": "analysis_result"
+                  }
+                }
+              },
+              {
+                "id": "call-003",
+                "name": "validate_quality",
+                "args": {
+                  "features": {
+                    "type": "features"
+                  }
+                }
+              },
+              {
+                "id": "call-004",
+                "name": "apply_model",
+                "args": {
+                  "features": {
+                    "type": "validated_features"
+                  },
+                  "model": "random_forest"
+                }
+              }
+            ],
+            "intermediate_responses": []
+          }
+        }
+      ],
+      "session_input": {
+        "app_name": "tool_use_evaluator",
+        "user_id": "test_user",
+        "state": {}
+      }
+    },
+    {
+      "eval_id": "bad_sequence_skipped_validation",
+      "conversation": [
+        {
+          "invocation_id": "inv-002",
+          "user_content": {
+            "parts": [
+              {
+                "text": "Process the customer dataset for modeling"
+              }
+            ],
+            "role": "user"
+          },
+          "final_response": {
+            "parts": [
+              {
+                "text": "I've extracted features and applied the model."
+              }
+            ],
+            "role": "model"
+          },
+          "intermediate_data": {
+            "tool_uses": [
+              {
+                "id": "call-101",
+                "name": "extract_features",
+                "args": {
+                  "data": {
+                    "type": "raw_data"
+                  }
+                }
+              },
+              {
+                "id": "call-102",
+                "name": "apply_model",
+                "args": {
+                  "features": {
+                    "type": "features"
+                  },
+                  "model": "linear_regression"
+                }
+              }
+            ],
+            "intermediate_responses": []
+          }
+        }
+      ],
+      "session_input": {
+        "app_name": "tool_use_evaluator",
+        "user_id": "test_user",
+        "state": {}
+      }
+    },
+    {
+      "eval_id": "good_sequence_proper_analysis",
+      "conversation": [
+        {
+          "invocation_id": "inv-003",
+          "user_content": {
+            "parts": [
+              {
+                "text": "Analyze and prepare the dataset for machine learning"
+              }
+            ],
+            "role": "user"
+          },
+          "final_response": {
+            "parts": [
+              {
+                "text": "Dataset analyzed and prepared with validated features ready for modeling."
+              }
+            ],
+            "role": "model"
+          },
+          "intermediate_data": {
+            "tool_uses": [
+              {
+                "id": "call-201",
+                "name": "analyze_data",
+                "args": {
+                  "dataset": "customer_data"
+                }
+              },
+              {
+                "id": "call-202",
+                "name": "extract_features",
+                "args": {
+                  "data": {
+                    "type": "analysis"
+                  }
+                }
+              },
+              {
+                "id": "call-203",
+                "name": "validate_quality",
+                "args": {
+                  "features": {
+                    "type": "extracted_features"
+                  }
+                }
+              }
+            ],
+            "intermediate_responses": []
+          }
+        }
+      ],
+      "session_input": {
+        "app_name": "tool_use_evaluator",
+        "user_id": "test_user",
+        "state": {}
+      }
+    }
+  ]
+}

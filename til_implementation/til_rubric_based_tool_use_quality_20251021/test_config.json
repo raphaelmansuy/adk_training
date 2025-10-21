@@ -1,0 +1,37 @@
+{
+  "criteria": {
+    "rubric_based_tool_use_quality_v1": {
+      "threshold": 0.7,
+      "judge_model_options": {
+        "judge_model": "gemini-2.5-flash",
+        "num_samples": 3
+      },
+      "rubrics": [
+        {
+          "rubric_id": "proper_tool_order",
+          "rubric_content": {
+            "text_property": "The agent calls analyze_data BEFORE extract_features. This respects tool dependencies."
+          }
+        },
+        {
+          "rubric_id": "complete_pipeline",
+          "rubric_content": {
+            "text_property": "For a complete analysis, the agent should call: analyze \u2192 extract \u2192 validate \u2192 apply (all 4 steps)"
+          }
+        },
+        {
+          "rubric_id": "validation_before_model",
+          "rubric_content": {
+            "text_property": "The agent validates feature quality before applying the model"
+          }
+        },
+        {
+          "rubric_id": "no_tool_failures",
+          "rubric_content": {
+            "text_property": "All tool calls succeed with proper parameters (no errors or missing args)"
+          }
+        }
+      ]
+    }
+  }
+}
