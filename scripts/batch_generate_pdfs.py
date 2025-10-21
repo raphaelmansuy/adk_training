@@ -19,12 +19,13 @@ import time
 def generate_pdfs():
     """Generate PDFs for all markdown files."""
     
-    # Get paths
-    project_root = Path(__file__).parent
+    # Get paths - adjust for scripts/ subdirectory
+    script_dir = Path(__file__).parent
+    project_root = script_dir.parent  # Go up one level to project root
     docs_dir = project_root / "docs" / "docs"
     til_dir = docs_dir / "til"
     pdf_dir = project_root / "pdf"
-    script_path = project_root / "scripts" / "markdown_to_pdf.py"
+    script_path = script_dir / "markdown_to_pdf.py"
     
     # Ensure pdf directory exists
     pdf_dir.mkdir(parents=True, exist_ok=True)
