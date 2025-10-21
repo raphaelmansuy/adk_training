@@ -618,15 +618,46 @@ This feature is essential for production agents that need reliability, human ove
 ### Related TILs
 
 - **[TIL: Context Compaction](til_context_compaction_20250119)** -
-  Reduce token usage in long-running paused workflows
+  Perfect combo! Use Pause/Resume to checkpoint at milestones, then apply
+  Context Compaction to reduce token growth across resumed sessions. Essential
+  for long-running workflows that span multiple invocations.
+
+- **[TIL: Evaluating Tool Use Quality](til_rubric_based_tool_use_quality_20251021)** -
+  After implementing pause/resume workflows, measure if your paused agents
+  maintain tool quality across resumptions. Validates state restoration doesn't
+  degrade agent behavior.
+
 - **[Back to TIL Index](til_index)** - Browse all quick-learn guides
 
-### Related Blog Posts
+### Related ADK Tutorials
+
+- **[Tutorial 01: Hello World Agent](/docs/tutorials/01_hello_world_agent)** -
+  Foundation for all agent patterns; resumability works with all agent types
+
+- **[Tutorial 08: State & Memory](/docs/advanced-tutorials/state_memory)** -
+  Comprehensive state management patterns including resumable state patterns
+
+- **[Tutorial 13: Events & Observability](/docs/advanced-tutorials/events_observability)** -
+  Understand how events persist checkpoints and enable resumption
+
+### ADK Official Documentation
+
+- **[Pause & Resume Invocations](https://github.com/google/adk-python/blob/main/docs/pause_resume.md)** -
+  Official ADK documentation with API reference
+
+- **[State Management](https://github.com/google/adk-python/blob/main/docs/state_management.md)** -
+  Complete state management patterns and best practices
+
+- **[ResumabilityConfig](https://github.com/google/adk-python/blob/main/google/adk/apps/app.py)** -
+  Source code and implementation details
+
+### Related Resources & Patterns
 
 - **[Deploy AI Agents: Production Strategies](/blog/deploy-ai-agents)** -
   Understand resilience and fault tolerance in production systems
-- **[The Multi-Agent Pattern: Managing Complexity](/blog/multi-agent-pattern-complexity-management)**
-  - Understand state management across complex workflows
+
+- **[The Multi-Agent Pattern: Managing Complexity](/blog/multi-agent-pattern-complexity-management)** -
+  Understand state management across complex workflows and agent handoffs
 
 ---
 

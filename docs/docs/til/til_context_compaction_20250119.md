@@ -423,26 +423,50 @@ Enable it once, save money forever. ✨
 
 ### Related TILs
 
-- **[TIL: Pause and Resume Invocations](til_pause_resume_20251020)** -
-  Combine checkpointing with context compaction for complete state management
+- **[TIL: Pause and Resume Invocations](til_pause_resume_20251020)** - Perfect
+  combo! Combine checkpointing with context compaction for complete
+  long-running workflow state management. Use Pause/Resume to checkpoint at
+  milestones, then Context Compaction to manage token growth across resumed
+  sessions.
+
+- **[TIL: Evaluating Tool Use Quality](til_rubric_based_tool_use_quality_20251021)** -
+  After optimizing token usage with context compaction, measure if your agent
+  is using the right tools efficiently. Validates that your agent quality
+  remains high with compacted context.
+
 - **[Back to TIL Index](til_index)** - Browse all quick-learn guides
 
-### Related Blog Posts
+### Related ADK Tutorials
+
+- **[Tutorial 01: Hello World Agent](/docs/tutorials/01_hello_world_agent)** -
+  Start here if new to ADK; context compaction applies to all agents
+
+- **[Tutorial 08: State & Memory](/docs/advanced-tutorials/state_memory)** -
+  Learn broader memory patterns beyond compaction; understand session state
+  management
+
+- **[Tutorial 13: Events & Observability](/docs/advanced-tutorials/events_observability)** -
+  Understand ADK event system and how compaction interacts with event
+  streaming
+
+### ADK Official Documentation
+
+- **[Events & Context Compaction](https://github.com/google/adk-python/blob/main/docs/events_compaction.md)** -
+  Official ADK documentation with API reference
+
+- **[LLM Event Summarizer](https://github.com/google/adk-python/tree/main/google/adk/events)** -
+  Source code and implementation details
+
+- **[Performance & Optimization](https://github.com/google/adk-python/blob/main/docs/performance.md)** -
+  Broader context optimization strategies
+
+### Related Resources & Patterns
 
 - **[Deploy AI Agents: Production Strategies](/blog/deploy-ai-agents)** -
   Understand cost optimization in production systems
 
----
-
-## Related Resources
-
-- **[Tutorial 08: State & Memory](/docs/advanced-tutorials/state_memory)** -
-  Learn broader memory patterns beyond compaction
-- **[ADK Official Docs](https://google.github.io/adk-docs/)** - Complete
-  compaction API reference
-- **[Events & Observability](/docs/advanced-tutorials/events_observability)** -
-  Understand ADK event system
-- **[Previous TIL Template](./TIL_TEMPLATE)** - How to create TIL articles
+- **[Token Optimization Pattern](/docs/patterns/token_optimization)** -
+  Best practices for managing token budgets across different models
 
 ## Questions?
 
