@@ -4,8 +4,23 @@ title: "TIL: Context Compaction with Google ADK 1.16"
 description: "Quick guide to using Context Compaction: automatically summarize conversation history to reduce token usage and costs with ADK 1.16's new LLM event summarization feature"
 sidebar_label: "TIL: Context Compaction (Oct 19)"
 sidebar_position: 3
-tags: ["til", "quick-learn", "context-compaction", "adk-1.16", "token-optimization", "memory-management"]
-keywords: ["adk", "context compaction", "event summarization", "token reduction", "conversation memory"]
+tags:
+  [
+    "til",
+    "quick-learn",
+    "context-compaction",
+    "adk-1.16",
+    "token-optimization",
+    "memory-management",
+  ]
+keywords:
+  [
+    "adk",
+    "context compaction",
+    "event summarization",
+    "token reduction",
+    "conversation memory",
+  ]
 status: "completed"
 difficulty: "intermediate"
 estimated_time: "8 minutes"
@@ -218,10 +233,10 @@ config = EventsCompactionConfig(
 )
 ```
 
-| Parameter | Type | Default | Purpose |
-|-----------|------|---------|---------|
-| `compaction_interval` | int | 5 | Trigger compaction |
-| `overlap_size` | int | 1 | Context continuity |
+| Parameter             | Type | Default | Purpose            |
+| --------------------- | ---- | ------- | ------------------ |
+| `compaction_interval` | int  | 5       | Trigger compaction |
+| `overlap_size`        | int  | 1       | Context continuity |
 
 ### Pro Tips
 
@@ -356,10 +371,10 @@ WITH COMPACTION (controlled growth):
       +----+----+----+----+----+----+----+----+----
       1    2    3    4    5    6    7    8
       Interaction Number
-      
+
 Actual values with compaction:
 180 -> 243 -> 295 -> 347 -> 405 -> 597 -> 646 -> 1170 -> 1225
-      
+
 71% token reduction achieved!
 ```
 
@@ -380,6 +395,7 @@ Actual values with compaction:
 - Interaction 5: 405 tokens (+58) ✅ Compaction triggers here
 
 **How to verify**:
+
 1. Send 5+ messages to your agent
 2. Check the response headers for `promptTokenCount`
 3. Calculate token growth per interaction
