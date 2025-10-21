@@ -61,7 +61,7 @@ See the [Troubleshooting section](#9-troubleshooting) for complete details.
 
 # Tutorial 19: Artifacts & File Management
 
-[View Implementation](./../../tutorial_implementation/tutorial19)
+[View Implementation](https://github.com/raphaelmansuy/adk_training/tree/main/tutorial_implementation/tutorial19)
 
 **Goal**: Master artifact storage, versioning, and retrieval to enable agents to create, manage, and track files across sessions, providing persistent state and audit trails.
 

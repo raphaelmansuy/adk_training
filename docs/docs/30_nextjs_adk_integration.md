@@ -37,7 +37,7 @@ import Comments from '@site/src/components/Comments';
 
 **A complete, tested implementation of this tutorial is available!**
 
-👉 [View Implementation](./../../tutorial_implementation/tutorial30)
+👉 [View Implementation](https://github.com/raphaelmansuy/adk_training/tree/main/tutorial_implementation/tutorial30)
 
 The implementation includes:
 

@@ -708,19 +708,19 @@ Catch tool misuse before production. ✨
 
 ### Related ADK Tutorials
 
-- **[Tutorial 01: Hello World Agent](hello_world_agent)** -
+- **[Tutorial 01: Hello World Agent](/01_hello_world_agent)** -
   Foundation for understanding agents that will be evaluated for tool
   quality
 
-- **[Tutorial 02: Function Tools](function_tools)** -
+- **[Tutorial 02: Function Tools](/02_function_tools)** -
   Learn how to design tools that agents will be evaluated on; crucial for
   tool use quality metrics
 
-- **[Tutorial 06: Multi-Agent Systems](multi_agent_systems)** -
+- **[Tutorial 06: Multi-Agent Systems](/06_multi_agent_systems)** -
   Learn about combining agents efficiently; relevant to tool use quality
   in larger systems
 
-- **[Tutorial 09: Evaluation & Testing](evaluation_testing)** -
+- **[Tutorial 09: Evaluation & Testing](/09_evaluation_testing)** -
   Comprehensive guide to all evaluation metrics and frameworks
 
 ### ADK Official Documentation
@@ -736,11 +736,8 @@ Catch tool misuse before production. ✨
 
 ### Related Resources & Patterns
 
-- **[Deploy AI Agents: Production Strategies](/blog/deploy-ai-agents)** -
+- **[Deploy AI Agents: Production Strategies](/blog/deploy-ai-agents-5-minutes)** -
   Understand quality assurance and evaluation in production systems
-
-- **[Building Reliable Agents: A Testing Strategy](/blog/building-reliable-agents)** -
-  Comprehensive approach to agent quality including tool use evaluation
 
 ## Questions?
 

@@ -32,7 +32,7 @@ import Comments from '@site/src/components/Comments';
 
 **A complete, tested implementation of this tutorial is available!**
 
-- 📂 [View Implementation](./../../tutorial_implementation/tutorial21)
+- 📂 [View Implementation](https://github.com/raphaelmansuy/adk_training/tree/main/tutorial_implementation/tutorial21)
 - ✅ **70 tests passing** (63% coverage)
 - 🎨 **5 tools** including synthetic image generation ⭐
 - 📚 User-friendly Makefile with comprehensive help system
@@ -1183,7 +1183,7 @@ You've mastered multimodal capabilities and synthetic image generation:
 - [Gemini Vision Documentation](https://cloud.google.com/vertex-ai/docs/generative-ai/multimodal/overview)
 - [Imagen Documentation](https://cloud.google.com/vertex-ai/docs/generative-ai/image/overview)
 - [Multimodal Best Practices](https://cloud.google.com/vertex-ai/docs/generative-ai/multimodal/best-practices)
-- [Working Implementation](./../../tutorial_implementation/tutorial21) - Complete, tested code
+- [Working Implementation](https://github.com/raphaelmansuy/adk_training/tree/main/tutorial_implementation/tutorial21) - Complete, tested code
 
 ---
 
@@ -1191,7 +1191,7 @@ You've mastered multimodal capabilities and synthetic image generation:
 
 :::info Implementation Available
 
-Check out the [complete implementation](./../../tutorial_implementation/tutorial21) with:
+Check out the [complete implementation](https://github.com/raphaelmansuy/adk_training/tree/main/tutorial_implementation/tutorial21) with:
 
 - **Vision catalog agent** with 5 specialized tools
 - **70 passing tests** (63% coverage)
