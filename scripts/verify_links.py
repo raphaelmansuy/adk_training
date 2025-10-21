@@ -38,7 +38,7 @@ import sys
 import time
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from pathlib import Path
-from typing import Dict, List, Tuple, Set
+from typing import Dict, List, Tuple, Set, Optional
 
 try:
     from bs4 import BeautifulSoup
@@ -226,6 +226,36 @@ class LinkVerifier:
         except Exception as e:
             return False, f"Error resolving link: {e}"
 
+    def suggest_fix_for_link(self, href: str) -> Optional[str]:
+        """
+        Suggest a fix for a broken link based on common patterns.
+
+        Args:
+            href: The broken href
+
+        Returns:
+            Suggested fix or None if no suggestion available
+        """
+        import re
+
+        # Pattern 1: Links with filename format (e.g., /01_hello_world_agent)
+        # These should be /docs/{id_without_numbers}
+        match = re.match(r'^/(\d+_)([a-z_]+)$', href)
+        if match:
+            suggested = f"/docs/{match.group(2)}"
+            return suggested
+
+        # Pattern 2: Links with /adk_training/ prefix but missing /docs/
+        # e.g., /adk_training/01_hello_world_agent -> /adk_training/docs/hello_world_agent
+        if '/adk_training/' in href:
+            match = re.match(r'^/adk_training/(\d+_)?([a-z_]+)$', href)
+            if match:
+                doc_id = match.group(2)
+                suggested = f"/adk_training/docs/{doc_id}"
+                return suggested
+
+        return None
+
     def verify_external_link(self, url: str) -> Tuple[bool, int, str]:
         """
         Verify that an external link is accessible.
@@ -335,12 +365,17 @@ class LinkVerifier:
         else:
             self.stats['broken_links'] += 1
             logger.warning(f"✗ {href} - {message}")
-            self.broken_links.append({
+            link_info = {
                 'url': href,
                 'type': 'internal',
                 'source': source_file,
                 'error': message
-            })
+            }
+            # Add suggestion if available
+            suggestion = self.suggest_fix_for_link(href)
+            if suggestion:
+                link_info['suggestion'] = suggestion
+            self.broken_links.append(link_info)
 
     def _verify_external_links_concurrent(self, external_links: List[Tuple[str, str]]) -> None:
         """Verify external links concurrently."""
@@ -410,6 +445,9 @@ class LinkVerifier:
                 report.append(f"\n  {idx}. {Fore.RED}{link_info['url']}{Style.RESET_ALL}")
                 report.append(f"     Type: {link_info['type']}")
                 report.append(f"     Error: {link_info['error']}")
+
+                if 'suggestion' in link_info:
+                    report.append(f"     💡 Suggestion: {Fore.YELLOW}{link_info['suggestion']}{Style.RESET_ALL}")
 
                 if link_info['type'] == 'external' and 'status_code' in link_info:
                     report.append(f"     Status Code: {link_info['status_code']}")

@@ -659,13 +659,13 @@ This feature is essential for production agents that need reliability, human ove
 
 ### Related ADK Tutorials
 
-- **[Tutorial 01: Hello World Agent](/01_hello_world_agent)** -
+- **[Tutorial 01: Hello World Agent](/hello_world_agent)** -
   Foundation for all agent patterns; resumability works with all agent types
 
-- **[Tutorial 08: State & Memory](/08_state_memory)** -
+- **[Tutorial 08: State & Memory](/state_memory)** -
   Comprehensive state management patterns including resumable state patterns
 
-- **[Tutorial 13: Events & Observability](/13_events_observability)** -
+- **[Tutorial 18: Events & Observability](/events_observability)** -
   Understand how events persist checkpoints and enable resumption
 
 ### ADK Official Documentation
