@@ -695,8 +695,8 @@ Catch tool misuse before production. ✨
 - **[Tutorial on Evaluation Framework](/docs/evaluation_testing)** - Comprehensive guide to all evaluation metrics
 - **[Tutorial on Tool Development](/docs/function_tools)** - Building tools agents will use
 - **[ADK Official Evaluation Docs](https://google.github.io/adk-docs/)** - Complete evaluation API reference
-- **[Previous TIL: Context Compaction](/docs/til/til_context_compaction_20250119)** - Another ADK 1.16 feature
-- **[TIL Template](/docs/til/til_template)** - How to create TIL articles
+- **[Previous TIL: Context Compaction](til_context_compaction_20250119)** - Another ADK 1.16 feature
+- **[TIL Template](til_template)** - How to create TIL articles
 
 ## Questions?
 

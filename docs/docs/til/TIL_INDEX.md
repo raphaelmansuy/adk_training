@@ -2,7 +2,7 @@
 id: til_index
 title: "Today I Learn - Quick Daily Insights"
 description: "Short, focused articles on specific Google ADK features and patterns. 5-10 minute reads with working code examples."
-sidebar_label: "📚 TIL Index"
+sidebar_label: "🎯 TIL Index"
 sidebar_position: 1
 tags: ["til", "index", "quick-learn"]
 ---
@@ -25,45 +25,41 @@ Perfect for staying current with ADK features and integrating them into your pro
 
 ## Available TILs
 
-### Pause and Resume Invocations (October 20, 2025)
+### Tool Use Quality (October 21, 2025)
 
-**📖 [TIL: Pause and Resume Invocations with Google ADK 1.16](/docs/til/til_pause_resume_20251020)**
+**📖 [TIL: Evaluating Tool Use Quality with Google ADK 1.16](til_rubric_based_tool_use_quality_20251021)**
 
-Checkpoint agent state and resume execution later for long-running workflows,
-human-in-the-loop interactions, and fault tolerance.
+Evaluate how well your agents select and use tools to accomplish tasks.
 
 **Key Points:**
+- 🎯 Catch tool selection mistakes (wrong tool when better option exists)
+- 🔄 Evaluate tool sequencing (are tools called in logical order?)
+- ⚡ Identify inefficiencies (unnecessary calls or missing combinations)
+- 📊 Separate tool quality from answer quality
+- 🔍 Perfect for production workflows where tool usage matters
 
-- �️ Fault tolerance - System failures don't cause work loss; resume from
-  checkpoint
-- 👤 Human-in-the-loop - Agent pauses to request feedback, then continues
-- ⏱️ Long-running tasks - Complex workflows can pause at natural break points
-- 🔄 Multi-agent handoff - State is preserved when handing off between agents
-- 💾 State persistence - Complete execution context is saved automatically
-
-**In 10 minutes you'll learn:**
-
-1. Why pause/resume invocations matter
-2. How state checkpointing works
-3. State restoration on resumption
-4. Configuration with ResumabilityConfig
-5. Real-world use cases (data processing, approvals, fault tolerance)
+**In 8 minutes you'll learn:**
+1. Difference between tool use quality and final answer quality
+2. Why tool sequencing matters
+3. Rubric-based evaluation framework
+4. Configuration and best practices
+5. Real-world examples (data analysis, customer support, research)
 6. Working implementation with tests
 
 **ADK Version:** 1.16+  
 **Complexity:** Intermediate  
-**Time:** ~10 minutes
+**Time:** ~8 minutes
 
 ---
 
 ### Context Compaction (October 19, 2025)
 
-**📖 [TIL: Context Compaction with Google ADK 1.16](/docs/til/til_context_compaction_20250119)**
+**📖 [TIL: Context Compaction with Google ADK 1.16](til_context_compaction_20250119)**
 
 Automatically summarize conversation history to reduce token usage in long-running agent conversations.
 
 **Key Points:**
-- � Save 70-90% on tokens in long conversations
+- 💰 Save 70-90% on tokens in long conversations
 - ⚡ Faster responses with smaller context
 - 🧠 Intelligent summarization preserves key information
 - 🔄 Perfect for 24-hour support agents and research assistants
@@ -80,6 +76,33 @@ Automatically summarize conversation history to reduce token usage in long-runni
 **ADK Version:** 1.16+  
 **Complexity:** Intermediate  
 **Time:** ~8 minutes
+
+---
+
+### Pause and Resume Invocations (October 20, 2025)
+
+**📖 [TIL: Pause and Resume Invocations with Google ADK 1.16](til_pause_resume_20251020)**
+
+Checkpoint agent state and resume execution later for long-running workflows,
+
+**Key Points:**
+- 🛡️ Automatic fault tolerance through state checkpointing
+- 👤 Seamless human-in-the-loop approval workflows
+- ⏱️ Long-running tasks pause at natural break points
+- 🔄 Multi-agent handoff with state preservation
+- 💾 Complete execution context automatically saved
+
+**In 10 minutes you'll learn:**
+1. Why pause/resume matters
+2. How state checkpointing works
+3. ResumabilityConfig setup (one line!)
+4. State restoration process
+5. Four key use cases
+6. Working implementation with tests
+
+**ADK Version:** 1.16.0+  
+**Complexity:** Intermediate  
+**Time:** ~10 minutes
 
 ---
 
@@ -110,7 +133,6 @@ Automatically summarize conversation history to reduce token usage in long-runni
 ## How to Use TILs
 
 ### For Learning
-
 1. Pick a TIL based on what you need today
 2. Read through (5-10 minutes)
 3. Run the working code example
@@ -118,16 +140,12 @@ Automatically summarize conversation history to reduce token usage in long-runni
 5. Check related tutorials for deeper learning
 
 ### For Teaching
-
 - Share specific TILs with your team when they need to learn a feature
 - Link in code reviews: "See TIL: [Feature Name]"
 - Combine multiple TILs to teach a workflow
 
 ### For Contributing
-
-Want to create a TIL? See the [TIL Template & Guidelines](
-/docs/til/til_template) for:
-
+Want to create a TIL? See the [TIL Template & Guidelines](til_template) for:
 - Structure and format
 - Best practices
 - Submission process
@@ -154,7 +172,6 @@ Every TIL includes:
 ## TIL vs Tutorials vs Blog Posts
 
 **TIL:**
-
 - Specific feature or pattern
 - 5-10 minutes
 - Working code example
@@ -162,7 +179,6 @@ Every TIL includes:
 - Dated for reference
 
 **Tutorial:**
-
 - Broader topic or workflow
 - 30-90 minutes
 - Full project structure
@@ -170,7 +186,6 @@ Every TIL includes:
 - Timeless reference
 
 **Blog Post:**
-
 - Opinion, experience, or analysis
 - Variable length
 - Personal insights
@@ -179,46 +194,21 @@ Every TIL includes:
 
 ---
 
-## Related Reading
-
-### Blog Posts on Related Topics
-
-Explore deeper insights and narrative discussions about patterns and features:
-
-- 📖 **[The Multi-Agent Pattern: Managing Complexity](/blog/multi-agent-pattern-complexity-management)**
-  - Understanding complex system structure (relates to pause/resume workflows)
-- 📖 **[Deploy AI Agents: Production Strategies](/blog/deploy-ai-agents)**
-  - Deployment with fault tolerance and state management
-- 📖 **[Multi-Agent Pattern Analysis](/blog/multi-agent-pattern-complexity-management)**
-  - Cognitive load management in agent systems
-
-**Recommended Learning Path:**
-
-1. 📚 Read the relevant TIL (5-10 minutes)
-2. 📖 Explore related blog post for deeper context (15-30 minutes)
-3. 🧪 Run the TIL working implementation (10-20 minutes)
-4. 📘 Dive into full tutorial for comprehensive mastery (1-2 hours)
-
----
-
 ## Stay Updated
 
 ### RSS Feed
 
-Subscribe to the [ADK Training RSS Feed](/adk_training/blog/rss.xml)
-to get notified when new TILs are published.
+Subscribe to the [ADK Training RSS Feed](/blog/rss.xml) to get notified when new TILs are published.
 
 ### Social
 
 Follow for TIL announcements:
-
 - 🐦 [@raphaelmansuy on Twitter/X](https://twitter.com/raphaelmansuy)
 - 🐙 [GitHub Discussions](https://github.com/raphaelmansuy/adk_training/discussions)
 
 ### Weekly Schedule
 
 New TILs are typically published:
-
 - **Tuesdays** - Core ADK features
 - **Fridays** - Integration patterns and tips
 
@@ -228,10 +218,9 @@ New TILs are typically published:
 
 Want to create a TIL for a feature you've learned about?
 
-**[📋 See TIL Template & Guidelines](/docs/til/til_template)**
+**[📋 See TIL Template & Guidelines](til_template)**
 
 The template includes:
-
 - Complete structure
 - Best practices
 - DO's and DON'Ts

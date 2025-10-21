@@ -617,9 +617,9 @@ This feature is essential for production agents that need reliability, human ove
 
 ### Related TILs
 
-- **[TIL: Context Compaction](/docs/til/til_context_compaction_20250119)** -
+- **[TIL: Context Compaction](til_context_compaction_20250119)** -
   Reduce token usage in long-running paused workflows
-- **[Back to TIL Index](/docs/til/til_index)** - Browse all quick-learn guides
+- **[Back to TIL Index](til_index)** - Browse all quick-learn guides
 
 ### Related Blog Posts
 
