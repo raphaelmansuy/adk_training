@@ -146,16 +146,16 @@ Here's the typical workflow:
     DEVELOPMENT LAYER               BUILD LAYER              DEPLOYMENT LAYER
     ─────────────────               ───────────              ────────────────
 
-    ┌──────────────────┐         ┌──────────────────┐      ┌──────────────────┐
-    │   Developer      │         │ Vertex AI Agent  │      │ Vertex AI Agent  │
-    │   Skills         │         │    Builder       │      │    Engine        │
-    │   ─────────────  │    ┌───>│  ─────────────  │ ───>  │  ─────────────   │
-    │ • Python expert  │    │    │ • Multi-agent   │       │ • Managed        │
-    │ • Framework      │    │    │   orchestration │       │   runtime        │
-    │   knowledge      │    │    │ • Visual design │       │ • Auto-scaling   │
-    └──────────────────┘    │    │ • Integration   │       │ • Monitoring     │
-              │             │    │   tools         │       │ • VPC-SC support │
-              │             │    └──────────────────┘      └──────────────────┘
+    ┌──────────────────┐         ┌──────────────────┐       ┌──────────────────┐
+    │   Developer      │         │ Vertex AI Agent  │       │ Vertex AI Agent  │
+    │   Skills         │         │    Builder       │       │    Engine        │
+    │   ─────────────  │    ┌───>│  ─────────────   │ ───>  │  ─────────────   │
+    │ • Python expert  │    │    │ • Multi-agent    │       │ • Managed        │
+    │ • Framework      │    │    │   orchestration  │       │   runtime        │
+    │   knowledge      │    │    │ • Visual design  │       │ • Auto-scaling   │
+    └──────────────────┘    │    │ • Integration    │       │ • Monitoring     │
+              │             │    │   tools          │       │ • VPC-SC support │
+              │             │    └──────────────────┘       └──────────────────┘
         Choose framework    │              │                         │
               │             │         Agent Garden                   │
         ┌─────────────┬─────┴──┐       (Templates)                   │
@@ -187,6 +187,8 @@ Here's the typical workflow:
                 │ Service  │                         │  collaborate)
                 └──────────┘                         └─────────────┘
 ```
+
+**The Agent Workflow Explained
 
 ```mermaid
 graph TD
@@ -390,7 +392,7 @@ Result: Centralized, governed, audited
 ### Portal Integration with Google's Agent Stack
 
 ```mermaid
-graph TD
+graph LR
     A["Developers"] -->|Build| B["Agent Development Kit"]
     B -->|Deploy| C["Vertex AI Agent Engine"]
 
