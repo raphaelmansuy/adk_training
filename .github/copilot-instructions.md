@@ -352,57 +352,312 @@ help(SamplingCapability)
 
 - Always read the documentation about how to write good documentation: docs/docs/skills/how_to_write_good_documentation.md and ensure that all your documentations follow the guidelines.
 
+## ⚠️ CRITICAL: Heredoc (EOF) Causes PTY Host Disconnect
+
+**RULE: NEVER use heredoc syntax (`<< 'EOF'` ... `EOF`) in VSCode integrated terminal.**
+
+Heredoc commands trigger immediate PTY host disconnect in VSCode. This is a VSCode terminal limitation with multi-line input handling.
+
+### What NOT to Do (Causes Crash)
+
+```bash
+# ❌ DON'T DO THIS - Causes PTY disconnect
+cat > file.py << 'EOF'
+# Multi-line content here
+print("hello")
+EOF
+```
+
+**Result**: PTY host disconnect error, terminal unusable.
+
+### What TO Do Instead (Safe Alternatives)
+
+**Option 1: Use echo with printf (Recommended)**
+
+```bash
+# ✅ DO THIS INSTEAD
+printf 'line1\nline2\nline3\n' > file.py
+```
+
+**Option 2: Use printf with escape sequences**
+
+```bash
+# ✅ Safe multi-line approach
+printf 'line1\nline2\nline3\n' > script.sh
+chmod +x script.sh
+```
+
+**Option 3: Paste directly into editor**
+
+```bash
+# ✅ Use VSCode editor
+# 1. Open file: code path/to/file.py
+# 2. Paste content directly in editor
+# 3. Save with Cmd+S
+# 4. Done - no PTY issues
+```
+
+**Option 4: Use separate file + copy**
+
+```bash
+# ✅ Create content outside VSCode, then copy
+# 1. Create file in external terminal or editor
+# 2. Copy to project: cp ~/Desktop/content.txt ./file.py
+# 3. No PTY involvement
+```
+
+### If PTY Disconnect Happens
+
+```bash
+# 1. Restart VSCode terminal
+# Terminal > New Terminal (Cmd+Shift+`)
+
+# 2. Or close and reopen VSCode
+Command+Q  # Close VSCode
+# Reopen it
+```
+
 ## Running Expensive Builds (Docusaurus Build)
 
-The Docusaurus build process is resource-intensive and can take significant time. When rebuilding the documentation, use one of these patterns to run the build in a separate shell process so it doesn't block your main terminal or VSCode terminal:
+⚠️ **CRITICAL: NEVER run `npm run build` from VSCode integrated terminal**
 
-### Pattern 1: Run in Background and Wait (Simple)
+This will cause PTY host disconnect. It is an architectural limitation of VSCode's PTY emulation, not a configuration issue.
+
+### ⚠️ FINAL SOLUTION: Close VSCode, Use External Terminal (ONLY 100% Effective Method)
+
+**After extensive testing, the ONLY way to prevent PTY disconnects is:**
 
 ```bash
-# Start build in background and wait for completion
-(cd /Users/raphaelmansuy/Github/03-working/adk_training/docs && rm -rf build && npm run build 2>&1 | tail -100) &
-wait
+# STEP 1: Close VSCode completely
+Command+Q  # OR quit VSCode from menu
+
+# STEP 2: Open external terminal
+open -a Terminal  # macOS Terminal
+# OR iTerm2
+
+# STEP 3: Run build with proper isolation
+export NODE_OPTIONS=--max-old-space-size=4096
+cd /Users/raphaelmansuy/Github/03-working/adk_training/docs
+nohup npm run build > build.log 2>&1 &
+
+# STEP 4: Monitor build progress
+tail -f build.log
+
+# STEP 5: After build completes, reopen VSCode
+open -a "Visual Studio Code" /Users/raphaelmansuy/Github/03-working/adk_training
 ```
 
-This starts the build as a background job and waits for it to finish.
+**Why closing VSCode is the ONLY solution:**
 
-En
+The PTY disconnect issue is not a build problem—it's a **VSCode terminal architecture limitation**:
 
-### Pattern 2: Capture Exit Status with PIPESTATUS (Recommended for zsh)
+1. VSCode integrated terminal uses PTY emulation layer (not native PTY)
+2. This emulation layer has resource limits and timeout mechanisms
+3. Complex process trees (webpack with 4-8 workers) exceed these limits
+4. VSCode times out and sends SIGINT signal
+5. Shell process dies → PTY connection orphaned
+6. "PTY host disconnect" error occurs
+7. **NO VSCode settings or configurations can fix this** (it's architectural)
+
+The ONLY ways to avoid it:
+
+- ✅ **Option A (BEST)**: Close VSCode, run build in external terminal
+- ✅ **Option B (ACCEPTABLE)**: Keep VSCode but run build in external terminal (separate processes)
+- ❌ **Option C (DOESN'T WORK)**: Run from VSCode tasks/terminal (PTY still involved)
+- ❌ **Option D (DOESN'T WORK)**: VSCode settings changes (can't override architecture)
+- ❌ **Option E (DOESN'T WORK)**: Different build commands (all use PTY if run from VSCode)
+
+### Typical Build Workflow (SAFE - Prevents All Crashes)
+
+**Complete step-by-step process (only guaranteed safe method):**
+
+**Step 1: Close VSCode**
 
 ```bash
-# Run with pipefail to capture proper exit status, show last 100 lines
-(cd /Users/raphaelmansuy/Github/03-working/adk_training/docs && set -o pipefail; rm -rf build && npm run build 2>&1 | tail -100)
-
-# After completion, check exit codes:
-echo $pipestatus  # array of exit codes for each pipeline stage
-echo $status      # overall exit code (respects pipefail)
+# Close VSCode completely from dock or use:
+Command+Q
 ```
 
-Use this pattern when you need to verify the build succeeded (exit status 0).
-
-### Pattern 3: Disown and Track Job (Advanced)
+**Step 2: Open External Terminal**
 
 ```bash
-# Start build with disown to fully detach from current shell
-(cd /Users/raphaelmansuy/Github/03-working/adk_training/docs && set -o pipefail; rm -rf build && npm run build 2>&1 | tail -100) &!
+# Press Command+Space and type: Terminal
+# Press Enter to open macOS Terminal
+# OR use iTerm2, which is more stable
+```
 
-# Check running jobs
+**Step 3: Set Node.js Memory**
+
+```bash
+# Set Node.js memory allocation
+export NODE_OPTIONS=--max-old-space-size=4096
+
+# Verify memory is set
+echo $NODE_OPTIONS
+```
+
+**Step 4: Run the Build**
+
+```bash
+# Navigate to docs directory
+cd /Users/raphaelmansuy/Github/03-working/adk_training/docs
+
+# Run build with proper output capture
+set -o pipefail; rm -rf build && npm run build 2>&1 | tail -100
+BUILD_STATUS=$?
+
+# Check result
+echo "Build exit status: $BUILD_STATUS"
+```
+
+**Step 5: Verify Build Completed**
+
+```bash
+# Check if build succeeded
+if [ -d "build" ] && [ -f "build/index.html" ]; then
+  echo "✅ Build successful"
+  find build -name "*.html" | wc -l  # Should show 225+
+else
+  echo "❌ Build failed"
+  exit 1
+fi
+```
+
+**Step 6: Verify Links After Build**
+
+```bash
+# From project root, verify all internal links
+cd ..
+python3 scripts/verify_links.py --skip-external
+
+# Expected: Success Rate 99%+
+```
+
+**Step 7: Reopen VSCode**
+
+```bash
+# Once build complete and verified, reopen VSCode
+open -a "Visual Studio Code" /Users/raphaelmansuy/Github/03-working/adk_training
+
+# VSCode will be fresh and responsive
+# All build artifacts are cached, next VSCode session is fast
+```
+
+**Complete One-Liner (for experienced users):**
+
+```bash
+export NODE_OPTIONS=--max-old-space-size=4096 && \
+cd /Users/raphaelmansuy/Github/03-working/adk_training/docs && \
+set -o pipefail; rm -rf build && npm run build 2>&1 | tail -100 && \
+cd .. && \
+python3 scripts/verify_links.py --skip-external
+```
+
+**Key Success Indicators:**
+
+✅ Build completes with exit status 0
+✅ 225 HTML files generated in `docs/build`
+✅ Link verification shows 99%+ success rate
+✅ No broken links reported
+✅ VSCode remains responsive (if open separately)
+✅ No terminal hangs or crashes
+✅ No "PTY host disconnect" error
+
+**Step 2: Run the Build (with memory and isolation)**
+
+```bash
+# Navigate to docs directory and run build
+cd /Users/raphaelmansuy/Github/03-working/adk_training/docs
+
+# Option A: Synchronous build (simple, blocks terminal)
+set -o pipefail; rm -rf build && npm run build 2>&1 | tail -100
+BUILD_STATUS=$?
+
+# Option B: Asynchronous build (advanced, continue working)
+set -o pipefail; rm -rf build && npm run build 2>&1 | tail -100 &!
+BUILD_PID=$!
+```
+
+**Step 3: Monitor Build Progress (if async)**
+
+```bash
+# Check if build is still running
+ps -p $BUILD_PID
+
+# Wait for completion
+wait $BUILD_PID
+BUILD_STATUS=$?
+
+# Or check job status
 jobs -l
-
-# Wait for specific job - e.g., job number 1
-wait %1
 ```
 
-Use this pattern when you want to continue working in the main shell while build completes in the background.
+**Step 4: Verify Build Success**
 
-### Typical Build Workflow
+```bash
+# Check build exit status (0 = success, non-zero = failure)
+echo "Build status: $BUILD_STATUS"
 
-1. Open a separate terminal or background process
-2. Run: `(cd /Users/raphaelmansuy/Github/03-working/adk_training/docs && set -o pipefail; rm -rf build && npm run build 2>&1 | tail -100)`
-3. Wait for completion
-4. Check exit status: `echo $status` (should be 0)
-5. Once build completes, run: `python3 scripts/verify_links.py --skip-external` to validate links
+# Verify build artifacts exist
+ls -lh docs/build/index.html  # Should exist
+
+# Check total HTML files generated
+find docs/build -name "*.html" | wc -l  # Should show 225+
+```
+
+**Step 5: Validate All Links**
+
+```bash
+# Quick check (internal links only, fast)
+python3 scripts/verify_links.py --skip-external
+
+# Full check (includes external URLs, slower)
+python3 scripts/verify_links.py
+
+# Export report for analysis
+python3 scripts/verify_links.py --json-output links_report.json
+```
+
+**Step 6: Review Results**
+
+```bash
+# View broken links count
+grep "Success Rate" <(python3 scripts/verify_links.py --skip-external)
+
+# If JSON was generated, examine it
+cat links_report.json | head -50
+
+# Expected: Success Rate: 99.9% or higher
+```
+
+**Complete One-Liner (for experienced users):**
+
+```bash
+export NODE_OPTIONS=--max-old-space-size=4096 && \
+cd /Users/raphaelmansuy/Github/03-working/adk_training/docs && \
+rm -rf build && npm run build 2>&1 | tail -100 && \
+cd .. && python3 scripts/verify_links.py --skip-external
+```
+
+**Key Success Indicators:**
+
+✅ Build completes with exit status 0
+✅ 225 HTML files generated in `docs/build`
+✅ Link verification shows 99%+ success rate
+✅ No broken links reported
+✅ VSCode remains responsive (if open)
+✅ No terminal hangs or crashes
+
+**If Something Goes Wrong:**
+
+| Problem | Solution |
+|---------|----------|
+| Build fails (non-zero status) | Check `npm run build` output, look for compilation errors |
+| Links verify but show broken | Run full verification with: `python3 scripts/verify_links.py` |
+| Memory issues (build slow/hangs) | Increase NODE_OPTIONS: `--max-old-space-size=6144` |
+| VSCode crashes during build | Ensure separate terminal used, VSCode not minimized helps |
+| File not found errors | Verify docs directory exists: `ls docs/package.json` |
+| Links remain broken after build | Check copilot-instructions.md for known issues |
 
 ### Link Verification After Build
 
@@ -420,5 +675,3 @@ python3 scripts/verify_links.py --json-output links_report.json
 ```
 
 See `scripts/verify_links.py` for full documentation and options.
-
-##

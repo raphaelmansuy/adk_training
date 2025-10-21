@@ -1,24 +1,29 @@
 # ADK Training Hub - Quick Start Makefile
 # User-friendly commands for the entire project
 
-.PHONY: help setup docs dev test clean format-md tutorials format-md
+.PHONY: help setup docs dev test clean format-md tutorials format-md build-docs build-docs-safe build-docs-verify recover-terminal
 
 # Default target - show help
 help:
 	@echo "🚀 ADK Training Hub - Master Google Agent Development Kit"
 	@echo ""
 	@echo "Quick Start (recommended order):"
-	@echo "  make setup     - Install all dependencies"
-	@echo "  make docs      - Build and serve documentation"
-	@echo "  make dev       - Start ADK web interface"
-	@echo "  make tutorials - List available tutorials"
+	@echo "  make setup          - Install all dependencies"
+	@echo "  make docs           - Build and serve documentation"
+	@echo "  make dev            - Start ADK web interface"
+	@echo "  make tutorials      - List available tutorials"
+	@echo ""
+	@echo "Documentation Building (SAFE METHODS):"
+	@echo "  make build-docs-safe    - Build docs with PTY protection (use external terminal!)"
+	@echo "  make build-docs-verify  - Build docs & verify all links"
+	@echo "  make recover-terminal   - Recover from PTY disconnect crashes"
 	@echo ""
 	@echo "Development Commands:"
-	@echo "  make test      - Run all tests across tutorials"
-	@echo "  make format-md - Format all markdown files"
-		@echo "  clean        Clean up all generated files and caches"
-	@echo "  format-md    Format all markdown files with Prettier"
+	@echo "  make test           - Run all tests across tutorials"
+	@echo "  make format-md      - Format all markdown files"
+	@echo "  make clean          - Clean up all generated files and caches"
 	@echo ""
+	@echo "⚠️  IMPORTANT: Always use 'make build-docs-safe' from external terminal (NOT VSCode terminal)"
 	@echo ""
 	@echo "📚 Documentation: https://raphaelmansuy.github.io/adk_training/"
 	@echo "💡 First time? Run: make setup && make docs"
@@ -40,6 +45,30 @@ docs:
 	@echo "📖 Starting documentation server..."
 	@echo "🌐 Open http://localhost:3000 in your browser"
 	cd docs && npm start
+
+# Build docs SAFELY with PTY protection (recommended)
+build-docs-safe:
+	@echo "🔒 Building documentation safely (with PTY protection)..."
+	@echo ""
+	@echo "⚠️  IMPORTANT: Please run this from an EXTERNAL terminal, not VSCode!"
+	@echo "   Use: Terminal.app (macOS) or iTerm2, NOT the VSCode integrated terminal"
+	@echo ""
+	bash scripts/build-docs-safe.sh
+
+# Build docs and verify all links
+build-docs-verify:
+	@echo "🔒 Building documentation safely and verifying links..."
+	bash scripts/build-docs-safe.sh
+	@echo ""
+	@echo "🔍 Verifying all links..."
+	python3 scripts/verify_links.py --skip-external
+	@echo ""
+	@echo "✅ Build and verification complete!"
+
+# Recover from terminal crashes
+recover-terminal:
+	@echo "🆘 Recovering from PTY terminal disconnect..."
+	bash scripts/recover-terminal.sh
 
 # Start ADK web interface (requires GOOGLE_API_KEY)
 dev: check-env
