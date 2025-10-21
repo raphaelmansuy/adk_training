@@ -690,13 +690,55 @@ Catch tool misuse before production. ✨
 
 ---
 
-## Related Resources
+## See Also
 
-- **[Tutorial on Evaluation Framework](/docs/evaluation_testing)** - Comprehensive guide to all evaluation metrics
-- **[Tutorial on Tool Development](/docs/function_tools)** - Building tools agents will use
-- **[ADK Official Evaluation Docs](https://google.github.io/adk-docs/)** - Complete evaluation API reference
-- **[Previous TIL: Context Compaction](til_context_compaction_20250119)** - Another ADK 1.16 feature
-- **[TIL Template](til_template)** - How to create TIL articles
+### Related TILs
+
+- **[TIL: Pause and Resume Invocations](til_pause_resume_20251020)** -
+  Use pause/resume to implement human-in-the-loop workflows that verify tool
+  quality before proceeding. Perfect for evaluating agent decisions at
+  checkpoints.
+
+- **[TIL: Context Compaction](til_context_compaction_20250119)** -
+  Ensure context compaction doesn't degrade tool selection quality. Monitor
+  tool use quality metrics as context becomes more compressed.
+
+- **[Back to TIL Index](til_index)** - Browse all quick-learn guides
+
+### Related ADK Tutorials
+
+- **[Tutorial 01: Hello World Agent](/docs/tutorials/01_hello_world_agent)** -
+  Foundation for understanding agents that will be evaluated for tool quality
+
+- **[Tutorial 05: Function Tools](/docs/tutorials/05_function_tools)** -
+  Learn how to design tools that agents will be evaluated on; crucial for
+  tool use quality metrics
+
+- **[Tutorial 07: Advanced Tool Composition](/docs/tutorials/07_advanced_tool_composition)** -
+  Learn about combining tools efficiently; directly measured by tool use
+  quality evaluation
+
+- **[Tutorial 10: Testing & Evaluation](/docs/tutorials/10_testing_evaluation)** -
+  Comprehensive guide to all evaluation metrics and frameworks
+
+### ADK Official Documentation
+
+- **[Evaluation Framework](https://github.com/google/adk-python/blob/main/docs/evaluation.md)** -
+  Official ADK evaluation documentation
+
+- **[Tool Use Quality Metric](https://github.com/google/adk-python/blob/main/google/adk/evaluation/metrics.py)** -
+  Source code and implementation details
+
+- **[Agent Evaluator API](https://github.com/google/adk-python/blob/main/google/adk/evaluation/agent_evaluator.py)** -
+  Complete API reference for running evaluations
+
+### Related Resources & Patterns
+
+- **[Deploy AI Agents: Production Strategies](/blog/deploy-ai-agents)** -
+  Understand quality assurance and evaluation in production systems
+
+- **[Building Reliable Agents: A Testing Strategy](/blog/building-reliable-agents)** -
+  Comprehensive approach to agent quality including tool use evaluation
 
 ## Questions?
 
