@@ -48,7 +48,7 @@ make setup      # Install dependencies
 make test       # Run all tests
 ```
 
-[📁 View Full Implementation](../../tutorial_implementation/tutorial34)
+[📁 View Full Implementation](https://github.com/raphaelmansuy/adk_training/tree/main/tutorial_implementation/tutorial34)
 
 **What's included:**
 

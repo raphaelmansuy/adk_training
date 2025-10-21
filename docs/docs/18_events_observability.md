@@ -34,7 +34,7 @@ import Comments from '@site/src/components/Comments';
 
 A complete, tested implementation of this tutorial is available in the repository:
 
-**[View Tutorial 18 Implementation →](../../tutorial_implementation/tutorial18/)**
+ **[View Tutorial 18 Implementation →](https://github.com/raphaelmansuy/adk_training/tree/main/tutorial_implementation/tutorial18/)**
 
 The implementation includes:
 - ✅ CustomerServiceMonitor with comprehensive event tracking

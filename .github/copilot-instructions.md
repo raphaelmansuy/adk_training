@@ -366,6 +366,8 @@ wait
 
 This starts the build as a background job and waits for it to finish.
 
+En
+
 ### Pattern 2: Capture Exit Status with PIPESTATUS (Recommended for zsh)
 
 ```bash

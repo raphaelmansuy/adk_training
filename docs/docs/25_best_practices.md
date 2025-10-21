@@ -76,7 +76,7 @@ import Comments from '@site/src/components/Comments';
 
 A complete, tested implementation of this tutorial is available in the repository:
 
-**[View Tutorial 25 Implementation →](../../tutorial_implementation/tutorial25/)**
+ **[View Tutorial 25 Implementation →](https://github.com/raphaelmansuy/adk_training/tree/main/tutorial_implementation/tutorial25/)**
 
 **GitHub Repository**: [Tutorial 25 Implementation](https://github.com/raphaelmansuy/adk_training/tree/main/tutorial_implementation/tutorial25)
 

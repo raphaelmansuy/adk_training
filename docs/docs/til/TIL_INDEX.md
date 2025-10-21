@@ -230,8 +230,8 @@ The template includes:
 
 ## Quick Navigation
 
-- **[📚 All Tutorials](/hello_world_agent)** - Comprehensive courses
-- **[🧠 Mental Models](/overview)** - Architecture and design
+- **[📚 All Tutorials](/docs/hello_world_agent)** - Comprehensive courses
+- **[🧠 Mental Models](/docs/overview)** - Architecture and design
 - **[📖 Blog](/blog)** - Articles and insights
 - **[🐙 GitHub](https://github.com/raphaelmansuy/adk_training)** - Source code
 
