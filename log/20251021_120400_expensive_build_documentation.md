@@ -3,12 +3,17 @@
 **Date**: 2025-10-21 12:04:00
 
 ## Summary
-Documented comprehensive patterns for running expensive Docusaurus builds in separate shell processes without blocking the main VSCode terminal or development workflow.
+
+Documented comprehensive patterns for running expensive Docusaurus builds in
+separate shell processes without blocking VSCode terminal or development flow.
 
 ## Changes Made
-Updated `.github/copilot-instructions.md` with a new section "Running Expensive Builds (Docusaurus Build)" that includes:
+
+Updated `.github/copilot-instructions.md` with a new "Running Expensive Builds"
+section that includes:
 
 ### Three Build Patterns
+
 1. **Pattern 1: Run in Background and Wait (Simple)**
    - Simple background job with wait
    - Useful for fire-and-forget builds
@@ -24,7 +29,7 @@ Updated `.github/copilot-instructions.md` with a new section "Running Expensive 
    - Shows how to track with `jobs -l` and wait for specific job
 
 ### Typical Build Workflow
-5-step workflow included:
+
 - Open separate terminal
 - Run build with output capture
 - Wait for completion
@@ -32,17 +37,22 @@ Updated `.github/copilot-instructions.md` with a new section "Running Expensive 
 - Run link verification after build
 
 ### Link Verification Section
-Added guidance on running `scripts/verify_links.py`:
+
 - `--skip-external` for quick internal link check
 - Full verification for internal + external links
 - `--json-output` for analysis export
 
 ## Context
-This documentation emerged from successfully running the Docusaurus build in the background and conducting link verification. The patterns ensure:
+
+This documentation emerged from successfully running the Docusaurus build in
+the background and conducting link verification. The patterns ensure:
+
 - Non-blocking builds in VSCode terminal
 - Proper exit status capture in zsh
 - Clean workflow for build + verification cycle
 
 ## Related Files
+
 - `.github/copilot-instructions.md` - Updated with new section
 - `scripts/verify_links.py` - Link verification script referenced
+
