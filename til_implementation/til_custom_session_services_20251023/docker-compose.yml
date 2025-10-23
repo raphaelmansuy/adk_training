@@ -14,33 +14,7 @@ services:
       interval: 5s
       timeout: 3s
       retries: 5
-    networks:
-      - adk-session-net
-
-  mongodb:
-    image: mongo:7.0
-    container_name: adk-mongodb-session
-    ports:
-      - "27017:27017"
-    environment:
-      MONGO_INITDB_ROOT_USERNAME: admin
-      MONGO_INITDB_ROOT_PASSWORD: password
-    volumes:
-      - mongodb_data:/data/db
-    healthcheck:
-      test: echo 'db.runCommand("ping").ok' | mongosh localhost:27017/test --quiet
-      interval: 5s
-      timeout: 3s
-      retries: 5
-    networks:
-      - adk-session-net
 
 volumes:
   redis_data:
     driver: local
-  mongodb_data:
-    driver: local
-
-networks:
-  adk-session-net:
-    driver: bridge

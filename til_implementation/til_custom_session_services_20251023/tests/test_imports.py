@@ -53,7 +53,7 @@ class TestEnvConfig:
         assert os.path.exists(env_example_path), ".env.example should exist"
 
     def test_env_contains_required_vars(self):
-        """Test that .env.example contains required variables."""
+        """Test that .env.example contains required Redis variables."""
         import os
         env_example_path = os.path.join(
             os.path.dirname(__file__),
@@ -63,12 +63,12 @@ class TestEnvConfig:
         with open(env_example_path, "r") as f:
             content = f.read()
         
+        # Redis-focused environment variables
         required_vars = [
             "GOOGLE_API_KEY",
             "REDIS_HOST",
             "REDIS_PORT",
-            "MONGODB_HOST",
-            "SESSION_SERVICE_TYPE",
+            "SESSION_SERVICE_URI",
         ]
         
         for var in required_vars:
