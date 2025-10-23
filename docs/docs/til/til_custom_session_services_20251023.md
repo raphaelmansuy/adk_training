@@ -140,11 +140,11 @@ Scheme Registration:
 ┌─────────────────────────────────────────────────────────┐
 │  Service Registry (get_service_registry())              │
 ├─────────────────────────────────────────────────────────┤
-│                                                          │
+│                                                         │
 │  "redis"  → redis_factory()                             │
 │            Creates RedisSessionService instances        │
 │            Loads sessions from Redis                    │
-│                                                          │
+│                                                         │
 └─────────────────────────────────────────────────────────┘
 
 When you run: adk web --session_service_uri=redis://localhost:6379
@@ -553,11 +553,11 @@ automatically. ✨
 
 ### Related TILs
 
-- **[TIL: Context Compaction](til_context_compaction_20250119)** - Optimize
+- **[TIL: Context Compaction](/docs/til/til_context_compaction_20250119)** - Optimize
   memory usage in long conversations (works well with persistent sessions!)
-- **[TIL: Pause and Resume Invocations](til_pause_resume_20251020)** -
+- **[TIL: Pause and Resume Invocations](/docs/til/til_pause_resume_20251020)** -
   Checkpoint agent execution state
-- **[Back to TIL Index](til_index)** - Browse all quick-learn guides
+- **[Back to TIL Index](/docs/til/til_index)** - Browse all quick-learn guides
 
 ### Related ADK Tutorials
 
