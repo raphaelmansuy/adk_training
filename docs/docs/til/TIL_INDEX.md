@@ -25,6 +25,34 @@ Perfect for staying current with ADK features and integrating them into your pro
 
 ## Available TILs
 
+### Custom Session Services (October 23, 2025)
+
+**📖 [TIL: Registering Custom Session Services in Google ADK 1.17](til_custom_session_services_20251023)**
+
+Extend ADK with custom session storage backends (Redis, MongoDB, PostgreSQL, DynamoDB).
+
+**Key Points:**
+- 💾 Persistent sessions that survive server restarts
+- 📊 Distributed storage for multi-server deployments
+- 🏢 Enterprise integration with your existing infrastructure
+- 🔧 Support any backend: Redis, MongoDB, PostgreSQL, DynamoDB, or custom
+- 🎛️ Works seamlessly with `adk web` via URI schemes
+- ⚡ Register once, use everywhere
+
+**In 8 minutes you'll learn:**
+1. Why custom session services matter
+2. Service registry pattern and factory functions
+3. BaseSessionStorage inheritance
+4. Redis, MongoDB, and multi-backend examples
+5. Configuration and pro tips
+6. Working implementation with tests
+
+**ADK Version:** 1.17+  
+**Complexity:** Intermediate  
+**Time:** ~8 minutes
+
+---
+
 ### Tool Use Quality (October 21, 2025)
 
 **📖 [TIL: Evaluating Tool Use Quality with Google ADK 1.16](til_rubric_based_tool_use_quality_20251021)**

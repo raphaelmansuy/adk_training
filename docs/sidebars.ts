@@ -106,6 +106,11 @@ const sidebars: SidebarsConfig = {
         },
         {
           type: 'doc',
+          id: 'til/til_custom_session_services_20251023',
+          label: 'TIL: Custom Session Services (Oct 23)',
+        },
+        {
+          type: 'doc',
           id: 'til/til_rubric_based_tool_use_quality_20251021',
           label: 'TIL: Tool Use Quality (Oct 21)',
         },
