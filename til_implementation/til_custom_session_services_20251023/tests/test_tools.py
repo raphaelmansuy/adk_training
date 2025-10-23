@@ -69,15 +69,15 @@ class TestToolFunctions:
             pytest.skip("ADK not installed")
 
     def test_show_service_registry_info_contains_schemes(self):
-        """Test show_service_registry_info mentions example schemes."""
+        """Test show_service_registry_info explains Redis registration."""
         try:
             from custom_session_agent.agent import show_service_registry_info
             result = show_service_registry_info()
             
-            assert "example_schemes" in result["data"]
-            schemes = result["data"]["example_schemes"]
-            assert "redis" in schemes
-            assert "mongodb" in schemes
+            assert "redis_registration" in result["data"]
+            redis_reg = result["data"]["redis_registration"]
+            assert redis_reg["scheme"] == "redis"
+            assert "registration" in redis_reg
         except ImportError:
             pytest.skip("ADK not installed")
 
@@ -96,31 +96,32 @@ class TestToolFunctions:
             pytest.skip("ADK not installed")
 
     def test_get_session_backend_guide_contains_backends(self):
-        """Test get_session_backend_guide mentions all backends."""
+        """Test get_session_backend_guide focuses on Redis."""
         try:
             from custom_session_agent.agent import get_session_backend_guide
             result = get_session_backend_guide()
             
             data = result["data"]
-            assert "redis" in data
-            assert "mongodb" in data
-            assert "memory" in data
-            assert "custom" in data
+            # New structure focuses on Redis
+            assert "why_redis" in data
+            assert "redis_setup" in data
+            assert "features" in data
+            assert "best_practices" in data
         except ImportError:
             pytest.skip("ADK not installed")
 
     def test_get_session_backend_guide_redis_info(self):
-        """Test get_session_backend_guide has Redis information."""
+        """Test get_session_backend_guide has Redis setup information."""
         try:
             from custom_session_agent.agent import get_session_backend_guide
             result = get_session_backend_guide()
             
-            redis_info = result["data"]["redis"]
-            assert "description" in redis_info
-            assert "use_cases" in redis_info
-            assert "pros" in redis_info
-            assert "cons" in redis_info
-            assert "setup" in redis_info
+            data = result["data"]
+            assert "why_redis" in data
+            assert "redis_setup" in data
+            redis_setup = data["redis_setup"]
+            assert "start_container" in redis_setup
+            assert "connect" in redis_setup
         except ImportError:
             pytest.skip("ADK not installed")
 

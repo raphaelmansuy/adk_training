@@ -38,22 +38,25 @@ import Comments from '@site/src/components/Comments';
 
 ### Why Custom Session Services Matter
 
-**The Problem**: By default, ADK stores sessions in memory. For production agents, you need:
+**The Problem**: By default, ADK stores sessions in memory. For
+production, you need:
 
 - Persistent storage (survive server restarts)
 - Distributed storage (multi-server deployments)
 - Custom backends (your specific infrastructure)
 
-**In one sentence**: Custom Session Services let you register any storage backend (Redis, MongoDB, PostgreSQL, DynamoDB) with ADK's service registry so `adk web` and your agents can use them seamlessly.
+**In one sentence**: Custom Session Services let you register any
+storage backend (Redis, MongoDB, PostgreSQL) with ADK's service
+registry so `adk web` and agents can use them seamlessly.
 
 ### Why Should You Care?
 
 **Problems it solves:**
 
-- 💾 **Persistent Sessions** - Sessions survive server restarts
-- 📊 **Distributed Systems** - Share sessions across multiple servers
-- 🏢 **Enterprise Integration** - Use your existing storage infrastructure
-- 🔧 **Custom Backends** - MongoDB, Redis, PostgreSQL, DynamoDB, or anything
+- 💾 **Persistent Sessions** - Survive server restarts
+- 📊 **Distributed Systems** - Share across multiple servers
+- 🏢 **Enterprise Integration** - Use your existing storage
+- 🔧 **Custom Backends** - Redis, MongoDB, PostgreSQL, DynamoDB
 - 🎛️ **CLI Support** - Works with `adk web` via URI schemes
 - ⚡ **Zero Code Changes** - Register once, use everywhere
 
@@ -70,20 +73,47 @@ import Comments from '@site/src/components/Comments';
 ```python
 from google.adk.cli import cli_tools_click
 from google.adk.cli.service_registry import get_service_registry
-from google.adk_community.sessions import redis_session_service
+from google.adk.sessions import BaseSessionService, Session
 
-# Step 1: Create a factory function
-def redis_service_factory(uri: str, **kwargs):
-    """Factory for creating a RedisSessionService."""
+class RedisSessionService(BaseSessionService):
+    """Store sessions in Redis with 24-hour auto-expiration."""
+    
+    def __init__(self, uri: str = "redis://localhost:6379", **kwargs):
+        self.redis_uri = uri
+        self.redis_client = redis.from_url(uri, decode_responses=True)
+    
+    async def create_session(self, *, app_name: str, user_id: str, **kwargs):
+        """Create and store session in Redis."""
+        session_id = str(uuid.uuid4())
+        session = Session(id=session_id, app_name=app_name, user_id=user_id)
+        # Store to Redis with 24h TTL
+        self.redis_client.set(f"session:{app_name}:{user_id}:{session_id}",
+                            json.dumps(session.dict()), ex=86400)
+        return session
+    
+    async def get_session(self, *, app_name: str, user_id: str,
+                        session_id: str, **kwargs):
+        """Retrieve session from Redis."""
+        data = self.redis_client.get(f"session:{app_name}:{user_id}:{session_id}")
+        return Session(**json.loads(data)) if data else None
+    
+    async def append_event(self, session: Session, event):
+        """Critical: Save events to Redis when session updates."""
+        event = await super().append_event(session=session, event=event)
+        # Save updated session with all events to Redis
+        key = f"session:{session.app_name}:{session.user_id}:{session.id}"
+        self.redis_client.set(key, json.dumps(session.dict()), ex=86400)
+        return event
+
+# Register with service registry
+def redis_factory(uri: str, **kwargs):
     kwargs_copy = kwargs.copy()
     kwargs_copy.pop("agents_dir", None)
-    return redis_session_service.RedisSessionService(**kwargs_copy)
+    return RedisSessionService(uri=uri, **kwargs_copy)
 
-# Step 2: Register with service registry
 registry = get_service_registry()
-registry.register_session_service("redis", redis_service_factory)
+registry.register_session_service("redis", redis_factory)
 
-# Step 3: Use via CLI
 if __name__ == '__main__':
     cli_tools_click.main()
 ```
@@ -92,36 +122,28 @@ if __name__ == '__main__':
 
 ```bash
 # Redis sessions from CLI
-adk web agents/ --session_service_uri=redis://localhost:6379/0
+python app.py web agents/ --session_service_uri=redis://localhost:6379
 
-# Or MongoDB (if you implement it)
-adk web agents/ --session_service_uri=mongodb://localhost:27017/adk_sessions
+# Sessions automatically persist to Redis!
 ```
 
 ### How It Works (3 Key Concepts)
 
 #### 1. Service Registry Pattern
 
-ADK has a **global service registry** that maps URI schemes to factories:
+ADK has a **global service registry** that maps URI schemes to
+factories. Here's the flow:
 
-```
-URI Scheme Registration:
+```text
+Scheme Registration:
 
 ┌─────────────────────────────────────────────────────────┐
 │  Service Registry (get_service_registry())              │
 ├─────────────────────────────────────────────────────────┤
 │                                                          │
-│  "redis"     → redis_service_factory()                  │
-│               Creates RedisSessionService instances     │
-│                                                          │
-│  "mongodb"   → mongodb_service_factory()                │
-│               Creates MongoDBSessionService instances   │
-│                                                          │
-│  "postgres"  → postgres_service_factory()               │
-│               Creates PostgresSessionService instances  │
-│                                                          │
-│  [custom]    → your_factory()                           │
-│               Creates YourCustomService instances       │
+│  "redis"  → redis_factory()                             │
+│            Creates RedisSessionService instances        │
+│            Loads sessions from Redis                    │
 │                                                          │
 └─────────────────────────────────────────────────────────┘
 
@@ -132,89 +154,161 @@ Parse URI scheme: "redis"
 ↓
 Look up factory: registry.get_session_service_factory("redis")
 ↓
-Call factory: redis_service_factory(uri="redis://localhost:6379")
+Call factory: redis_factory(uri="redis://localhost:6379")
 ↓
 Return: RedisSessionService instance ready to use
 ```
 
 #### 2. Factory Function Pattern
 
-Your factory receives the **URI string** and returns a **session service instance**:
+Your factory receives the **URI string** and returns a **session
+service instance**:
 
 ```python
-def custom_session_factory(uri: str, **kwargs):
+def redis_factory(uri: str, **kwargs):
     """
     Factory receives the full URI from CLI.
 
     Args:
-        uri: Full URI string (e.g., "redis://localhost:6379/0")
+        uri: Full URI string (e.g., "redis://localhost:6379")
         **kwargs: Additional options from ADK
 
     Returns:
-        Instance of your custom session service
+        RedisSessionService instance ready to use
     """
-    # Parse URI if needed
-    parsed = parse_uri(uri)  # extract host, port, db, etc.
-
-    # Create and return service instance
-    return CustomSessionService(
-        host=parsed.host,
-        port=parsed.port,
-        **kwargs
-    )
-```
-
-**Why kwargs handling matters:**
-
-```python
-# Always remove agents_dir from kwargs
-# It's passed by ADK but your service doesn't need it
-def redis_factory(uri: str, **kwargs):
     kwargs_copy = kwargs.copy()
-    kwargs_copy.pop("agents_dir", None)  # ← Important!
-    return RedisSessionService(**kwargs_copy)
+    kwargs_copy.pop("agents_dir", None)  # Remove non-service kwarg
+    return RedisSessionService(uri=uri, **kwargs_copy)
 ```
 
-#### 3. Inheritance from BaseSessionStorage
+#### 3. Inherit from BaseSessionService
 
-Your custom service must inherit from `BaseSessionStorage`:
+Your custom service must inherit from `BaseSessionService`:
 
 ```python
-from google.adk.sessions import BaseSessionStorage
+from google.adk.sessions import BaseSessionService, Session, Event
+import redis
+import json
+import uuid
 
-class CustomSessionService(BaseSessionStorage):
-    """Your custom session storage backend."""
+class RedisSessionService(BaseSessionService):
+    """Store ADK sessions in Redis."""
 
-    async def write(self, session_id: str, data: dict) -> None:
-        """Write session data to storage."""
-        # Your implementation: save to Redis, MongoDB, etc.
-        pass
+    def __init__(self, uri: str = "redis://localhost:6379"):
+        self.redis_client = redis.from_url(uri, decode_responses=True)
 
-    async def read(self, session_id: str) -> dict:
-        """Read session data from storage."""
-        # Your implementation: retrieve from your backend
-        pass
+    async def create_session(self, *, app_name: str, user_id: str,
+                           **kwargs):
+        """Create and store session in Redis."""
+        session_id = str(uuid.uuid4())
+        session = Session(id=session_id, app_name=app_name,
+                        user_id=user_id)
+        # Store to Redis with 24-hour expiration
+        self.redis_client.set(f"session:{session_id}",
+                            json.dumps(session.dict()),
+                            ex=86400)
+        return session
 
-    async def delete(self, session_id: str) -> None:
-        """Delete session data."""
-        # Your implementation: remove from your backend
-        pass
+    async def get_session(self, *, app_name: str, user_id: str,
+                        session_id: str, **kwargs):
+        """Retrieve session from Redis."""
+        data = self.redis_client.get(f"session:{session_id}")
+        if not data:
+            return None
+        return Session(**json.loads(data))
+
+    async def list_sessions(self, *, app_name: str, user_id: str,
+                          **kwargs):
+        """List all sessions for a user."""
+        pattern = f"session:*"
+        sessions = []
+        for key in self.redis_client.keys(pattern):
+            data = self.redis_client.get(key)
+            if data:
+                session_dict = json.loads(data)
+                if (session_dict.get("app_name") == app_name and
+                    session_dict.get("user_id") == user_id):
+                    sessions.append(Session(**session_dict))
+        return {"sessions": sessions, "total_count": len(sessions)}
+
+    async def delete_session(self, *, app_name: str, user_id: str,
+                           session_id: str, **kwargs):
+        """Delete session from Redis."""
+        self.redis_client.delete(f"session:{session_id}")
+
+    async def append_event(self, session: Session, event):
+        """Critical: Save events and full session to Redis."""
+        # Call parent to add event to session.events
+        event = await super().append_event(session=session, event=event)
+        # IMPORTANT: Save entire session to Redis after event added
+        self.redis_client.set(f"session:{session.id}",
+                            json.dumps(session.dict()),
+                            ex=86400)
+        return event
 ```
 
-### Use Case 1: Redis Session Service
+### Use Case: Redis Session Service
 
-**Scenario**: You're running agents in production and want fast, persistent sessions.
+**Scenario**: You're running agents in production and want fast,
+persistent sessions with automatic expiration.
 
 ```python
-# redis_setup.py
+# main.py
 from google.adk.cli import cli_tools_click
 from google.adk.cli.service_registry import get_service_registry
-from google.adk_community.sessions import redis_session_service
+import redis
+import json
+import uuid
+from google.adk.sessions import BaseSessionService, Session
 
+class RedisSessionService(BaseSessionService):
+    """Store ADK sessions in Redis."""
+
+    def __init__(self, uri: str = "redis://localhost:6379"):
+        self.redis_client = redis.from_url(uri, decode_responses=True)
+
+    async def create_session(self, *, app_name: str, user_id: str,
+                           **kwargs):
+        session_id = str(uuid.uuid4())
+        session = Session(id=session_id, app_name=app_name,
+                        user_id=user_id)
+        self.redis_client.set(f"session:{session_id}",
+                            json.dumps(session.dict()), ex=86400)
+        return session
+
+    async def append_event(self, session: Session, event):
+        event = await super().append_event(session=session, event=event)
+        self.redis_client.set(f"session:{session.id}",
+                            json.dumps(session.dict()), ex=86400)
+        return event
+
+    async def get_session(self, *, app_name: str, user_id: str,
+                        session_id: str, **kwargs):
+        data = self.redis_client.get(f"session:{session_id}")
+        if not data:
+            return None
+        return Session(**json.loads(data))
+
+    async def list_sessions(self, *, app_name: str, user_id: str,
+                          **kwargs):
+        sessions = []
+        for key in self.redis_client.keys("session:*"):
+            data = self.redis_client.get(key)
+            if data:
+                s = Session(**json.loads(data))
+                if s.app_name == app_name and s.user_id == user_id:
+                    sessions.append(s)
+        return {"sessions": sessions, "total_count": len(sessions)}
+
+    async def delete_session(self, *, app_name: str, user_id: str,
+                           session_id: str, **kwargs):
+        self.redis_client.delete(f"session:{session_id}")
+
+# Register the service
 def redis_factory(uri: str, **kwargs):
     kwargs_copy = kwargs.copy()
     kwargs_copy.pop("agents_dir", None)
-    return redis_session_service.RedisSessionService(**kwargs_copy)
+    return RedisSessionService(uri=uri, **kwargs_copy)
 
 registry = get_service_registry()
 registry.register_session_service("redis", redis_factory)
@@ -226,103 +320,23 @@ if __name__ == '__main__':
 **Run with:**
 
 ```bash
-# Default Redis (localhost:6379, db=0)
-python redis_setup.py web agents/
+# Default Redis (localhost:6379)
+python main.py web agents/
 
 # Custom Redis location
-python redis_setup.py web agents/ \
-  --session_service_uri=redis://redis.prod.example.com:6379/1
+python main.py web agents/ \
+  --session_service_uri=redis://redis.prod.example.com:6379
 
-# Result: All sessions persist to Redis ✅
+# Result: All sessions persist to Redis with auto-expiration ✅
 ```
 
-### Use Case 2: Custom MongoDB Service
+**What happens:**
 
-**Scenario**: Your team uses MongoDB, and you want session documents stored there.
-
-```python
-from google.adk.sessions import BaseSessionStorage
-from pymongo import MongoClient
-import json
-
-class MongoDBSessionService(BaseSessionStorage):
-    """Store ADK sessions in MongoDB."""
-
-    def __init__(self, connection_string: str, **kwargs):
-        self.client = MongoClient(connection_string)
-        self.db = self.client['adk_sessions']
-        self.collection = self.db['sessions']
-
-    async def write(self, session_id: str, data: dict) -> None:
-        """Write session to MongoDB."""
-        self.collection.update_one(
-            {"_id": session_id},
-            {"$set": {"data": data}},
-            upsert=True
-        )
-
-    async def read(self, session_id: str) -> dict:
-        """Read session from MongoDB."""
-        doc = self.collection.find_one({"_id": session_id})
-        return doc["data"] if doc else {}
-
-    async def delete(self, session_id: str) -> None:
-        """Delete session from MongoDB."""
-        self.collection.delete_one({"_id": session_id})
-
-# Register it
-def mongodb_factory(uri: str, **kwargs):
-    kwargs_copy = kwargs.copy()
-    kwargs_copy.pop("agents_dir", None)
-    return MongoDBSessionService(
-        connection_string=uri.replace("mongodb://", "mongodb://"),
-        **kwargs_copy
-    )
-
-registry = get_service_registry()
-registry.register_session_service("mongodb", mongodb_factory)
-```
-
-**Run with:**
-
-```bash
-adk web agents/ --session_service_uri=mongodb://localhost:27017/mydb
-```
-
-### Use Case 3: Multi-Backend Setup
-
-**Scenario**: Different agents use different backends (Redis for cache,
-PostgreSQL for critical data).
-
-```python
-from google.adk.cli import cli_tools_click
-from google.adk.cli.service_registry import get_service_registry
-from google.adk_community.sessions import redis_session_service
-from my_custom import postgres_session_service
-
-registry = get_service_registry()
-
-# Register Redis
-def redis_factory(uri: str, **kwargs):
-    kwargs_copy = kwargs.copy()
-    kwargs_copy.pop("agents_dir", None)
-    return redis_session_service.RedisSessionService(**kwargs_copy)
-
-registry.register_session_service("redis", redis_factory)
-
-# Register PostgreSQL
-def postgres_factory(uri: str, **kwargs):
-    kwargs_copy = kwargs.copy()
-    kwargs_copy.pop("agents_dir", None)
-    return postgres_session_service.PostgresSessionService(**kwargs_copy)
-
-registry.register_session_service("postgres", postgres_factory)
-
-if __name__ == '__main__':
-    cli_tools_click.main()
-```
-
-**Choose at runtime:**
+1. Sessions are created on first interaction
+2. Each event (user message, agent response) triggers `append_event()`
+3. Full session state is saved to Redis (24-hour TTL)
+4. Sessions survive page refreshes, server restarts
+5. After 24 hours, sessions auto-expire from Redis
 
 ```bash
 # Use Redis for fast agents
@@ -343,10 +357,10 @@ registry.register_session_service(
 
 | Parameter | Type | Purpose |
 |-----------|------|---------|
-| `scheme` | str | URI scheme identifier (e.g., "redis", "mongodb") |
-| `factory` | Callable | Function that takes `(uri: str, **kwargs)` and returns service |
-| `uri` | str | Full URI passed to factory (e.g., "redis://localhost:6379") |
-| `**kwargs` | dict | Additional options (remove `agents_dir` before using) |
+| `scheme` | str | URI scheme identifier (e.g., "redis") |
+| `factory` | Callable | Function that takes `(uri: str, **kwargs)` |
+| `uri` | str | Full URI (e.g., "redis://localhost:6379") |
+| `**kwargs` | dict | Additional options (remove `agents_dir`) |
 
 ### Pro Tips
 
@@ -417,96 +431,109 @@ class MySessionService(BaseSessionStorage):
 
 ### Complete Working Implementation
 
-The full implementation includes:
+This TIL includes a production-ready Redis session service that you
+can use directly:
 
-- Full Redis session service example (or MongoDB alternative)
-- Registration in ADK CLI
-- Comprehensive tests for factory pattern
-- Test suite for session operations
-- Multiple backends demonstrated
-- Environment configuration
+**Start the example:**
 
 ```bash
 cd til_implementation/til_custom_session_services_20251023/
 
-make setup       # Install dependencies
-make test        # Run all tests (validates registration)
+make setup       # Install dependencies + Docker
+make docker-up   # Start Redis container
 make dev         # Launch web UI with custom sessions
 ```
 
-**Test the implementation:**
+**Key files in the implementation:**
+
+- `custom_session_agent/agent.py` - RedisSessionService with all 5
+  methods
+- `custom_session_agent/__main__.py` - Entry point that registers
+  service
+- `tests/` - Full test suite for factory and service methods
+- `view_sessions.py` - Utility to inspect Redis session data
+- `Makefile` - Simplified commands (setup, docker-up, dev, test)
+
+**Run the tests:**
 
 ```bash
-# Run from implementation directory
+cd til_implementation/til_custom_session_services_20251023/
 pytest tests/ -v
 
 # Expected output:
-# test_registration.py::test_factory_registration PASSED
-# test_registration.py::test_uri_parsing PASSED
-# test_redis_service.py::test_session_write PASSED
-# test_redis_service.py::test_session_read PASSED
-# test_redis_service.py::test_session_delete PASSED
+# test_agent.py::test_agent_config_valid PASSED
+# test_imports.py::test_required_env_vars PASSED
+# test_tools.py::test_show_service_registry_info PASSED
+# ...
+# 26 passed ✅
 ```
 
 ### How Persistence Works in Practice
 
-**Session Lifecycle with Custom Backend:**
+**Session Lifecycle with Redis:**
 
-```
+```text
 1. User sends message to agent
    ↓
 2. ADK creates/loads session
    ↓
-3. Session service loads old data
-   myService.read(session_id) → fetches from Redis/MongoDB
+3. Session service loads session data
+   RedisSessionService.get_session() loads from Redis
    ↓
 4. Agent processes message with session context
    ↓
-5. Response generated
+5. Response generated + event created
    ↓
-6. Session updated and saved
-   myService.write(session_id, updated_data) → Redis/MongoDB
+6. Session saved to Redis
+   RedisSessionService.append_event() saves full session
+   (This is the CRITICAL method!)
    ↓
 7. User refreshes browser
    ↓
 8. New request for same session_id
    ↓
-9. Session service loads saved data
-   myService.read(session_id) → data persists! ✅
+9. Session service loads session
+   RedisSessionService.get_session() → retrieves from Redis
+   Data persists! ✅
    ↓
-10. Agent has full context from previous interaction ✅
+10. Agent has full context (conversation history, state) ✅
 ```
 
 **Verification Steps:**
 
-1. Start your agent with custom sessions:
+1. Start your agent with Redis sessions:
+
    ```bash
-   python my_setup.py web agents/ --session_service_uri=redis://localhost:6379
+   make setup
+   make docker-up
+   make dev
    ```
 
-2. Open browser to localhost:8000
+2. Open browser to `localhost:8000`
 
 3. Send message to agent ("What's your name?")
 
-4. Check backend (Redis/MongoDB directly):
-   ```bash
-   # Redis
-   redis-cli GET session:xyz123
+4. Check Redis directly:
 
-   # MongoDB
-   db.sessions.find({"_id": "xyz123"})
+   ```bash
+   # View all sessions stored in Redis
+   cd til_implementation/til_custom_session_services_20251023/
+   python view_sessions.py
    ```
 
-5. You should see session data persisted ✅
+5. You should see session with conversation history ✅
 
 6. Refresh browser - agent remembers conversation ✅
 
 ### Next Steps After Learning
 
-1. 📖 **Check adk-python-community**: See working Redis implementation
-2. 🚀 **Implement your backend**: Adapt example to your storage system
-3. 💬 **Register and test**: Use the pattern in your main CLI
-4. 🔄 **Deploy**: Use in production `adk web` and agents
+1. 📖 **Copy the pattern**: Use `custom_session_agent/agent.py`
+   as a template for your own service
+2. 🚀 **Adapt to your backend**: Replace Redis client with your
+   storage system
+3. 💬 **Register service**: Use the factory pattern in your CLI
+4. 🔄 **Deploy**: Use in production with `adk web
+   --session_service_uri=your_uri`
 
 ## Key Takeaway
 
@@ -543,19 +570,19 @@ automatically. ✨
 
 ### ADK Official Documentation
 
-- **[BaseSessionStorage API](https://github.com/google/adk-python/tree/main/google/adk/sessions)** -
-  Complete API reference and abstract methods
-- **[Service Registry](https://github.com/google/adk-python/blob/main/google/adk/cli/service_registry.py)** -
-  Service registry implementation
-- **[ADK Community Sessions](https://github.com/google/adk-python-community/tree/main/src/google/adk_community/sessions)** -
-  Working Redis implementation
+- **BaseSessionService API** - Complete API reference and abstract
+  methods (see google.adk.sessions module)
+- **Service Registry** - Service registry implementation in
+  google.adk.cli.service_registry
+- **ADK Community Sessions** - Working Redis implementation in
+  adk-python-community
 
 ### Related Resources & Patterns
 
-- **[Production Agent Patterns](/blog/production-agent-checklist)** - Session
-  persistence is critical for production agents
-- **[Custom Session Services Implementation](https://github.com/raphaelmansuy/adk_training/tree/main/til_implementation/til_custom_session_services_20251023)** -
-  Working code example with full test suite
+- **Production Agent Patterns** - Session persistence is critical for
+  production agents
+- **Custom Session Services Implementation** - Working code example
+  with full test suite (see til_implementation directory)
 
 ## Questions?
 
@@ -564,4 +591,5 @@ automatically. ✨
 - 🚀 Ready to go deeper? See Tutorial 08
 
 <Comments />
+```
 ```

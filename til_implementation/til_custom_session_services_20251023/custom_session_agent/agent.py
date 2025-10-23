@@ -1,8 +1,8 @@
 """
 Custom Session Services Agent
 
-Demonstrates registering and using custom session storage backends
-(Redis, MongoDB, etc.) with Google ADK's service registry pattern.
+Demonstrates registering and using Redis as a custom session storage backend
+with Google ADK's service registry pattern.
 """
 
 import os
@@ -389,7 +389,7 @@ def show_service_registry_info() -> Dict[str, Any]:
     """
     Tool to display service registry information.
     
-    Shows how to access the service registry programmatically.
+    Shows how to register Redis as a custom session backend.
     
     Returns:
         Dictionary with registry details
@@ -397,19 +397,21 @@ def show_service_registry_info() -> Dict[str, Any]:
     try:
         return {
             "status": "success",
-            "report": "Service registry information retrieved",
+            "report": "Redis service registry information",
             "data": {
-                "pattern": "Factory functions map URI schemes to services",
-                "example_schemes": ["redis", "mongodb", "memory", "postgres"],
-                "how_it_works": {
-                    "step1": "Define factory function (takes URI, returns service)",
-                    "step2": "Call registry.register_session_service(scheme, factory)",
-                    "step3": "ADK uses registry when parsing --session_service_uri"
+                "pattern": "Register factory functions that create session services",
+                "redis_registration": {
+                    "scheme": "redis",
+                    "factory_pattern": "def redis_factory(uri: str, **kwargs) -> RedisSessionService",
+                    "registration": "registry.register_session_service('redis', redis_factory)",
+                    "usage": "python -m agent web --session_service_uri=redis://localhost:6379"
                 },
-                "registration_code": """
-registry = get_service_registry()
-registry.register_session_service("redis", redis_factory)
-                """
+                "key_points": [
+                    "Factory receives URI string as input",
+                    "Always pop 'agents_dir' from kwargs",
+                    "Return configured service instance",
+                    "ADK handles the rest automatically"
+                ]
             }
         }
     except Exception as e:
@@ -422,41 +424,39 @@ registry.register_session_service("redis", redis_factory)
 
 def get_session_backend_guide() -> Dict[str, Any]:
     """
-    Tool to provide guidance on different session backends.
+    Tool to provide guidance on Redis as a session backend.
     
     Returns:
-        Dictionary with backend comparison and selection guide
+        Dictionary with Redis setup and best practices
     """
     return {
         "status": "success",
-        "report": "Session backend selection guide",
+        "report": "Redis session backend guide",
         "data": {
-            "redis": {
-                "description": "Fast in-memory storage with persistence",
-                "use_cases": ["Production agents", "High-frequency sessions", "Cache"],
-                "pros": ["Fast", "Persistent", "Distributed", "Well-supported"],
-                "cons": ["Requires Redis server", "Memory constraints"],
-                "setup": "make docker-up  # Starts Redis container"
+            "why_redis": "Fast, persistent, production-ready in-memory data store",
+            "redis_setup": {
+                "start_container": "make docker-up",
+                "connect": "redis://localhost:6379",
+                "default_ttl": "24 hours per session"
             },
-            "mongodb": {
-                "description": "Document-oriented storage",
-                "use_cases": ["Document-heavy sessions", "MongoDB shops", "Complex data"],
-                "pros": ["Flexible schema", "Complex queries", "Large documents"],
-                "cons": ["Slower than Redis", "More setup required"],
-                "setup": "make docker-up  # Starts MongoDB container"
-            },
-            "memory": {
-                "description": "In-memory storage (default, no persistence)",
-                "use_cases": ["Development", "Testing", "Stateless agents"],
-                "pros": ["No setup", "Fast", "Simple"],
-                "cons": ["Lost on restart", "Single server only"],
-                "setup": "No setup required"
-            },
-            "custom": {
-                "description": "Implement your own backend",
-                "use_cases": ["DynamoDB", "PostgreSQL", "Custom storage"],
-                "how": "Inherit from BaseSessionStorage, implement async methods",
-                "docs": "See TIL documentation for full implementation guide"
+            "features": [
+                "Fast session lookup and storage",
+                "Automatic expiration (TTL)",
+                "Persistence with AOF (Append Only File)",
+                "Distributed session sharing",
+                "Simple pub/sub for notifications"
+            ],
+            "best_practices": [
+                "Set TTL to auto-cleanup old sessions",
+                "Use key prefixes for organization",
+                "Monitor memory usage",
+                "Enable persistence in production"
+            ],
+            "extending": {
+                "step1": "Inherit from BaseSessionService",
+                "step2": "Implement async methods (create, get, list, delete, append_event)",
+                "step3": "Register with service registry",
+                "step4": "Use via: --session_service_uri=redis://..."
             }
         }
     }
@@ -473,26 +473,28 @@ root_agent = Agent(
     description="Demonstrates custom session service registration in ADK",
     instruction="""You are an expert on ADK's custom session service registration pattern.
 
-Your role is to help users understand:
-1. How to register custom session services (Redis, MongoDB, etc.)
-2. The factory function pattern and service registry
-3. How sessions persist across requests
-4. Practical examples and best practices
+Your role is to help users understand Redis session persistence in ADK.
 
-When users ask about session services:
-- Explain the problem (default memory storage limitations)
-- Show the solution (service registry + factory functions)
-- Provide concrete examples
-- Use the available tools to demonstrate concepts
+Key concepts:
+1. Service Registry Pattern - Maps URI schemes to factory functions
+2. Factory Functions - Create session service instances from URIs
+3. BaseSessionService - Interface all custom backends must implement
+4. Redis Backend - Production-ready session storage with TTL and persistence
 
-Key points to emphasize:
-- Service registry maps URI schemes to factories
-- Factories take URI, return service instance
-- Always pop agents_dir from kwargs
-- BaseSessionStorage must be inherited
-- Works with any backend (Redis, MongoDB, custom)
+When users ask about sessions:
+- Explain why persistent sessions matter
+- Show how Redis stores conversation history
+- Demonstrate session retrieval across page refreshes
+- Show the code that makes it work
 
-Help users set up and test their own backends!""",
+Technical highlights:
+- Each session stores complete event history
+- Author field tracks user vs agent messages
+- Sessions auto-expire after 24 hours
+- Scale to multiple servers with Redis cluster
+- Poems and conversations survive page refreshes
+
+Help users test persistent sessions and understand the pattern!""",
     tools=[
         describe_session_info,
         test_session_persistence,
