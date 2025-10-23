@@ -16,6 +16,7 @@ Welcome to **Today I Learn** (TIL) - a collection of short, focused learning art
 ## What are TILs?
 
 TILs are **quick, practical guides** designed for busy developers who want to:
+
 - ✅ Learn one specific feature or pattern
 - ✅ Get working code examples
 - ✅ Understand when to use it
@@ -27,11 +28,12 @@ Perfect for staying current with ADK features and integrating them into your pro
 
 ### Custom Session Services (October 23, 2025)
 
-**📖 [TIL: Registering Custom Session Services in Google ADK 1.17](til_custom_session_services_20251023)**
+**📖 [TIL: Registering Custom Session Services in Google ADK 1.17](/docs/til/til_custom_session_services_20251023)**
 
 Extend ADK with custom session storage backends (Redis, MongoDB, PostgreSQL, DynamoDB).
 
 **Key Points:**
+
 - 💾 Persistent sessions that survive server restarts
 - 📊 Distributed storage for multi-server deployments
 - 🏢 Enterprise integration with your existing infrastructure
@@ -40,6 +42,7 @@ Extend ADK with custom session storage backends (Redis, MongoDB, PostgreSQL, Dyn
 - ⚡ Register once, use everywhere
 
 **In 8 minutes you'll learn:**
+
 1. Why custom session services matter
 2. Service registry pattern and factory functions
 3. BaseSessionStorage inheritance
@@ -55,11 +58,12 @@ Extend ADK with custom session storage backends (Redis, MongoDB, PostgreSQL, Dyn
 
 ### Tool Use Quality (October 21, 2025)
 
-**📖 [TIL: Evaluating Tool Use Quality with Google ADK 1.16](til_rubric_based_tool_use_quality_20251021)**
+**📖 [TIL: Evaluating Tool Use Quality with Google ADK 1.16](/docs/til/til_rubric_based_tool_use_quality_20251021)**
 
 Evaluate how well your agents select and use tools to accomplish tasks.
 
 **Key Points:**
+
 - 🎯 Catch tool selection mistakes (wrong tool when better option exists)
 - 🔄 Evaluate tool sequencing (are tools called in logical order?)
 - ⚡ Identify inefficiencies (unnecessary calls or missing combinations)
@@ -67,6 +71,7 @@ Evaluate how well your agents select and use tools to accomplish tasks.
 - 🔍 Perfect for production workflows where tool usage matters
 
 **In 8 minutes you'll learn:**
+
 1. Difference between tool use quality and final answer quality
 2. Why tool sequencing matters
 3. Rubric-based evaluation framework
@@ -82,11 +87,12 @@ Evaluate how well your agents select and use tools to accomplish tasks.
 
 ### Context Compaction (October 19, 2025)
 
-**📖 [TIL: Context Compaction with Google ADK 1.16](til_context_compaction_20250119)**
+**📖 [TIL: Context Compaction with Google ADK 1.16](/docs/til/til_context_compaction_20250119)**
 
 Automatically summarize conversation history to reduce token usage in long-running agent conversations.
 
 **Key Points:**
+
 - 💰 Save 70-90% on tokens in long conversations
 - ⚡ Faster responses with smaller context
 - 🧠 Intelligent summarization preserves key information
@@ -94,6 +100,7 @@ Automatically summarize conversation history to reduce token usage in long-runni
 - ⏰ Completely automatic and transparent
 
 **In 8 minutes you'll learn:**
+
 1. Why context compaction matters
 2. How sliding window compaction works
 3. LLM-based summarization approach
@@ -109,11 +116,12 @@ Automatically summarize conversation history to reduce token usage in long-runni
 
 ### Pause and Resume Invocations (October 20, 2025)
 
-**📖 [TIL: Pause and Resume Invocations with Google ADK 1.16](til_pause_resume_20251020)**
+**📖 [TIL: Pause and Resume Invocations with Google ADK 1.16](/docs/til/til_pause_resume_20251020)**
 
 Checkpoint agent state and resume execution later for long-running workflows,
 
 **Key Points:**
+
 - 🛡️ Automatic fault tolerance through state checkpointing
 - 👤 Seamless human-in-the-loop approval workflows
 - ⏱️ Long-running tasks pause at natural break points
@@ -121,6 +129,7 @@ Checkpoint agent state and resume execution later for long-running workflows,
 - 💾 Complete execution context automatically saved
 
 **In 10 minutes you'll learn:**
+
 1. Why pause/resume matters
 2. How state checkpointing works
 3. ResumabilityConfig setup (one line!)
@@ -136,13 +145,13 @@ Checkpoint agent state and resume execution later for long-running workflows,
 
 ## Why TILs Instead of Full Tutorials?
 
-| Aspect | TIL | Full Tutorial |
-|--------|-----|--------------|
-| **Scope** | One feature or pattern | Complete topic |
-| **Time** | 5-10 minutes | 30-90 minutes |
-| **Code** | Quick example | Full project |
-| **Depth** | Surface-level | Comprehensive |
-| **Use Case** | "Learn this TODAY" | "Master this topic" |
+| Aspect       | TIL                    | Full Tutorial       |
+| ------------ | ---------------------- | ------------------- |
+| **Scope**    | One feature or pattern | Complete topic      |
+| **Time**     | 5-10 minutes           | 30-90 minutes       |
+| **Code**     | Quick example          | Full project        |
+| **Depth**    | Surface-level          | Comprehensive       |
+| **Use Case** | "Learn this TODAY"     | "Master this topic" |
 
 ---
 
@@ -161,6 +170,7 @@ Checkpoint agent state and resume execution later for long-running workflows,
 ## How to Use TILs
 
 ### For Learning
+
 1. Pick a TIL based on what you need today
 2. Read through (5-10 minutes)
 3. Run the working code example
@@ -168,12 +178,15 @@ Checkpoint agent state and resume execution later for long-running workflows,
 5. Check related tutorials for deeper learning
 
 ### For Teaching
+
 - Share specific TILs with your team when they need to learn a feature
 - Link in code reviews: "See TIL: [Feature Name]"
 - Combine multiple TILs to teach a workflow
 
 ### For Contributing
+
 Want to create a TIL? See the [TIL Template & Guidelines](til_template) for:
+
 - Structure and format
 - Best practices
 - Submission process
@@ -193,13 +206,14 @@ Every TIL includes:
 ✅ **Working implementation** - Full code with tests  
 ✅ **Configuration reference** - All options documented  
 ✅ **Pro tips** - Real-world advice  
-✅ **When NOT to use it** - Important caveats  
+✅ **When NOT to use it** - Important caveats
 
 ---
 
 ## TIL vs Tutorials vs Blog Posts
 
 **TIL:**
+
 - Specific feature or pattern
 - 5-10 minutes
 - Working code example
@@ -207,6 +221,7 @@ Every TIL includes:
 - Dated for reference
 
 **Tutorial:**
+
 - Broader topic or workflow
 - 30-90 minutes
 - Full project structure
@@ -214,6 +229,7 @@ Every TIL includes:
 - Timeless reference
 
 **Blog Post:**
+
 - Opinion, experience, or analysis
 - Variable length
 - Personal insights
@@ -231,12 +247,14 @@ Subscribe to the [ADK Training RSS Feed](/blog/rss.xml) to get notified when new
 ### Social
 
 Follow for TIL announcements:
+
 - 🐦 [@raphaelmansuy on Twitter/X](https://twitter.com/raphaelmansuy)
 - 🐙 [GitHub Discussions](https://github.com/raphaelmansuy/adk_training/discussions)
 
 ### Weekly Schedule
 
 New TILs are typically published:
+
 - **Tuesdays** - Core ADK features
 - **Fridays** - Integration patterns and tips
 
@@ -249,6 +267,7 @@ Want to create a TIL for a feature you've learned about?
 **[📋 See TIL Template & Guidelines](til_template)**
 
 The template includes:
+
 - Complete structure
 - Best practices
 - DO's and DON'Ts
