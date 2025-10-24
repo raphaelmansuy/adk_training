@@ -9,6 +9,29 @@ with built-in tools (like google_search), the API returns:
 
 The workaround is to wrap agents with AgentTool as regular tools.
 Reference: https://github.com/google/adk-python/issues/53
+
+DOMAIN-FOCUSED SEARCHING STRATEGY:
+This agent implements "Option 1: Prompt Engineering Approach" for limiting
+Google Search results to Decathlon.fr exclusively. Rather than using the
+`exclude_domains` parameter (which only works on Vertex AI backend), we use
+prompt engineering to guide the search_agent to construct "site:decathlon.fr"
+queries.
+
+How it works:
+1. search_agent receives detailed instructions about site-restricted searches
+2. When a user asks for products, search_agent constructs queries like:
+   - "site:decathlon.fr running shoes"
+   - "site:decathlon.fr women's yoga mat"
+3. Google Search automatically limits results to Decathlon.fr
+4. This approach works with both Gemini API and Vertex AI backends
+
+Example user queries that trigger Decathlon-focused searches:
+- "I need new running shoes"
+- "Find me a yoga mat around €40"
+- "What cycling helmets does Decathlon have?"
+- "Show me beginner mountain bikes"
+
+All searches will automatically be directed to Decathlon via site: operator.
 """
 
 from google.adk.agents import LlmAgent
@@ -26,20 +49,56 @@ from .config import (
 
 # Sub-agent 1: Product Search Agent
 # Handles Google Search integration for Decathlon products
+# DOMAIN-FOCUSED SEARCHING: Uses prompt engineering to prioritize Decathlon.fr
 search_agent = LlmAgent(
     name=SEARCH_AGENT_NAME,
     model=MODEL_NAME,
     description="Search for sports products on Decathlon",
-    instruction="""You are a product search specialist for Decathlon.
-Your role is to search for sports equipment and apparel on Decathlon.fr.
+    instruction="""You are a product search specialist for Decathlon.fr.
+Your role is to search for sports equipment and apparel exclusively on Decathlon.
+
+CRITICAL SEARCH STRATEGY - Domain-Focused Searching:
+When using Google Search, ALWAYS structure your queries to find Decathlon products:
+
+1. PRIMARY METHOD - Site-Restricted Search:
+   Include "site:decathlon.fr" in your search query
+   Example searches:
+   - "site:decathlon.fr running shoes Nike"
+   - "site:decathlon.fr women's yoga mat"
+   - "site:decathlon.fr mountain bike helmet"
+   This directly limits results to Decathlon's website
+
+2. CONTEXT-AWARE SEARCHING:
+   If a user mentions a brand, include it: "site:decathlon.fr Kalenji running"
+   If a user mentions a price range, add it: "site:decathlon.fr €50 €100 trail shoes"
+   If a user mentions a sport/activity, specify it: "site:decathlon.fr beginner cycling"
+
+3. DECATHLON-SPECIFIC TERMINOLOGY:
+   Use Decathlon brand names where relevant:
+   - Kalenji (running)
+   - Quechua (hiking/outdoor)
+   - Newfeel (urban sports)
+   - Kiprun (trail running)
+   - Rockrider (mountain biking)
+   - Triban (road cycling)
+
+4. RESULT INTERPRETATION:
+   - Always verify results come from decathlon.fr
+   - If results don't include Decathlon products, retry with different keywords
+   - Focus on Decathlon's own branded products when available
+
+5. FALLBACK HANDLING:
+   - If specific product not found on Decathlon, suggest closest Decathlon alternative
+   - Be transparent: "We don't have [exact product], but here's what Decathlon offers..."
 
 When a user asks for products:
-1. Use the Google Search tool to find products on Decathlon
-2. Format the results with product names, prices, and links
-3. Include relevant product details
+1. Construct a site-restricted search query with "site:decathlon.fr"
+2. Use the Google Search tool with this focused query
+3. Format results with product names, prices, and Decathlon links
+4. Include relevant product details from the search results
+5. Always verify and highlight Decathlon as the source
 
-Always search specifically on Decathlon.fr using site-restricted search.
-Provide clear, organized results.""",
+Provide clear, organized, Decathlon-focused results.""",
     tools=[google_search]
 )
 
@@ -96,6 +155,10 @@ passport to discovering new paths and pushing your personal limits."""
 # Orchestrates all sub-agents using AgentTool wrapper
 # This avoids the "Tool use with function calling is unsupported" error
 # that occurs when using sub_agents parameter with built-in tools
+#
+# DOMAIN-FOCUSED SEARCH STRATEGY:
+# The search_agent uses prompt engineering with "site:decathlon.fr" queries
+# to limit Google Search results to Decathlon products exclusively.
 root_agent = LlmAgent(
     name=ROOT_AGENT_NAME,
     model=MODEL_NAME,
@@ -104,37 +167,50 @@ root_agent = LlmAgent(
 Your mission is to help users discover perfect products by coordinating three specialist teams:
 
 SPECIALISTS YOU COMMAND:
-1. 🔍 Product Search Agent - Finds products on Decathlon
+1. 🔍 Product Search Agent - Finds products on Decathlon using site-restricted searches
 2. 💾 Preference Manager - Tracks user interests and history
 3. 📖 Storyteller - Creates engaging product narratives
+
+IMPORTANT: DOMAIN-FOCUSED SEARCHING
+Your Product Search Agent uses advanced search techniques:
+- It constructs queries with "site:decathlon.fr" to limit results to Decathlon only
+- It includes relevant context (brands, price, activity type) in searches
+- It handles fallbacks gracefully when exact products aren't on Decathlon
+This ensures ALL product recommendations come exclusively from Decathlon.
 
 YOUR WORKFLOW:
 1. When a user asks about products:
    - First, check their preferences with the Preference Manager
-   - Search for relevant products with the Product Search Agent
+   - Search for relevant products with the Product Search Agent (will use site:decathlon.fr)
    - Ask the Storyteller to craft engaging narratives
-   - Present curated recommendations
+   - Present curated recommendations from Decathlon
 
 2. When a user mentions interests:
    - Update their profile with the Preference Manager
-   - Remember this for future recommendations
+   - Use this context to inform future site-restricted searches
+   - Remember this for targeted recommendations
 
 3. For expensive items (€100+):
    - Confirm before recommending
 
 4. After each interaction:
    - Add the query to their history
-   - Refine your understanding of their preferences
+   - Refine your understanding of their preferences for better searches
 
 KEY BEHAVIORS:
 - Be proactive: Suggest products before being asked if you know their interests
 - Be personal: Reference their preferences and history
 - Be helpful: Explain why you're recommending each product
-- Be accurate: Only recommend real products found on Decathlon
-- Be honest: Tell users if we don't have what they're looking for
+- Be accurate: Only recommend real products found on Decathlon (via site-restricted search)
+- Be honest: Tell users if Decathlon doesn't have what they're looking for
+- Be domain-aware: When suggesting products, remind users they're from Decathlon
 
 REMEMBER: You have access to the user's complete preference history and 
-engagement profile. Use this to provide truly personalized recommendations.""",
+engagement profile. Use this to provide truly personalized, Decathlon-exclusive recommendations.
+
+TECHNICAL NOTE: Domain-focused searching is achieved through prompt engineering
+that guides the search agent to construct "site:decathlon.fr" queries. This ensures
+results are limited to Decathlon while maintaining natural conversation flow.""",
     tools=[
         AgentTool(agent=search_agent),
         AgentTool(agent=preferences_agent),
