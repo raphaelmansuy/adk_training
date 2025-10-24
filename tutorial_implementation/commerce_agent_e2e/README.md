@@ -19,46 +19,59 @@ This tutorial demonstrates:
 ### Prerequisites
 
 - Python 3.9+
-- Google API Key (free at [aistudio.google.com](https://aistudio.google.com/app/apikey))
+- Vertex AI Service Account (recommended) OR Google API Key
 - SQLite3 (pre-installed on macOS/Linux)
 
-### Setup (2 minutes)
+### Authentication Setup
+
+**⚠️ IMPORTANT:** This agent works best with **Vertex AI authentication**. Using Gemini API (GOOGLE_API_KEY) breaks the "site:decathlon.com.hk" search operator.
+
+#### Option A: Vertex AI (Recommended)
 
 ```bash
 # Navigate to tutorial
 cd tutorial_implementation/commerce_agent_e2e
 
-# Set authentication (choose one)
-export GOOGLE_API_KEY=your_key_here
-# OR
-export GOOGLE_APPLICATION_CREDENTIALS=/path/to/service-account.json
+# Run Vertex AI setup script (handles environment variables)
+make setup-vertex-ai
 
-# Install and test
-make setup
-make test
+# Follow the prompts to configure service account
 ```
 
-### Run the Agent
+The script will:
+1. ✅ Verify service account credentials at `./credentials/commerce-agent-key.json`
+2. ✅ Unset any conflicting Gemini API keys
+3. ✅ Set `GOOGLE_CLOUD_PROJECT` and `GOOGLE_APPLICATION_CREDENTIALS`
+4. ✅ Test that credentials work correctly
+
+#### Option B: Gemini API (Limited)
 
 ```bash
-# Start the development UI
+# Navigate to tutorial
+cd tutorial_implementation/commerce_agent_e2e
+
+# Set API key
+export GOOGLE_API_KEY=your_key_here
+# Get free key at: https://aistudio.google.com/app/apikey
+```
+
+**⚠️ Limitation:** The "site:decathlon.com.hk" search operator won't work with Gemini API.
+
+### Setup (2 minutes)
+
+```bash
+# Install dependencies
+make setup
+
+# Run tests (optional)
+make test
+
+# Start development UI
 make dev
 
 # Open http://localhost:8000 in your browser
 # Select "commerce_agent" from the dropdown
 ```
-
-### Try Demo Scenarios
-
-```bash
-make demo
-```
-
-This shows guided scenarios to test:
-- New user setup and preference management
-- Returning customer with history recall
-- Multi-user isolation verification
-- Expensive item confirmation flow
 
 ## 📁 Project Structure
 
@@ -272,7 +285,71 @@ Covers:
 | Tests fail | Run `make setup` first |
 | SQLite errors | Delete `commerce_agent_sessions.db` and restart |
 
-## 📈 Deployment
+## � Authentication Troubleshooting
+
+### "site:decathlon.com.hk" operator not working
+
+**Problem:** Search returns results from other retailers (Amazon, eBay, Adidas)
+
+**Cause:** Using Gemini API instead of Vertex AI
+
+**Solution:**
+
+```bash
+# 1. Check which credentials are set
+echo $GOOGLE_API_KEY
+echo $GOOGLE_APPLICATION_CREDENTIALS
+
+# 2. If both are set, unset the API key:
+unset GOOGLE_API_KEY
+
+# 3. Re-run the agent
+make dev
+```
+
+### Both GOOGLE_API_KEY and GOOGLE_APPLICATION_CREDENTIALS set
+
+**Problem:** Agent uses Gemini API instead of Vertex AI, breaking search
+
+**Warning:** The Makefile will show this warning during `make dev`
+
+**Solution:**
+
+```bash
+# Run the setup script to fix credentials
+make setup-vertex-ai
+
+# Or manually unset and re-run
+unset GOOGLE_API_KEY
+make dev
+```
+
+### Vertex AI credentials not loading
+
+**Problem:** Error like "Could not authenticate with Google Cloud"
+
+**Solution:**
+
+```bash
+# 1. Verify credentials file exists
+ls -la ./credentials/commerce-agent-key.json
+
+# 2. Verify environment variables
+echo $GOOGLE_CLOUD_PROJECT
+echo $GOOGLE_APPLICATION_CREDENTIALS
+
+# 3. Test with gcloud CLI
+gcloud auth list
+
+# 4. If gcloud shows wrong account, switch:
+gcloud config set project $GOOGLE_CLOUD_PROJECT
+gcloud auth application-default login
+
+# 5. Re-run setup
+make setup-vertex-ai
+```
+
+## �📈 Deployment
 
 ### Local Development
 

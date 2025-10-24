@@ -1,22 +1,23 @@
 # Commerce Agent E2E - End-to-End Implementation Tutorial
 # Production-ready multi-user commerce assistant with session persistence
 
-.PHONY: help setup dev test demo clean check-env
+.PHONY: help setup dev test demo clean check-env setup-vertex-ai
 
 # Default target
 help:
 	@echo "🛍️  Commerce Agent E2E - End-to-End Implementation"
 	@echo ""
 	@echo "Quick Start Commands:"
-	@echo "  make setup      - Install dependencies and setup package"
-	@echo "  make test       - Run comprehensive test suite (unit, integration, e2e)"
-	@echo "  make dev        - Start development UI (adk web)"
-	@echo "  make demo       - Display demo scenarios"
+	@echo "  make setup              - Install dependencies and setup package"
+	@echo "  make setup-vertex-ai    - Configure Vertex AI authentication"
+	@echo "  make test               - Run comprehensive test suite (unit, integration, e2e)"
+	@echo "  make dev                - Start development UI (adk web)"
+	@echo "  make demo               - Display demo scenarios"
 	@echo ""
 	@echo "Advanced Commands:"
-	@echo "  make clean      - Clean up generated files"
+	@echo "  make clean              - Clean up generated files"
 	@echo ""
-	@echo "💡 First time? Run: make setup && make test && make dev"
+	@echo "💡 First time? Run: make setup-vertex-ai && make setup && make dev"
 
 # Install dependencies
 setup: check-env
@@ -34,6 +35,10 @@ setup: check-env
 	@echo "  2. Start agent: make dev"
 	@echo "  3. Open browser: http://localhost:8000"
 
+# Configure Vertex AI authentication (run before setup)
+setup-vertex-ai:
+	@bash scripts/setup-vertex-ai.sh
+
 # Run all tests
 test: check-env
 	@echo "🧪 Running comprehensive test suite..."
@@ -50,6 +55,15 @@ test: check-env
 dev: check-env
 	@echo "🤖 Starting Commerce Agent..."
 	@echo ""
+	@if [ ! -z "$$GOOGLE_API_KEY" ]; then \
+		echo "⚠️  Unsetting GOOGLE_API_KEY to use Vertex AI..."; \
+		unset GOOGLE_API_KEY; \
+	fi
+	@if [ ! -z "$$GEMINI_API_KEY" ]; then \
+		echo "⚠️  Unsetting GEMINI_API_KEY to use Vertex AI..."; \
+		unset GEMINI_API_KEY; \
+	fi
+	@echo ""
 	@echo "📱 Open http://localhost:8000 in your browser"
 	@echo "🎯 Select 'commerce_agent' from the agent dropdown"
 	@echo ""
@@ -58,7 +72,7 @@ dev: check-env
 	@echo "  • User 'bob', Sport: 'cycling' → Recommend cycling gear"
 	@echo "  • Expensive item test → Try products over €100"
 	@echo ""
-	adk web
+	unset GOOGLE_API_KEY GEMINI_API_KEY; adk web
 
 # Display demo scenarios
 demo:
@@ -128,15 +142,16 @@ check-env:
 	@if [ -z "$$GOOGLE_API_KEY" ] && [ -z "$$GOOGLE_APPLICATION_CREDENTIALS" ]; then \
 		echo "❌ Error: Authentication not configured"; \
 		echo ""; \
-		echo "Choose one of the following authentication methods:"; \
+		echo "This agent requires ONE authentication method:"; \
 		echo ""; \
-		echo "🔑 Method 1 - API Key (Gemini API):"; \
-		echo "   export GOOGLE_API_KEY=your_api_key_here"; \
-		echo "   Get a free key at: https://aistudio.google.com/app/apikey"; \
-		echo ""; \
-		echo "🔐 Method 2 - Service Account (VertexAI):"; \
-		echo "   export GOOGLE_APPLICATION_CREDENTIALS=/path/to/service-account.json"; \
+		echo "✅ RECOMMENDED - Vertex AI (Service Account):"; \
 		echo "   export GOOGLE_CLOUD_PROJECT=your_project_id"; \
+		echo "   export GOOGLE_APPLICATION_CREDENTIALS=/path/to/service-account.json"; \
+		echo "   Setup guide: log/20250124_173000_vertex_ai_setup_guide.md"; \
+		echo ""; \
+		echo "⚠️  NOT RECOMMENDED - Gemini API (limited search):"; \
+		echo "   export GOOGLE_API_KEY=your_api_key_here"; \
+		echo "   Get key at: https://aistudio.google.com/app/apikey"; \
 		echo ""; \
 		exit 1; \
 	fi
