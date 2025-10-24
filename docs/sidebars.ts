@@ -95,6 +95,15 @@ const sidebars: SidebarsConfig = {
     },
     {
       type: 'category',
+      label: 'End-to-End Implementations',
+      collapsed: true,
+      description: 'Complete, production-ready applications demonstrating ADK patterns',
+      items: [
+        'commerce_agent_e2e',
+      ],
+    },
+    {
+      type: 'category',
       label: 'Today I Learn (TIL)',
       collapsed: true,
       description: 'Quick daily learning pieces on specific ADK features',
