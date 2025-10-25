@@ -6,7 +6,6 @@ Demonstrates session persistence, tool integration, and multi-agent coordination
 from .agent import root_agent
 from .search_agent import search_agent
 from .preferences_agent import preferences_agent
-from .storyteller_agent import storyteller_agent
 from .tools import manage_user_preferences, curate_products, generate_product_narrative
 from .models import (
     UserPreferences,
@@ -21,7 +20,6 @@ __all__ = [
     "root_agent",
     "search_agent",
     "preferences_agent",
-    "storyteller_agent",
     "manage_user_preferences",
     "curate_products",
     "generate_product_narrative",

@@ -8,7 +8,6 @@ from commerce_agent.agent import (
     root_agent,
     search_agent,
     preferences_agent,
-    storyteller_agent,
 )
 from commerce_agent.database import init_database
 
@@ -28,22 +27,17 @@ class TestAgentConfiguration:
         assert preferences_agent is not None
         assert preferences_agent.name == "PreferenceManager"
     
-    def test_storyteller_agent_exists(self):
-        """Test storyteller agent is properly configured"""
-        assert storyteller_agent is not None
-        assert storyteller_agent.name == "StorytellerAgent"
-    
     def test_root_agent_exists(self):
         """Test root agent is properly configured"""
         assert root_agent is not None
         assert root_agent.name == "CommerceCoordinator"
         assert root_agent.model == "gemini-2.5-flash"
     
-    def test_root_agent_has_sub_agents(self):
-        """Test root agent has sub-agents"""
-        assert hasattr(root_agent, "sub_agents")
-        # Should have 3 sub-agents
-        assert len(root_agent.sub_agents) == 3
+    def test_root_agent_has_tools(self):
+        """Test root agent has tools (AgentTools for sub-agents)"""
+        assert hasattr(root_agent, "tools")
+        # Should have 2 AgentTools (search and preferences)
+        assert len(root_agent.tools) == 2
     
     def test_agent_models_are_valid(self):
         """Test all agents use valid model names"""
@@ -51,14 +45,12 @@ class TestAgentConfiguration:
         
         assert search_agent.model in valid_models
         assert preferences_agent.model in valid_models
-        assert storyteller_agent.model in valid_models
         assert root_agent.model in valid_models
     
     def test_agent_instructions_are_set(self):
         """Test all agents have instructions"""
         assert search_agent.instruction is not None and len(search_agent.instruction) > 0
         assert preferences_agent.instruction is not None and len(preferences_agent.instruction) > 0
-        assert storyteller_agent.instruction is not None and len(storyteller_agent.instruction) > 0
         assert root_agent.instruction is not None and len(root_agent.instruction) > 0
 
 
@@ -153,9 +145,8 @@ class TestImportPaths:
             root_agent,
             search_agent,
             preferences_agent,
-            storyteller_agent,
         )
-        assert all([root_agent, search_agent, preferences_agent, storyteller_agent])
+        assert all([root_agent, search_agent, preferences_agent])
     
     def test_import_tools(self):
         """Test all tools can be imported"""
