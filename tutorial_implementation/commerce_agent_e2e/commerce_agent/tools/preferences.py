@@ -16,6 +16,9 @@
 
 from typing import Dict, Any
 from google.adk.tools import ToolContext
+# Note: ToolResult TypedDict available for reference but not used in signatures
+# to maintain compatibility with ADK automatic function calling
+from ..types import ToolResult
 
 
 def save_preferences(
@@ -37,9 +40,10 @@ def save_preferences(
     """
     try:
         # Save to user state (persists across sessions)
-        tool_context.invocation_context.state["user:pref_sport"] = sport
-        tool_context.invocation_context.state["user:pref_budget"] = budget_max
-        tool_context.invocation_context.state["user:pref_experience"] = experience_level
+        # ADK v1.17+ uses tool_context.state directly, not invocation_context
+        tool_context.state["user:pref_sport"] = sport
+        tool_context.state["user:pref_budget"] = budget_max
+        tool_context.state["user:pref_experience"] = experience_level
         
         return {
             "status": "success",
@@ -68,7 +72,8 @@ def get_preferences(tool_context: ToolContext) -> Dict[str, Any]:
         Dictionary with status, report, and preference data
     """
     try:
-        state = tool_context.invocation_context.state
+        # ADK v1.17+ uses tool_context.state directly, not invocation_context
+        state = tool_context.state
         
         prefs = {
             "sport": state.get("user:pref_sport"),

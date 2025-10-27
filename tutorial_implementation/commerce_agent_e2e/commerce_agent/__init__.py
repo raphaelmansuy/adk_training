@@ -12,15 +12,28 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-"""Commerce Agent - Simplified version following official ADK patterns.
+"""Commerce Agent - A specialized e-commerce assistant using Google ADK.
 
-A clean, maintainable sports shopping assistant with:
-- Google Search grounding for product discovery
-- Simple user preference management
-- Direct URL extraction and display
+This agent handles:
+- Product searches and recommendations
+- Price comparisons
+- Technical specifications
+- Delivery information
+- User preferences management
+
+The agent uses Google Search for grounding (source attribution) and maintains
+user preferences across sessions.
 """
 
 from .agent import root_agent
+from .callbacks import create_grounding_callback
+from .types import ToolResult, UserPreferences, GroundingMetadata, GroundingSource
 
-__version__ = "0.3.0"  # Simplified version
-__all__ = ["root_agent"]
+__all__ = [
+    "root_agent",
+    "create_grounding_callback",
+    "ToolResult",
+    "UserPreferences",
+    "GroundingMetadata",
+    "GroundingSource",
+]

@@ -23,6 +23,8 @@ This tutorial demonstrates:
 - ✅ **Multi-Agent Coordination**: Root agent orchestrating 3 specialized sub-agents
 - ✅ **Comprehensive Testing**: Unit, integration, and end-to-end test suites
 - ✅ **Production Patterns**: Error handling, confirmation flows, state management
+- ✅ **Type Safety**: TypedDict definitions for all tool interfaces
+- ✅ **Observability**: GroundingMetadataCallback for source attribution tracking
 
 ### 🌟 Grounding Metadata Features
 
@@ -277,7 +279,58 @@ result = manage_user_preferences(
 )
 ```
 
-### 4. Tool Confirmation Flow
+### 4. Grounding Metadata Callback (NEW)
+
+Extract source attribution from Google Search results:
+
+```python
+from commerce_agent import root_agent, create_grounding_callback
+from google.adk.runners import Runner
+
+runner = Runner(
+    agent=root_agent,
+    after_model_callbacks=[create_grounding_callback(verbose=True)]
+)
+
+async for event in runner.run_async(...):
+    if event.is_final_response():
+        # Access extracted sources from callback_context.state
+        # (Note: callback stores in state during after_model phase)
+        print("Response with grounded sources generated")
+```
+
+**Benefits**:
+- ✅ Console logs show source attribution during development
+- ✅ Monitor grounding quality in real-time
+- ✅ Verify URLs are from real search results
+- ✅ Debug which sources support which claims
+
+**Note**: For `adk web` usage, the callback runs automatically but output appears in server logs, not the web UI.
+
+**Documentation**: See `docs/GROUNDING_CALLBACK_GUIDE.md` for complete usage guide.
+
+### 5. Type Safety with TypedDict (NEW)
+
+All tool interfaces now use TypedDict for better IDE support:
+
+```python
+from commerce_agent.types import ToolResult, UserPreferences
+
+def my_tool(param: str, tool_context: ToolContext) -> ToolResult:
+    return {
+        "status": "success",
+        "report": "Operation completed",
+        "data": {"result": "value"}
+    }
+```
+
+**Benefits**:
+- ✅ Full IDE autocomplete
+- ✅ Type checking with mypy
+- ✅ Clear API contracts
+- ✅ Reduced runtime errors
+
+### 6. Tool Confirmation Flow
 
 For expensive items (€100+), the agent requests confirmation before recommending.
 
