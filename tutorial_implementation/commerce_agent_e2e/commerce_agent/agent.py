@@ -29,6 +29,7 @@ from .prompt import commerce_agent_instruction
 root_agent = Agent(
     model=MODEL_NAME,
     name=AGENT_NAME,
+    description="A sports shopping assistant that helps users find products using Google Search grounding and personalized preferences",
     instruction=commerce_agent_instruction,
     tools=[
         search_products,  # AgentTool wrapping Google Search

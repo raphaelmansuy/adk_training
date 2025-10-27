@@ -23,7 +23,7 @@ def save_preferences(
     budget_max: int,
     experience_level: str,
     tool_context: ToolContext
-) -> str:
+) -> Dict[str, Any]:
     """Save user preferences for personalized recommendations.
     
     Args:
@@ -33,14 +33,29 @@ def save_preferences(
         tool_context: ADK tool context
     
     Returns:
-        Confirmation message
+        Dictionary with status and report
     """
-    # Save to user state (persists across sessions)
-    tool_context.invocation_context.state["user:pref_sport"] = sport
-    tool_context.invocation_context.state["user:pref_budget"] = budget_max
-    tool_context.invocation_context.state["user:pref_experience"] = experience_level
-    
-    return f"✓ Preferences saved: {sport}, max €{budget_max}, {experience_level} level"
+    try:
+        # Save to user state (persists across sessions)
+        tool_context.invocation_context.state["user:pref_sport"] = sport
+        tool_context.invocation_context.state["user:pref_budget"] = budget_max
+        tool_context.invocation_context.state["user:pref_experience"] = experience_level
+        
+        return {
+            "status": "success",
+            "report": f"✓ Preferences saved: {sport}, max €{budget_max}, {experience_level} level",
+            "data": {
+                "sport": sport,
+                "budget_max": budget_max,
+                "experience_level": experience_level
+            }
+        }
+    except Exception as e:
+        return {
+            "status": "error",
+            "report": f"Failed to save preferences: {str(e)}",
+            "error": str(e)
+        }
 
 
 def get_preferences(tool_context: ToolContext) -> Dict[str, Any]:
@@ -50,20 +65,36 @@ def get_preferences(tool_context: ToolContext) -> Dict[str, Any]:
         tool_context: ADK tool context
     
     Returns:
-        Dictionary of saved preferences
+        Dictionary with status, report, and preference data
     """
-    state = tool_context.invocation_context.state
-    
-    prefs = {
-        "sport": state.get("user:pref_sport"),
-        "budget_max": state.get("user:pref_budget"),
-        "experience_level": state.get("user:pref_experience")
-    }
-    
-    # Filter out None values
-    prefs = {k: v for k, v in prefs.items() if v is not None}
-    
-    if not prefs:
-        return {"message": "No preferences saved yet"}
-    
-    return prefs
+    try:
+        state = tool_context.invocation_context.state
+        
+        prefs = {
+            "sport": state.get("user:pref_sport"),
+            "budget_max": state.get("user:pref_budget"),
+            "experience_level": state.get("user:pref_experience")
+        }
+        
+        # Filter out None values
+        prefs = {k: v for k, v in prefs.items() if v is not None}
+        
+        if not prefs:
+            return {
+                "status": "success",
+                "report": "No preferences saved yet",
+                "data": {}
+            }
+        
+        return {
+            "status": "success",
+            "report": f"Retrieved preferences: {', '.join(f'{k}={v}' for k, v in prefs.items())}",
+            "data": prefs
+        }
+    except Exception as e:
+        return {
+            "status": "error",
+            "report": f"Failed to retrieve preferences: {str(e)}",
+            "error": str(e),
+            "data": {}
+        }
