@@ -39,13 +39,44 @@ class UserPreferences(BaseModel):
         }
 
 
+class SourceCitation(BaseModel):
+    """Citation source for a product fact or claim"""
+    title: str = Field(description="Source title (website name, article)")
+    uri: str = Field(description="Direct URL to source")
+    domain: Optional[str] = Field(default=None, description="Domain name extracted from URL")
+    snippet: Optional[str] = Field(default=None, description="Preview text from source")
+    
+    class Config:
+        json_schema_extra = {
+            "example": {
+                "title": "Decathlon Official Store",
+                "uri": "https://www.decathlon.com.hk/en/p/kalenji-shoes",
+                "domain": "decathlon.com.hk",
+                "snippet": "Kalenji Running Shoes - Lightweight performance..."
+            }
+        }
+
+
+class GroundedSegment(BaseModel):
+    """Text segment backed by source citations"""
+    text: str = Field(description="The segment text")
+    sources: List[SourceCitation] = Field(
+        default_factory=list,
+        description="Sources that support this segment"
+    )
+    confidence: Optional[float] = Field(
+        default=None,
+        description="Confidence score (0.0-1.0) for this segment's accuracy"
+    )
+
+
 class Product(BaseModel):
-    """Decathlon product information"""
+    """Decathlon product information with grounding metadata"""
     product_id: str = Field(description="Unique product identifier")
     name: str = Field(description="Product name")
     price: float = Field(description="Price in EUR")
     currency: str = Field(default="EUR", description="Currency code")
-    url: Optional[str] = Field(default=None, description="Product URL")
+    url: Optional[str] = Field(default=None, description="Product URL from search results")
     category: Optional[str] = Field(default=None, description="Sport category")
     brand: Optional[str] = Field(default=None, description="Brand name")
     rating: Optional[float] = Field(
@@ -53,6 +84,28 @@ class Product(BaseModel):
         description="User rating (0-5)"
     )
     description: Optional[str] = Field(default=None, description="Product description")
+    
+    # Grounding metadata for source attribution
+    source_citations: List[SourceCitation] = Field(
+        default_factory=list,
+        description="Sources where this product information was found"
+    )
+    grounded_segments: List[GroundedSegment] = Field(
+        default_factory=list,
+        description="Product description segments with their supporting sources"
+    )
+    overall_grounding_score: Optional[float] = Field(
+        default=None,
+        description="Overall confidence score for product data accuracy (0.0-1.0)"
+    )
+    is_grounded: bool = Field(
+        default=False,
+        description="Whether product data is backed by actual search results"
+    )
+    search_timestamp: Optional[str] = Field(
+        default=None,
+        description="When this product data was retrieved from search"
+    )
     
     class Config:
         json_schema_extra = {
@@ -63,7 +116,17 @@ class Product(BaseModel):
                 "currency": "EUR",
                 "category": "running",
                 "brand": "Kalenji",
-                "rating": 4.5
+                "rating": 4.5,
+                "url": "https://www.decathlon.com.hk/en/p/kalenji-shoes",
+                "source_citations": [
+                    {
+                        "title": "Decathlon Hong Kong",
+                        "uri": "https://www.decathlon.com.hk/en/p/kalenji-shoes",
+                        "domain": "decathlon.com.hk"
+                    }
+                ],
+                "is_grounded": True,
+                "overall_grounding_score": 0.95
             }
         }
 

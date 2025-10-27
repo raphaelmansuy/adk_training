@@ -1,19 +1,23 @@
 """
 Custom tools for Commerce Agent.
-Implements preference management and product curation.
+Implements preference management, product curation, and citation validation.
+
+These tools enhance the commerce agent with:
+- User preference tracking and personalization
+- Product recommendation curation based on preferences
+- Citation validation to prevent URL hallucination
+- Grounding metadata verification
 """
 
 from typing import Optional, Dict, Any, List
 from datetime import datetime
+import logging
 
 from .models import (
     UserPreferences,
-    PriceRange,
     InteractionRecord,
     UserFavorite,
-    EngagementProfile,
     Product,
-    ToolResponse,
 )
 from .database import (
     get_user_preferences,
@@ -22,11 +26,11 @@ from .database import (
     get_user_history,
     add_favorite,
     get_user_favorites,
-    get_cached_results,
-    cache_search_results,
     get_engagement_profile,
     init_database,
 )
+
+logger = logging.getLogger(__name__)
 
 
 def manage_user_preferences(
@@ -314,3 +318,222 @@ def generate_product_narrative(
             "error": str(e),
             "data": None
         }
+
+
+def validate_citations(
+    product: Dict[str, Any]
+) -> Dict[str, Any]:
+    """
+    Validate product citations and grounding metadata.
+    
+    Checks:
+    1. All URLs are from known retailer domains
+    2. URLs match their source domains
+    3. No fabricated URL patterns detected
+    4. Grounding metadata is present
+    5. Source citations exist for all URLs
+    
+    Args:
+        product: Product dict with source_citations and grounding metadata
+    
+    Returns:
+        ToolResponse with validation results
+    """
+    try:
+        if not product:
+            return {
+                "status": "error",
+                "report": "Invalid product data",
+                "error": "Product cannot be empty",
+                "data": None
+            }
+        
+        product_obj = Product(**product)
+        issues = []
+        warnings = []
+        
+        # Check 1: URL validity
+        if product_obj.url:
+            from urllib.parse import urlparse
+            try:
+                parsed = urlparse(product_obj.url)
+                domain = parsed.netloc
+                
+                # Whitelist of known retailer domains
+                known_domains = [
+                    "decathlon.com.hk",
+                    "nike.com",
+                    "adidas.com",
+                    "intersport.com",
+                    "amazon.com",
+                    "ebay.com",
+                    "sports-direct.com",
+                    "rei.com",
+                    "thenorthface.com",
+                ]
+                
+                if domain not in known_domains:
+                    warnings.append(f"URL domain '{domain}' not in known retailers list")
+                
+                # Check for hallucinated URL patterns
+                suspicious_patterns = [
+                    "/_/R-p-",  # Fabricated Decathlon pattern
+                    "/en/p/[^/]*/?mc=",  # Fake product URL pattern
+                    "//invalid",
+                    "example.com"
+                ]
+                
+                for pattern in suspicious_patterns:
+                    if pattern.replace("[^/]*", ".*") in product_obj.url:
+                        issues.append(f"URL contains suspicious pattern: {pattern}")
+            
+            except Exception as e:
+                issues.append(f"URL parsing error: {str(e)}")
+        
+        else:
+            warnings.append("No product URL provided")
+        
+        # Check 2: Source citations exist
+        if not product_obj.source_citations:
+            warnings.append("No source citations found")
+        else:
+            # Validate each citation
+            for i, citation in enumerate(product_obj.source_citations):
+                if not citation.uri:
+                    issues.append(f"Citation {i} has no URI")
+                
+                if not citation.title:
+                    issues.append(f"Citation {i} has no title")
+                
+                # Check if main URL matches citation domain
+                if product_obj.url and citation.uri:
+                    from urllib.parse import urlparse
+                    main_domain = urlparse(product_obj.url).netloc
+                    citation_domain = urlparse(citation.uri).netloc
+                    
+                    if main_domain != citation_domain:
+                        warnings.append(
+                            f"Main URL domain '{main_domain}' differs from citation "
+                            f"domain '{citation_domain}' - check if appropriate"
+                        )
+        
+        # Check 3: Grounding status
+        if not product_obj.is_grounded:
+            warnings.append("Product is not marked as grounded (no backing sources)")
+        
+        # Check 4: Overall grounding score
+        if product_obj.overall_grounding_score:
+            if product_obj.overall_grounding_score < 0.5:
+                warnings.append(
+                    f"Low grounding score: {product_obj.overall_grounding_score:.0%} "
+                    "(consider additional verification)"
+                )
+        
+        # Build response
+        is_valid = len(issues) == 0
+        status = "success" if is_valid else "error"
+        
+        report_parts = []
+        if is_valid:
+            report_parts.append("✅ Citations validated successfully")
+        else:
+            report_parts.append(f"❌ Found {len(issues)} citation issue(s)")
+            for issue in issues:
+                report_parts.append(f"  • {issue}")
+        
+        if warnings:
+            report_parts.append(f"⚠️  {len(warnings)} warning(s):")
+            for warning in warnings:
+                report_parts.append(f"  • {warning}")
+        
+        report = "\n".join(report_parts)
+        
+        return {
+            "status": status,
+            "report": report,
+            "data": {
+                "is_valid": is_valid,
+                "issues": issues,
+                "warnings": warnings,
+                "has_sources": len(product_obj.source_citations) > 0,
+                "is_grounded": product_obj.is_grounded,
+                "grounding_score": product_obj.overall_grounding_score,
+                "validation_timestamp": datetime.utcnow().isoformat()
+            }
+        }
+    
+    except Exception as e:
+        logger.error(f"Citation validation error: {str(e)}")
+        return {
+            "status": "error",
+            "report": f"Citation validation failed: {str(e)}",
+            "error": str(e),
+            "data": None
+        }
+
+
+def extract_sources_from_product(
+    product: Dict[str, Any]
+) -> Dict[str, Any]:
+    """
+    Extract and format source citations from a product.
+    
+    Returns sources in a format suitable for display to users.
+    
+    Args:
+        product: Product dict with source_citations
+    
+    Returns:
+        ToolResponse with formatted sources
+    """
+    try:
+        product_obj = Product(**product)
+        
+        if not product_obj.source_citations:
+            return {
+                "status": "success",
+                "report": "No sources available for this product",
+                "data": {"sources": [], "formatted": "No sources found"}
+            }
+        
+        # Group by domain
+        by_domain = {}
+        for citation in product_obj.source_citations:
+            domain = citation.domain or "Unknown Domain"
+            if domain not in by_domain:
+                by_domain[domain] = []
+            by_domain[domain].append(citation)
+        
+        # Format for display
+        formatted_lines = ["**Product Sources:**"]
+        for i, (domain, citations) in enumerate(by_domain.items(), 1):
+            formatted_lines.append(f"{i}. {domain}")
+            for citation in citations:
+                formatted_lines.append(f"   📎 {citation.title}")
+                if citation.uri:
+                    formatted_lines.append(f"   🔗 {citation.uri}")
+                if citation.snippet:
+                    formatted_lines.append(f"   \"{citation.snippet[:80]}...\"")
+        
+        return {
+            "status": "success",
+            "report": f"Extracted {len(product_obj.source_citations)} sources",
+            "data": {
+                "sources": [c.__dict__ for c in product_obj.source_citations],
+                "sources_by_domain": {
+                    domain: [c.__dict__ for c in citations]
+                    for domain, citations in by_domain.items()
+                },
+                "unique_domains": list(by_domain.keys()),
+                "formatted": "\n".join(formatted_lines)
+            }
+        }
+    
+    except Exception as e:
+        return {
+            "status": "error",
+            "report": f"Source extraction failed: {str(e)}",
+            "error": str(e),
+            "data": None
+        }
+

@@ -47,10 +47,38 @@ SEARCH_AGENT_NAME = "ProductSearchAgent"
 PREFERENCES_AGENT_NAME = "PreferenceManager"
 STORYTELLER_AGENT_NAME = "StorytellerAgent"
 
+# Enhanced agent names
+ENHANCED_ROOT_AGENT_NAME = "EnhancedCommerceCoordinator"
+PREFERENCE_COLLECTOR_NAME = "PreferenceCollector"
+PRODUCT_ADVISOR_NAME = "ProductAdvisor"
+VISUAL_ASSISTANT_NAME = "VisualAssistant"
+CHECKOUT_ASSISTANT_NAME = "CheckoutAssistant"
+
 # Model name (works on both Gemini API and Vertex AI)
 # Using Vertex AI? Set GOOGLE_APPLICATION_CREDENTIALS env var
 # Using Gemini API? Set GOOGLE_API_KEY env var
 MODEL_NAME = "gemini-2.5-flash"
+
+# Enhanced agent model parameters
+ENHANCED_MODEL_TEMPERATURE = 0.7  # Balanced creativity/consistency
+ENHANCED_MODEL_TOP_P = 0.9  # High diversity for recommendations
+ENHANCED_MODEL_TOP_K = 40  # Moderate token sampling
+
+# ============================================================================
+# Enhanced Agent Features
+# ============================================================================
+
+# Feature flags for enhanced agent
+ENABLE_MULTIMODAL = True  # Enable image/video analysis
+ENABLE_STRUCTURED_RESPONSES = True  # Force Pydantic JSON schemas
+ENABLE_BATCHED_QUESTIONS = True  # Collect preferences efficiently
+ENABLE_CART_MANAGEMENT = True  # Full cart CRUD operations
+ENABLE_VISUAL_CALLBACKS = True  # Logging/metrics callbacks
+
+# Multimodal configuration
+MAX_IMAGE_SIZE_MB = 10  # Maximum image size for analysis
+SUPPORTED_IMAGE_FORMATS = ["jpg", "jpeg", "png", "webp"]
+VIDEO_LINK_TIMEOUT_SECONDS = 30  # Timeout for video link sharing
 
 # ============================================================================
 # Search Configuration
