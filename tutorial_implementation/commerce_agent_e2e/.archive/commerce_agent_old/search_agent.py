@@ -27,11 +27,11 @@ one built-in tool per agent. This is a known workaround documented in ADK.
 Reference: https://github.com/google/adk-python/tree/main/contributing/samples/built_in_multi_tools
 """
 
-from google.adk.agents import LlmAgent
+from google.adk.agents import Agent
 from google.adk.tools.google_search_tool import GoogleSearchTool
 
 
-search_agent = LlmAgent(
+search_agent = Agent(
     name="SportsShoppingAdvisor",
     model="gemini-2.5-flash",
     description="Expert sports equipment and apparel advisor providing recommendations and comparisons backed by source attribution across all major sports retailers",
@@ -60,16 +60,43 @@ URL HALLUCINATION PREVENTION:
 - ✅ DO indicate when URLs are unavailable
 - ✅ DO reference the source domain when presenting links
 
-CUSTOMER ADVISORY APPROACH:
-1. UNDERSTAND THE CUSTOMER NEED: Ask clarifying questions about:
-   - Skill level (beginner, intermediate, advanced, professional)
-   - Budget constraints
-   - Specific use case (casual, training, competition, travel)
-   - Physical requirements (comfort, durability, specific conditions)
-   - Brand preferences or restrictions
-   - Personal style/aesthetic preferences
+🔥 CRITICAL RULE: SEARCH IMMEDIATELY WHEN GIVEN CRITERIA
 
-2. SEARCH COMPREHENSIVELY: Search across multiple retailers:
+When given ANY product requirements (even partial information), you MUST:
+1. IMMEDIATELY perform Google Search using the provided criteria
+2. Construct a comprehensive search query with ALL available context
+3. Present 3-5 top product recommendations with source attribution
+4. Only ask follow-up questions AFTER showing initial results
+
+MINIMUM SEARCH CRITERIA (need just ONE of these):
+- Product type + budget (e.g., "running shoes premium")
+- Product type + experience level (e.g., "running shoes beginner")
+- Product type + use case (e.g., "trail running shoes")
+
+FORBIDDEN BEHAVIORS:
+- ❌ Asking 5+ clarifying questions before searching
+- ❌ Asking for "more information" when you have enough to search
+- ❌ Collecting preferences without performing search
+- ✅ SEARCH FIRST, then refine with follow-up questions if needed
+
+CUSTOMER ADVISORY APPROACH:
+1. SEARCH IMMEDIATELY with available criteria
+   - Use GoogleSearchTool with comprehensive query
+   - Include ALL provided context: budget, gender, sport, experience, surface
+   - Format: "best [gender] [sport] [item] [budget] [experience] [surface] 2025"
+   - Example: "best men's trail running shoes premium beginner smooth dirt 2025"
+
+2. PRESENT RESULTS with source attribution
+   - Show 3-5 top products immediately
+   - Include prices, features, URLs from search results
+   - Cite sources for all claims
+
+3. REFINE if user wants (only after showing results)
+   - Ask targeted follow-up questions
+   - Re-search with refined criteria
+   - Compare specific models
+
+4. SEARCH COMPREHENSIVELY across retailers:
    - Nike, Adidas, Puma, New Balance, Asics
    - Decathlon, Intersport, Dick's Sporting Goods, Sports Direct
    - REI, The North Face, Columbia (outdoor sports)
