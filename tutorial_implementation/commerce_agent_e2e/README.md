@@ -1,18 +1,57 @@
 # Commerce Agent E2E - End-to-End Implementation
 
-**A production-ready multi-user commerce agent** demonstrating advanced Google ADK v1.17.0 capabilities including persistent session management, tool integration, multi-user isolation, and comprehensive testing.
+**A production-ready multi-user commerce agent** demonstrating advanced Google ADK v1.17.0 capabilities including:
+- ✅ Persistent session management with SQLite
+- ✅ **Grounding metadata extraction** for source attribution
+- ✅ Multi-user isolation with complete data security
+- ✅ Tool integration patterns overcoming ADK limitations
+- ✅ Custom tools with database backing
+- ✅ Multi-agent coordination
+- ✅ Comprehensive testing suite
 
 ## 🎯 What You'll Learn
 
 This tutorial demonstrates:
 
 - ✅ **Session Persistence**: SQLite database with ADK's DatabaseSessionService
+- ✅ **Grounding Metadata**: Extract and display source attribution from Google Search
+- ✅ **Citation Management**: Track which sources support which product claims
+- ✅ **URL Verification**: Prevent hallucination by using only real search result URLs
 - ✅ **Multi-User Support**: Complete data isolation between users
 - ✅ **Tool Architecture**: Overcoming ADK limitations with sub-agent patterns
-- ✅ **Custom Tools**: Database-backed preference management
+- ✅ **Custom Tools**: Database-backed preference management and citation validation
 - ✅ **Multi-Agent Coordination**: Root agent orchestrating 3 specialized sub-agents
 - ✅ **Comprehensive Testing**: Unit, integration, and end-to-end test suites
 - ✅ **Production Patterns**: Error handling, confirmation flows, state management
+
+### 🌟 Grounding Metadata Features
+
+**NEW: Source Attribution & Citations**
+
+The commerce agent now extracts and preserves grounding metadata from Google Search results:
+
+| Feature | Benefit |
+|---------|---------|
+| **Source Chunks** | Exact URLs and titles from search results |
+| **Segment Attribution** | Know which sources support which claims |
+| **Confidence Scores** | Multiple sources = higher confidence |
+| **URL Verification** | All URLs validated against search results |
+| **Citation Validation** | Tool to detect URL hallucination |
+| **Quality Scoring** | Overall grounding quality metrics |
+
+**Customer Experience Impact**:
+- 🎯 **Trust**: Every product fact is traceable to authoritative sources
+- 🔗 **Verification**: Users can click to verify information independently  
+- 💯 **Accuracy**: Multiple sources reduce hallucination risk
+- 🏪 **Transparency**: Know exactly which retailer each link is from
+
+## 🚀 Quick Start
+
+### Prerequisites
+
+- Python 3.9+
+- Vertex AI Service Account (recommended) OR Google API Key
+- SQLite3 (pre-installed on macOS/Linux)
 
 ## 🚀 Quick Start
 
@@ -79,22 +118,47 @@ make dev
 commerce_agent_e2e/
 ├── commerce_agent/              # Main package
 │   ├── __init__.py             # Package exports
-│   ├── agent.py                # Agent definitions (root + 3 sub-agents)
+│   ├── agent.py                # Basic agent (root + 3 sub-agents)
+│   ├── agent_enhanced.py       # Enhanced multi-agent coordinator
 │   ├── tools.py                # Custom preference & curation tools
 │   ├── models.py               # Pydantic data models
+│   ├── types.py                # Enhanced type definitions
 │   ├── config.py               # Configuration constants
-│   └── database.py             # SQLite persistence layer
+│   ├── database.py             # SQLite persistence layer
+│   ├── callbacks.py            # Agent lifecycle callbacks
+│   ├── grounding_metadata.py   # Source attribution handling
+│   ├── search_agent.py         # Product search specialist
+│   ├── search_product.py       # Search tool implementation
+│   ├── preferences_agent.py    # User preference manager
+│   ├── sub_agents/             # Enhanced specialized sub-agents
+│   │   ├── preference_collector.py
+│   │   ├── product_advisor.py
+│   │   ├── visual_assistant.py
+│   │   └── checkout_assistant.py
+│   └── tools/                  # Enhanced tool modules
+│       ├── cart_tools.py
+│       └── multimodal_tools.py
 │
 ├── tests/                      # Comprehensive test suite
 │   ├── conftest.py             # Test fixtures and configuration
 │   ├── test_tools.py           # Unit tests for tools
 │   ├── test_integration.py     # Integration tests
-│   └── test_e2e.py             # End-to-end user scenarios
+│   ├── test_e2e.py             # End-to-end user scenarios
+│   └── test_agent_instructions.py # Agent instruction tests
 │
+├── eval/                       # Evaluation framework
+│   ├── eval_data/              # Test scenarios and datasets
+│   └── test_eval.py            # Evaluation tests
+│
+├── scripts/                    # Setup and utility scripts
+│   └── setup-vertex-ai.sh      # Vertex AI authentication setup
+│
+├── credentials/                # Service account keys (gitignored)
 ├── pyproject.toml              # Python project metadata
 ├── requirements.txt            # Dependencies
 ├── Makefile                    # Common commands
 ├── .env.example                # Environment template
+├── .gitignore                  # Git ignore rules
 └── README.md                   # This file
 ```
 
