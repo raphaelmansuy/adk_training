@@ -1,0 +1,349 @@
+# Testing with Specific User Identities in ADK Web
+
+**How to test user preferences with different user IDs in the ADK web interface**
+
+## Quick Answer
+
+In the ADK web UI (http://localhost:8000), you can set **User ID** and **Session ID** in the **Session Settings** panel before chatting with the agent.
+
+---
+
+## Step-by-Step Guide
+
+### 1. Start the Server
+
+```bash
+# Option A: Default (ADK state)
+make dev
+
+# Option B: SQLite persistence
+make dev-sqlite
+```
+
+### 2. Open Browser
+
+Navigate to: **http://localhost:8000**
+
+### 3. Select Agent
+
+From the dropdown, select: **`commerce_agent`**
+
+### 4. Configure User Identity (CRITICAL STEP)
+
+**Look for the Session Settings panel** (usually on the left or top of the UI):
+
+- **User ID**: Enter a unique identifier (e.g., `alice`, `bob`, `athlete_123`)
+- **Session ID**: Enter a session identifier (e.g., `session_001`, `s_abc`)
+
+**Example configurations:**
+
+| User ID | Session ID | Purpose |
+|---------|------------|---------|
+| `alice` | `session_001` | Test runner preferences |
+| `bob` | `session_001` | Test cyclist preferences |
+| `athlete_123` | `test_session` | Production-like testing |
+
+### 5. Start Chatting
+
+Once User ID and Session ID are set, start your conversation:
+
+**Alice (runner):**
+```
+User ID: alice
+Session ID: session_001
+
+Chat:
+- "I want running shoes under €150. I'm a beginner."
+- "Show me some options"
+```
+
+**Bob (cyclist):**
+```
+User ID: bob
+Session ID: session_001
+
+Chat:
+- "I'm into cycling. Budget is €200."
+- "Find me cycling gear"
+```
+
+---
+
+## Testing Multi-User Isolation
+
+### Test Scenario: Verify Users Are Isolated
+
+**Step 1: Create Alice's Preferences**
+
+1. Set User ID: `alice`
+2. Set Session ID: `session_001`
+3. Chat: "I want running shoes under €150. I'm a beginner."
+4. Agent saves preferences: `sport=running`, `budget=150`, `experience=beginner`
+
+**Step 2: Create Bob's Preferences**
+
+1. Change User ID to: `bob`
+2. Change Session ID to: `session_002`
+3. Chat: "I'm into cycling. Budget is €200."
+4. Agent saves preferences: `sport=cycling`, `budget=200`
+
+**Step 3: Verify Isolation**
+
+1. Switch back to User ID: `alice` (Session ID: `session_001`)
+2. Chat: "What are my preferences?"
+3. Agent should respond with: **running, €150, beginner** (NOT cycling)
+
+4. Switch to User ID: `bob` (Session ID: `session_002`)
+5. Chat: "What are my preferences?"
+6. Agent should respond with: **cycling, €200** (NOT running)
+
+✅ **If this works, multi-user isolation is confirmed!**
+
+---
+
+## Testing Session Persistence (SQLite Mode)
+
+**Requires:** `make dev-sqlite` (with SQLite enabled)
+
+### Test Scenario: Verify Sessions Survive Restart
+
+**Step 1: Create Session with Preferences**
+
+1. Start server: `make dev-sqlite`
+2. Set User ID: `athlete_test`
+3. Set Session ID: `session_persist_test`
+4. Chat: "I want running shoes under €150. I'm a beginner."
+5. Agent saves preferences
+
+**Step 2: Note the Session ID**
+
+- Copy the Session ID shown in the UI
+- Close browser
+
+**Step 3: Restart Server**
+
+1. Stop server: `Ctrl+C`
+2. Start again: `make dev-sqlite`
+
+**Step 4: Restore Session**
+
+1. Open browser: http://localhost:8000
+2. Set User ID: `athlete_test`
+3. Set Session ID: `session_persist_test` (same as before)
+4. Chat: "What are my preferences?"
+
+✅ **If preferences are restored, SQLite persistence works!**
+
+---
+
+## Advanced: Testing via API
+
+You can also test with curl commands:
+
+### Create Session for Specific User
+
+```bash
+curl -X POST http://localhost:8000/apps/commerce_agent/users/alice/sessions/session_001 \
+  -H "Content-Type: application/json" \
+  -d '{"state": {}}'
+```
+
+### Send Message as Specific User
+
+```bash
+curl -X POST http://localhost:8000/run \
+  -H "Content-Type: application/json" \
+  -d '{
+    "app_name": "commerce_agent",
+    "user_id": "alice",
+    "session_id": "session_001",
+    "new_message": {
+      "role": "user",
+      "parts": [{"text": "I want running shoes under €150"}]
+    }
+  }'
+```
+
+### Get Session State
+
+```bash
+curl -X GET http://localhost:8000/apps/commerce_agent/users/alice/sessions/session_001
+```
+
+**Response shows:**
+```json
+{
+  "id": "session_001",
+  "appName": "commerce_agent",
+  "userId": "alice",
+  "state": {
+    "user:sport": "running",
+    "user:budget": 150,
+    "user:experience": "beginner"
+  },
+  "events": [...],
+  "lastUpdateTime": 1706300000.0
+}
+```
+
+---
+
+## Common Test Scenarios
+
+### Scenario 1: New User Onboarding
+
+```
+User ID: new_athlete_001
+Session ID: onboarding_session
+
+Test flow:
+1. "I want running shoes"
+2. Agent asks: budget? experience?
+3. "Under €150, beginner"
+4. Agent saves preferences
+5. "Show me options"
+6. Agent uses saved preferences to search
+```
+
+### Scenario 2: Returning Customer
+
+```
+User ID: alice (existing user)
+Session ID: session_002 (NEW session, SAME user)
+
+Test flow:
+1. "What do you know about me?"
+2. Agent recalls: "You prefer running, budget €150, beginner level"
+3. "Recommend something"
+4. Agent suggests products based on history
+```
+
+### Scenario 3: Multi-User Household
+
+```
+User ID: parent_alice
+Session ID: session_001
+- Sport: running
+
+User ID: child_bob  
+Session ID: session_001
+- Sport: soccer
+
+Switch between users and verify preferences don't mix
+```
+
+---
+
+## Debugging Tips
+
+### Issue: Preferences Not Saving
+
+**Check:**
+1. User ID is set (not default "user")
+2. Agent is calling `save_preferences` tool
+3. Check session state in browser DevTools or via API
+
+### Issue: Preferences Mixing Between Users
+
+**Check:**
+1. User IDs are actually different
+2. Not using same session ID for different users
+3. Agent is using `tool_context.state["user:pref"]` (not session:)
+
+### Issue: Preferences Lost After Restart
+
+**Expected Behavior:**
+- `make dev` (ADK state): Preferences MAY be lost (session-scoped)
+- `make dev-sqlite`: Preferences MUST persist ✅
+
+**If SQLite fails:**
+1. Check database exists: `ls -la commerce_sessions.db`
+2. Check database content: `sqlite3 commerce_sessions.db "SELECT * FROM sessions;"`
+3. Verify session ID matches
+
+---
+
+## UI Navigation Guide
+
+### Finding Session Settings in ADK Web
+
+**Layout variations:**
+
+**Option A: Left Panel**
+```
+┌────────────────┬──────────────────────┐
+│ Session Panel  │                      │
+│                │                      │
+│ User ID: ___   │   Chat Area          │
+│ Session ID: __ │                      │
+│                │                      │
+│ [Start Chat]   │                      │
+└────────────────┴──────────────────────┘
+```
+
+**Option B: Top Bar**
+```
+┌─────────────────────────────────────────┐
+│ User ID: _____  Session ID: _____       │
+├─────────────────────────────────────────┤
+│                                         │
+│           Chat Area                     │
+│                                         │
+└─────────────────────────────────────────┘
+```
+
+**Option C: Settings Icon**
+```
+┌─────────────────────────────────────────┐
+│ Commerce Agent         [⚙️ Settings]     │
+├─────────────────────────────────────────┤
+│                                         │
+│           Chat Area                     │
+```
+Click ⚙️ → Enter User ID and Session ID
+
+---
+
+## Reference: Official ADK Documentation
+
+**Session Management API:**
+- Create Session: `POST /apps/{app_name}/users/{user_id}/sessions/{session_id}`
+- Get Session: `GET /apps/{app_name}/users/{user_id}/sessions/{session_id}`
+- Delete Session: `DELETE /apps/{app_name}/users/{user_id}/sessions/{session_id}`
+
+**Source:** https://google.github.io/adk-docs/get-started/testing/#session-management
+
+---
+
+## Summary
+
+✅ **Set User ID and Session ID in ADK web UI before chatting**
+
+✅ **Different users = Complete isolation**
+
+✅ **Same user, different sessions = Shared user preferences (user: prefix)**
+
+✅ **SQLite mode = Full persistence across restarts**
+
+✅ **Test multi-user scenarios by switching User ID in UI**
+
+---
+
+**Quick Test Command:**
+
+```bash
+# Terminal 1: Start server
+make dev-sqlite
+
+# Browser: Set User ID = "alice", Session ID = "test_001"
+# Chat: "I want running shoes under €150. I'm a beginner."
+
+# Browser: Change User ID = "bob", Session ID = "test_002"  
+# Chat: "I'm into cycling. Budget €200."
+
+# Browser: Change back to User ID = "alice", Session ID = "test_001"
+# Chat: "What are my preferences?"
+# Expected: running, €150, beginner (NOT cycling!)
+```
+
+**If this works, you're ready to test with real users!** 🎉
