@@ -28,6 +28,8 @@ When building AI agents for enterprises with data privacy concerns or for regula
 industries, you need to understand the gap between standard AI models and enterprise-grade
 solutions.
 
+<!-- truncate -->
+
 ## Why Gemini Enterprise Matters: Starting with WHY
 
 ### The Core Problem
@@ -188,7 +190,7 @@ Here's the typical workflow:
                 └──────────┘                         └─────────────┘
 ```
 
-**The Agent Workflow Explained**
+### The Agent Workflow Explained
 
 ```mermaid
 graph TD
