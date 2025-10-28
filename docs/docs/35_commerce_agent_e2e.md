@@ -973,7 +973,7 @@ You'll know everything is working when:
 
 ✅ All 14+ tests pass (`make test`)  
 ✅ Agent starts without errors (`make dev`)  
-✅ Agent appears in dropdown at <http://localhost:8000>  
+✅ Agent appears in dropdown at [http://localhost:8000](http://localhost:8000)  
 ✅ Agent calls `get_preferences` at conversation start  
 ✅ Agent calls `save_preferences` when user provides info  
 ✅ Agent searches products using Google Search  
