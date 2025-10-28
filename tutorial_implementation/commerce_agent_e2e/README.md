@@ -63,6 +63,20 @@ The commerce agent now extracts and preserves grounding metadata from Google Sea
 - Vertex AI Service Account (recommended) OR Google API Key
 - SQLite3 (pre-installed on macOS/Linux)
 
+### Two Ways to Run
+
+**Option 1: ADK Web Interface** (Default - uses ADK state)
+```bash
+make dev  # Visit http://localhost:8000
+```
+
+**Option 2: SQLite Persistent Sessions** (Advanced - survives restarts)
+```bash
+python runner_with_sqlite.py
+```
+
+See **[Session Persistence Options](#-session-persistence-options)** below for comparison.
+
 ### Authentication Setup
 
 **⚠️ IMPORTANT:** This agent works best with **Vertex AI authentication**. Using Gemini API (GOOGLE_API_KEY) breaks the "site:decathlon.com.hk" search operator.
@@ -114,7 +128,120 @@ make dev
 # Select "commerce_agent" from the dropdown
 ```
 
-## 📁 Project Structure
+## � Session Persistence Options
+
+Choose the right persistence strategy for your use case:
+
+### Option 1: ADK State (Default - Simple)
+
+**What is it?**
+ADK's built-in state management with `user:` prefix for cross-session persistence.
+
+**How it works:**
+```python
+# Tools modify state
+def save_preferences(sport: str, tool_context: ToolContext):
+    tool_context.state["user:sport"] = sport  # Persisted automatically
+    return {"status": "success"}
+
+# State persists across invocations
+def get_preferences(tool_context: ToolContext):
+    return {"data": tool_context.state.get("user:sport")}
+```
+
+**Best for:**
+- ✅ Simple user preferences (sport, budget, experience level)
+- ✅ Quick prototyping and development
+- ✅ Single-server deployments
+- ✅ Key-value data patterns
+
+**Current Implementation:** This is what the commerce agent uses today.
+
+### Option 2: DatabaseSessionService with SQLite (Advanced)
+
+**What is it?**
+ADK's built-in SQL persistence for sessions, state, and conversation history.
+
+**How it works:**
+```python
+from google.adk.sessions import DatabaseSessionService
+
+# One-time setup
+session_service = DatabaseSessionService(
+    db_url="sqlite:///./sessions.db?mode=wal"
+)
+
+runner = Runner(
+    agent=root_agent,
+    session_service=session_service
+)
+
+# Everything persists: state, events, timestamps
+session = await session_service.get_session("app", "user", "session_id")
+# Data survives app restarts! ✅
+```
+
+**Using with adk web (OFFICIAL SUPPORT):**
+```bash
+# SQLite persistence (sessions survive restarts)
+adk web --session_service_uri sqlite:///./sessions.db
+
+# With WAL mode (recommended)
+adk web --session_service_uri "sqlite:///./sessions.db?mode=wal"
+
+# PostgreSQL (production)
+adk web --session_service_uri postgresql://user:pass@localhost/adk_sessions
+```
+
+**Reference:** [ADK CLI Documentation](https://google.github.io/adk-docs/api-reference/cli/cli.html#web)
+
+**Best for:**
+- ✅ Multi-user applications with isolation requirements
+- ✅ Conversation history preservation
+- ✅ Complex queries (SQL JOINs, filters)
+- ✅ Production deployments
+
+**Try it now:**
+```bash
+# Run the SQLite demo
+python runner_with_sqlite.py
+
+# See comprehensive guide
+cat docs/SQLITE_SESSION_PERSISTENCE_GUIDE.md
+```
+
+### Comparison Table
+
+| Feature | ADK State (`user:` prefix) | DatabaseSessionService (SQLite) |
+|---------|----------------------------|----------------------------------|
+| **Setup** | ✅ Zero config | ⚠️ Database URL required |
+| **Persistence** | ✅ Cross-session | ✅ Cross-restart |
+| **Conversation History** | ❌ Not stored | ✅ Full event log |
+| **Multi-User Isolation** | ✅ Good (via state keys) | ✅ Excellent (via DB rows) |
+| **Queries** | ❌ Key-value only | ✅ SQL queries, JOINs |
+| **Scalability** | ✅ Good for simple data | ✅ Better for complex data |
+| **Production Databases** | ❌ In-memory/temp storage | ✅ PostgreSQL/MySQL/Spanner |
+| **Current Commerce Agent** | ✅ **Using this** | ⏳ Available as option |
+
+### When to Switch?
+
+**Keep ADK State if:**
+- You have simple user preferences (sport, budget, experience)
+- You're prototyping or in development
+- You don't need conversation history
+
+**Switch to DatabaseSessionService if:**
+- You need conversation history across restarts
+- You have complex multi-user requirements
+- You want SQL query capabilities
+- You're deploying to production at scale
+
+**Documentation:**
+- **SQLite Guide**: `docs/SQLITE_SESSION_PERSISTENCE_GUIDE.md` (comprehensive)
+- **Working Example**: `runner_with_sqlite.py` (ready to run)
+- **ADK Docs**: https://google.github.io/adk-docs/sessions/
+
+## �📁 Project Structure
 
 ```
 commerce_agent_e2e/
@@ -205,6 +332,38 @@ product_cache         -- Search result caching (app-wide)
 
 ```bash
 make test
+```
+
+### Testing with Specific User Identities
+
+**⚠️ Important: The ADK web UI does NOT have a panel for setting User IDs**
+
+The `adk web` browser interface uses a fixed default user ID ("user") for all sessions. To test with specific user identities (alice, bob, etc.), you **must use the API endpoints directly**.
+
+**Complete Guide**: See [docs/TESTING_WITH_USER_IDENTITIES.md](docs/TESTING_WITH_USER_IDENTITIES.md) for:
+- � **API testing with curl** (the ONLY way to set custom User IDs)
+- 🐍 **Python scripts** for automated multi-user testing
+- 👥 **Multi-user isolation testing** (Alice vs Bob scenario)
+- 💾 **SQLite persistence verification** across restarts
+- 🎯 **Common test scenarios** (onboarding, returning customer, multi-user household)
+- 🐛 **Debugging tips** for preference issues
+
+**Quick view guide**:
+```bash
+make test-guide   # View API testing instructions in terminal
+```
+
+**Quick API Example**:
+```bash
+# Create session for alice
+curl -X POST http://localhost:8000/apps/commerce_agent/users/alice/sessions/s1 \
+  -H "Content-Type: application/json" -d '{"state": {}}'
+
+# Send message as alice
+curl -X POST http://localhost:8000/run -H "Content-Type: application/json" -d '{
+  "app_name": "commerce_agent", "user_id": "alice", "session_id": "s1",
+  "new_message": {"role": "user", "parts": [{"text": "I want running shoes"}]}
+}'
 ```
 
 ### Test Tiers

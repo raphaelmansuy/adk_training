@@ -1,7 +1,7 @@
 # Commerce Agent E2E - End-to-End Implementation Tutorial
 # Production-ready multi-user commerce assistant with session persistence
 
-.PHONY: help setup dev test demo clean check-env setup-vertex-ai
+.PHONY: help setup dev dev-sqlite test test-guide demo demo-sqlite clean check-env setup-vertex-ai
 
 # Default target
 help:
@@ -11,13 +11,20 @@ help:
 	@echo "  make setup              - Install dependencies and setup package"
 	@echo "  make setup-vertex-ai    - Configure Vertex AI authentication"
 	@echo "  make test               - Run comprehensive test suite (unit, integration, e2e)"
-	@echo "  make dev                - Start development UI (adk web)"
+	@echo "  make test-guide         - View guide for testing with user identities"
+	@echo "  make dev                - Start development UI with ADK state (default)"
+	@echo "  make dev-sqlite         - Start development UI with SQLite persistence"
 	@echo "  make demo               - Display demo scenarios"
+	@echo "  make demo-sqlite        - Run SQLite persistence demo script"
 	@echo ""
 	@echo "Advanced Commands:"
 	@echo "  make clean              - Clean up generated files"
 	@echo ""
 	@echo "💡 First time? Run: make setup-vertex-ai && make setup && make dev"
+	@echo ""
+	@echo "Session Persistence Options:"
+	@echo "  • ADK State (default):     Simple, works out-of-box"
+	@echo "  • SQLite (dev-sqlite):     Persistent, survives restarts"
 
 # Install dependencies
 setup: check-env
@@ -51,7 +58,72 @@ test: check-env
 	@echo ""
 	@echo "✅ Tests complete! Coverage report: htmlcov/index.html"
 
-# Start development UI
+# Display testing guide for user identities
+test-guide:
+	@echo ""
+	@echo "📖 Testing with Specific User Identities"
+	@echo ""
+	@echo "⚠️  IMPORTANT: The 'adk web' UI does NOT have a panel for User ID/Session ID"
+	@echo "    The browser interface uses a fixed default user ID: 'user'"
+	@echo ""
+	@echo "To test with specific users (alice, bob, etc.), use the API endpoints:"
+	@echo ""
+	@echo "1️⃣  Create Session for Alice:"
+	@echo "  curl -X POST http://localhost:8000/apps/commerce_agent/users/alice/sessions/s1 \\"
+	@echo "    -H 'Content-Type: application/json' -d '{\"state\": {}}'"
+	@echo ""
+	@echo "2️⃣  Send Message as Alice:"
+	@echo "  curl -X POST http://localhost:8000/run -H 'Content-Type: application/json' -d '{"
+	@echo "    \"app_name\": \"commerce_agent\","
+	@echo "    \"user_id\": \"alice\","
+	@echo "    \"session_id\": \"s1\","
+	@echo "    \"new_message\": {"
+	@echo "      \"role\": \"user\","
+	@echo "      \"parts\": [{\"text\": \"I want running shoes under 150 euros\"}]"
+	@echo "    }"
+	@echo "  }'"
+	@echo ""
+	@echo "3️⃣  Create Session for Bob:"
+	@echo "  curl -X POST http://localhost:8000/apps/commerce_agent/users/bob/sessions/s2 \\"
+	@echo "    -H 'Content-Type: application/json' -d '{\"state\": {}}'"
+	@echo ""
+	@echo "4️⃣  Send Message as Bob:"
+	@echo "  curl -X POST http://localhost:8000/run -H 'Content-Type: application/json' -d '{"
+	@echo "    \"app_name\": \"commerce_agent\","
+	@echo "    \"user_id\": \"bob\","
+	@echo "    \"session_id\": \"s2\","
+	@echo "    \"new_message\": {"
+	@echo "      \"role\": \"user\","
+	@echo "      \"parts\": [{\"text\": \"I am into cycling. Budget 200 euros\"}]"
+	@echo "    }"
+	@echo "  }'"
+	@echo ""
+	@echo "5️⃣  Verify Isolation - Check Alice's Preferences:"
+	@echo "  curl -X POST http://localhost:8000/run -H 'Content-Type: application/json' -d '{"
+	@echo "    \"app_name\": \"commerce_agent\","
+	@echo "    \"user_id\": \"alice\","
+	@echo "    \"session_id\": \"s1\","
+	@echo "    \"new_message\": {"
+	@echo "      \"role\": \"user\","
+	@echo "      \"parts\": [{\"text\": \"What are my preferences?\"}]"
+	@echo "    }"
+	@echo "  }'"
+	@echo ""
+	@echo "Expected: Agent shows running (NOT cycling) ✅"
+	@echo ""
+	@echo "📄 Full Documentation:"
+	@echo "   docs/TESTING_WITH_USER_IDENTITIES.md"
+	@echo ""
+	@echo "Or open the guide:"
+	@if command -v less >/dev/null 2>&1; then \
+		less docs/TESTING_WITH_USER_IDENTITIES.md; \
+	elif command -v more >/dev/null 2>&1; then \
+		more docs/TESTING_WITH_USER_IDENTITIES.md; \
+	else \
+		cat docs/TESTING_WITH_USER_IDENTITIES.md; \
+	fi
+
+# Start development UI (default - uses ADK state)
 dev: check-env
 	@echo "🤖 Starting Commerce Agent..."
 	@echo ""
@@ -67,6 +139,12 @@ dev: check-env
 	@echo "📱 Open http://localhost:8000 in your browser"
 	@echo "🎯 Select 'commerce_agent' from the agent dropdown"
 	@echo ""
+	@echo "💾 Session Persistence: ADK State (user: prefix)"
+	@echo "   - Preferences persist across invocations"
+	@echo "   - Sessions lost on app restart"
+	@echo ""
+	@echo "💡 Want persistence across restarts? Use: make dev-sqlite"
+	@echo ""
 	@echo "Test scenarios:"
 	@echo "  • User 'alice', Sport: 'running' → Find running shoes"
 	@echo "  • User 'bob', Sport: 'cycling' → Recommend cycling gear"
@@ -74,12 +152,46 @@ dev: check-env
 	@echo ""
 	unset GOOGLE_API_KEY GEMINI_API_KEY; adk web
 
+# Start development UI with SQLite persistence
+dev-sqlite: check-env
+	@echo "🤖 Starting Commerce Agent with SQLite Session Persistence"
+	@echo ""
+	@if [ ! -z "$$GOOGLE_API_KEY" ]; then \
+		echo "⚠️  Unsetting GOOGLE_API_KEY to use Vertex AI..."; \
+		unset GOOGLE_API_KEY; \
+	fi
+	@if [ ! -z "$$GEMINI_API_KEY" ]; then \
+		echo "⚠️  Unsetting GEMINI_API_KEY to use Vertex AI..."; \
+		unset GEMINI_API_KEY; \
+	fi
+	@echo ""
+	@echo "📱 Open http://localhost:8000 in your browser"
+	@echo "🎯 Select 'commerce_agent' from the agent dropdown"
+	@echo ""
+	@echo "💾 Session Persistence: SQLite Database"
+	@echo "   - Full conversation history preserved"
+	@echo "   - Sessions persist across app restarts ✅"
+	@echo "   - Database: ./commerce_sessions.db"
+	@echo ""
+	@echo "🔍 Inspect database:"
+	@echo "   sqlite3 commerce_sessions.db"
+	@echo "   > .tables"
+	@echo "   > SELECT * FROM sessions;"
+	@echo ""
+	@echo "Test scenarios:"
+	@echo "  1. Chat with agent"
+	@echo "  2. Stop server (Ctrl+C)"
+	@echo "  3. Restart: make dev-sqlite"
+	@echo "  4. Your session data is still there! ✅"
+	@echo ""
+	unset GOOGLE_API_KEY GEMINI_API_KEY; adk web --session_service_uri "sqlite:///./commerce_sessions.db?mode=wal"
+
 # Display demo scenarios
 demo:
 	@echo ""
 	@echo "📋 Commerce Agent E2E Demo Scenarios"
 	@echo ""
-	@echo "Run these after starting with: make dev"
+	@echo "Run these after starting with: make dev (or make dev-sqlite)"
 	@echo ""
 	@echo "------- SCENARIO 1: New User Setup -------"
 	@echo "User ID: athlete_1"
@@ -123,6 +235,21 @@ demo:
 	@echo ""
 	@echo "✅ All scenarios demonstrate key features!"
 	@echo ""
+
+# Run SQLite persistence demo (programmatic)
+demo-sqlite: check-env
+	@echo "🚀 Running SQLite Session Persistence Demo"
+	@echo ""
+	@echo "This script demonstrates:"
+	@echo "  ✅ DatabaseSessionService with SQLite"
+	@echo "  ✅ Session creation and retrieval"
+	@echo "  ✅ State persistence across 'restarts'"
+	@echo "  ✅ Multi-user isolation"
+	@echo "  ✅ Conversation history preservation"
+	@echo ""
+	@echo "Press Ctrl+C to stop at any time"
+	@echo ""
+	python runner_with_sqlite.py
 
 # Clean up
 clean:
