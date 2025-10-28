@@ -39,16 +39,24 @@ import Comments from '@site/src/components/Comments';
 
 ## Overview
 
-This is a **production-ready end-to-end implementation** of a Commerce Agent that demonstrates enterprise-grade ADK capabilities. The agent handles real-world scenarios including:
+This is a **production-ready end-to-end implementation** of a Commerce Agent that demonstrates essential ADK v1.17.0 capabilities in a clean, maintainable architecture. The agent handles real-world e-commerce scenarios including:
 
-- **Multi-user sessions** with complete isolation and persistence
-- **Product discovery** via Google Search with Decathlon integration
-- **Proactive recommendations** based on user history and preferences
-- **Narrative generation** for engagement and storytelling
-- **Session management** with advanced pause/resume capabilities
-- **Comprehensive testing** covering 8 major workflows
+- **Grounding metadata extraction** from Google Search results for source attribution
+- **Multi-user session management** with ADK state isolation (`user:` prefix)
+- **Product discovery** via Google Search with site-specific filtering (Decathlon)
+- **Personalized recommendations** based on saved user preferences
+- **Type-safe tool interfaces** using TypedDict patterns
+- **Comprehensive testing** covering unit, integration, and e2e scenarios
+- **Optional SQLite persistence** for sessions that survive app restarts
 
-This tutorial teaches you to build agents that scale from development through production deployment.
+This tutorial teaches you to build clean, testable agents that follow ADK best practices and scale from development through production deployment.
+
+**Key Implementation Highlights:**
+- ✅ **Simple Architecture**: One root agent with 3 tools (not complex multi-agent)
+- ✅ **Grounding Callback**: Extract and monitor Google Search source attribution
+- ✅ **Two Persistence Modes**: ADK state (default) or SQLite (optional)
+- ✅ **Vertex AI Ready**: Optimized for Vertex AI with fallback to Gemini API
+- ✅ **TypedDict Safety**: Type-safe tool returns with IDE autocomplete
 
 ## Prerequisites
 
@@ -61,273 +69,511 @@ This tutorial teaches you to build agents that scale from development through pr
 
 ## Core Concepts
 
-### 1. Multi-User Session Architecture
+### 1. Simple Agent Architecture
 
-Unlike tutorials 1-34 which focus on single users, this agent handles **concurrent users with complete data isolation**:
+This implementation uses a **clean, single-agent design** with three tools:
 
-```
-User Alice (user123)          User Bob (user456)
-    |                              |
-    v                              v
-Session A123 ← ISOLATED →  Session B456
-    |                              |
-    +-- state['user:sport']    +-- state['user:sport']
-    |   = "running"            |   = "cycling"
-    |                          |
-    +-- state['temp:buffer']   +-- state['temp:buffer']
-        (lost after turn)          (lost after turn)
-    
-Both users share:
-    state['app:cache']              (global product cache)
-```
-
-### 2. Tool Architecture: Overcoming the Single Built-in Tool Limitation
-
-ADK v1.17.0 allows only ONE built-in tool per agent. The workaround uses sub-agents:
-
-```
+```text
 ┌─────────────────────────────────────┐
-│      Root Commerce Coordinator       │
-│    (Orchestrates All Sub-Agents)    │
+│      Commerce Agent (Root)          │
+│   Personal Shopping Concierge       │
 └──────────────┬──────────────────────┘
                │
      ┌─────────┼─────────┐
      v         v         v
- [Search]   [Prefs]   [Story]
- Sub-Agent  Sub-Agent  Sub-Agent
-     │         │         v
-     │         │       No Tools
-     │         │       (Pure LLM)
-     │         v
-     │     Custom Pref
-     │     Tool (DB)
-     │
-     v
- GoogleSearchTool
- (site:decathlon.fr)
+[Search]   [Save]    [Get]
+ Tool      Prefs     Prefs
+  │
+  v
+AgentTool wrapping
+Google Search Agent
+(site:decathlon.com.hk)
 ```
+
+**Why this approach?**
+
+- ✅ Simpler to understand and maintain
+- ✅ Follows ADK best practices from official samples
+- ✅ Easier to test and debug
+- ✅ Production-ready without overengineering
+
+### 2. Multi-User State Isolation
+
+The agent uses ADK's built-in state management with the `user:` prefix
+for cross-session persistence:
+
+```text
+User Alice (alice)              User Bob (bob)
+    |                              |
+    v                              v
+Session s1 ← ISOLATED →      Session s2
+    |                              |
+    +-- state['user:pref_sport']   +-- state['user:pref_sport']
+    |   = "running"                |   = "cycling"
+    |                              |
+    +-- state['user:pref_budget']  +-- state['user:pref_budget']
+        = 150                          = 200
+
+Each user has completely isolated preferences
+```
+
+**Key Point**: The `user:` prefix in ADK state automatically provides
+multi-user isolation. No complex database setup required for basic use cases.
 
 ### 3. State Management Deep Dive
 
-The agent uses all three state scopes correctly:
+The agent uses ADK state scopes correctly for different data lifetimes:
 
 | Scope | Prefix | Lifetime | Example |
 |-------|--------|----------|---------|
-| Session | none | Current chat only | `current_query`, `search_results` |
-| User | `user:` | Persists across sessions | `user:preferences`, `user:favorites` |
-| App | `app:` | Shared by all users | `app:product_cache`, `app:metrics` |
-| Temp | `temp:` | Just this invocation | `temp:search_buffer` |
+| Session | none | Current chat | `current_query` |
+| User | `user:` | Across sessions | `user:pref_sport` |
+| App | `app:` | Shared globally | `app:product_cache` |
+| Temp | `temp:` | Current invocation | `temp:grounding_sources` |
 
-**Critical**: User-scoped data persists to SQLite. Each user can only access their own `user:*` keys.
-
-### 4. Session Persistence with SQLite
-
-The agent uses `DatabaseSessionService` to persist all data:
+**How it works:**
 
 ```python
+# In save_preferences tool
+def save_preferences(sport: str, budget_max: int, ..., tool_context: ToolContext):
+    # Saves to user-scoped state (persists across sessions)
+    tool_context.state["user:pref_sport"] = sport
+    tool_context.state["user:pref_budget"] = budget_max
+    # ✅ This data survives when user starts a new chat session
+
+# In get_preferences tool
+def get_preferences(tool_context: ToolContext):
+    # Retrieves user-scoped state
+    sport = tool_context.state.get("user:pref_sport")
+    budget = tool_context.state.get("user:pref_budget")
+    # ✅ Returns saved preferences from previous sessions
+```
+
+**Critical**: User-scoped data with `user:` prefix provides multi-user isolation.
+User "alice" cannot access user "bob"'s preferences.
+
+### 4. Optional SQLite Persistence
+
+While ADK state (`user:` prefix) handles most use cases, the implementation
+also supports SQLite for full session persistence:
+
+**Two modes available:**
+
+1. **ADK State (Default)**: `make dev`
+   - Simple, works out-of-box
+   - Preferences persist across invocations
+   - Sessions lost on app restart
+
+2. **SQLite (Advanced)**: `make dev-sqlite`
+   - Full conversation history preserved  
+   - Sessions survive app restarts
+   - SQL query capabilities
+
+```python
+# SQLite mode (optional)
 from google.adk.sessions import DatabaseSessionService
 
 session_service = DatabaseSessionService(
-    db_url="sqlite:///./commerce_agent_sessions.db"
+    db_url="sqlite:///./commerce_sessions.db?mode=wal"
 )
 
-# Create session
-session = await session_service.create_session(
-    app_name="commerce_agent",
-    user_id="user123",           # Multi-user isolation by this ID
-    session_id="session456",
-    state={"user:sport": "running"}
-)
-
-# Data persists even after app restart!
-session_restored = await session_service.get_session(
-    "commerce_agent", "user123", "session456"
-)
-assert session_restored.state["user:sport"] == "running"  # ✅
+# Or use CLI:
+# adk web --session_service_uri "sqlite:///./sessions.db?mode=wal"
 ```
 
-### 5. Evaluation Framework (v1.17.0)
+**When to use SQLite:**
+- ✅ Need conversation history across restarts
+- ✅ Want SQL query capabilities
+- ✅ Production deployment requirements
 
-The implementation includes metrics collection:
+**When ADK state is enough:**
+- ✅ Simple user preferences (sport, budget, experience)
+- ✅ Development and testing
+- ✅ Single-server deployments
 
-- **Tool use quality**: Rubric-based evaluation of tool calls
-- **Hallucination detection**: Identifies false claims
-- **Response quality**: Evaluates recommendation relevance
-- **Performance metrics**: Latency, cache hits, user isolation verification
+### 5. Grounding Metadata Extraction (NEW in v1.17.0)
+
+A key feature of this implementation is the **grounding callback** that extracts
+source attribution from Google Search results:
+
+```python
+from commerce_agent import create_grounding_callback
+from google.adk.runners import Runner
+
+runner = Runner(
+    agent=root_agent,
+    after_model_callbacks=[create_grounding_callback(verbose=True)]
+)
+```
+
+**What it extracts:**
+
+- ✅ Source URLs and titles from grounding chunks
+- ✅ Domain names (e.g., "decathlon.com.hk", "alltricks.com")
+- ✅ Segment-level attribution (which sources support which claims)
+- ✅ Confidence scores based on multi-source agreement
+
+**Console output example:**
+
+```text
+====================================================================
+✓ GROUNDING METADATA EXTRACTED
+====================================================================
+Total Sources: 5
+
+Sources:
+  1. [decathlon.com.hk] Brooks Divide 5 - Trail Running Shoes
+  2. [alltricks.com] Brooks Divide 5 - €95 Free Shipping
+  3. [runningwarehouse.com] Brooks Divide 5 Review
+
+Grounding Supports: 8 segments
+  1. [high] "Brooks Divide 5 costs €95" (3 sources)
+  2. [medium] "ideal for beginner trail runners" (2 sources)
+  ... and 6 more
+====================================================================
+```
+
+**Why this matters:**
+
+- ✅ **Transparency**: Users see which retailers/sources support each claim
+- ✅ **Trust**: Multiple sources = higher confidence in recommendations
+- ✅ **Debugging**: Console logs help verify search quality during development
+- ✅ **Anti-hallucination**: Validate that URLs are from real search results
 
 ## Architecture Overview
 
-### Agent Hierarchy
+### Agent Structure
 
-```
+The commerce agent uses a **simple, maintainable architecture**:
+
+```text
 Commerce Agent (Root)
-├── ProductSearchAgent (Sub-agent 1)
-│   └── GoogleSearchTool
-│       └── site:decathlon.fr
-├── PreferenceManager (Sub-agent 2)
-│   └── manage_user_preferences() tool
-│       └── SQLite backend
-└── StorytellerAgent (Sub-agent 3)
-    └── No tools (pure LLM narrative)
+├── Tool 1: search_products (AgentTool wrapping Google Search)
+├── Tool 2: save_preferences (FunctionTool)
+└── Tool 3: get_preferences (FunctionTool)
 ```
+
+**No complex sub-agents**. This design:
+
+- ✅ Follows ADK best practices from official samples
+- ✅ Easier to test (fewer moving parts)
+- ✅ Clearer debugging (single agent flow)
+- ✅ Production-ready without overengineering
 
 ### Data Flow
 
-```
-User Query
+```text
+User Query ("Find running shoes under €100")
     ↓
-Root Agent (orchestrator)
+Root Agent receives message
     ↓
-┌───────────┬──────────────┬─────────────┐
-│           │              │             │
-v           v              v             v
-Search   Preferences  Storytelling   State
-Query    Update       Generation     Save
-│           │              │             │
-└───────────┴──────────────┴─────────────┘
-            ↓
-    Tool Confirmation
-    (if expensive)
-            ↓
-    Tool Execution
-            ↓
-    State Persistence
-    (DatabaseSessionService)
-            ↓
+┌───────────────────────────────────────┐
+│ 1. Call get_preferences()             │
+│    → Check if user has saved prefs    │
+└───────────────┬───────────────────────┘
+                ↓
+┌───────────────────────────────────────┐
+│ 2. If prefs missing:                  │
+│    Ask clarifying questions           │
+│    Then call save_preferences()       │
+└───────────────┬───────────────────────┘
+                ↓
+┌───────────────────────────────────────┐
+│ 3. Call search_products()             │
+│    → Executes Google Search           │
+│    → site:decathlon.com.hk filter     │
+│    → Returns 3-5 products             │
+└───────────────┬───────────────────────┘
+                ↓
+┌───────────────────────────────────────┐
+│ 4. Grounding Callback (after_model)   │
+│    → Extracts source attribution      │
+│    → Logs to console                  │
+│    → Stores in state['temp:*']        │
+└───────────────┬───────────────────────┘
+                ↓
+┌───────────────────────────────────────┐
+│ 5. Generate Response                  │
+│    → Personalized recommendations     │
+│    → Why each product fits user needs │
+│    → Purchase links with retailers    │
+└───────────────────────────────────────┘
+                ↓
     Response to User
 ```
 
 ## Database Schema
 
-The SQLite database stores all persistent data:
+The implementation includes a **simple SQLite database** used by the preference
+tools for storing historical data and favorites. This is **optional** and
+separate from ADK's session management.
+
+**Database file**: `commerce_agent_sessions.db` (created automatically)
 
 ```sql
--- User preferences and profile
+-- User preferences (managed by save_preferences/get_preferences tools)
 CREATE TABLE user_preferences (
     user_id TEXT PRIMARY KEY,
     preferences_json TEXT,  -- JSON: {sports, price_range, brands}
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
--- Interaction history for personalization
+-- Interaction history for analytics (optional)
 CREATE TABLE interaction_history (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     user_id TEXT NOT NULL,
     session_id TEXT NOT NULL,
     query TEXT,
     result_count INTEGER,
-    timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (user_id) REFERENCES user_preferences(user_id)
+    timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
--- Favorite products
+-- Favorite products (optional)
 CREATE TABLE user_favorites (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     user_id TEXT NOT NULL,
     product_id TEXT,
     product_name TEXT,
     url TEXT,
-    added_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (user_id) REFERENCES user_preferences(user_id)
-);
-
--- Search result cache (app-wide)
-CREATE TABLE product_cache (
-    cache_key TEXT PRIMARY KEY,
-    results_json TEXT,
-    cached_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    ttl_seconds INTEGER DEFAULT 3600
+    added_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 ```
 
+**Important clarifications:**
+
+1. **ADK State vs Database**: The agent primarily uses ADK's `user:` state for
+   preferences. The database is for additional features (history, favorites).
+
+2. **Not for ADK Sessions**: This database does NOT store ADK session data.
+   For that, use `DatabaseSessionService` with `make dev-sqlite`.
+
+3. **Initialization**: Database is created automatically on first `make setup`
+   via `init_database()` call.
+
 ## Implementation Deep Dive
 
-### Step 1: Running the Implementation
+### Step 1: Setup and Running
 
 ```bash
 # Navigate to the tutorial
 cd tutorial_implementation/commerce_agent_e2e
 
-# Setup dependencies
+# Option 1: Install dependencies only
 make setup
 
-# Run all tests (recommended first step)
+# Option 2: Setup with Vertex AI authentication (recommended)
+make setup-vertex-ai  # Interactive script to configure service account
+make setup
+
+# Run all tests
 make test
 
-# Start development UI
+# Start development UI (ADK state persistence)
 make dev
 
-# Try a demo
-make demo
+# OR start with SQLite persistence (survives restarts)
+make dev-sqlite
 ```
 
 ### Step 2: Understanding the Tool Implementations
 
-#### Custom Preference Tool (Function Tool)
+#### Tool 1: Product Search (AgentTool wrapping Google Search)
 
 ```python
-def manage_user_preferences(
-    action: str,  # 'get', 'update', 'add_history'
-    user_id: str,
-    data: Optional[Dict[str, Any]] = None
+from google.adk.agents import Agent
+from google.adk.tools.agent_tool import AgentTool
+from google.adk.tools.google_search_tool import google_search
+
+# Search agent with Google Search grounding
+_search_agent = Agent(
+    model="gemini-2.5-flash",
+    name="sports_product_search",
+    description="Search for sports products using Google Search with grounding",
+    instruction="""Search for sports products and provide detailed information.
+
+When searching:
+1. Use comprehensive queries like "best trail running shoes under 100 euros 2025"
+2. Extract key product information: name, brand, price, features
+3. **CRITICAL**: Display URLs from search results with clear retailer attribution
+4. Present 3-5 products with clickable links
+
+Response format:
+- Product name and brand
+- Price in EUR
+- Key features (2-3 bullet points)
+- **Purchase Link**: Show with visible retailer domain
+- Brief explanation of why it fits user needs
+""",
+    tools=[google_search],
+)
+
+# Export as AgentTool for use in main agent
+search_products = AgentTool(agent=_search_agent)
+```
+
+**Key points:**
+
+- ✅ Uses AgentTool pattern to wrap Google Search agent
+- ✅ Site-restricted search via query params (e.g., "site:decathlon.com.hk")
+- ✅ Grounding metadata automatically extracted by Google Search
+- ✅ Works best with Vertex AI (Gemini API has site: operator limitations)
+
+#### Tool 2: Save Preferences (FunctionTool)
+
+```python
+from typing import Dict, Any
+from google.adk.tools import ToolContext
+
+def save_preferences(
+    sport: str,
+    budget_max: int,
+    experience_level: str,
+    tool_context: ToolContext
 ) -> Dict[str, Any]:
-    """
-    Manages user preferences in SQLite.
-    
-    Actions:
-    - 'get': Retrieve current preferences
-    - 'update': Update user preferences
-    - 'add_history': Add to interaction history
+    """Save user preferences for personalized recommendations."""
+    try:
+        # Save to user state (persists across sessions)
+        tool_context.state["user:pref_sport"] = sport
+        tool_context.state["user:pref_budget"] = budget_max
+        tool_context.state["user:pref_experience"] = experience_level
+        
+        return {
+            "status": "success",
+            "report": f"✓ Preferences saved: {sport}, max €{budget_max}, {experience_level} level",
+            "data": {
+                "sport": sport,
+                "budget_max": budget_max,
+                "experience_level": experience_level
+            }
+        }
+    except Exception as e:
+        return {
+            "status": "error",
+            "report": f"Failed to save preferences: {str(e)}",
+            "error": str(e)
+        }
+```
+
+**Key points:**
+
+- ✅ Uses `tool_context.state["user:*"]` for cross-session persistence
+- ✅ Returns structured dict matching ToolResult TypedDict (but not in signature)
+- ✅ Proper error handling with descriptive messages
+- ✅ Simple and testable
+
+#### Tool 3: Get Preferences (FunctionTool)
+
+```python
+def get_preferences(tool_context: ToolContext) -> Dict[str, Any]:
+    """Retrieve saved user preferences."""
+    try:
+        state = tool_context.state
+        
+        prefs = {
+            "sport": state.get("user:pref_sport"),
+            "budget_max": state.get("user:pref_budget"),
+            "experience_level": state.get("user:pref_experience")
+        }
+        
+        # Filter out None values
+        prefs = {k: v for k, v in prefs.items() if v is not None}
+        
+        if not prefs:
+            return {
+                "status": "success",
+                "report": "No preferences saved yet",
+                "data": {}
+            }
+        
+        return {
+            "status": "success",
+            "report": f"Retrieved preferences: {', '.join(f'{k}={v}' for k, v in prefs.items())}",
+            "data": prefs
+        }
+    except Exception as e:
+        return {
+            "status": "error",
+            "report": f"Failed to retrieve preferences: {str(e)}",
+            "error": str(e),
+            "data": {}
+        }
+```
+
+**Key points:**
+
+- ✅ Reads from `user:*` state keys
+- ✅ Handles missing preferences gracefully
+- ✅ Returns consistent format
+
+### Step 3: The Grounding Callback
+
+```python
+from commerce_agent.callbacks import create_grounding_callback
+
+def create_grounding_callback(verbose: bool = True):
+    """Create a grounding metadata extraction callback.
     
     Returns:
-        {'status': 'success'/'error', 'report': '...', 'data': {...}}
+        Async callback function for use with Runner
     """
+    
+    async def extract_grounding_metadata(callback_context, llm_response):
+        """Extract grounding metadata from LLM response."""
+        if not hasattr(llm_response, 'candidates'):
+            return None
+        
+        candidate = llm_response.candidates[0]
+        if not hasattr(candidate, 'grounding_metadata'):
+            return None
+        
+        metadata = candidate.grounding_metadata
+        
+        # Extract sources from grounding_chunks
+        sources = []
+        if hasattr(metadata, 'grounding_chunks'):
+            for chunk in metadata.grounding_chunks:
+                if hasattr(chunk, 'web') and chunk.web:
+                    sources.append({
+                        "title": chunk.web.title,
+                        "uri": chunk.web.uri,
+                        "domain": extract_domain(chunk.web.uri)
+                    })
+        
+        # Store in temp state for current invocation
+        callback_context.state["temp:_grounding_sources"] = sources
+        
+        if verbose:
+            print(f"\n{'='*60}")
+            print("✓ GROUNDING METADATA EXTRACTED")
+            print(f"Total Sources: {len(sources)}")
+            for i, source in enumerate(sources, 1):
+                print(f"  {i}. [{source['domain']}] {source['title']}")
+            print(f"{'='*60}\n")
+        
+        return None  # ADK callbacks return None
+    
+    return extract_grounding_metadata
 ```
 
-This tool demonstrates:
-- ✅ Structured return format
-- ✅ Error handling with descriptive messages
-- ✅ Database persistence
-- ✅ Multi-user isolation (by `user_id` parameter)
-
-#### Google Search Tool (Built-in)
+**Usage with Runner:**
 
 ```python
-search_agent = LlmAgent(
-    name="ProductSearchAgent",
-    model="gemini-2.5-flash",
-    instruction="Search Decathlon for products...",
-    tools=[
-        GoogleSearchTool(
-            query_params={"site": "decathlon.fr"},
-            bypass_multi_tools_limit=True  # v1.17.0 feature
-        )
-    ]
+from google.adk.runners import Runner
+from commerce_agent import root_agent, create_grounding_callback
+
+runner = Runner(
+    agent=root_agent,
+    after_model_callbacks=[create_grounding_callback(verbose=True)]
 )
 ```
 
-Key features:
-- ✅ Site-restricted search (only Decathlon products)
-- ✅ Works in sub-agent (v1.17.0 workaround)
-- ✅ Caches results to `state['app:product_cache']`
+**Key points:**
 
-#### Storyteller Agent (Pure LLM)
-
-```python
-story_agent = LlmAgent(
-    name="StorytellerAgent",
-    model="gemini-2.5-flash",
-    instruction="""You are a creative storyteller...
-    Create engaging narratives around product recommendations.
-    Connect the product to the user's interests and lifestyle.
-    Use vivid imagery and emotional appeal."""
-    # No tools needed - pure LLM capability
-)
-```
-
-Demonstrates:
-- ✅ Agents without tools (pure conversation)
-- ✅ Specialized roles in multi-agent systems
+- ✅ Function-based callback (not class-based)
+- ✅ Goes in Runner's `after_model_callbacks`, not Agent
+- ✅ Extracts source URLs, titles, domains from grounding_chunks
+- ✅ Console logging for development visibility
+- ✅ Stores in `temp:` state (current invocation only)
 
 ### Step 3: Session Management Testing
 
@@ -367,134 +613,312 @@ async def test_multi_user_session_isolation():
 
 Once running, test interactively:
 
-1. **Test Session Persistence**:
-   - Set User ID: "athlete_1", Session ID: "session_1"
-   - Type: "My favorite sport is running"
-   - Close browser, reopen → Preferences persisted ✅
+1. **Test Preference Workflow**:
+   - Open http://localhost:8000
+   - Select "commerce_agent" from dropdown
+   - Type: "I want running shoes"
+   - Agent should call `get_preferences` → ask for budget & experience
+   - Type: "Under 150 euros, I'm a beginner"
+   - Agent should call `save_preferences` → confirm saved ✅
 
-2. **Test Multi-User Isolation**:
-   - Open two browser tabs
-   - Tab 1: User ID "alice", set sport "running"
-   - Tab 2: User ID "bob", set sport "cycling"
-   - Verify each sees only their own preferences ✅
+2. **Test Product Search**:
+   - Type: "Find trail running shoes"
+   - Agent calls `search_products` 
+   - Verify results include Decathlon products ✅
+   - Check terminal for grounding metadata extraction logs
 
-3. **Test Product Search**:
-   - Type: "Find Kalenji running shoes under €150 on Decathlon"
-   - Verify search tool executes
-   - Results include Decathlon products ✅
+3. **Test Preference Persistence**:
+   - Refresh browser (new session, same user)
+   - Type: "What are my preferences?"
+   - Agent should retrieve saved preferences from previous session ✅
 
-4. **Test Proactive Recommendations**:
-   - Set preferences for running
-   - Agent should suggest: "Based on your interest in running..." ✅
+4. **Test Personalized Recommendations**:
+   - Type: "Recommend something for me"
+   - Agent should reference saved sport/budget/experience ✅
+   - Recommendations should be tailored to beginner level
+
+**Note on Multi-User Testing**: The `adk web` UI doesn't have User ID input.
+To test multi-user isolation, use the API endpoints directly (see
+`docs/TESTING_WITH_USER_IDENTITIES.md` or run `make test-guide`).
 
 ## Complete Testing Workflow
+
+### Test Organization
+
+The test suite follows a clear structure:
+
+```text
+tests/
+├── conftest.py                    # Test fixtures and configuration
+├── test_tools.py                  # Unit tests for individual tools
+├── test_integration.py            # Integration tests (agent + tools)
+├── test_e2e.py                    # End-to-end user scenarios
+├── test_agent_instructions.py     # Agent prompt/instruction tests
+└── test_callback_and_types.py     # Callback and TypedDict tests
+```
 
 ### Tier 1: Unit Tests
 
 ```bash
 pytest tests/test_tools.py -v
-# Tests:
-# - Tool return format correct
-# - Database operations work
-# - Error handling robust
-# - User isolation in database
 ```
+
+**Tests:**
+
+- ✅ `save_preferences` stores data in ADK state correctly
+- ✅ `get_preferences` retrieves data from state
+- ✅ Tool return format matches ToolResult TypedDict structure
+- ✅ Error handling with proper status/report fields
+- ✅ Missing preferences handled gracefully
 
 ### Tier 2: Integration Tests
 
 ```bash
 pytest tests/test_integration.py -v
-# Tests:
-# - Agent + tools work together
-# - Session service integration
-# - State persistence
-# - Tool confirmation flow
 ```
+
+**Tests:**
+
+- ✅ Agent configuration is valid (model, name, description)
+- ✅ Agent has all 3 tools attached correctly
+- ✅ Tool imports work (search_products, save_preferences, get_preferences)
+- ✅ Package structure is correct
+- ✅ Grounding callback imports successfully
 
 ### Tier 3: End-to-End Tests
 
 ```bash
 pytest tests/test_e2e.py -v
-# Tests:
-# - Complete user workflows
-# - Multi-user scenarios
-# - Session retrieval after restart
-# - Full recommendation pipeline
 ```
+
+**Tests:**
+
+- ✅ Complete new user workflow (set prefs → search → get recommendations)
+- ✅ Returning customer scenario (preferences persist across sessions)
+- ✅ Multi-user isolation (Alice's prefs don't affect Bob's)
+- ✅ Database operations (if using optional SQLite features)
+- ✅ Error recovery scenarios
+
+### Tier 4: Agent Instruction Tests
+
+```bash
+pytest tests/test_agent_instructions.py -v
+```
+
+**Tests:**
+
+- ✅ Agent instruction contains preference workflow steps
+- ✅ Instruction mentions all 3 tools
+- ✅ Concierge persona is present
+- ✅ Product presentation format specified
+
+### Tier 5: Callback and Type Tests
+
+```bash
+pytest tests/test_callback_and_types.py -v
+```
+
+**Tests:**
+
+- ✅ Grounding callback creates function correctly
+- ✅ TypedDict structures are importable
+- ✅ ToolResult matches expected format
+- ✅ Callback can be attached to Runner
 
 ### Run All Tests with Coverage
 
 ```bash
 make test
 # Runs: pytest tests/ -v --cov=commerce_agent --cov-report=html
-# Opens coverage report in browser
+# Generates: htmlcov/index.html (opens automatically in browser)
 ```
+
+**Expected Results:**
+
+- ✅ 14+ tests passing
+- ✅ 85%+ code coverage
+- ✅ No import errors
+- ✅ All test tiers green
 
 ## Key Features Demonstrated
 
-### 1. Session Persistence (v1.17.0)
+### 1. Grounding Metadata Extraction (NEW)
+
+The grounding callback extracts source attribution from Google Search:
 
 ```python
+from commerce_agent import create_grounding_callback
+from google.adk.runners import Runner
+
+runner = Runner(
+    agent=root_agent,
+    after_model_callbacks=[create_grounding_callback(verbose=True)]
+)
+```
+
+**What it provides:**
+
+- ✅ Source URLs and titles from grounding_chunks
+- ✅ Domain extraction (e.g., "decathlon.com.hk")
+- ✅ Segment-level attribution (which sources support which claims)
+- ✅ Console logging for debugging
+- ✅ Anti-hallucination validation
+
+### 2. ADK State Management (Primary Method)
+
+Uses `user:` prefix for cross-session persistence:
+
+```python
+def save_preferences(..., tool_context: ToolContext):
+    tool_context.state["user:pref_sport"] = sport
+    tool_context.state["user:pref_budget"] = budget
+    # ✅ Persists across invocations, isolated by user
+```
+
+**Benefits:**
+
+- ✅ Zero configuration required
+- ✅ Automatic multi-user isolation
+- ✅ Works with any ADK deployment (web, CLI, API)
+- ✅ Perfect for simple key-value preferences
+
+### 3. Optional SQLite Persistence (Advanced)
+
+Available via `make dev-sqlite` for full session history:
+
+```python
+from google.adk.sessions import DatabaseSessionService
+
 session_service = DatabaseSessionService(
-    db_url="sqlite:///./sessions.db"
+    db_url="sqlite:///./commerce_sessions.db?mode=wal"
 )
 
-# Data survives app restarts
-session = await session_service.get_session(
-    "commerce_agent", "user123", "session456"
-)
-# Returns all user preferences and history
+# Or via CLI:
+# adk web --session_service_uri "sqlite:///./sessions.db?mode=wal"
 ```
 
-### 2. Session Rewind (v1.17.0)
+**When to use:**
+
+- ✅ Need conversation history across restarts
+- ✅ Want SQL query capabilities
+- ✅ Production requirements for audit trails
+
+### 4. TypedDict for Type Safety
+
+All tools return structured dicts with TypedDict hints:
 
 ```python
-# Go back to a previous invocation state
-await session_service.rewind_session(
-    "commerce_agent", "user123", "session456",
-    to_invocation_num=2
-)
-# Session restored to state before invocation 3
+from commerce_agent.types import ToolResult
+
+def my_tool(...) -> Dict[str, Any]:  # Use Dict in signature (ADK requirement)
+    result: ToolResult = {           # Can use TypedDict for hints
+        "status": "success",
+        "report": "Operation completed",
+        "data": {"key": "value"}
+    }
+    return result  # ✅ IDE autocomplete + type checking
 ```
 
-### 3. Tool Confirmation (Human-in-the-Loop)
+**Benefits:**
+
+- ✅ Full IDE autocomplete
+- ✅ Type checking with mypy
+- ✅ Clear API contracts
+- ✅ ADK compatibility maintained
+
+### 5. Simple Agent Coordination
+
+Clean single-agent design with specialized tools:
 
 ```python
-# For expensive operations, ask for confirmation
-if product_price > 100:
-    await tool_context.request_tool_confirmation(
-        tool_name="purchase_recommendation",
-        message=f"Recommend expensive item: {product_name} (€{product_price}). Confirm?"
-    )
-```
-
-### 4. Artifacts (Image Display)
-
-```python
-# Save product images for display
-image_part = types.Part.from_bytes(
-    data=image_bytes,
-    mime_type="image/png"
-)
-version = await context.save_artifact(
-    filename=f"product_{product_id}.png",
-    artifact=image_part
-)
-# Image appears in chat automatically
-```
-
-### 5. Multi-Agent Coordination
-
-```python
-root_agent = LlmAgent(
-    name="CommerceCoordinator",
-    sub_agents=[
-        AgentTool(agent=search_agent),
-        AgentTool(agent=prefs_agent),
-        AgentTool(agent=story_agent)
+root_agent = Agent(
+    model="gemini-2.5-flash",
+    name="commerce_agent",
+    tools=[
+        search_products,              # AgentTool (wraps Google Search)
+        FunctionTool(func=save_preferences),
+        FunctionTool(func=get_preferences),
     ]
 )
-# Root agent orchestrates all three
+```
+
+**Why this approach:**
+
+- ✅ Simpler than multi-agent orchestration
+- ✅ Easier to test and debug
+- ✅ Follows official ADK samples
+- ✅ Production-ready without overengineering
+
+## Authentication & Setup
+
+### ⚠️ Critical: Vertex AI vs Gemini API
+
+The agent works with both authentication methods, but with key differences:
+
+| Feature | Vertex AI | Gemini API |
+|---------|-----------|------------|
+| **Google Search** | ✅ Full support | ⚠️ Limited |
+| **site: operator** | ✅ Works | ❌ Doesn't work |
+| **Search quality** | ✅ Excellent | ⚠️ Mixed results |
+| **Grounding** | ✅ Full metadata | ⚠️ Partial |
+| **Production** | ✅ Recommended | ❌ Dev only |
+
+**Problem with Gemini API**: The `site:decathlon.com.hk` search operator
+doesn't work, causing the agent to return results from Amazon, eBay, Adidas,
+and other non-Decathlon retailers. This breaks the core product discovery flow.
+
+### Setup Option 1: Vertex AI (Recommended)
+
+```bash
+# Navigate to tutorial
+cd tutorial_implementation/commerce_agent_e2e
+
+# Run interactive setup script
+make setup-vertex-ai
+
+# Follow prompts to:
+# 1. Verify service account at ./credentials/commerce-agent-key.json
+# 2. Unset any conflicting API keys
+# 3. Set GOOGLE_CLOUD_PROJECT and GOOGLE_APPLICATION_CREDENTIALS
+# 4. Test authentication
+
+# Then install dependencies
+make setup
+```
+
+The `setup-vertex-ai` script handles:
+
+- ✅ Service account verification
+- ✅ Environment variable configuration
+- ✅ Credential testing
+- ✅ Conflict resolution (removes GOOGLE_API_KEY if set)
+
+### Setup Option 2: Gemini API (Limited)
+
+```bash
+# Get API key from https://aistudio.google.com/app/apikey
+export GOOGLE_API_KEY=your_key_here
+
+# Install dependencies
+cd tutorial_implementation/commerce_agent_e2e
+make setup
+```
+
+**Known Limitation**: Search will return non-Decathlon results.
+
+### Verifying Authentication
+
+```bash
+# Check which credentials are active
+echo $GOOGLE_API_KEY
+echo $GOOGLE_APPLICATION_CREDENTIALS
+
+# If both are set, Vertex AI takes precedence
+# Manually unset API key if needed:
+unset GOOGLE_API_KEY
+
+# Restart agent
+make dev
 ```
 
 ## Deployment Scenarios
@@ -502,90 +926,199 @@ root_agent = LlmAgent(
 ### Local Development
 
 ```bash
-# Use in-memory SQLite
+# Option 1: ADK state (simple, preferences persist across invocations)
 make dev
+
+# Option 2: SQLite (full history, survives restarts)
+make dev-sqlite
+
 # Access at http://localhost:8000
 ```
 
-### Production (Tier 2 - Small Scale)
+### Production (Cloud Run)
 
 ```bash
-# Use persistent SQLite + Cloud Run
+# Using Vertex AI
 export GOOGLE_APPLICATION_CREDENTIALS=/path/to/service-account.json
-adk deploy cloud_run --session-db sqlite://./sessions.db
+
+# Option 1: ADK state (simple)
+adk deploy cloud_run --name commerce-agent
+
+# Option 2: SQLite persistence
+adk deploy cloud_run \
+  --name commerce-agent \
+  --session_service_uri "sqlite:///./sessions.db?mode=wal"
 ```
 
-### Enterprise Scale (Tier 3 - Google Cloud Spanner)
+### Enterprise Scale (Agent Engine + Cloud Spanner)
 
-```python
-# Switch to Cloud Spanner for multi-region scale
-session_service = DatabaseSessionService(
-    db_url="spanner://projects/my-project/instances/my-instance/databases/commerce"
-)
+```bash
+# Deploy to Agent Engine with Cloud Spanner persistence
+adk deploy agent_engine \
+  --name commerce-agent \
+  --session_service_uri "spanner://projects/MY_PROJECT/instances/MY_INSTANCE/databases/commerce"
 ```
+
+**Benefits of Cloud Spanner:**
+
+- ✅ Multi-region deployment
+- ✅ Automatic scaling
+- ✅ High availability (99.999% SLA)
+- ✅ ACID transactions
+- ✅ SQL query capabilities
 
 ## Success Criteria
 
 You'll know everything is working when:
 
-✅ All 8 test scenarios pass
-✅ Multi-user sessions properly isolated
-✅ Product recommendations generated correctly
-✅ Session persistence verified across restarts
-✅ Tool confirmation flow works end-to-end
-✅ No data loss or corruption in SQLite
-✅ Performance acceptable for concurrent users
-✅ `make dev` starts cleanly with dropdown showing agent
+✅ All 14+ tests pass (`make test`)  
+✅ Agent starts without errors (`make dev`)  
+✅ Agent appears in dropdown at <http://localhost:8000>  
+✅ Agent calls `get_preferences` at conversation start  
+✅ Agent calls `save_preferences` when user provides info  
+✅ Agent searches products using Google Search  
+✅ Preferences persist across browser refresh  
+✅ Grounding metadata appears in server logs (terminal)  
+✅ Product recommendations include Decathlon links  
+✅ No "site: operator" issues (if using Vertex AI)
 
 ## Common Issues & Solutions
 
 | Issue | Solution |
 |-------|----------|
-| Agent not appearing in web dropdown | Run `pip install -e .` in tutorial root |
-| SQLite "database is locked" | Ensure only one process accesses db at a time |
-| Search tool returns no results | Verify GOOGLE_API_KEY is set and valid |
-| Tests fail with auth error | Set GOOGLE_API_KEY or GOOGLE_APPLICATION_CREDENTIALS |
-| Session state not persisting | Verify db_url is correct and file writable |
+| Agent not in dropdown | Run `pip install -e .` in tutorial root |
+| Search returns non-Decathlon | Using Gemini API - switch to Vertex AI |
+| "site: operator doesn't work" | Run `make setup-vertex-ai` |
+| Tests fail with auth error | Set credentials (see Authentication section) |
+| Grounding metadata not visible | Check terminal logs (not in UI) |
+| Preferences not persisting | Verify `user:` prefix in state keys |
+| Both API key and SA set | Unset GOOGLE_API_KEY (Vertex AI takes precedence) |
+| Database locked error | Only happens if using SQLite mode, restart dev |
+
+### Detailed Troubleshooting
+
+#### Issue: Search Returns Wrong Retailers
+
+**Symptom**: Agent recommends products from Amazon, eBay, Adidas instead of
+Decathlon.
+
+**Cause**: Using Gemini API instead of Vertex AI. The `site:decathlon.com.hk`
+operator doesn't work with Gemini API.
+
+**Solution**:
+
+```bash
+# 1. Check which auth is active
+echo $GOOGLE_API_KEY
+echo $GOOGLE_APPLICATION_CREDENTIALS
+
+# 2. If GOOGLE_API_KEY is set, unset it
+unset GOOGLE_API_KEY
+
+# 3. Run Vertex AI setup
+make setup-vertex-ai
+
+# 4. Restart agent
+make dev
+```
+
+#### Issue: Grounding Metadata Not Showing
+
+**Expected Behavior**: Grounding metadata appears in **terminal logs**, not in
+the web UI.
+
+**Where to look**:
+
+```bash
+# Terminal output after search_products call:
+====================================================================
+✓ GROUNDING METADATA EXTRACTED
+====================================================================
+Total Sources: 5
+  1. [decathlon.com.hk] Brooks Divide 5...
+  2. [alltricks.com] Brooks Divide 5...
+====================================================================
+```
+
+**Note**: To display grounding in UI, you'd need custom frontend integration
+(CopilotKit or React components).
+
+#### Issue: Preferences Not Persisting
+
+**Check**:
+
+1. Verify tools use `user:` prefix:
+
+```python
+tool_context.state["user:pref_sport"] = sport  # ✅ Correct
+tool_context.state["pref_sport"] = sport       # ❌ Wrong (session only)
+```
+
+2. Check agent instruction mentions preference workflow
+3. Verify user isn't changing User ID between sessions
 
 ## What You'll Learn
 
 By completing this implementation, you'll master:
 
-1. **Session Management**: Multi-user systems with complete data isolation
-2. **Database Integration**: SQLite persistence with ADK SessionService
-3. **Tool Architecture**: Overcoming ADK limitations with sub-agent workarounds
-4. **Agent Orchestration**: Coordinating multiple specialized agents
-5. **Testing Strategy**: Unit, integration, and end-to-end test patterns
-6. **Production Practices**: Error handling, RBAC, monitoring, deployment
-7. **Advanced Evaluation**: Rubric-based quality metrics and hallucination detection
-8. **State Management**: All three state scopes (session, user, app, temp)
+1. **Simple Agent Design**: Clean single-agent with specialized tools
+2. **ADK State Management**: User-scoped state for multi-user isolation
+3. **Grounding Metadata**: Extracting and monitoring Google Search sources
+4. **TypedDict Safety**: Type-safe tool returns with IDE support
+5. **Function Tools**: Simple, testable tool implementations
+6. **Testing Patterns**: Unit, integration, and e2e test organization
+7. **Authentication**: Vertex AI vs Gemini API trade-offs
+8. **Production Deployment**: Cloud Run, Agent Engine, and Spanner options
+
+**Key Takeaways**:
+
+- ✅ Start simple (single agent) before going complex (multi-agent)
+- ✅ Use ADK state for preferences (unless you need SQL queries)
+- ✅ Vertex AI is required for site-restricted search
+- ✅ Grounding callback provides transparency and anti-hallucination
+- ✅ TypedDict helps but can't be used in tool signatures (ADK limitation)
 
 ## Next Steps
 
 After completing this tutorial:
 
-1. **Extend the agent**: Add more product categories, payment integration
-2. **Scale to production**: Deploy to Agent Engine or Cloud Run
-3. **Add personalization**: Implement ML-based recommendation engine
-4. **Monitor and optimize**: Add observability, analyze user behavior
-5. **Build frontend**: Create custom UI with CopilotKit or Next.js integration
+1. **Customize the prompt**: Edit `commerce_agent/prompt.py` for different
+   personalities
+2. **Add more tools**: Create tools for cart management, order tracking, reviews
+3. **Integrate frontend**: Use CopilotKit to build custom UI with grounding
+   display
+4. **Switch to SQLite**: Try `make dev-sqlite` for persistent conversation
+   history
+5. **Deploy to production**: Use `adk deploy cloud_run` with Vertex AI
+6. **Add analytics**: Track user behavior, popular products, search patterns
+7. **Implement ML recommendations**: Use Vertex AI predictions for personalization
 
 ## References
 
 ### Official Resources
 
-- [ADK Session Management](https://google.github.io/adk-docs/sessions/)
-- [DatabaseSessionService](https://google.github.io/adk-docs/sessions/session/)
-- [Tool Integration Guide](https://google.github.io/adk-docs/tools/)
-- [Multi-Agent Systems](https://google.github.io/adk-docs/agents/multi-agents/)
+- [ADK Documentation](https://google.github.io/adk-docs/)
+- [State Management Guide](https://google.github.io/adk-docs/state/)
+- [Google Search Tool](https://google.github.io/adk-docs/tools/google-search/)
+- [Session Service](https://google.github.io/adk-docs/sessions/)
 - [Testing Guide](https://google.github.io/adk-docs/get-started/testing/)
+- [Deployment Options](https://google.github.io/adk-docs/deployment/)
 
 ### Implementation Files
 
 - [Source Code](https://github.com/raphaelmansuy/adk_training/tree/main/tutorial_implementation/commerce_agent_e2e)
 - [Agent Definition](https://github.com/raphaelmansuy/adk_training/tree/main/tutorial_implementation/commerce_agent_e2e/commerce_agent/agent.py)
-- [Custom Tools](https://github.com/raphaelmansuy/adk_training/tree/main/tutorial_implementation/commerce_agent_e2e/commerce_agent/tools.py)
+- [Tools](https://github.com/raphaelmansuy/adk_training/tree/main/tutorial_implementation/commerce_agent_e2e/commerce_agent/tools/)
+- [Callback](https://github.com/raphaelmansuy/adk_training/tree/main/tutorial_implementation/commerce_agent_e2e/commerce_agent/callbacks.py)
 - [Test Suite](https://github.com/raphaelmansuy/adk_training/tree/main/tutorial_implementation/commerce_agent_e2e/tests)
+- [README](https://github.com/raphaelmansuy/adk_training/tree/main/tutorial_implementation/commerce_agent_e2e/README.md)
+
+### Additional Documentation
+
+- `docs/GROUNDING_CALLBACK_GUIDE.md` - Complete grounding metadata usage
+- `docs/SQLITE_SESSION_PERSISTENCE_GUIDE.md` - SQLite persistence deep dive
+- `docs/TESTING_WITH_USER_IDENTITIES.md` - Multi-user testing via API
+- `TESTING_GUIDE.md` - Testing instructions and debugging
 
 ---
 
