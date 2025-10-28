@@ -1,0 +1,33 @@
+[build-system]
+requires = ["setuptools>=64", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "commerce-agent-e2e"
+version = "0.1.0"
+description = "End-to-End Production Commerce Agent - Multi-user session management, persistent data, tool integration"
+requires-python = ">=3.9"
+authors = [{name = "ADK Training", email = "info@adk-training.dev"}]
+readme = "README.md"
+license = {text = "MIT"}
+
+dependencies = [
+    "google-adk>=1.17.0",
+    "pydantic>=2.0.0",
+    "python-dotenv>=1.0.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=7.4.0",
+    "pytest-asyncio>=0.21.0",
+    "pytest-cov>=4.1.0",
+    "black>=23.0.0",
+    "ruff>=0.0.275",
+]
+
+[tool.setuptools]
+packages = ["commerce_agent"]
+
+[tool.setuptools.package-data]
+commerce_agent = ["py.typed"]
