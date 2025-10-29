@@ -20,7 +20,7 @@ You're here because AI agents are transforming software development, and you wan
 - Testing frameworks you can adapt to your projects
 - Integration examples for Next.js, React, Streamlit, Slack, PubSub, and more
 
-**Completion Status: 34/34 tutorials ready to use (100%)** ✅
+**Completion Status: 35/35 tutorials ready to use (100%)** ✅
 
 > Built by developers, for developers. Every tutorial has working code, not just theory.
 
@@ -82,8 +82,9 @@ Think of it as the missing framework between "ChatGPT API call" and "production 
 │   ├── 31_react_vite_adk_integration.md # ✅ COMPLETED - React/Vite integration
 │   ├── 32_streamlit_adk_integration.md # ✅ COMPLETED - Streamlit integration
 │   ├── 33_slack_adk_integration.md # ✅ COMPLETED - Slack integration
-│   └── 34_pubsub_adk_integration.md # ✅ COMPLETED - PubSub integration
-├── tutorial_implementation/       # ✅ 34 working implementations
+│   ├── 34_pubsub_adk_integration.md # ✅ COMPLETED - PubSub integration
+│   └── 35_commerce_agent_e2e.md # ✅ COMPLETED - E2E Commerce Agent
+├── tutorial_implementation/       # ✅ 35 working implementations
 │   ├── tutorial01/                # Hello World Agent
 │   ├── tutorial02/                # Function Tools
 │   ├── tutorial03/                # OpenAPI Tools
@@ -117,7 +118,8 @@ Think of it as the missing framework between "ChatGPT API call" and "production 
 │   ├── tutorial31/                # React Vite ADK Integration
 │   ├── tutorial32/                # Streamlit ADK Integration
 │   ├── tutorial33/                # Slack ADK Integration
-│   └── tutorial34/                # PubSub ADK Integration
+│   ├── tutorial34/                # PubSub ADK Integration
+│   └── commerce_agent_e2e/        # E2E Commerce Agent (Production Example)
 ```
 
 ## 🚀 Get Started (5 minutes)
@@ -181,7 +183,33 @@ Complete all 34 tutorials, focusing on:
 
 **You'll gain:** Deep expertise in agent architecture and the patterns to make critical design decisions.
 
-## � Today I Learn (TIL) - Quick Daily Insights
+## 📰 Blog: Deep Dives & Industry Insights
+
+Stay current with **in-depth articles** exploring AI agent architecture, enterprise deployment strategies, and production best practices.
+
+### Latest Posts
+
+#### 🚀 Gemini Enterprise: Why Your AI Agents Need Enterprise-Grade Capabilities (October 21, 2025)
+
+Understand the critical differences between standard AI APIs and enterprise-grade solutions. Learn when and why your production agents need Gemini Enterprise for compliance, data sovereignty, and scale.
+
+**What You'll Learn:**
+
+- Google's AI agent ecosystem (Agent Builder, Agent Engine, ADK, Agent Garden)
+- Gemini Enterprise Portal capabilities and architecture
+- Real-world scenarios: Healthcare, FinTech, Enterprise data analysis
+- Decision frameworks for standard vs. enterprise deployment
+- Building custom portals with ADK and CopilotKit
+- Migration paths from development to production
+
+**Time**: 25-30 minutes
+**Read**: [Gemini Enterprise Guide →](https://raphaelmansuy.github.io/adk_training/blog/gemini-enterprise-vs-agent-engine)
+
+**Perfect for**: Architects evaluating enterprise agent platforms, teams planning production deployments, developers understanding Google's agent ecosystem.
+
+---
+
+## 📖 Today I Learn (TIL) - Quick Daily Insights
 
 Introducing **Today I Learn (TIL)** - short, focused articles on specific ADK
 features and patterns. Perfect for learning one concept at a time!
@@ -223,46 +251,47 @@ See the complete tutorial list in the [Project Structure](#project-structure) se
 
 ## 🎓 Tutorials Overview
 
-| Tutorial                                                                                         | Topic                        | Status       | Complexity   | Time  |
-| ------------------------------------------------------------------------------------------------ | ---------------------------- | ------------ | ------------ | ----- |
-| [01](https://github.com/raphaelmansuy/adk_training/tree/main/tutorial_implementation/tutorial01) | Hello World Agent            | ✅ Completed | Beginner     | 30min |
-| [02](https://github.com/raphaelmansuy/adk_training/tree/main/tutorial_implementation/tutorial02) | Function Tools               | ✅ Completed | Beginner     | 45min |
-| [03](https://github.com/raphaelmansuy/adk_training/tree/main/tutorial_implementation/tutorial03) | OpenAPI Tools                | ✅ Completed | Beginner     | 1hr   |
-| [04](https://github.com/raphaelmansuy/adk_training/tree/main/tutorial_implementation/tutorial04) | Sequential Workflows         | ✅ Completed | Intermediate | 1hr   |
-| [05](https://github.com/raphaelmansuy/adk_training/tree/main/tutorial_implementation/tutorial05) | Parallel Processing          | ✅ Completed | Intermediate | 1hr   |
-| [06](https://github.com/raphaelmansuy/adk_training/tree/main/tutorial_implementation/tutorial06) | Multi-Agent Systems          | ✅ Completed | Intermediate | 1.5hr |
-| [07](https://github.com/raphaelmansuy/adk_training/tree/main/tutorial_implementation/tutorial07) | Loop Agents                  | ✅ Completed | Advanced     | 1hr   |
-| [08](https://github.com/raphaelmansuy/adk_training/tree/main/tutorial_implementation/tutorial08) | State & Memory               | ✅ Completed | Advanced     | 1.5hr |
-| [09](https://github.com/raphaelmansuy/adk_training/tree/main/tutorial_implementation/tutorial09) | Callbacks & Guardrails       | ✅ Completed | Advanced     | 2hr   |
-| [10](https://github.com/raphaelmansuy/adk_training/tree/main/tutorial_implementation/tutorial10) | Evaluation & Testing         | ✅ Completed | Advanced     | 1.5hr |
-| [11](https://github.com/raphaelmansuy/adk_training/tree/main/tutorial_implementation/tutorial11) | Built-in Tools & Grounding   | ✅ Completed | Intermediate | 1hr   |
-| [12](https://github.com/raphaelmansuy/adk_training/tree/main/tutorial_implementation/tutorial12) | Planners & Thinking          | ✅ Completed | Advanced     | 1.5hr |
-| [13](https://github.com/raphaelmansuy/adk_training/tree/main/tutorial_implementation/tutorial13) | Code Execution               | ✅ Completed | Advanced     | 1.5hr |
-| [14](https://github.com/raphaelmansuy/adk_training/tree/main/tutorial_implementation/tutorial14) | Streaming & SSE              | ✅ Completed | Intermediate | 1hr   |
-| [15](https://github.com/raphaelmansuy/adk_training/tree/main/tutorial_implementation/tutorial15) | Live API Audio               | ✅ Completed | Advanced     | 1hr   |
-| [16](https://github.com/raphaelmansuy/adk_training/tree/main/tutorial_implementation/tutorial16) | MCP Integration              | ✅ Completed | Advanced     | 1.5hr |
-| [17](https://github.com/raphaelmansuy/adk_training/tree/main/tutorial_implementation/tutorial17) | Agent-to-Agent Communication | ✅ Completed | Advanced     | 1hr   |
-| [18](https://github.com/raphaelmansuy/adk_training/tree/main/tutorial_implementation/tutorial18) | Events & Observability       | ✅ Completed | Advanced     | 1.5hr |
-| [19](https://github.com/raphaelmansuy/adk_training/tree/main/tutorial_implementation/tutorial19) | Artifacts & Files            | ✅ Completed | Intermediate | 1hr   |
-| [20](https://github.com/raphaelmansuy/adk_training/tree/main/tutorial_implementation/tutorial20) | YAML Configuration           | ✅ Completed | Intermediate | 1hr   |
-| [21](https://github.com/raphaelmansuy/adk_training/tree/main/tutorial_implementation/tutorial21) | Multimodal Image             | ✅ Completed | Advanced     | 1hr   |
-| [22](https://github.com/raphaelmansuy/adk_training/tree/main/tutorial_implementation/tutorial22) | Model Selection              | ✅ Completed | Advanced     | 1.5hr |
-| [23](https://github.com/raphaelmansuy/adk_training/tree/main/tutorial_implementation/tutorial23) | Production Deployment        | ✅ Completed | Advanced     | 1.5hr |
-| [24](https://github.com/raphaelmansuy/adk_training/tree/main/tutorial_implementation/tutorial24) | Advanced Observability       | ✅ Completed | Advanced     | 1hr   |
-| [25](https://github.com/raphaelmansuy/adk_training/tree/main/tutorial_implementation/tutorial25) | Best Practices               | ✅ Completed | Advanced     | 1.5hr |
-| [26](https://github.com/raphaelmansuy/adk_training/tree/main/tutorial_implementation/tutorial26) | Google AgentSpace            | ✅ Completed | Advanced     | 2hr   |
-| [27](https://github.com/raphaelmansuy/adk_training/tree/main/tutorial_implementation/tutorial27) | Third-Party Framework Tools  | ✅ Completed | Advanced     | 1.5hr |
-| [28](https://github.com/raphaelmansuy/adk_training/tree/main/tutorial_implementation/tutorial28) | Using Other LLMs             | ✅ Completed | Advanced     | 2hr   |
-| [29](https://github.com/raphaelmansuy/adk_training/tree/main/tutorial_implementation/tutorial29) | UI Integration Intro         | ✅ Completed | Intermediate | 1.5hr |
-| [30](https://github.com/raphaelmansuy/adk_training/tree/main/tutorial_implementation/tutorial30) | Next.js ADK Integration      | ✅ Completed | Advanced     | 2hr   |
-| [31](https://github.com/raphaelmansuy/adk_training/tree/main/tutorial_implementation/tutorial31) | React Vite ADK Integration   | ✅ Completed | Advanced     | 1.5hr |
-| [32](https://github.com/raphaelmansuy/adk_training/tree/main/tutorial_implementation/tutorial32) | Streamlit ADK Integration    | ✅ Completed | Advanced     | 2hr   |
-| [33](https://github.com/raphaelmansuy/adk_training/tree/main/tutorial_implementation/tutorial33) | Slack ADK Integration        | ✅ Completed | Advanced     | 2hr   |
-| [34](https://github.com/raphaelmansuy/adk_training/tree/main/tutorial_implementation/tutorial34) | PubSub ADK Integration       | ✅ Completed | Advanced     | 2hr   |
+| Tutorial                                                                                                 | Topic                        | Status       | Complexity   | Time  |
+| -------------------------------------------------------------------------------------------------------- | ---------------------------- | ------------ | ------------ | ----- |
+| [01](https://github.com/raphaelmansuy/adk_training/tree/main/tutorial_implementation/tutorial01)         | Hello World Agent            | ✅ Completed | Beginner     | 30min |
+| [02](https://github.com/raphaelmansuy/adk_training/tree/main/tutorial_implementation/tutorial02)         | Function Tools               | ✅ Completed | Beginner     | 45min |
+| [03](https://github.com/raphaelmansuy/adk_training/tree/main/tutorial_implementation/tutorial03)         | OpenAPI Tools                | ✅ Completed | Beginner     | 1hr   |
+| [04](https://github.com/raphaelmansuy/adk_training/tree/main/tutorial_implementation/tutorial04)         | Sequential Workflows         | ✅ Completed | Intermediate | 1hr   |
+| [05](https://github.com/raphaelmansuy/adk_training/tree/main/tutorial_implementation/tutorial05)         | Parallel Processing          | ✅ Completed | Intermediate | 1hr   |
+| [06](https://github.com/raphaelmansuy/adk_training/tree/main/tutorial_implementation/tutorial06)         | Multi-Agent Systems          | ✅ Completed | Intermediate | 1.5hr |
+| [07](https://github.com/raphaelmansuy/adk_training/tree/main/tutorial_implementation/tutorial07)         | Loop Agents                  | ✅ Completed | Advanced     | 1hr   |
+| [08](https://github.com/raphaelmansuy/adk_training/tree/main/tutorial_implementation/tutorial08)         | State & Memory               | ✅ Completed | Advanced     | 1.5hr |
+| [09](https://github.com/raphaelmansuy/adk_training/tree/main/tutorial_implementation/tutorial09)         | Callbacks & Guardrails       | ✅ Completed | Advanced     | 2hr   |
+| [10](https://github.com/raphaelmansuy/adk_training/tree/main/tutorial_implementation/tutorial10)         | Evaluation & Testing         | ✅ Completed | Advanced     | 1.5hr |
+| [11](https://github.com/raphaelmansuy/adk_training/tree/main/tutorial_implementation/tutorial11)         | Built-in Tools & Grounding   | ✅ Completed | Intermediate | 1hr   |
+| [12](https://github.com/raphaelmansuy/adk_training/tree/main/tutorial_implementation/tutorial12)         | Planners & Thinking          | ✅ Completed | Advanced     | 1.5hr |
+| [13](https://github.com/raphaelmansuy/adk_training/tree/main/tutorial_implementation/tutorial13)         | Code Execution               | ✅ Completed | Advanced     | 1.5hr |
+| [14](https://github.com/raphaelmansuy/adk_training/tree/main/tutorial_implementation/tutorial14)         | Streaming & SSE              | ✅ Completed | Intermediate | 1hr   |
+| [15](https://github.com/raphaelmansuy/adk_training/tree/main/tutorial_implementation/tutorial15)         | Live API Audio               | ✅ Completed | Advanced     | 1hr   |
+| [16](https://github.com/raphaelmansuy/adk_training/tree/main/tutorial_implementation/tutorial16)         | MCP Integration              | ✅ Completed | Advanced     | 1.5hr |
+| [17](https://github.com/raphaelmansuy/adk_training/tree/main/tutorial_implementation/tutorial17)         | Agent-to-Agent Communication | ✅ Completed | Advanced     | 1hr   |
+| [18](https://github.com/raphaelmansuy/adk_training/tree/main/tutorial_implementation/tutorial18)         | Events & Observability       | ✅ Completed | Advanced     | 1.5hr |
+| [19](https://github.com/raphaelmansuy/adk_training/tree/main/tutorial_implementation/tutorial19)         | Artifacts & Files            | ✅ Completed | Intermediate | 1hr   |
+| [20](https://github.com/raphaelmansuy/adk_training/tree/main/tutorial_implementation/tutorial20)         | YAML Configuration           | ✅ Completed | Intermediate | 1hr   |
+| [21](https://github.com/raphaelmansuy/adk_training/tree/main/tutorial_implementation/tutorial21)         | Multimodal Image             | ✅ Completed | Advanced     | 1hr   |
+| [22](https://github.com/raphaelmansuy/adk_training/tree/main/tutorial_implementation/tutorial22)         | Model Selection              | ✅ Completed | Advanced     | 1.5hr |
+| [23](https://github.com/raphaelmansuy/adk_training/tree/main/tutorial_implementation/tutorial23)         | Production Deployment        | ✅ Completed | Advanced     | 1.5hr |
+| [24](https://github.com/raphaelmansuy/adk_training/tree/main/tutorial_implementation/tutorial24)         | Advanced Observability       | ✅ Completed | Advanced     | 1hr   |
+| [25](https://github.com/raphaelmansuy/adk_training/tree/main/tutorial_implementation/tutorial25)         | Best Practices               | ✅ Completed | Advanced     | 1.5hr |
+| [26](https://github.com/raphaelmansuy/adk_training/tree/main/tutorial_implementation/tutorial26)         | Google AgentSpace            | ✅ Completed | Advanced     | 2hr   |
+| [27](https://github.com/raphaelmansuy/adk_training/tree/main/tutorial_implementation/tutorial27)         | Third-Party Framework Tools  | ✅ Completed | Advanced     | 1.5hr |
+| [28](https://github.com/raphaelmansuy/adk_training/tree/main/tutorial_implementation/tutorial28)         | Using Other LLMs             | ✅ Completed | Advanced     | 2hr   |
+| [29](https://github.com/raphaelmansuy/adk_training/tree/main/tutorial_implementation/tutorial29)         | UI Integration Intro         | ✅ Completed | Intermediate | 1.5hr |
+| [30](https://github.com/raphaelmansuy/adk_training/tree/main/tutorial_implementation/tutorial30)         | Next.js ADK Integration      | ✅ Completed | Advanced     | 2hr   |
+| [31](https://github.com/raphaelmansuy/adk_training/tree/main/tutorial_implementation/tutorial31)         | React Vite ADK Integration   | ✅ Completed | Advanced     | 1.5hr |
+| [32](https://github.com/raphaelmansuy/adk_training/tree/main/tutorial_implementation/tutorial32)         | Streamlit ADK Integration    | ✅ Completed | Advanced     | 2hr   |
+| [33](https://github.com/raphaelmansuy/adk_training/tree/main/tutorial_implementation/tutorial33)         | Slack ADK Integration        | ✅ Completed | Advanced     | 2hr   |
+| [34](https://github.com/raphaelmansuy/adk_training/tree/main/tutorial_implementation/tutorial34)         | PubSub ADK Integration       | ✅ Completed | Advanced     | 2hr   |
+| [35](https://github.com/raphaelmansuy/adk_training/tree/main/tutorial_implementation/commerce_agent_e2e) | E2E Commerce Agent           | ✅ Completed | Advanced     | 90min |
 
 ## 📊 Project Completion Status
 
-### ✅ Completed Tutorials (34/34)
+### ✅ Completed Tutorials (35/35)
 
 The following tutorials have been fully implemented with working code, comprehensive tests, and verified functionality:
 
@@ -313,6 +342,11 @@ The following tutorials have been fully implemented with working code, comprehen
 - **Tutorial 31**: React Vite ADK Integration - Custom React frontend with AG-UI protocol
 - **Tutorial 32**: Streamlit ADK Integration - Data science applications with Streamlit
 - **Tutorial 33**: Slack ADK Integration - Slack bot development and integration
+- **Tutorial 34**: PubSub ADK Integration - Event-driven architectures with PubSub
+
+**End-to-End Implementations:**
+
+- **Tutorial 35**: Commerce Agent E2E - Production-ready multi-user commerce agent with session persistence
 
 **All completed tutorials include:**
 
@@ -323,9 +357,9 @@ The following tutorials have been fully implemented with working code, comprehen
 - ✅ Documentation and usage examples
 - ✅ Integration with ADK web interface
 
-### ✅ All Tutorials Complete (34/34)
+### ✅ All Tutorials Complete (35/35)
 
-The comprehensive ADK Training Hub now includes all 34 tutorials with full implementations.
+The comprehensive ADK Training Hub now includes all 35 tutorials with full implementations.
 
 ## 🛠️ Development Tools
 

@@ -1,15 +1,15 @@
 # 📚 Tutorial Index - Complete ADK Learning Path
 
 Welcome to the comprehensive ADK Training Hub tutorial collection!
-This index organizes all 34 tutorials into structured learning paths
+This index organizes all 35 tutorials into structured learning paths
 to help you master Google Agent Development Kit from first principles
 to production deployment.
 
 ## 📊 Progress Overview
 
-- **Tutorial Implementation**: 34/34 completed (100%) ✅
-- **Available Tutorials**: 34/34 ready to use
-- **Total Roadmap**: 34 comprehensive tutorials completed
+- **Tutorial Implementation**: 35/35 completed (100%) ✅
+- **Available Tutorials**: 35/35 ready to use
+- **Total Roadmap**: 35 comprehensive tutorials completed
 
 ## 🟢 Foundation Track (Beginner Friendly)
 
@@ -93,7 +93,17 @@ Connect your agents with external platforms and services.
 | [**33: Slack ADK Integration**](./33_slack_adk_integration.md)   | Intermediate | 2.5 hours | Slack bot development and integration  |
 | [**34: PubSub ADK Integration**](./34_pubsub_adk_integration.md) | Advanced     | 2.5 hours | Event-driven architectures with PubSub |
 
-## 🎯 Learning Paths
+## � End-to-End Implementations (Production Examples)
+
+Complete production-ready implementations demonstrating best practices.
+
+### ✅ E2E Completed Tutorials
+
+| Tutorial                                                         | Difficulty   | Est. Time | Description                            |
+| ---------------------------------------------------------------- | ------------ | --------- | -------------------------------------- |
+| [**35: Commerce Agent E2E**](./35_commerce_agent_e2e.md) | Advanced     | 90 min    | Multi-user commerce agent with session persistence |
+
+## �🎯 Learning Paths
 
 ### 🚀 Quick Start Path (2-3 hours)
 
@@ -146,4 +156,6 @@ and join the community!
 
 ---
 
-> Last updated: October 19, 2025 | Total: 34 | Completed: 34 | Status: 100% Complete ✅
+> Last updated: October 28, 2025 | Total: 35 | Completed: 35 | Status: 100% Complete ✅
+
+```
