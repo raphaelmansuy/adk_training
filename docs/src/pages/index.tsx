@@ -27,7 +27,7 @@ function HomepageHeader() {
             Build Production-Ready AI Agents in Days, Not Months
           </Heading>
           <p className={clsx("hero__subtitle", styles.heroSubtitle)}>
-            The only comprehensive Google ADK training with 34 hands-on tutorials, 
+            The only comprehensive Google ADK training with 35 hands-on tutorials, 
             working code examples, and production deployment patterns. 
             Learn skills that directly impact your projects and career.
           </p>
@@ -180,13 +180,13 @@ function StatsSection() {
       <div className="container">
         <div className={styles.statsGrid}>
           <div className={styles.statItem}>
-            <AnimatedCounter end={34} label="Tutorials Complete" />
+            <AnimatedCounter end={35} label="Tutorials Complete" />
           </div>
           <div className={styles.statItem}>
-            <AnimatedCounter end={34} label="Working Implementations" />
+            <AnimatedCounter end={35} label="Working Implementations" />
           </div>
           <div className={styles.statItem}>
-            <AnimatedCounter end={68} label="Test Cases" />
+            <AnimatedCounter end={70} label="Test Cases" />
           </div>
           <div className={styles.statItem}>
             <AnimatedCounter end={100} label="Open Source %" />
@@ -340,6 +340,75 @@ function TILSection() {
   );
 }
 
+function BlogSection() {
+  return (
+    <section className={styles.blogSection}>
+      <div className="container">
+        <Heading as="h2" className={styles.sectionTitle}>
+          Deep Dives & Strategic Insights
+        </Heading>
+        <p className={styles.sectionSubtitle}>
+          In-depth articles exploring enterprise AI agent architecture, deployment strategies, and production best practices
+        </p>
+        <div className={styles.blogGrid}>
+          <div className={styles.blogCard}>
+            <div className={styles.blogBadge}>Featured</div>
+            <div className={styles.blogDate}>Oct 21, 2025</div>
+            <h3 className={styles.blogTitle}>
+              Gemini Enterprise: Why Your AI Agents Need Enterprise-Grade Capabilities
+            </h3>
+            <p className={styles.blogDescription}>
+              Understand when and why your production agents need Gemini Enterprise. 
+              Explore Google's complete AI agent ecosystem (Agent Builder, Agent Engine, ADK, Agent Garden), 
+              real-world compliance scenarios, and decision frameworks for enterprise deployment.
+            </p>
+            <div className={styles.blogMeta}>
+              <span className={styles.blogTag}>Enterprise</span>
+              <span className={styles.blogTag}>Architecture</span>
+              <span className={styles.blogTag}>25-30 min</span>
+            </div>
+            <div className={styles.blogTopics}>
+              <strong>Key Topics:</strong>
+              <ul>
+                <li>Google's agent ecosystem overview</li>
+                <li>Enterprise portal capabilities & architecture</li>
+                <li>Healthcare, FinTech, Enterprise use cases</li>
+                <li>Build vs. buy decision frameworks</li>
+                <li>Migration strategies to production</li>
+              </ul>
+            </div>
+            <div className={styles.blogActions}>
+              <Link className={styles.blogLink} to="/blog/gemini-enterprise-vs-agent-engine">
+                📖 Read Full Article
+              </Link>
+            </div>
+          </div>
+
+          <div className={styles.blogCard}>
+            <div className={styles.blogBadgeComing}>More Coming</div>
+            <div className={styles.blogDate}>Subscribe for Updates</div>
+            <h3 className={styles.blogTitle}>Future Deep Dives</h3>
+            <p className={styles.blogDescription}>
+              More enterprise-focused articles coming soon covering advanced topics like 
+              cost optimization, security patterns, scalability strategies, and real-world 
+              production war stories.
+            </p>
+            <div className={styles.blogMeta}>
+              <span className={styles.blogTag}>Production</span>
+              <span className={styles.blogTag}>Best Practices</span>
+            </div>
+            <div className={styles.blogActions}>
+              <Link className={styles.blogLink} to="/blog">
+                📰 View All Posts
+              </Link>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}
+
 function CommunitySection() {
   return (
     <section className={styles.communitySection}>
@@ -352,8 +421,8 @@ function CommunitySection() {
         </p>
         <GitHubStats />
         <div className={styles.progressContainer}>
-          <ProgressIndicator completed={34} total={34} label="Tutorial Implementation" />
-          <ProgressIndicator completed={68} total={100} label="Test Cases" />
+          <ProgressIndicator completed={35} total={35} label="Tutorial Implementation" />
+          <ProgressIndicator completed={70} total={100} label="Test Cases" />
         </div>
       </div>
     </section>
@@ -438,19 +507,19 @@ export default function Home(): ReactNode {
   const {siteConfig} = useDocusaurusContext();
   return (
     <Layout
-      title="Google ADK Training: Build Production AI Agents Fast (34 Free Tutorials)"
-      description="Learn Google Agent Development Kit (ADK) with 34 hands-on tutorials. Build multi-agent systems, deploy to production, integrate with React/Next.js. Free, open-source, copy-paste ready code for Python developers.">
+      title="Google ADK Training: Build Production AI Agents Fast (35 Free Tutorials)"
+      description="Learn Google Agent Development Kit (ADK) with 35 hands-on tutorials. Build multi-agent systems, deploy to production, integrate with React/Next.js. Free, open-source, copy-paste ready code for Python developers.">
       <Head>
         {/* Article Schema */}
         <script type="application/ld+json">
           {JSON.stringify({
             '@context': 'https://schema.org',
             '@type': 'Article',
-            headline: 'Google ADK Training: Build Production AI Agents Fast (34 Free Tutorials)',
-            description: 'Learn Google Agent Development Kit (ADK) with 34 hands-on tutorials. Build multi-agent systems, deploy to production, integrate with React/Next.js. Free, open-source, copy-paste ready code.',
+            headline: 'Google ADK Training: Build Production AI Agents Fast (35 Free Tutorials)',
+            description: 'Learn Google Agent Development Kit (ADK) with 35 hands-on tutorials. Build multi-agent systems, deploy to production, integrate with React/Next.js. Free, open-source, copy-paste ready code.',
             image: 'https://raphaelmansuy.github.io/adk_training/img/docusaurus-social-card.jpg',
             datePublished: '2025-01-01',
-            dateModified: '2025-10-14',
+            dateModified: '2025-10-28',
             author: {
               '@type': 'Person',
               name: 'Raphael Mansuy',
@@ -494,7 +563,7 @@ export default function Home(): ReactNode {
             '@context': 'https://schema.org',
             '@type': 'Course',
             name: 'Google ADK Training Hub',
-            description: 'Complete training program for Google Agent Development Kit with 34 tutorials and production-ready examples.',
+            description: 'Complete training program for Google Agent Development Kit with 35 tutorials and production-ready examples.',
             provider: {
               '@type': 'Organization',
               name: 'ADK Training Project',
@@ -527,6 +596,7 @@ export default function Home(): ReactNode {
         <LearningPaths />
         <FeaturesSection />
         <TILSection />
+        <BlogSection />
         {/* <TestimonialsSection /> - Commented out until we have real testimonials */}
         <CommunitySection />
         <GetStartedSection />

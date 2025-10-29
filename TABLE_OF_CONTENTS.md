@@ -1,8 +1,8 @@
 # Google ADK Tutorial Series - Table of Contents
 
-**🎉 Status: COMPLETE - All 34 tutorials + Mental Models Overview finished!**
+**🎉 Status: COMPLETE - All 35 tutorials + Mental Models Overview finished!**
 
-Welcome to the most comprehensive Google Agent Development Kit (ADK) tutorial series. This guide will take you from zero to production-ready AI agents, including enterprise deployment, third-party integrations, and multi-provider LLM support.
+Welcome to the most comprehensive Google Agent Development Kit (ADK) tutorial series. This guide will take you from zero to production-ready AI agents, including enterprise deployment, third-party integrations, multi-provider LLM support, and end-to-end production examples.
 
 ---
 
@@ -34,6 +34,40 @@ Welcome to the most comprehensive Google Agent Development Kit (ADK) tutorial se
 **Time**: 2 hours (comprehensive read)
 
 **Recommended**: Read overview → Follow learning path → Deep dive tutorials
+
+---
+
+## 📰 Blog: Deep Dives & Industry Insights
+
+Stay current with in-depth articles exploring AI agent architecture, enterprise deployment, and production best practices. These articles complement the tutorials with strategic insights and decision frameworks.
+
+### Latest Posts
+
+#### Gemini Enterprise: Why Your AI Agents Need Enterprise-Grade Capabilities
+
+**Published**: October 21, 2025
+**File**: `docs/blog/2025-10-21-gemini-enterprise.md`
+**Read online**: [Gemini Enterprise Guide](https://raphaelmansuy.github.io/adk_training/blog/gemini-enterprise-vs-agent-engine)
+
+**What You'll Learn**:
+
+- **Google's Agent Ecosystem**: Complete overview of Vertex AI Agent Builder, Agent Engine, ADK, Agent Garden, and A2A Protocol
+- **Gemini Enterprise Portal**: Architecture, capabilities, and comparison with custom solutions
+- **Enterprise Requirements**: Data sovereignty, compliance (HIPAA, FedRAMP), security, and governance
+- **Real-World Scenarios**: Healthcare, financial services, and enterprise data analysis use cases
+- **Decision Frameworks**: When to use standard vs. enterprise, build vs. buy analysis
+- **Migration Strategies**: 4-week phased migration path from development to production
+- **Building Alternatives**: Step-by-step guide to building custom portals with ADK and CopilotKit
+
+**Why Read This**:
+
+- Understand the complete Google AI agent product landscape
+- Make informed decisions about enterprise deployment
+- Learn when Gemini Enterprise is worth the investment
+- Discover how to build enterprise-grade solutions with open-source tools
+
+**Time**: 25-30 minutes
+**Audience**: Architects, CTOs, senior engineers planning production deployments
 
 ---
 
@@ -674,6 +708,28 @@ Master user interface integration with modern web frameworks and platforms.
 **Use Case**: Event-driven AI systems and enterprise messaging
 
 **Time**: 2 hours
+
+---
+
+#### Tutorial 35: Commerce Agent E2E (End-to-End Implementation 01)
+
+**File**: `docs/tutorial/35_commerce_agent_e2e.md` (1,126 lines)
+
+**You'll Learn**:
+
+- Production-ready multi-user commerce agent
+- Persistent session management with SQLite
+- Grounding metadata extraction from Google Search
+- Multi-user session isolation with ADK state
+- Product discovery via Google Search
+- Personalized recommendations
+- Type-safe tool interfaces using TypedDict
+- Comprehensive testing (unit, integration, e2e)
+- Optional SQLite persistence patterns
+
+**Use Case**: Production e-commerce agents with session persistence and source attribution
+
+**Time**: 90 minutes
 
 ---
 
