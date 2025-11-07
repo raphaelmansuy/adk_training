@@ -783,13 +783,32 @@ Risk Assessment:
 
 ```python
 from google.adk.planners import BasePlanner
-from google.adk.types import LlmRequest, LlmResponse
+from google.adk.agents.callback_context import CallbackContext
+from google.adk.agents.readonly_context import ReadonlyContext
+from google.adk.models.llm_request import LlmRequest
+from google.genai import types
+from typing import List, Optional
 
 class MyCustomPlanner(BasePlanner):
     """Custom planning strategy."""
 
-    def build_planning_instruction(self, agent, context) -> str:
-        """Inject custom planning instructions."""
+    def build_planning_instruction(
+        self,
+        readonly_context: ReadonlyContext,
+        llm_request: LlmRequest,
+    ) -> Optional[str]:
+        """Inject custom planning instructions.
+        
+        Args:
+            readonly_context: The readonly context containing session state,
+                user state, and app state for the current invocation.
+            llm_request: The LLM request object containing the user message,
+                conversation history, and generation parameters.
+            
+        Returns:
+            The planning instruction string to guide the agent's reasoning,
+            or None if no custom planning instruction is needed.
+        """
         return """
 You are a systematic problem solver. For each task:
 
@@ -813,11 +832,27 @@ STEP 4: VALIDATE
 - What could be improved?
         """
 
-    def process_planning_response(self, response: LlmResponse) -> LlmResponse:
-        """Process response after planning."""
-        # Could modify response here
+    def process_planning_response(
+        self,
+        callback_context: CallbackContext,
+        response_parts: List[types.Part],
+    ) -> Optional[List[types.Part]]:
+        """Process response after planning.
+        
+        Args:
+            callback_context: The callback context providing access to state,
+                tools, and the ability to modify the agent's behavior during
+                the current invocation.
+            response_parts: The LLM response parts from the planning step.
+                Read-only list that should not be modified in place.
+            
+        Returns:
+            The processed response parts (can be modified copies), or None
+            if no processing is needed and original parts should be used.
+        """
+        # Could modify response_parts here
         # Add metadata, validate structure, etc.
-        return response
+        return response_parts
 
 # Use custom planner
 agent = Agent(
@@ -832,7 +867,23 @@ agent = Agent(
 class DataSciencePlanner(BasePlanner):
     """Planner for data science workflows."""
 
-    def build_planning_instruction(self, agent, context) -> str:
+    def build_planning_instruction(
+        self,
+        readonly_context: ReadonlyContext,
+        llm_request: LlmRequest,
+    ) -> Optional[str]:
+        """Build data science planning instruction.
+        
+        Args:
+            readonly_context: The readonly context containing session state,
+                user state, and app state for the current invocation.
+            llm_request: The LLM request object containing the user message,
+                conversation history, and generation parameters.
+            
+        Returns:
+            The planning instruction string for data science workflows that
+            guides the agent through the data science methodology.
+        """
         return """
 Follow the data science methodology:
 
@@ -866,6 +917,26 @@ Follow the data science methodology:
 3. How to update model?
 </DEPLOYMENT>
         """
+
+    def process_planning_response(
+        self,
+        callback_context: CallbackContext,
+        response_parts: List[types.Part],
+    ) -> Optional[List[types.Part]]:
+        """Process data science planning response.
+        
+        Args:
+            callback_context: The callback context providing access to state,
+                tools, and agent control during the current invocation.
+            response_parts: The LLM response parts from the planning step.
+                Read-only list that should not be modified in place.
+                
+        Returns:
+            The processed response parts with data science-specific
+            validation or metadata, or None to use original parts.
+        """
+        # Could add data science-specific validation or metadata here
+        return response_parts
 
 # Data science agent with custom planner
 ds_agent = Agent(
