@@ -78,6 +78,14 @@ Pick the track that matches your timeline and goals:
 
 **Outcome:** Deep knowledge for critical AI system design decisions.
 
+### ✨ Advanced Specializations
+
+**[GEPA Optimization](36_gepa_optimization_advanced.md)** — Automatic prompt evolution
+
+- Use genetic algorithms to automatically improve agent prompts
+- Real LLM-based reflection with Gemini
+- Production-ready implementation patterns
+
 ---
 
 ## 📖 Key Resources
@@ -93,6 +101,8 @@ Pick the track that matches your timeline and goals:
 - [Today I Learn Series](til/til_index) — Bite-sized lessons
   - Context Compaction (Oct 19) — Token optimization techniques
   - And more...
+- [GEPA Optimization](36_gepa_optimization_advanced.md) — Automatic prompt
+  evolution using genetic algorithms and LLM reflection
 
 **External resources:**
 
@@ -113,6 +123,7 @@ Pick the track that matches your timeline and goals:
 
 ## 👨‍💻 About
 
-Created by [Raphaël MANSUY](https://linkedin.com/in/raphaelmansuy), CTO and AI educator. Built from production experience, not theory.
+Created by [Raphaël MANSUY](https://linkedin.com/in/raphaelmansuy), CTO and
+AI educator. Built from production experience, not theory.
 
 **[Start Building →](01_hello_world_agent.md)**
