@@ -64,6 +64,15 @@ related_links:
 
 import Comments from '@site/src/components/Comments';
 
+:::info Implementation Repository
+
+**View the complete implementation on GitHub:**
+[raphaelmansuy/adk_training/tutorial_implementation/tutorial_gepa_optimization](https://github.com/raphaelmansuy/adk_training/tree/main/tutorial_implementation/tutorial_gepa_optimization)
+
+This includes working code, tests, Makefile, and both simulated and real GEPA demos.
+
+:::
+
 ## Why: The Problem with Manual Prompt Engineering
 
 You spend hours tweaking your agent's prompt:
