@@ -783,13 +783,29 @@ Risk Assessment:
 
 ```python
 from google.adk.planners import BasePlanner
-from google.adk.types import LlmRequest, LlmResponse
+from google.adk.agents.callback_context import CallbackContext
+from google.adk.agents.readonly_context import ReadonlyContext
+from google.adk.models.llm_request import LlmRequest
+from google.genai import types
+from typing import List, Optional
 
 class MyCustomPlanner(BasePlanner):
     """Custom planning strategy."""
 
-    def build_planning_instruction(self, agent, context) -> str:
-        """Inject custom planning instructions."""
+    def build_planning_instruction(
+        self,
+        readonly_context: ReadonlyContext,
+        llm_request: LlmRequest,
+    ) -> Optional[str]:
+        """Inject custom planning instructions.
+        
+        Args:
+            readonly_context: The readonly context of the invocation.
+            llm_request: The LLM request. Readonly.
+            
+        Returns:
+            The planning instruction string, or None if no instruction needed.
+        """
         return """
 You are a systematic problem solver. For each task:
 
@@ -813,11 +829,23 @@ STEP 4: VALIDATE
 - What could be improved?
         """
 
-    def process_planning_response(self, response: LlmResponse) -> LlmResponse:
-        """Process response after planning."""
-        # Could modify response here
+    def process_planning_response(
+        self,
+        callback_context: CallbackContext,
+        response_parts: List[types.Part],
+    ) -> Optional[List[types.Part]]:
+        """Process response after planning.
+        
+        Args:
+            callback_context: The callback context of the invocation.
+            response_parts: The LLM response parts. Readonly.
+            
+        Returns:
+            The processed response parts, or None if no processing is needed.
+        """
+        # Could modify response_parts here
         # Add metadata, validate structure, etc.
-        return response
+        return response_parts
 
 # Use custom planner
 agent = Agent(
@@ -832,7 +860,20 @@ agent = Agent(
 class DataSciencePlanner(BasePlanner):
     """Planner for data science workflows."""
 
-    def build_planning_instruction(self, agent, context) -> str:
+    def build_planning_instruction(
+        self,
+        readonly_context: ReadonlyContext,
+        llm_request: LlmRequest,
+    ) -> Optional[str]:
+        """Build data science planning instruction.
+        
+        Args:
+            readonly_context: The readonly context of the invocation.
+            llm_request: The LLM request. Readonly.
+            
+        Returns:
+            The planning instruction string for data science workflows.
+        """
         return """
 Follow the data science methodology:
 
@@ -866,6 +907,15 @@ Follow the data science methodology:
 3. How to update model?
 </DEPLOYMENT>
         """
+
+    def process_planning_response(
+        self,
+        callback_context: CallbackContext,
+        response_parts: List[types.Part],
+    ) -> Optional[List[types.Part]]:
+        """Process data science planning response."""
+        # Could add data science-specific validation or metadata here
+        return response_parts
 
 # Data science agent with custom planner
 ds_agent = Agent(
