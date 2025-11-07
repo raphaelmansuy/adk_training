@@ -800,11 +800,14 @@ class MyCustomPlanner(BasePlanner):
         """Inject custom planning instructions.
         
         Args:
-            readonly_context: The readonly context of the invocation.
-            llm_request: The LLM request. Readonly.
+            readonly_context: The readonly context containing session state,
+                user state, and app state for the current invocation.
+            llm_request: The LLM request object containing the user message,
+                conversation history, and generation parameters.
             
         Returns:
-            The planning instruction string, or None if no instruction needed.
+            The planning instruction string to guide the agent's reasoning,
+            or None if no custom planning instruction is needed.
         """
         return """
 You are a systematic problem solver. For each task:
@@ -837,11 +840,15 @@ STEP 4: VALIDATE
         """Process response after planning.
         
         Args:
-            callback_context: The callback context of the invocation.
-            response_parts: The LLM response parts. Readonly.
+            callback_context: The callback context providing access to state,
+                tools, and the ability to modify the agent's behavior during
+                the current invocation.
+            response_parts: The LLM response parts from the planning step.
+                Read-only list that should not be modified in place.
             
         Returns:
-            The processed response parts, or None if no processing is needed.
+            The processed response parts (can be modified copies), or None
+            if no processing is needed and original parts should be used.
         """
         # Could modify response_parts here
         # Add metadata, validate structure, etc.
@@ -868,11 +875,14 @@ class DataSciencePlanner(BasePlanner):
         """Build data science planning instruction.
         
         Args:
-            readonly_context: The readonly context of the invocation.
-            llm_request: The LLM request. Readonly.
+            readonly_context: The readonly context containing session state,
+                user state, and app state for the current invocation.
+            llm_request: The LLM request object containing the user message,
+                conversation history, and generation parameters.
             
         Returns:
-            The planning instruction string for data science workflows.
+            The planning instruction string for data science workflows that
+            guides the agent through the data science methodology.
         """
         return """
 Follow the data science methodology:
@@ -913,7 +923,18 @@ Follow the data science methodology:
         callback_context: CallbackContext,
         response_parts: List[types.Part],
     ) -> Optional[List[types.Part]]:
-        """Process data science planning response."""
+        """Process data science planning response.
+        
+        Args:
+            callback_context: The callback context providing access to state,
+                tools, and agent control during the current invocation.
+            response_parts: The LLM response parts from the planning step.
+                Read-only list that should not be modified in place.
+                
+        Returns:
+            The processed response parts with data science-specific
+            validation or metadata, or None to use original parts.
+        """
         # Could add data science-specific validation or metadata here
         return response_parts
 
