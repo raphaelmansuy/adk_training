@@ -242,7 +242,7 @@ See actual LLM-driven optimization:
 
 ### Full Tutorial
 
-[Read the complete GEPA tutorial →](/docs/36_gepa_optimization_advanced)
+[Read the complete GEPA tutorial →](/docs/gepa_optimization_advanced)
 
 Learn:
 
@@ -309,7 +309,7 @@ practices:
 
 2. **Read the tutorial** (30 minutes)
 
-   [GEPA Optimization →](/docs/36_gepa_optimization_advanced)
+   [GEPA Optimization →](/docs/gepa_optimization_advanced)
 
 3. **Apply to your agents**
 
@@ -324,7 +324,7 @@ practices:
 
 ## Learn More
 
-- **[Full Tutorial](/docs/36_gepa_optimization_advanced)** — Complete guide with
+- **[Full Tutorial](/docs/gepa_optimization_advanced)** — Complete guide with
   code
 - **[GEPA Paper](https://arxiv.org/abs/2507.19457)** — Research details
 - **[DSPy Framework](https://github.com/stanfordnlp/dspy)** — GEPA ecosystem
@@ -335,4 +335,4 @@ practices:
 
 **Stop guessing on prompts. Start optimizing them systematically.**
 
-[Get Started with GEPA →](/docs/36_gepa_optimization_advanced)
+[Get Started with GEPA →](/docs/gepa_optimization_advanced)
