@@ -1,0 +1,23 @@
+# GEPA Optimization Tutorial Requirements
+# This tutorial demonstrates GEPA concepts using a simulated customer support agent
+
+# Google ADK and dependencies
+google-genai>=1.15.0
+google-adk>=0.1.4
+
+# GEPA framework (optional - for actual optimization)
+# gepa>=0.1.0
+
+# Testing and development
+pytest>=7.0.0
+pytest-asyncio>=0.24.0
+pytest-cov>=5.0.0
+
+# Code quality
+ruff>=0.5.0
+black>=24.0.0
+mypy>=1.11.0
+
+# Utilities
+python-dotenv>=1.0.0
+pydantic>=2.0.0

@@ -1,0 +1,63 @@
+[build-system]
+requires = ["setuptools>=68.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "gepa-optimization-tutorial"
+version = "0.1.0"
+description = "Tutorial on GEPA (Genetic-Pareto Prompt Optimization) with ADK"
+readme = "README.md"
+requires-python = ">=3.9"
+license = {text = "Apache License 2.0"}
+
+dependencies = [
+    "google-genai>=1.15.0",
+    "google-adk>=0.1.4",
+    "python-dotenv>=1.0.0",
+]
+
+[project.optional-dependencies]
+test = [
+    "pytest>=7.0.0",
+    "pytest-asyncio>=0.24.0",
+    "pytest-cov>=5.0.0",
+]
+dev = [
+    "pytest>=7.0.0",
+    "pytest-asyncio>=0.24.0",
+    "pytest-cov>=5.0.0",
+    "ruff>=0.5.0",
+    "black>=24.0.0",
+    "mypy>=1.11.0",
+]
+gepa = [
+    "gepa>=0.1.0",
+    "tau-bench>=0.1.0",
+]
+
+[project.urls]
+Repository = "https://github.com/raphaelmansuy/adk_training"
+Documentation = "https://docs.google.com/adk"
+
+[tool.setuptools]
+packages = ["gepa_agent"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = ["test_*.py"]
+asyncio_mode = "auto"
+
+[tool.black]
+line-length = 88
+target-version = ["py39", "py310", "py311"]
+
+[tool.ruff]
+line-length = 88
+target-version = "py39"
+select = ["E", "F", "W", "C", "I"]
+
+[tool.mypy]
+python_version = "3.9"
+warn_return_any = true
+warn_unused_configs = true
+disallow_untyped_defs = false
