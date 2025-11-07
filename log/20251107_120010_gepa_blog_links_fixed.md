@@ -44,3 +44,13 @@ All instances of `/docs/36_gepa_optimization_advanced` replaced with
 ✅ No remaining references to `/docs/36_gepa` pattern
 ✅ Links now point to the correct Docusaurus documentation page
 ✅ 4/4 broken links fixed
+
+## Additional Improvements
+
+Also ensured the GEPA optimization tutorial documentation at
+`docs/docs/36_gepa_optimization_advanced.md` has a prominent link to the GitHub
+implementation:
+
+✅ Added implementation info box after imports
+✅ Links to the GitHub tutorial implementation
+✅ Frontmatter already contains `implementation_link` for Docusaurus
