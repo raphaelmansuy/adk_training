@@ -2,7 +2,7 @@
 
 **Build production-ready AI agents tutorials that solve real problems.**
 
-You're here because AI agents are transforming software development, and you want practical skills you can use at work tomorrow. This training hub gives you exactly that—no fluff, just working code and proven patterns from 34 completed tutorials.
+You're here because AI agents are transforming software development, and you want practical skills you can use at work tomorrow. This training hub gives you exactly that—no fluff, just working code and proven patterns from 36 completed tutorials.
 
 ## What You'll Gain
 
@@ -15,12 +15,12 @@ You're here because AI agents are transforming software development, and you wan
 
 **Practically:**
 
-- 34 working implementations you can run today
+- 36 working implementations you can run today
 - Copy-paste code patterns for common scenarios
 - Testing frameworks you can adapt to your projects
 - Integration examples for Next.js, React, Streamlit, Slack, PubSub, and more
 
-**Completion Status: 35/35 tutorials ready to use (100%)** ✅
+**Completion Status: 36/36 tutorials ready to use (100%)** ✅
 
 > Built by developers, for developers. Every tutorial has working code, not just theory.
 
@@ -48,7 +48,7 @@ Think of it as the missing framework between "ChatGPT API call" and "production 
 ├── TABLE_OF_CONTENTS.md           # Complete tutorial series guide
 ├── scratchpad.md                  # Quick reference patterns
 ├── thought.md                     # Tutorial design and research notes
-├── docs/tutorial/                 # 34 comprehensive tutorials
+├── docs/tutorial/                 # 36 comprehensive tutorials
 │   ├── 01_hello_world_agent.md    # ✅ COMPLETED - Agent basics
 │   ├── 02_function_tools.md       # ✅ COMPLETED - Custom tools
 │   ├── 03_openapi_tools.md        # ✅ COMPLETED - REST API integration
@@ -83,8 +83,9 @@ Think of it as the missing framework between "ChatGPT API call" and "production 
 │   ├── 32_streamlit_adk_integration.md # ✅ COMPLETED - Streamlit integration
 │   ├── 33_slack_adk_integration.md # ✅ COMPLETED - Slack integration
 │   ├── 34_pubsub_adk_integration.md # ✅ COMPLETED - PubSub integration
-│   └── 35_commerce_agent_e2e.md # ✅ COMPLETED - E2E Commerce Agent
-├── tutorial_implementation/       # ✅ 35 working implementations
+│   ├── 35_commerce_agent_e2e.md # ✅ COMPLETED - E2E Commerce Agent
+│   └── 36_gepa_optimization_advanced.md # ✅ COMPLETED - GEPA SOP Optimization
+├── tutorial_implementation/       # ✅ 36 working implementations
 │   ├── tutorial01/                # Hello World Agent
 │   ├── tutorial02/                # Function Tools
 │   ├── tutorial03/                # OpenAPI Tools
@@ -119,7 +120,8 @@ Think of it as the missing framework between "ChatGPT API call" and "production 
 │   ├── tutorial32/                # Streamlit ADK Integration
 │   ├── tutorial33/                # Slack ADK Integration
 │   ├── tutorial34/                # PubSub ADK Integration
-│   └── commerce_agent_e2e/        # E2E Commerce Agent (Production Example)
+│   ├── commerce_agent_e2e/        # E2E Commerce Agent (Production Example)
+│   └── tutorial_gepa_optimization/ # GEPA SOP Optimization
 ```
 
 ## 🚀 Get Started (5 minutes)
@@ -173,7 +175,7 @@ Start with [Tutorial 01](docs/tutorial/01_hello_world_agent.md) (30 min) to unde
 
 **For:** Senior engineers and architects
 
-Complete all 34 tutorials, focusing on:
+Complete all 36 tutorials, focusing on:
 
 - Multi-agent orchestration patterns
 - Production observability and testing
@@ -188,6 +190,27 @@ Complete all 34 tutorials, focusing on:
 Stay current with **in-depth articles** exploring AI agent architecture, enterprise deployment strategies, and production best practices.
 
 ### Latest Posts
+
+#### 🧬 Optimize Your Google ADK Agent's SOP with GEPA (November 7, 2025)
+
+Stop manually tweaking agent prompts. Learn how genetic algorithms and LLM
+reflection automatically evolve your agent's instructions for better performance.
+
+**What You'll Learn:**
+
+- Why manual prompt engineering fails (4 failure modes explained)
+- How GEPA uses genetic algorithms with LLM intelligence
+- Building evaluation scenarios for your agent
+- Implementing LLM-guided mutation
+- Production deployment patterns
+
+**Time**: 10-15 minutes
+**Read**: [GEPA Optimization Guide →](https://raphaelmansuy.github.io/adk_training/blog/gepa-optimization-tutorial)
+
+**Perfect for**: Teams optimizing agent SOPs, developers tired of manual
+prompt tweaking, architects designing AI agent systems.
+
+---
 
 #### 🚀 Gemini Enterprise: Why Your AI Agents Need Enterprise-Grade Capabilities (October 21, 2025)
 
@@ -288,10 +311,11 @@ See the complete tutorial list in the [Project Structure](#project-structure) se
 | [33](https://github.com/raphaelmansuy/adk_training/tree/main/tutorial_implementation/tutorial33)         | Slack ADK Integration        | ✅ Completed | Advanced     | 2hr   |
 | [34](https://github.com/raphaelmansuy/adk_training/tree/main/tutorial_implementation/tutorial34)         | PubSub ADK Integration       | ✅ Completed | Advanced     | 2hr   |
 | [35](https://github.com/raphaelmansuy/adk_training/tree/main/tutorial_implementation/commerce_agent_e2e) | E2E Commerce Agent           | ✅ Completed | Advanced     | 90min |
+| [36](https://github.com/raphaelmansuy/adk_training/tree/main/tutorial_implementation/tutorial_gepa_optimization) | GEPA SOP Optimization | ✅ Completed | Advanced | 1.5hr |
 
 ## 📊 Project Completion Status
 
-### ✅ Completed Tutorials (35/35)
+### ✅ Completed Tutorials (36/36)
 
 The following tutorials have been fully implemented with working code, comprehensive tests, and verified functionality:
 
@@ -348,6 +372,10 @@ The following tutorials have been fully implemented with working code, comprehen
 
 - **Tutorial 35**: Commerce Agent E2E - Production-ready multi-user commerce agent with session persistence
 
+**Advanced Specializations:**
+
+- **Tutorial 36**: GEPA SOP Optimization - Genetic algorithms for automatic agent prompt optimization with LLM reflection
+
 **All completed tutorials include:**
 
 - ✅ Working code implementations in `tutorial_implementation/`
@@ -357,9 +385,9 @@ The following tutorials have been fully implemented with working code, comprehen
 - ✅ Documentation and usage examples
 - ✅ Integration with ADK web interface
 
-### ✅ All Tutorials Complete (35/35)
+### ✅ All Tutorials Complete (36/36)
 
-The comprehensive ADK Training Hub now includes all 35 tutorials with full implementations.
+The comprehensive ADK Training Hub now includes all 36 tutorials with full implementations.
 
 ## 🛠️ Development Tools
 

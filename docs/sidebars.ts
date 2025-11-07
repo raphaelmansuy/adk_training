@@ -78,6 +78,7 @@ const sidebars: SidebarsConfig = {
         'google_agentspace',
         'third_party_tools',
         'using_other_llms',
+        'gepa_optimization_advanced',
       ],
     },
     {
