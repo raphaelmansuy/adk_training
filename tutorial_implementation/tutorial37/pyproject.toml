@@ -1,0 +1,64 @@
+[build-system]
+requires = ["setuptools>=45", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "policy-navigator"
+version = "0.1.0"
+description = "Enterprise Compliance & Policy Navigator - Tutorial 37 for Google ADK"
+readme = "README.md"
+requires-python = ">=3.9"
+authors = [
+    {name = "Google ADK Training", email = "training@example.com"}
+]
+keywords = ["adk", "file-search", "compliance", "policies", "rag"]
+license = {text = "Apache License 2.0"}
+
+dependencies = [
+    "google-genai>=1.15.0",
+    "google-adk>=1.16.0",
+    "python-dotenv>=1.0.0",
+    "pydantic>=2.0.0",
+    "loguru>=0.7.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=7.0.0",
+    "pytest-cov>=4.0.0",
+    "pytest-asyncio>=0.21.0",
+    "black>=23.0.0",
+    "ruff>=0.1.0",
+    "mypy>=1.0.0",
+]
+
+[project.urls]
+Homepage = "https://github.com/raphaelmansuy/adk_training"
+Repository = "https://github.com/raphaelmansuy/adk_training/tree/main/tutorial_implementation/tutorial37"
+Documentation = "https://github.com/raphaelmansuy/adk_training/tree/main/docs/docs/tutorial37"
+
+[tool.setuptools]
+packages = ["policy_navigator"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = "test_*.py"
+addopts = "-v --cov=policy_navigator --cov-report=html"
+
+[tool.coverage.run]
+source = ["policy_navigator"]
+omit = ["*/tests/*"]
+
+[tool.black]
+line-length = 88
+target-version = ["py39", "py310", "py311"]
+
+[tool.ruff]
+line-length = 88
+target-version = "py39"
+
+[tool.mypy]
+python_version = "3.9"
+warn_return_any = true
+warn_unused_configs = true
+disallow_untyped_defs = false
