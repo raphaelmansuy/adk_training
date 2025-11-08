@@ -14,11 +14,13 @@ This tutorial implements a **production-ready multi-agent system** for managing,
 
 ### Business Value
 
-- **$150K-$200K annual savings** for mid-sized companies
-- **$4K-$5K implementation cost** (10-day payback period)
-- **3000%+ ROI** on first year investment
-- **99% faster** policy access (45 minutes → 30 seconds)
+- **$9K-$12K annual savings** for mid-sized companies (realistic estimate)
+- **$2.5K-3.5K implementation cost** (3-5 month payback period)
+- **165-270% ROI** on first year investment
+- **90%+ faster** policy access (5 minutes → 30 seconds for automated queries)
 - **Audit-ready** with built-in citation tracking and compliance trails
+
+_Note: This is a production-starter foundation. Add retry logic, monitoring, and rate limiting for full production deployment._
 
 ### Key Features
 
