@@ -5,8 +5,9 @@ Tests core functionality of policy management tools without requiring live API.
 """
 
 import pytest
-from unittest.mock import Mock, patch, MagicMock
+from unittest.mock import Mock, patch
 from policy_navigator.metadata import MetadataSchema, PolicyDepartment, PolicyType
+from policy_navigator.stores import StoreManager
 from policy_navigator.utils import (
     get_sample_policies_dir,
     get_store_name_for_policy,
@@ -196,14 +197,122 @@ class TestStoreManagerIntegration:
     @pytest.fixture
     def store_manager(self):
         """Create StoreManager for testing."""
-        from policy_navigator.stores import StoreManager
-
         return StoreManager()
 
     def test_list_stores_returns_list(self, store_manager):
         """Test listing stores returns a list."""
         stores = store_manager.list_stores()
         assert isinstance(stores, list)
+
+    def test_list_documents_mock(self, store_manager):
+        """Test list_documents method with mocked API."""
+        with patch.object(store_manager.client.file_search_stores.documents, 'list') as mock_list:
+            # Mock the response
+            mock_doc = Mock()
+            mock_doc.name = 'fileSearchStores/123/documents/abc'
+            mock_doc.display_name = 'test_document'
+            mock_doc.create_time = '2025-01-01T00:00:00Z'
+            mock_doc.update_time = '2025-01-01T00:00:00Z'
+            mock_doc.state = 'ACTIVE'
+            mock_doc.size_bytes = 1024
+            
+            mock_list.return_value = [mock_doc]
+            
+            docs = store_manager.list_documents('fileSearchStores/123')
+            assert isinstance(docs, list)
+            assert len(docs) == 1
+            assert docs[0]['display_name'] == 'test_document'
+
+    def test_find_document_by_display_name_mock(self, store_manager):
+        """Test find_document_by_display_name with mocked API."""
+        with patch.object(store_manager, 'list_documents') as mock_list:
+            mock_list.return_value = [
+                {
+                    'name': 'fileSearchStores/123/documents/abc',
+                    'display_name': 'policy1.md',
+                    'create_time': '2025-01-01T00:00:00Z',
+                }
+            ]
+            
+            result = store_manager.find_document_by_display_name('fileSearchStores/123', 'policy1.md')
+            assert result == 'fileSearchStores/123/documents/abc'
+
+    def test_find_document_by_display_name_not_found(self, store_manager):
+        """Test find_document_by_display_name when document not found."""
+        with patch.object(store_manager, 'list_documents') as mock_list:
+            mock_list.return_value = []
+            
+            result = store_manager.find_document_by_display_name('fileSearchStores/123', 'nonexistent.md')
+            assert result is None
+
+    def test_delete_document_mock(self, store_manager):
+        """Test delete_document method with mocked API."""
+        with patch.object(store_manager.client.file_search_stores.documents, 'delete') as mock_delete:
+            mock_delete.return_value = None
+            
+            result = store_manager.delete_document('fileSearchStores/123/documents/abc')
+            assert result is True
+            mock_delete.assert_called_once()
+
+    def test_upsert_file_to_store_new_document(self, store_manager):
+        """Test upsert when document doesn't exist (new upload)."""
+        with patch.object(store_manager, 'find_document_by_display_name') as mock_find, \
+             patch.object(store_manager, 'upload_file_to_store') as mock_upload:
+            
+            # Document doesn't exist
+            mock_find.return_value = None
+            mock_upload.return_value = True
+            
+            # Create a temporary test file
+            import tempfile
+            with tempfile.NamedTemporaryFile(mode='w', suffix='.md', delete=False) as f:
+                f.write('test content')
+                temp_file = f.name
+            
+            try:
+                result = store_manager.upsert_file_to_store(
+                    temp_file, 'fileSearchStores/123', 'test.md'
+                )
+                
+                # Should only call upload, not delete
+                assert result is True
+                mock_find.assert_called_once()
+                mock_upload.assert_called_once()
+            finally:
+                import os
+                os.unlink(temp_file)
+
+    def test_upsert_file_to_store_existing_document(self, store_manager):
+        """Test upsert when document exists (replacement)."""
+        with patch.object(store_manager, 'find_document_by_display_name') as mock_find, \
+             patch.object(store_manager, 'delete_document') as mock_delete, \
+             patch.object(store_manager, 'upload_file_to_store') as mock_upload, \
+             patch('time.sleep'):  # Mock sleep to speed up test
+            
+            # Document exists
+            mock_find.return_value = 'fileSearchStores/123/documents/old'
+            mock_delete.return_value = True
+            mock_upload.return_value = True
+            
+            # Create a temporary test file
+            import tempfile
+            with tempfile.NamedTemporaryFile(mode='w', suffix='.md', delete=False) as f:
+                f.write('updated content')
+                temp_file = f.name
+            
+            try:
+                result = store_manager.upsert_file_to_store(
+                    temp_file, 'fileSearchStores/123', 'test.md'
+                )
+                
+                # Should call find, delete, and upload
+                assert result is True
+                mock_find.assert_called_once()
+                mock_delete.assert_called_once()
+                mock_upload.assert_called_once()
+            finally:
+                import os
+                os.unlink(temp_file)
 
 
 @pytest.mark.integration

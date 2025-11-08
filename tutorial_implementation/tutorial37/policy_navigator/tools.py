@@ -32,29 +32,31 @@ class PolicyTools:
 
     def upload_policy_documents(
         self,
-        file_paths: List[str],
+        file_paths: str,
         store_name: str,
-        metadata_list: Optional[List[Dict]] = None,
     ) -> Dict[str, Any]:
         """
-        Upload multiple policy documents to File Search Store.
+        Upload policy documents to File Search Store with upsert semantics.
+
+        If a document with the same name already exists, it will be replaced.
 
         Args:
-            file_paths: List of file paths to upload
+            file_paths: Comma-separated file paths to upload
             store_name: Target File Search Store name
-            metadata_list: Optional list of metadata for each document
 
         Returns:
             dict with status, uploaded count, and details
         """
+        # Parse comma-separated file paths
+        paths = [p.strip() for p in file_paths.split(",")]
         try:
-            logger.info(f"Uploading {len(file_paths)} documents to {store_name}...")
+            logger.info(f"Uploading {len(paths)} documents to {store_name}...")
 
             uploaded = 0
             failed = 0
             details = []
 
-            for i, file_path in enumerate(file_paths):
+            for file_path in paths:
                 if not os.path.exists(file_path):
                     logger.error(f"File not found: {file_path}")
                     failed += 1
@@ -62,24 +64,24 @@ class PolicyTools:
                     continue
 
                 try:
-                    metadata = metadata_list[i] if metadata_list and i < len(metadata_list) else None
                     display_name = os.path.basename(file_path)
 
-                    if self.store_manager.upload_file_to_store(
-                        file_path, store_name, display_name, metadata
+                    # Use upsert instead of upload to replace existing documents
+                    if self.store_manager.upsert_file_to_store(
+                        file_path, store_name, display_name, None
                     ):
                         uploaded += 1
                         details.append(
-                            {"file": file_path, "status": "success"}
+                            {"file": file_path, "status": "success", "mode": "upsert"}
                         )
                     else:
                         failed += 1
                         details.append(
-                            {"file": file_path, "status": "error", "reason": "Upload failed"}
+                            {"file": file_path, "status": "error", "reason": "Upsert failed"}
                         )
 
                 except Exception as e:
-                    logger.error(f"Failed to upload {file_path}: {str(e)}")
+                    logger.error(f"Failed to upsert {file_path}: {str(e)}")
                     failed += 1
                     details.append(
                         {"file": file_path, "status": "error", "reason": str(e)}
@@ -89,9 +91,9 @@ class PolicyTools:
                 "status": "success" if uploaded > 0 else "error",
                 "uploaded": uploaded,
                 "failed": failed,
-                "total": len(file_paths),
+                "total": len(paths),
                 "details": details,
-                "report": f"Uploaded {uploaded}/{len(file_paths)} documents successfully",
+                "report": f"Upserted {uploaded}/{len(paths)} documents successfully",
             }
 
         except Exception as e:
@@ -587,12 +589,11 @@ def _get_tools() -> PolicyTools:
 
 # Export tool functions
 def upload_policy_documents(
-    file_paths: List[str],
+    file_paths: str,
     store_name: str,
-    metadata_list: Optional[List[Dict]] = None,
 ) -> Dict[str, Any]:
-    """Upload multiple policy documents."""
-    return _get_tools().upload_policy_documents(file_paths, store_name, metadata_list)
+    """Upload policy documents to File Search store."""
+    return _get_tools().upload_policy_documents(file_paths, store_name)
 
 
 def search_policies(

@@ -23,7 +23,6 @@ from policy_navigator.utils import (
     validate_api_key,
     get_policy_files,
     get_store_name_for_policy,
-    format_response,
 )
 from policy_navigator.stores import StoreManager
 from policy_navigator.metadata import MetadataSchema
@@ -45,17 +44,24 @@ def main():
     try:
         store_manager = StoreManager()
 
-        # Step 1: Create File Search Stores
-        print("Step 1: Creating File Search Stores")
+        # Step 1: Create or reuse File Search Stores
+        print("Step 1: Creating or Reusing File Search Stores")
         print("-" * 70)
 
         stores = {}
         for store_type, store_name in Config.get_store_names().items():
-            print(f"  Creating {store_type.upper()} store: {store_name}")
+            print(f"  {store_type.upper()} store: {store_name}")
             try:
-                store_id = store_manager.create_policy_store(store_name)
-                stores[store_type] = store_id
-                print(f"    → Store ID: {store_id}\n")
+                # Check if store already exists (reuse pattern)
+                existing_store = store_manager.get_store_by_display_name(store_name)
+                if existing_store:
+                    stores[store_type] = existing_store
+                    print(f"    → Using existing store: {existing_store}\n")
+                else:
+                    # Create new store only if it doesn't exist
+                    store_id = store_manager.create_policy_store(store_name)
+                    stores[store_type] = store_id
+                    print(f"    → Created new store: {store_id}\n")
             except Exception as e:
                 print(f"    ✗ Failed: {str(e)}\n")
 
@@ -101,7 +107,7 @@ def main():
                 metadata = MetadataSchema.code_of_conduct_metadata()
 
             try:
-                result = store_manager.upload_file_to_store(
+                result = store_manager.upsert_file_to_store(
                     policy_file,
                     store_id,
                     display_name=policy_name,
@@ -109,10 +115,10 @@ def main():
                 )
 
                 if result:
-                    print(f"    ✓ Upload successful")
+                    print("    ✓ Upsert successful")
                     uploaded_count += 1
                 else:
-                    print(f"    ✗ Upload failed")
+                    print("    ✗ Upsert failed")
 
             except Exception as e:
                 print(f"    ✗ Error: {str(e)}")

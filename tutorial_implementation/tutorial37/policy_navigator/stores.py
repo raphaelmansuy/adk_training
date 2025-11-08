@@ -9,6 +9,7 @@ import time
 import mimetypes
 from typing import Optional, Dict, Any
 from google import genai
+from google.genai import types
 from loguru import logger
 
 from policy_navigator.config import Config
@@ -133,23 +134,116 @@ class StoreManager:
             logger.error(f"Failed to find store by display name: {str(e)}")
             return None
 
-    def delete_store(self, store_name: str) -> bool:
+    def delete_store(self, store_name: str, force: bool = False) -> bool:
         """
         Delete a File Search Store.
 
         Args:
             store_name: Full store name (e.g., 'fileSearchStores/xxxxx')
+            force: If True, delete even if store contains documents
 
         Returns:
             bool: True if deletion successful
         """
         try:
             logger.warning(f"Deleting File Search Store: {store_name}")
-            self.client.file_search_stores.delete(name=store_name)
+            config = None
+            if force:
+                config = types.DeleteFileSearchStoreConfig(force=True)
+            self.client.file_search_stores.delete(name=store_name, config=config)
             logger.info("✓ Store deleted")
             return True
         except Exception as e:
             logger.error(f"Failed to delete store: {str(e)}")
+            raise
+
+    def list_documents(self, store_name: str) -> list:
+        """
+        List all documents in a File Search Store.
+
+        Args:
+            store_name: Full store name (e.g., 'fileSearchStores/xxxxx')
+
+        Returns:
+            list: List of document information dicts
+        """
+        try:
+            documents = self.client.file_search_stores.documents.list(
+                parent=store_name
+            )
+            doc_list = []
+
+            for doc in documents:
+                doc_list.append(
+                    {
+                        "name": doc.name,
+                        "display_name": getattr(doc, "display_name", ""),
+                        "create_time": getattr(doc, "create_time", ""),
+                        "update_time": getattr(doc, "update_time", ""),
+                        "state": getattr(doc, "state", "UNKNOWN"),
+                        "size_bytes": getattr(doc, "size_bytes", 0),
+                    }
+                )
+
+            logger.info(f"Found {len(doc_list)} documents in store")
+            return doc_list
+
+        except Exception as e:
+            logger.error(f"Failed to list documents: {str(e)}")
+            raise
+
+    def find_document_by_display_name(
+        self, store_name: str, display_name: str
+    ) -> Optional[str]:
+        """
+        Find a document in a store by display name.
+
+        Returns the first matching document name if found.
+
+        Args:
+            store_name: Full store name (e.g., 'fileSearchStores/xxxxx')
+            display_name: Display name of the document to find
+
+        Returns:
+            str: Full document name (e.g., 'fileSearchStores/xxx/documents/yyy') or None
+        """
+        try:
+            documents = self.list_documents(store_name)
+            matching_docs = [d for d in documents if d.get("display_name") == display_name]
+
+            if not matching_docs:
+                logger.debug(f"Document '{display_name}' not found in store")
+                return None
+
+            # Return the first matching document
+            return matching_docs[0].get("name")
+
+        except Exception as e:
+            logger.error(f"Failed to find document by display name: {str(e)}")
+            return None
+
+    def delete_document(self, document_name: str, force: bool = True) -> bool:
+        """
+        Delete a document from a File Search Store.
+
+        Args:
+            document_name: Full document name (e.g., 'fileSearchStores/xxx/documents/yyy')
+            force: If True, delete even if document has chunks
+
+        Returns:
+            bool: True if deletion successful
+        """
+        try:
+            logger.info(f"Deleting document: {document_name}")
+            
+            # Note: force is passed as a query parameter in the API
+            self.client.file_search_stores.documents.delete(
+                name=document_name, force=force
+            )
+            logger.info("✓ Document deleted")
+            return True
+        except Exception as e:
+            logger.error(f"Failed to delete document: {str(e)}")
             raise
 
     def upload_file_to_store(
@@ -219,6 +313,55 @@ class StoreManager:
 
         except Exception as e:
             logger.error(f"Failed to upload file: {str(e)}")
+            raise
+
+    def upsert_file_to_store(
+        self,
+        file_path: str,
+        store_name: str,
+        display_name: Optional[str] = None,
+        metadata: Optional[list] = None,
+    ) -> bool:
+        """
+        Upload a file to a File Search Store with upsert semantics.
+
+        If a document with the same display_name already exists in the store,
+        it will be deleted first before uploading the new version.
+
+        Args:
+            file_path: Path to the file to upload
+            store_name: Target File Search Store name
+            display_name: Optional display name for the document
+            metadata: Optional custom metadata for the document
+
+        Returns:
+            bool: True if upsert successful
+        """
+        try:
+            if display_name is None:
+                display_name = file_path.split("/")[-1]
+
+            logger.info(f"Upserting {file_path} to store (upsert mode)...")
+
+            # Check if document with same display_name already exists
+            existing_doc = self.find_document_by_display_name(store_name, display_name)
+            if existing_doc:
+                logger.info(f"Found existing document '{display_name}', deleting...")
+                self.delete_document(existing_doc, force=True)
+                # Give the store time to process deletion
+                time.sleep(1)
+
+            # Now upload the new version
+            success = self.upload_file_to_store(
+                file_path, store_name, display_name, metadata
+            )
+
+            if success:
+                logger.info(f"✓ {display_name} upserted successfully")
+            return success
+
+        except Exception as e:
+            logger.error(f"Failed to upsert file: {str(e)}")
             raise
 
     def wait_for_operation(self, operation_name: str, timeout: int = 300) -> bool:
@@ -294,3 +437,30 @@ def upload_file_to_store(
     return _get_manager().upload_file_to_store(
         file_path, store_name, display_name, metadata
     )
+
+
+def upsert_file_to_store(
+    file_path: str,
+    store_name: str,
+    display_name: Optional[str] = None,
+    metadata: Optional[list] = None,
+) -> bool:
+    """Upload a file to a store with upsert semantics (replace if exists)."""
+    return _get_manager().upsert_file_to_store(
+        file_path, store_name, display_name, metadata
+    )
+
+
+def list_documents(store_name: str) -> list:
+    """List all documents in a store."""
+    return _get_manager().list_documents(store_name)
+
+
+def find_document_by_display_name(store_name: str, display_name: str) -> Optional[str]:
+    """Find a document in a store by display name."""
+    return _get_manager().find_document_by_display_name(store_name, display_name)
+
+
+def delete_document(document_name: str, force: bool = True) -> bool:
+    """Delete a document from a store."""
+    return _get_manager().delete_document(document_name, force)
