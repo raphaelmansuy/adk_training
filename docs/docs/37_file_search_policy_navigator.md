@@ -53,21 +53,32 @@ Picture this: You're an employee at a mid-sized company. You need to know if you
 
 Your HR team handles 50+ policy questions like this **every single day**. Each question takes 3-5 minutes to answer. That's **4-6 hours of wasted HR time daily**.
 
-**Annual cost: $62,500 - $125,000 per year** in lost productivity.
+**Annual cost: $9,000 - $12,000 per year** in lost productivity.
 
-### Traditional RAG: Complex and Expensive
+:::note Reality Check
 
-The typical solution? Build a RAG system with:
+The scenario above reflects typical mid-sized companies (500-1000 employees):
+- **10-15 policy questions/day** (not 50)
+- **3-5 minutes per question** (simple lookups, not complex research)
+- **60% automation rate** (some questions require HR judgment)
+
+This is still a meaningful problem worth solving!
+
+:::
+
+### Traditional RAG: More Complex Than File Search
+
+The typical RAG solution requires:
 
 ```text
 ❌ Parse PDFs → Chunk text → Create embeddings
-❌ Index in Pinecone/Weaviate ($25+/month)
+❌ Index in vector DB (setup + maintenance)
 ❌ Manage vector DB operations and versioning
 ❌ Handle query logic and re-ranking
 ❌ Manually extract citations
 ❌ Monitor and scale infrastructure
 
-Result: 2-3 weeks setup + $200+/month + ongoing maintenance
+Result: 1-2 weeks setup + $50-100/month + ongoing maintenance
 ```
 
 ### File Search: Simple and Native
@@ -95,35 +106,47 @@ response = client.models.generate_content(
 # Returns: Answer + automatic citations ✅
 ```
 
-**Result: 1-2 hours setup + $37 one-time + ~$3/month**
+**Result: 1-2 days setup + $37 one-time indexing + ~$3-5/month queries**
 
-### The Business Case
+### The Realistic Business Case
 
 | Aspect           | Traditional RAG | File Search      |
 | ---------------- | --------------- | ---------------- |
-| **Setup Time**   | 2-3 weeks       | 1-2 hours        |
-| **Setup Cost**   | $8,000-12,000   | $1,000           |
-| **Monthly Cost** | $200+           | $3-5             |
+| **Setup Time**   | 1-2 weeks       | 1-2 days         |
+| **Setup Cost**   | $4,000-6,000    | $2,000-3,000     |
+| **Monthly Cost** | $50-100         | $3-10            |
 | **Storage**      | External DB     | Free, persistent |
 | **Citations**    | Manual          | Automatic        |
 | **Maintenance**  | Ongoing         | Google-managed   |
 
-**ROI Calculation:**
+**Honest ROI Calculation:**
 
-```
-Annual HR Time Saved:  $62,500 - $125,000
-Implementation Cost:   $4,000 - $5,000
-Year 1 ROI:           1,250% - 3,000%
-Payback Period:       10-20 days
+```text
+Daily policy questions handled:    10-15
+Automation rate:                   60% (9 questions)
+Time saved per question:           5 minutes
+Daily time saved:                  45 minutes
+Annual time saved:                 187 hours
+Annual value at $50/hr:            $9,350
+
+Implementation costs:
+- Development (3-5 days):          $2,000-3,000
+- Document indexing:               $37
+- User training:                   $500
+Total implementation:              $2,537-3,537
+
+First-year savings:                $9,350
+First-year ROI:                    165-270%
+Payback period:                    3-5 months
 ```
 
-**Bottom Line**: File Search gives you **enterprise-grade RAG** at **1/50th the cost and complexity** of traditional solutions.
+**Bottom Line**: File Search gives you **simpler RAG** at **~3-5x lower cost** than traditional vector database solutions. Still a strong business case!
 
 ---
 
 ## What You'll Build
 
-A **production-ready Policy Navigator** that demonstrates File Search's power through a real-world compliance system.
+A **production-starter Policy Navigator** that demonstrates File Search's core capabilities. This is a solid foundation you can extend with production features like retry logic, monitoring, and rate limiting.
 
 ### System Architecture
 
@@ -190,7 +213,23 @@ A **production-ready Policy Navigator** that demonstrates File Search's power th
 ✅ **Metadata Filtering** - Find policies by attributes  
 ✅ **Upsert Semantics** - Update policies without duplicates  
 ✅ **Audit Trails** - Track all policy access for compliance  
-✅ **Production Ready** - Error handling, logging, comprehensive tests
+✅ **Clean Code** - Well-structured, tested, extensible foundation
+
+:::warning Production Checklist
+
+This tutorial provides a **solid starter foundation**. Before production deployment, add:
+
+- ⚠️ **Retry logic** with exponential backoff
+- ⚠️ **Rate limiting** to avoid API quota issues
+- ⚠️ **Circuit breakers** for graceful degradation
+- ⚠️ **Monitoring & alerts** for system health
+- ⚠️ **Structured logging** with correlation IDs
+- ⚠️ **Authentication & authorization** for access control
+- ⚠️ **Cost monitoring** and budget alerts
+
+See the "Production Deployment Checklist" section for details.
+
+:::
 
 ---
 
@@ -553,17 +592,143 @@ result = create_audit_trail(
 
 ## Production Deployment
 
+### Production Deployment Checklist
+
+This tutorial provides a **solid foundation**. Here's what to add before production:
+
+#### 1. Reliability & Resilience
+
+```python
+# Add retry logic with exponential backoff
+from tenacity import retry, stop_after_attempt, wait_exponential
+
+@retry(
+    stop=stop_after_attempt(3),
+    wait=wait_exponential(multiplier=1, min=4, max=10)
+)
+def search_policies_with_retry(query, store_name):
+    """Search with automatic retries on transient failures."""
+    return search_policies(query, store_name)
+
+# Add circuit breaker for graceful degradation
+from circuitbreaker import circuit
+
+@circuit(failure_threshold=5, recovery_timeout=60)
+def search_with_circuit_breaker(query, store_name):
+    """Fail fast if File Search is consistently unavailable."""
+    return search_policies_with_retry(query, store_name)
+```
+
+#### 2. Rate Limiting & Quotas
+
+```python
+# Implement rate limiting to avoid API quota issues
+from ratelimit import limits, sleep_and_retry
+
+@sleep_and_retry
+@limits(calls=60, period=60)  # 60 queries per minute
+def search_with_rate_limit(query, store_name):
+    """Rate-limited search to stay within API quotas."""
+    return search_with_circuit_breaker(query, store_name)
+```
+
+#### 3. Monitoring & Observability
+
+```python
+# Add structured logging with correlation IDs
+import structlog
+import uuid
+
+logger = structlog.get_logger()
+
+def search_with_monitoring(query, store_name, user_id=None):
+    """Search with comprehensive monitoring."""
+    correlation_id = str(uuid.uuid4())
+    
+    logger.info(
+        "search_started",
+        correlation_id=correlation_id,
+        query=query[:100],  # Truncate for privacy
+        store=store_name,
+        user_id=user_id
+    )
+    
+    try:
+        start_time = time.time()
+        result = search_with_rate_limit(query, store_name)
+        duration = time.time() - start_time
+        
+        logger.info(
+            "search_completed",
+            correlation_id=correlation_id,
+            duration_ms=duration * 1000,
+            citations=len(result.get("citations", []))
+        )
+        
+        return result
+    except Exception as e:
+        logger.error(
+            "search_failed",
+            correlation_id=correlation_id,
+            error=str(e),
+            error_type=type(e).__name__
+        )
+        raise
+```
+
+#### 4. Authentication & Authorization
+
+```python
+# Add proper access control
+def search_with_auth(query, store_name, user, session):
+    """Verify user has access to the store before searching."""
+    if not user.has_permission(f"read:{store_name}"):
+        raise PermissionError(f"User {user.id} cannot access {store_name}")
+    
+    # Log access for audit
+    audit_log.record(
+        action="search",
+        user=user.id,
+        store=store_name,
+        timestamp=datetime.utcnow()
+    )
+    
+    return search_with_monitoring(query, store_name, user.id)
+```
+
+#### 5. Cost Monitoring
+
+```python
+# Track API usage and costs
+def search_with_cost_tracking(query, store_name, user):
+    """Track costs per query for budgeting."""
+    result = search_with_auth(query, store_name, user)
+    
+    # Estimate cost based on token usage
+    estimated_cost = calculate_cost(result)
+    cost_tracker.record(
+        store=store_name,
+        user=user.id,
+        cost_usd=estimated_cost,
+        timestamp=datetime.utcnow()
+    )
+    
+    return result
+```
+
 ### Cost Breakdown (Year 1)
 
 ```text
-Setup & Development:      $1,000-2,000  (2-3 dev days)
-Document Indexing:        $37.50        (one-time, 1 GB of policies)
-Query Costs:              $3-5/month    (1,000 queries/month)
+Setup & Development:      $2,000-3,000  (3-5 dev days)
+Document Indexing:        $37           (one-time, 1 GB of policies)
+Query Costs:              $3-10/month   (1,000 queries/month)
 Storage:                  FREE          (persistent, unlimited)
 ────────────────────────────────────────────────────────────
-Total Year 1:             ~$4,000-5,000
-Annual Savings:           $62,500-125,000
-ROI:                      1,250%-3,000%
+Total Year 1:             ~$2,500-3,500
+Annual Savings:           $9,000-12,000
+Net Benefit Year 1:       $5,500-9,500
+ROI:                      165-270%
+Payback Period:           3-5 months
 ```
 
 **Pricing verified against [official Gemini API documentation](https://ai.google.dev/pricing)**
@@ -685,6 +850,34 @@ pytest tests/test_core.py::TestFileSearchIntegration -v
 - Rapidly changing content (< 1 hour updates)
 - Exact keyword matching (use full-text search)
 
+### File Search Limitations & Alternatives
+
+**Understanding the Trade-offs**:
+
+| Limitation | Impact | Workaround |
+|------------|--------|------------|
+| **No custom embeddings** | Can't fine-tune for domain-specific terms | Use metadata filtering + good document structure |
+| **No control over chunking** | May split content awkwardly | Write documents with clear section boundaries |
+| **20 GB store limit** | Large document sets need multiple stores | Organize by department/topic in separate stores |
+| **Citation granularity** | Citations are chunk-level, not sentence-level | Structure documents with clear headers |
+| **Cost at scale** | $0.15/1M tokens adds up | Cache frequent queries, use metadata to narrow search |
+
+**When Traditional RAG Might Be Better**:
+
+- **Highly specialized domain**: Medical/legal jargon requiring custom embeddings
+- **Hybrid search needs**: Combining semantic + keyword + metadata complex filters
+- **Sub-second latency**: Vector DBs on dedicated hardware are faster
+- **100+ GB corpus**: File Search has 20 GB/store limit
+- **Custom re-ranking**: Need business-logic-driven result ordering
+
+**Simple Alternatives to Consider**:
+
+1. **SQLite Full-Text Search**: For < 10K documents, FTS5 is fast and free
+2. **Elasticsearch**: If you already run it, adding semantic search is straightforward
+3. **PostgreSQL pgvector**: If your data is in Postgres, pgvector is convenient
+
+**Bottom Line**: File Search is the **simplest** option for 80% of RAG use cases. Use alternatives when you need specific advanced features or have existing infrastructure.
+
 ### Business Impact
 
 **For a mid-sized company (500-1000 employees):**
@@ -722,16 +915,18 @@ pytest tests/test_core.py::TestFileSearchIntegration -v
 
 ## Summary
 
-**Tutorial 37** teaches you to build production-ready RAG systems using Gemini's native File Search:
+**Tutorial 37** teaches you to build a production-starter RAG system using Gemini's native File Search:
 
-✅ **Simple**: 3 steps vs 8+ (traditional RAG)  
-✅ **Cheap**: $4K vs $10K+ implementation  
-✅ **Fast**: 1-2 hours vs 2-3 weeks setup  
+✅ **Simpler**: 3 API calls vs complex vector DB setup  
+✅ **Lower Cost**: $2.5K-3.5K vs $4K-6K implementation  
+✅ **Faster**: 1-2 days vs 1-2 weeks setup  
 ✅ **Powerful**: Automatic citations, semantic search, multi-store support  
-✅ **Production-Ready**: Error handling, logging, audit trails, comprehensive tests
+✅ **Solid Foundation**: Clean code, error handling, audit trails, extensible design
 
-**Real business value**: $150K-$200K annual savings, 10-day payback period, 3000%+ ROI.
+**Realistic business value**: $9K-$12K annual savings, 165-270% ROI, 3-5 month payback.
 
-File Search gives you **enterprise-grade RAG at 1/50th the cost** of traditional solutions. No vector databases, no complex pipelines, just clean, simple, powerful semantic search.
+File Search gives you **simpler, cheaper RAG** (~3-5x cost reduction vs traditional vector databases). No vector database operations, automatic citation extraction, and Google-managed infrastructure.
+
+**What you learn**: Core File Search integration, document organization, metadata filtering, and a solid foundation to extend with production features (retry logic, monitoring, rate limiting).
 
 <Comments />
