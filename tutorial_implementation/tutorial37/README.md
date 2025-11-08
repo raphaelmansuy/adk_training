@@ -10,6 +10,8 @@
 
 This tutorial implements a **production-ready multi-agent system** for managing, searching, and analyzing company policies using **Google's Gemini File Search API** for native Retrieval Augmented Generation (RAG).
 
+**📖 Full Tutorial**: [Tutorial 37: Native RAG with File Search](https://github.com/raphaelmansuy/adk_training/tree/main/docs/docs/37_file_search_policy_navigator.md)
+
 ### Business Value
 
 - **$150K-$200K annual savings** for mid-sized companies
@@ -449,6 +451,7 @@ Licensed under Apache License 2.0 - see LICENSE file
 
 ## 🎓 Learning Resources
 
+- **[Tutorial 37 Documentation](https://github.com/raphaelmansuy/adk_training/tree/main/docs/docs/37_file_search_policy_navigator.md)** - Complete tutorial with WHY→WHAT→HOW structure
 - [Google ADK Documentation](https://github.com/google/adk-python)
 - [Gemini File Search API](https://ai.google.dev/gemini-api/docs/file-search)
 - [Tutorial Series](https://github.com/raphaelmansuy/adk_training)
@@ -456,11 +459,12 @@ Licensed under Apache License 2.0 - see LICENSE file
 ## 🚀 Next Steps
 
 1. ✅ Complete quick start above
-2. Run demos to see features
-3. Adapt sample policies to your organization
-4. Deploy to production (see deployment guide)
-5. Integrate with Slack/Teams (see tutorial 33)
-6. Monitor usage and iterate
+2. **Read the full tutorial**: [Tutorial 37 Documentation](https://github.com/raphaelmansuy/adk_training/tree/main/docs/docs/37_file_search_policy_navigator.md)
+3. Run demos to see all features
+4. Adapt sample policies to your organization
+5. Deploy to production (see deployment guide)
+6. Integrate with Slack/Teams (see tutorial 33)
+7. Monitor usage and iterate
 
 ## 📞 Support
 

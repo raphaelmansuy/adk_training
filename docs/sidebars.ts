@@ -101,6 +101,7 @@ const sidebars: SidebarsConfig = {
       description: 'Complete, production-ready applications demonstrating ADK patterns',
       items: [
         'commerce_agent_e2e',
+        'file_search_policy_navigator',
       ],
     },
     {
