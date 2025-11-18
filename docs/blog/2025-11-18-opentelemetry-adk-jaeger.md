@@ -1,6 +1,6 @@
 ---
 title: "Observing ADK Agents: OpenTelemetry Tracing with Jaeger"
-authors: [adk_team]
+authors: [adk-team]
 tags: [adk, opentelemetry, jaeger, observability, tracing, debugging]
 ---
 
