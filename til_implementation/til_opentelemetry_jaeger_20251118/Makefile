@@ -47,7 +47,12 @@ demo:
 
 web:
 	@echo "$(BOLD)🌐 Starting web UI at http://localhost:8000$(RESET)"
+	@echo "$(BOLD)📊 With OTEL traces exported to Jaeger at http://localhost:16686$(RESET)"
 	@echo ""
+	OTEL_SERVICE_NAME=google-adk-math-agent \
+	OTEL_EXPORTER_OTLP_ENDPOINT=http://localhost:4318 \
+	OTEL_EXPORTER_OTLP_PROTOCOL=http/protobuf \
+	OTEL_INSTRUMENTATION_GENAI_CAPTURE_MESSAGE_CONTENT=true \
 	adk web .
 
 jaeger-up:

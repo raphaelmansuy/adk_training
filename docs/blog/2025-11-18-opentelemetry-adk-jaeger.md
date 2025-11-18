@@ -20,6 +20,8 @@ understand one crucial gotcha.
 This post shows you the complete picture: what to do, why it matters,
 and the one thing that trips up most developers.
 
+![Jaeger UI showing traces from an ADK agent](./assets//adk-oltp.gif)
+
 <!--truncate-->
 
 ## The Problem We're Solving

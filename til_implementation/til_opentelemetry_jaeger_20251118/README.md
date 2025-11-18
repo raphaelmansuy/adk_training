@@ -1,65 +1,89 @@
-# OpenTelemetry + ADK + Jaeger Tutorial
+# OpenTelemetry + ADK + Jaeger
 
-**Complete example of distributed tracing with Google's Agent Development Kit (ADK), OpenTelemetry instrumentation, and Jaeger visualization.**
+Distributed tracing for AI agents using Google ADK, OpenTelemetry, and Jaeger visualization.
 
-This tutorial demonstrates how to:
+## What is Jaeger?
 
-1. Build a simple AI agent using ADK
-2. Configure OpenTelemetry to export traces to Jaeger
-3. Visualize agent execution flow, LLM calls, and tool execution in Jaeger UI
-4. Debug and observe multi-step agent reasoning
+Jaeger is an open-source distributed tracing system that visualizes agent execution flow:
 
-## Quick Start
+```
+Your Agent        Jaeger Backend       Jaeger UI
+┌─────────┐      ┌──────────────┐    ┌──────────────┐
+│ ADK     │ OTLP │ Span         │    │ Interactive  │
+│ Agent   ├─────>│ Collector    │    │ Trace View   │
+│ Running │      │ (Docker)     │    │ Flamegraph   │
+└─────────┘      └──────────────┘    │ Latency      │
+                                     │ Dependencies │
+                                     └──────────────┘
+                                      http://localhost:16686
+```
 
-### Prerequisites
+**Why Jaeger matters**: Debug agent behavior, find bottlenecks, and verify LLM calls in one place.
 
-- Python 3.10+
-- Docker (for running Jaeger)
-- Google API key (for Gemini models)
+## Quick Start (3 Steps)
 
-### Setup
+### 1. Setup
 
 ```bash
-# Clone and navigate to tutorial
-cd til_opentelemetry_jaeger_20251118
-
-# Install dependencies
 make setup
-
-# Copy environment template
-cp .env.example .env
-# Edit .env and add your GOOGLE_GENAI_API_KEY
+cp .env.example .env  # Add your GOOGLE_GENAI_API_KEY
 ```
 
-### Run Jaeger (Local Docker)
+### 2. Start Jaeger
 
 ```bash
-docker run -d --name jaeger \
-  -e COLLECTOR_OTLP_ENABLED=true \
-  -p 16686:16686 \
-  -p 4317:4317 \
-  -p 4318:4318 \
-  jaegertracing/all-in-one:latest
+make jaeger-up  # Opens UI at http://localhost:16686
 ```
 
-Open Jaeger UI: http://localhost:16686
-
-### Run the Agent
+### 3. Run Agent
 
 ```bash
-# Run demo with sample queries
-make demo
-
-# Or run with Python directly
-python -m math_agent.agent
+make demo          # Demo script with sample queries
+# OR
+make web           # Interactive web UI at http://localhost:8000
 ```
 
-### View Traces in Jaeger
+View traces: Select `google-adk-math-agent` service in Jaeger and click "Find Traces".
 
-1. Go to http://localhost:16686
-2. Select service: `google-adk-math-agent`
-3. Click "Find Traces"
-4. Click any trace to see hierarchical span details
+## How It Works
+
+```
+┌──────────────────────────────────────────────────────┐
+│ You Ask Agent a Question                             │
+└────────────┬─────────────────────────────────────────┘
+             │
+             ▼
+┌──────────────────────────────────────────────────────┐
+│ Agent Runs (ADK + Gemini)                            │
+│  • Plans response                                    │
+│  • Calls math tools (add, multiply, etc.)            │
+│  • Gets results                                      │
+│  • Formats final answer                              │
+└────────────┬─────────────────────────────────────────┘
+             │
+             ▼ (OpenTelemetry)
+┌──────────────────────────────────────────────────────┐
+│ Export Traces (OTLP HTTP)                            │
+│  • Span: invoke_agent (2.5s)                         │
+│  • Span: call_llm (1.2s)                             │
+│  • Span: execute_tool (0.1s)                         │
+└────────────┬─────────────────────────────────────────┘
+             │
+             ▼
+┌──────────────────────────────────────────────────────┐
+│ Jaeger Receives Traces (localhost:4318)              │
+│  • Stores in backend                                 │
+│  • Indexes by service & time                         │
+└────────────┬─────────────────────────────────────────┘
+             │
+             ▼
+┌──────────────────────────────────────────────────────┐
+│ View in Jaeger UI (localhost:16686)                  │
+│  • Flame graph visualization                         │
+│  • Find bottlenecks                                  │
+│  • Debug failures                                    │
+└──────────────────────────────────────────────────────┘
+```
 
 ## Project Structure
 
@@ -82,22 +106,114 @@ til_opentelemetry_jaeger_20251118/
 
 ## Key Concepts
 
-### OpenTelemetry Initialization
+### OpenTelemetry with ADK: Two Approaches
 
-The `otel_config.py` module handles OTel setup:
+This tutorial demonstrates **both approaches** that work with ADK v1.17.0+:
+
+```
+APPROACH 1: adk web (Recommended)      APPROACH 2: Demo Script
+─────────────────────────────────────  ─────────────────────
+1. Set environment variables           1. Call initialize_otel()
+2. adk web loads agent.py              2. Manually create provider
+3. ADK reads env vars                  3. Add OTLP exporter
+4. ADK creates TracerProvider          4. Set as global provider
+5. Your code inherits it ✓             5. Run agent ✓
+   (No conflicts!)                        (Full control!)
+```
+
+#### ✅ Approach 1: Environment Variables (Recommended for `adk web`)
+
+Let ADK's built-in OpenTelemetry support handle everything:
+
+```bash
+# Set environment variables
+export OTEL_SERVICE_NAME=google-adk-math-agent
+export OTEL_EXPORTER_OTLP_ENDPOINT=http://localhost:4318
+export OTEL_EXPORTER_OTLP_PROTOCOL=http/protobuf
+export OTEL_INSTRUMENTATION_GENAI_CAPTURE_MESSAGE_CONTENT=true
+
+# Run adk web - ADK automatically configures OTel
+adk web .
+```
+
+**Why this works with `adk web`**:
+
+- ADK initializes its own TracerProvider before loading agents
+- We can't override it once set (OpenTelemetry limitation)
+- Solution: Set environment variables and let ADK use them
+- The `Makefile` does this automatically: `make web`
+
+**In your agent code**:
+
+```python
+from math_agent.otel_config import initialize_otel_env
+
+# Just configure env vars - ADK does the rest
+initialize_otel_env(
+    service_name="google-adk-math-agent",
+    jaeger_endpoint="http://localhost:4318/v1/traces",
+)
+```
+
+#### ✅ Approach 2: Manual Setup (For Standalone Demo)
+
+Manually initialize TracerProvider in your code:
 
 ```python
 from math_agent.otel_config import initialize_otel
 
-# Must be called BEFORE importing ADK
-initialize_otel(
+# Full manual control - works for demo scripts
+tracer_provider, logger_provider = initialize_otel(
     service_name="google-adk-math-agent",
-    service_version="0.1.0",
     jaeger_endpoint="http://localhost:4318/v1/traces"
 )
 ```
 
-**Important**: OTel initialization must happen before any ADK imports, or early spans will be missed.
+**Why this works for demo**:
+
+- You control initialization order completely
+- TracerProvider is set BEFORE ADK imports happen
+- No conflict with ADK's provider
+
+**When to use**:
+
+- Standalone scripts (`python -m math_agent.agent`)
+- Detailed control over span processors
+- Need custom sampling or exporters
+
+### Important: The TracerProvider Conflict
+
+⚠️ **Key Learning**: OpenTelemetry only allows ONE global TracerProvider per process.
+
+When using `adk web`:
+
+1. ADK FastAPI server starts first
+2. ADK automatically initializes a TracerProvider
+3. If your agent code tries to set another one → warning → ignored
+4. Your custom Jaeger exporter never gets attached!
+
+**Solution**: Use environment variables (Approach 1). ADK reads them and
+configures everything correctly.
+
+### Code Organization
+
+The `otel_config.py` module provides both approaches:
+
+```python
+# Recommended for adk web - just sets env vars
+from math_agent.otel_config import initialize_otel_env
+initialize_otel_env()
+
+# OR detailed control - for standalone scripts
+from math_agent.otel_config import initialize_otel
+tracer_provider, logger_provider = initialize_otel()
+
+# Call after agent runs to flush spans to Jaeger
+from math_agent.otel_config import force_flush
+force_flush()
+```
+
+
 
 ### Math Agent
 
@@ -119,46 +235,35 @@ instrumentation for:
 
 ### Trace Structure in Jaeger
 
-When you run the agent, you'll see traces like:
+When you run the agent, Jaeger captures a complete trace hierarchy:
 
 ```
-Agent.run (root span)
-├── planner (reasoning step)
-├── tool_call: add_numbers (tool execution)
-│   └── function execution (actual computation)
-├── generate_content (Gemini API call)
-│   └── prompt/response (if not redacted)
-└── response generation
+Invocation (root span)
+├─ invoke_agent
+│  ├─ call_llm (user query)
+│  │  └─ 🕐 ~1.5s (Gemini API)
+│  ├─ execute_tool (add_numbers)
+│  │  └─ result: 579
+│  └─ call_llm (final answer)
+│     └─ 🕐 ~2s
+└─ status: SUCCESS ✓
 ```
 
-Each span includes:
-- Execution duration
-- Attributes (tool name, input/output)
-- Status (success/error)
-- Logs and events
+**What you see in Jaeger UI**:
+- Flame graph (span duration visualization)
+- Exact timing for each operation
+- Tool input/output data
+- LLM prompts and responses
+- Error stack traces (if any)
 
 ## Testing
 
-Run the comprehensive test suite:
-
 ```bash
-# Run all tests with coverage
-make test
-
-# Run specific test class
-pytest tests/test_agent.py::TestToolFunctions -v
-
-# Run specific test
-pytest tests/test_agent.py::TestToolFunctions::test_add_numbers_positive -v
+make test                                          # Run all tests with coverage
+pytest tests/test_agent.py::TestToolFunctions -v  # Specific test class
 ```
 
-**Test Coverage**:
-- ✅ 30+ unit tests for math operations
-- ✅ Edge cases (division by zero, large numbers, type mixing)
-- ✅ OTel initialization and configuration
-- ✅ Span processor setup
-- ✅ Tracer creation and usage
-- ✅ Tool documentation validation
+**Coverage**: 42 unit tests covering tool functions, OTel setup, edge cases, and documentation.
 
 ## Configuration
 
@@ -189,186 +294,30 @@ OTEL_SERVICE_VERSION=0.1.0
 initialize_otel(jaeger_endpoint="http://jaeger.company.com:4318/v1/traces")
 ```
 
-## Production Considerations
-
-This tutorial demonstrates the basics. For production:
-
-### Add These Features
-
-1. **Retry Logic**
-   ```python
-   from tenacity import retry, stop_after_attempt, wait_exponential
-   
-   @retry(stop=stop_after_attempt(3), wait=wait_exponential())
-   async def run_agent_with_retries(query):
-       ...
-   ```
-
-2. **Rate Limiting**
-   ```python
-   from ratelimit import limits, RateLimitException
-   
-   @limits(calls=60, period=60)
-   async def run_agent_limited(query):
-       ...
-   ```
-
-3. **Circuit Breaker**
-   ```python
-   from pybreaker import CircuitBreaker
-   
-   breaker = CircuitBreaker(
-       fail_max=5,
-       reset_timeout=60
-   )
-   
-   @breaker
-   async def run_agent_safe(query):
-       ...
-   ```
-
-4. **Structured Logging**
-   ```python
-   import logging
-   import uuid
-   
-   logger = logging.getLogger(__name__)
-   correlation_id = uuid.uuid4()
-   
-   logger.info(
-       "agent_started",
-       extra={
-           "correlation_id": correlation_id,
-           "query": query,
-           "timestamp": datetime.utcnow().isoformat(),
-       }
-   )
-   ```
-
-5. **Cost Tracking**
-   ```python
-   class CostTracker:
-       def __init__(self):
-           self.total_cost = 0.0
-       
-       def record(self, tokens: int, cost_per_1m: float):
-           cost = (tokens / 1_000_000) * cost_per_1m
-           self.total_cost += cost
-           return cost
-   ```
-
-6. **Authentication/Authorization**
-   ```python
-   async def run_agent_secure(user_id: str, query: str):
-       if not user.has_permission(f"agent:math"):
-           raise PermissionError(f"User {user_id} cannot access math agent")
-       ...
-   ```
-
 ## Troubleshooting
 
-### Traces not appearing in Jaeger
+| Issue | Solution |
+|-------|----------|
+| No traces in Jaeger | Check: `docker ps \| grep jaeger` and verify OTEL_EXPORTER_OTLP_ENDPOINT is `http://localhost:4318` |
+| API key error | Set GOOGLE_GENAI_API_KEY in `.env` file |
+| Import errors | Run `make setup` to install all dependencies |
+| Span batching slow | Reduce `schedule_delay_millis` in BatchSpanProcessor or use sampling for high-volume traces |
 
-**Check**:
-1. Jaeger is running: `docker ps | grep jaeger`
-2. OTLP endpoint is correct (default: `http://localhost:4318/v1/traces`)
-3. OTel initialization happens before ADK imports
-4. No errors in agent console output
-
-**Debug**:
-```bash
-# Check Jaeger connectivity
-curl http://localhost:16686/api/services
-
-# Verify OTel configuration
-python -c "
-from math_agent.otel_config import initialize_otel
-import os
-provider = initialize_otel()
-print('OTEL_EXPORTER_OTLP_ENDPOINT:', os.environ.get('OTEL_EXPORTER_OTLP_ENDPOINT'))
-print('Provider:', provider)
-"
-```
-
-### Agent not generating spans
-
-**Check**:
-1. Agent is using correct LLM (gemini-2.5-flash)
-2. Google API key is set and valid
-3. OpenTelemetry SDK is installed: `pip show opentelemetry-sdk`
-4. Exporter is installed: `pip show opentelemetry-exporter-otlp-proto-http`
-
-### Memory/Performance Issues
-
-**Optimization**:
-1. Adjust batch size in `BatchSpanProcessor`:
-   ```python
-   BatchSpanProcessor(
-       exporter,
-       max_queue_size=2048,  # Default: 2048
-       max_export_batch_size=512,  # Default: 512
-       schedule_delay_millis=5000,  # Default: 5000
-   )
-   ```
-
-2. Use sampling to reduce trace volume:
-   ```python
-   from opentelemetry.sdk.trace.sampler import TraceIdRatioBased
-   
-   provider = TracerProvider(
-       sampler=TraceIdRatioBased(0.1),  # Sample 10% of traces
-       resource=resource
-   )
-   ```
-
-## Common Commands
+## Commands
 
 ```bash
-# Setup
-make setup                    # Install dependencies
-
-# Launch ADK Web UI (interactive chat)
-make web                      # Access at http://localhost:8000
-
-# Jaeger Management
-make jaeger-up                # Start Jaeger (Docker required)
-                              # UI at http://localhost:16686
-make jaeger-down              # Stop and remove Jaeger
-make jaeger-status            # Check if Jaeger is running
-
-# Development
-make demo                     # Run demo with sample queries
-
-# Testing
-make test                     # Run all tests with coverage
-
-# Cleanup
-make clean                    # Remove cache and artifacts
-
-# Help
-make help                     # Show all commands with descriptions
+make setup          # Install dependencies
+make jaeger-up      # Start Jaeger container (http://localhost:16686)
+make jaeger-down    # Stop Jaeger
+make demo           # Run demo script
+make web            # Start ADK web UI (http://localhost:8000)
+make test           # Run all tests
+make clean          # Remove cache files
+make help           # Show all commands
 ```
 
-## Learning Resources
+## Resources
 
 - [ADK Documentation](https://github.com/google/adk-python)
-- [OpenTelemetry Python Docs](https://opentelemetry.io/docs/instrumentation/python/)
-- [Jaeger UI Guide](https://www.jaegertracing.io/docs/latest/frontend-ui/)
-- [OTLP Specification](https://opentelemetry.io/docs/specs/otel/protocol/)
-
-## Blog Post
-
-This tutorial is documented in the blog post:
-[Using OpenTelemetry with Google ADK AI Agents and Visualizing Traces in Jaeger](../../../docs/blog/2025-11-18-opentelemetry-adk-jaeger.md)
-
-## License
-
-MIT License - See LICENSE file
-
-## Support
-
-For issues or questions:
-1. Check troubleshooting section above
-2. Review ADK documentation: https://github.com/google/adk-python
-3. Check OpenTelemetry docs: https://opentelemetry.io
-4. Review Jaeger docs: https://www.jaegertracing.io
+- [OpenTelemetry Instrumentation](https://opentelemetry.io/docs/instrumentation/python/)
+- [Jaeger UI Guide](https://www.jaegertracing.io/docs/)

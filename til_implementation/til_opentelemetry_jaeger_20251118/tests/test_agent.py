@@ -118,11 +118,12 @@ class TestOpenTelemetryInitialization:
         """Test OTel initialization with custom service name."""
         try:
             from math_agent.otel_config import initialize_otel
-            provider = initialize_otel(service_name="custom-service")
-            assert provider is not None
+            tracer_provider, logger_provider = initialize_otel(service_name="custom-service", force_reinit=True)
+            assert tracer_provider is not None
             # Verify resource attributes
-            resource = provider.resource
-            assert resource.attributes.get("service.name") == "custom-service"
+            resource = tracer_provider.resource
+            assert "service.name" in resource.attributes
+            assert resource.attributes["service.name"] == "custom-service"
         except ImportError:
             pytest.skip("OpenTelemetry not available in test environment")
 
@@ -130,10 +131,11 @@ class TestOpenTelemetryInitialization:
         """Test OTel initialization with custom version."""
         try:
             from math_agent.otel_config import initialize_otel
-            provider = initialize_otel(service_version="1.0.0")
-            assert provider is not None
-            resource = provider.resource
-            assert resource.attributes.get("service.version") == "1.0.0"
+            tracer_provider, logger_provider = initialize_otel(service_version="1.0.0", force_reinit=True)
+            assert tracer_provider is not None
+            resource = tracer_provider.resource
+            assert "service.version" in resource.attributes
+            assert resource.attributes["service.version"] == "1.0.0"
         except ImportError:
             pytest.skip("OpenTelemetry not available in test environment")
 
@@ -141,10 +143,11 @@ class TestOpenTelemetryInitialization:
         """Test OTel initialization with custom Jaeger endpoint."""
         try:
             from math_agent.otel_config import initialize_otel
-            provider = initialize_otel(
-                jaeger_endpoint="http://jaeger.example.com:4318/v1/traces"
+            tracer_provider, logger_provider = initialize_otel(
+                jaeger_endpoint="http://jaeger.example.com:4318/v1/traces",
+                force_reinit=True
             )
-            assert provider is not None
+            assert tracer_provider is not None
         except ImportError:
             pytest.skip("OpenTelemetry not available in test environment")
 
@@ -153,7 +156,7 @@ class TestOpenTelemetryInitialization:
         try:
             from math_agent.otel_config import initialize_otel
             import os
-            provider = initialize_otel()
+            tracer_provider, logger_provider = initialize_otel()
             assert os.environ.get("OTEL_EXPORTER_OTLP_PROTOCOL") == "http/protobuf"
             assert "OTEL_EXPORTER_OTLP_ENDPOINT" in os.environ
             assert "service.name" in os.environ.get("OTEL_RESOURCE_ATTRIBUTES", "")
@@ -164,8 +167,8 @@ class TestOpenTelemetryInitialization:
         """Test that OTel resource has correct attributes."""
         try:
             from math_agent.otel_config import initialize_otel
-            provider = initialize_otel()
-            resource = provider.resource
+            tracer_provider, logger_provider = initialize_otel()
+            resource = tracer_provider.resource
             assert "service.name" in resource.attributes
             assert "service.version" in resource.attributes
             assert resource.attributes["service.name"] == "google-adk-math-agent"
@@ -177,10 +180,10 @@ class TestOpenTelemetryInitialization:
         """Test that initialize_otel can be called multiple times safely."""
         try:
             from math_agent.otel_config import initialize_otel
-            provider1 = initialize_otel()
-            provider2 = initialize_otel()
-            assert provider1 is not None
-            assert provider2 is not None
+            tracer_provider1, logger_provider1 = initialize_otel()
+            tracer_provider2, logger_provider2 = initialize_otel()
+            assert tracer_provider1 is not None
+            assert tracer_provider2 is not None
         except ImportError:
             pytest.skip("OpenTelemetry not available in test environment")
 
@@ -192,11 +195,11 @@ class TestOTelConfigIntegration:
         """Test that span processors are properly configured."""
         try:
             from math_agent.otel_config import initialize_otel
-            provider = initialize_otel()
+            tracer_provider, logger_provider = initialize_otel()
             # Verify that provider is properly initialized
-            assert provider is not None
+            assert tracer_provider is not None
             # Verify resource is set
-            assert provider.resource is not None
+            assert tracer_provider.resource is not None
         except ImportError:
             pytest.skip("OpenTelemetry not available in test environment")
 
@@ -206,8 +209,8 @@ class TestOTelConfigIntegration:
             from opentelemetry import trace
             from math_agent.otel_config import initialize_otel
 
-            provider = initialize_otel()
-            trace.set_tracer_provider(provider)
+            tracer_provider, logger_provider = initialize_otel()
+            trace.set_tracer_provider(tracer_provider)
             tracer = trace.get_tracer(__name__)
             assert tracer is not None
         except ImportError:
@@ -219,8 +222,8 @@ class TestOTelConfigIntegration:
             from opentelemetry import trace
             from math_agent.otel_config import initialize_otel
 
-            provider = initialize_otel()
-            trace.set_tracer_provider(provider)
+            tracer_provider, logger_provider = initialize_otel()
+            trace.set_tracer_provider(tracer_provider)
             tracer = trace.get_tracer(__name__)
 
             with tracer.start_as_current_span("test_span") as span:
