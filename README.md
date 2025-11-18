@@ -228,6 +228,18 @@ Understand the critical differences between standard AI APIs and enterprise-grad
 **Time**: 25-30 minutes
 **Read**: [Gemini Enterprise Guide →](https://raphaelmansuy.github.io/adk_training/blog/gemini-enterprise-vs-agent-engine)
 
+---
+
+#### 🔍 Observing ADK Agents: OpenTelemetry Tracing with Jaeger (November 18, 2025)
+
+Instrument ADK agents with OpenTelemetry and export traces to Jaeger for full
+distributed observability. This short post covers quickstart steps (Docker
+Jaeger), explains the critical TracerProvider conflict when using `adk web`,
+and shows both environment-variable and manual initialization approaches.
+
+**Time**: 5-10 minutes
+**Read**: [OpenTelemetry + ADK + Jaeger Tutorial →](https://raphaelmansuy.github.io/adk_training/blog/2025-11-18-opentelemetry-adk-jaeger)
+
 **Perfect for**: Architects evaluating enterprise agent platforms, teams planning production deployments, developers understanding Google's agent ecosystem.
 
 ---
@@ -263,6 +275,7 @@ extended user interactions.
 Want to create your own TIL? See our comprehensive guide:
 
 - [TIL Template & Guidelines →](./docs/til/TIL_TEMPLATE.md)
+ - [TIL: Registering Custom Session Services (Oct 23, 2025) →](./docs/til/til_custom_session_services_20251023)
 - **New TIL every week** - Stay current with ADK features
 - **Your submissions welcome** - Contribute your own TILs
 
