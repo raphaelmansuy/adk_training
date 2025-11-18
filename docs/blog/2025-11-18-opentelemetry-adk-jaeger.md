@@ -197,26 +197,161 @@ This is invaluable for debugging:
 - "Why is my system slow?" → Flame graph shows the bottleneck
 - "Did the tool actually run?" → See the span execution timing
 
-## Two Approaches at a Glance
+## Production: Google Cloud Trace
 
-| Scenario | Approach | Code |
-|----------|----------|------|
-| Using `adk web` | Environment variables | `os.environ["OTEL_..."]` |
-| Standalone script | Manual setup | `trace.set_tracer_provider()` |
-| Need custom sampling | Manual setup | Control `TracerProvider` directly |
-| Local development | Either | Both work equally well |
+When running ADK on **Google Cloud**, you can export traces directly to
+**Google Cloud Trace** (part of Google Cloud Observability). This is the
+recommended approach for production deployments.
+
+### Why Google Cloud Trace?
+
+- **Native Integration**: No third-party infrastructure needed
+- **Same OpenTelemetry**: Uses the same OTLP protocol as Jaeger
+- **Integrated Dashboard**: View traces alongside logs and metrics in Cloud Console
+- **Cost Effective**: Pay only for what you use, with free tier available
+- **Enterprise Ready**: IAM controls, audit logging, compliance features
+
+### Setup for Google Cloud Trace
+
+First, enable the required APIs:
+
+```bash
+gcloud services enable \
+  aiplatform.googleapis.com \
+  telemetry.googleapis.com \
+  cloudtrace.googleapis.com \
+  logging.googleapis.com \
+  monitoring.googleapis.com
+```
+
+Install the Google Cloud exporters:
+
+```bash
+pip install google-adk \
+  opentelemetry-sdk \
+  opentelemetry-exporter-otlp-proto-grpc \
+  opentelemetry-exporter-gcp-logging \
+  opentelemetry-exporter-gcp-monitoring \
+  opentelemetry-instrumentation-google-genai \
+  opentelemetry-instrumentation-vertexai
+```
+
+Configure in your agent initialization (with `adk web` or standalone):
+
+```python
+import os
+from google.auth import default
+from opentelemetry.sdk.trace import TracerProvider
+from opentelemetry.sdk.trace.export import BatchSpanProcessor
+from opentelemetry.exporter.otlp.proto.grpc.trace_exporter import OTLPSpanExporter
+from opentelemetry.sdk.resources import Resource
+from opentelemetry import trace
+
+# Get your Google Cloud project ID
+credentials, project_id = default()
+
+# Create resource with project metadata
+resource = Resource.create(
+    attributes={
+        "service.name": "adk-agent",
+        "gcp.project_id": project_id,
+    }
+)
+
+# Configure OTLP exporter for Google Cloud Trace
+provider = TracerProvider(resource=resource)
+otlp_exporter = OTLPSpanExporter(
+    endpoint="telemetry.googleapis.com:443",
+    credentials=credentials,
+)
+provider.add_span_processor(BatchSpanProcessor(otlp_exporter))
+trace.set_tracer_provider(provider)
+
+# Now initialize your ADK agent
+from google.adk.agents import Agent
+# ... rest of your agent code ...
+```
+
+Or use environment variables with `adk web`:
+
+```bash
+export OTEL_SERVICE_NAME=adk-agent
+export OTEL_EXPORTER_OTLP_ENDPOINT=https://telemetry.googleapis.com:443
+export OTEL_EXPORTER_OTLP_PROTOCOL=grpc
+export GOOGLE_CLOUD_PROJECT=$PROJECT_ID
+
+adk web .
+```
+
+### View Traces in Google Cloud Console
+
+```bash
+# Open Cloud Trace UI directly
+gcloud compute ssh --zone=us-central1-a instance-name -- \
+  'curl http://localhost:8080' &
+
+# Or navigate to Cloud Console:
+# https://console.cloud.google.com/traces/
+```
+
+In the Cloud Trace Explorer:
+
+1. Select your service name (`adk-agent`)
+2. Filter by span name: `call_llm`, `execute_tool`, etc.
+3. View traces with microsecond precision
+4. Click "GenAI" tab to see LLM events, tool calls, and reasoning
+
+### Access Control
+
+Grant these IAM roles to users who need to view traces:
+
+```bash
+# For viewing traces
+gcloud projects add-iam-policy-binding $PROJECT_ID \
+  --member=user:EMAIL \
+  --role=roles/cloudtrace.user
+
+# For writing traces (service account)
+gcloud projects add-iam-policy-binding $PROJECT_ID \
+  --member=serviceAccount:SA_EMAIL \
+  --role=roles/telemetry.tracesWriter
+```
+
+For complete details, see the official
+[ADK OpenTelemetry Instrumentation Guide](https://docs.cloud.google.com/stackdriver/docs/instrumentation/ai-agent-adk).
+
+## Deployment Options: Local vs Cloud
+
+| Scenario | Backend | Setup |
+|----------|---------|-------|
+| Local dev with `adk web` | Jaeger | Env vars |
+| Standalone script | Jaeger | Manual setup |
+| Production (Google Cloud) | Cloud Trace | Env vars |
+| Custom sampling | Jaeger | Manual |
 
 ## Common Issues
 
 **Q: Traces not appearing in Jaeger?**  
-A: Check Jaeger is running (`docker ps`), and verify `OTEL_EXPORTER_OTLP_ENDPOINT=http://localhost:4318`
+A: Check Jaeger is running (`docker ps`), and verify
+`OTEL_EXPORTER_OTLP_ENDPOINT=http://localhost:4318`
 
 **Q: I see warnings about "Overriding TracerProvider"?**  
-A: You're using manual setup with `adk web`. Switch to environment variables instead.
+A: You're using manual setup with `adk web`. Switch to environment
+variables instead.
+
+**Q: Traces not appearing in Google Cloud Trace?**  
+A: Verify your service account has `roles/telemetry.tracesWriter`.
+Check that the `GOOGLE_APPLICATION_CREDENTIALS` environment variable
+points to a valid service account JSON file.
+
+**Q: "Permission denied" error with Google Cloud Trace?**  
+A: Ensure Telemetry API is enabled:
+`gcloud services enable telemetry.googleapis.com`. Also verify the
+service account has the correct IAM role.
 
 **Q: Can I use this in production?**  
-A: Yes. Export to Google Cloud Trace, Honeycomb, Datadog, or any
-OTLP-compatible backend by changing the endpoint.
+A: Yes. Export to Google Cloud Trace (recommended for GCP), Honeycomb,
+Datadog, or any OTLP-compatible backend by changing the endpoint.
 
 ## The Real Tutorial
 
