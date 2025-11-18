@@ -223,7 +223,7 @@ OTLP-compatible backend by changing the endpoint.
 This blog post is the high-level "why." For the complete working
 example with tests, see:
 
-📚 **[OpenTelemetry + ADK + Jaeger Tutorial](https://github.com/google/adk-python/tree/main/til_opentelemetry_jaeger_20251118)**
+📚 **[OpenTelemetry + ADK + Jaeger Tutorial](https://github.com/raphaelmansuy/adk_training/tree/main/til_implementation/til_opentelemetry_jaeger_20251118)**
 
 - 42 unit tests
 - Both approaches demonstrated
