@@ -1,145 +1,240 @@
 ---
-title: "Using OpenTelemetry with Google ADK AI Agents and Visualizing Traces in Jaeger"
+title: "Observing ADK Agents: OpenTelemetry Tracing with Jaeger"
 authors: [adk_team]
-tags: [adk, opentelemetry, observability, jaeger, tracing, agents]
+tags: [adk, opentelemetry, jaeger, observability, tracing, debugging]
 ---
 
-Google's **Agent Development Kit (ADK)** is an open-source Python framework for building sophisticated AI agents and multi-agent systems. It is powered by Gemini models by default but is model-agnostic. ADK has **built-in OpenTelemetry (OTel) instrumentation** that automatically creates traces for key agent actions: LLM calls, tool executions, planning steps, agent runs, etc.
+You build an AI agent with Google ADK. It works. But when you ask
+**"Why did the agent choose that tool?"** or **"Which LLM call took
+5 seconds?"** – you're flying blind.
 
-This makes it extremely easy to observe the internal reasoning flow of your agents (e.g., why a tool was called, what prompt was sent to the model, latencies).
+Enter **distributed tracing**: Jaeger visualizes every step your agent
+takes, from reasoning to tool execution to LLM calls. ADK has
+**built-in OpenTelemetry support**, making this a breeze... once you
+understand one crucial gotcha.
 
-By default, when running locally, traces are only in-memory (visible in console or ADK's dev UI). To persist and visualize them in tools like **Jaeger**, you just need to configure an OTLP exporter.
-
-This tutorial shows a complete end-to-end example:
-
-1. Install ADK and dependencies
-2. Build a simple AI agent with tools
-3. Run Jaeger (all-in-one) with Docker
-4. Configure OpenTelemetry to export traces to Jaeger via OTLP
-5. Run the agent and view beautiful hierarchical traces in Jaeger UI
+This post shows you the complete picture: what to do, why it matters,
+and the one thing that trips up most developers.
 
 <!--truncate-->
 
-## Step 1: Install ADK and OpenTelemetry Packages
+## The Problem We're Solving
 
-```bash
-pip install google-adk[all]  # or git+https://github.com/google/adk-python.git for latest
-pip install opentelemetry-sdk opentelemetry-exporter-otlp-proto-http
+Your agent runs. But where does the time go?
+
+```text
+Input: "What is 123 + 456?"
+│
+├─ Agent reasoning (planning which tool)    ⏱️ 0.5s
+├─ LLM call to Gemini                       ⏱️ 1.2s
+├─ Tool execution (add_numbers)             ⏱️ 0.1s
+├─ Final response generation                ⏱️ 0.8s
+│
+Output: "579"
 ```
 
-> Note: ADK already depends on `opentelemetry-api`, so you only need the SDK and exporter.
+Without tracing, you never see this breakdown. With Jaeger, you get a
+flame graph showing every millisecond.
 
-You also need a Google AI API key (for Gemini):
+## Quick Start: 5 Minutes
+
+### 1. Start Jaeger (Docker)
 
 ```bash
-export GOOGLE_GENAI_API_KEY=your-key-here
-# or use google-auth for GCP
+docker run -d --name jaeger \
+  -e COLLECTOR_OTLP_ENABLED=true \
+  -p 16686:16686 -p 4318:4318 \
+  jaegertracing/all-in-one:latest
 ```
 
-## Step 2: Create a Simple ADK Agent
+### 2. Install Dependencies
 
-Create a file `math_agent.py`:
+```bash
+pip install google-adk opentelemetry-sdk \
+  opentelemetry-exporter-otlp-proto-http
+```
+
+### 3. Copy the Tutorial
+
+```bash
+cd til_opentelemetry_jaeger_20251118
+make setup
+cp .env.example .env  # Add GOOGLE_GENAI_API_KEY
+```
+
+### 4. Run and Observe
+
+```bash
+make demo                # See traces exported automatically
+```
+
+### 5. View in Jaeger
+
+Open [http://localhost:16686](http://localhost:16686) → Select
+`google-adk-math-agent` → Click "Find Traces"
+
+**You now have complete observability.** That's it.
+
+## The Real Challenge: TracerProvider Conflicts
+
+Here's where most developers get stuck:
+
+### ❌ This Doesn't Work (With `adk web`)
 
 ```python
-# Initialize OpenTelemetry FIRST (before any ADK imports)
-from opentelemetry.sdk.resources import Resource
+from opentelemetry.sdk.trace import TracerProvider
+from opentelemetry import trace
+
+# You manually create a provider
+provider = TracerProvider()
+# ... add your exporter ...
+trace.set_tracer_provider(provider)
+
+# Meanwhile, adk web already started and:
+# 1. Started FastAPI server
+# 2. Initialized its own TracerProvider
+# 3. Now your set_tracer_provider() call fails silently
+
+# Result: Your custom exporter never gets used ❌
+```
+
+**Why?** OpenTelemetry enforces: *"One global TracerProvider per
+process."* ADK initializes first (in `adk web` mode), so you can't
+override it. Your exporter gets ignored, and traces never reach
+Jaeger.
+
+### ✅ The Solution: Environment Variables
+
+Instead of fighting for control, **let ADK initialize everything**:
+
+```bash
+# Set these environment variables
+export OTEL_SERVICE_NAME=google-adk-math-agent
+export OTEL_EXPORTER_OTLP_ENDPOINT=http://localhost:4318
+export OTEL_EXPORTER_OTLP_PROTOCOL=http/protobuf
+
+# Now start adk web - it reads env vars and configures OTel automatically
+adk web .
+```
+
+**In your agent code**, just set the same env vars in your config:
+
+```python
+import os
+
+os.environ.setdefault("OTEL_SERVICE_NAME", "google-adk-math-agent")
+os.environ.setdefault("OTEL_EXPORTER_OTLP_ENDPOINT", "http://localhost:4318")
+os.environ.setdefault("OTEL_EXPORTER_OTLP_PROTOCOL", "http/protobuf")
+
+# ADK (v1.17.0+) reads these and configures everything
+# Your code runs on top of ADK's already-initialized provider
+# No conflicts! ✓
+```
+
+This is the **recommended approach** in ADK v1.17.0+.
+
+## Alternative: Manual Setup (For Standalone Scripts)
+
+If you're **not** using `adk web`, you have full control:
+
+```python
 from opentelemetry.sdk.trace import TracerProvider
 from opentelemetry.sdk.trace.export import BatchSpanProcessor
 from opentelemetry.exporter.otlp.proto.http.trace_exporter import OTLPSpanExporter
 from opentelemetry import trace
 
-resource = Resource(attributes={
-    "service.name": "google-adk-math-agent",
-    "service.version": "0.1.0"
-})
-
-provider = TracerProvider(resource=resource)
-processor = BatchSpanProcessor(OTLPSpanExporter(endpoint="http://localhost:4318/v1/traces"))
+# Initialize FIRST (before any ADK imports)
+provider = TracerProvider()
+processor = BatchSpanProcessor(
+    OTLPSpanExporter(endpoint="http://localhost:4318/v1/traces")
+)
 provider.add_span_processor(processor)
 trace.set_tracer_provider(provider)
 
-# Now import ADK
+# NOW import ADK (uses your provider)
 from google.adk.agents import Agent
-from google.adk.tools import FunctionTool
-
-# Define tools
-def add_numbers(a: float, b: float) -> float:
-    """Add two numbers."""
-    return a + b
-
-# Create agent with tools
-root_agent = Agent(
-    name="math_assistant",
-    model="gemini-2.5-flash",
-    description="A helpful math assistant.",
-    instruction="You are a helpful math assistant. Use tools when asked to perform calculations.",
-    tools=[FunctionTool(func=add_numbers)],
-)
+# ... rest of your agent code ...
 ```
 
-This agent will:
-- Receive the question
-- Reason → decide to call the `add_numbers` tool
-- Call the tool
-- Return the answer
+**Why this works**: You control initialization order. Provider is
+set before ADK runs.
 
-ADK automatically creates OTel spans for all these steps.
+**When to use this**: Standalone scripts, custom sampling, or
+detailed control over span processors.
 
-## Step 3: Start Jaeger (All-in-One)
+## What You Get in Jaeger
 
-The easiest way is the official Jaeger all-in-one Docker image:
+When you query `google-adk-math-agent` in Jaeger, you see:
 
-```bash
-docker run -d --name jaeger \
-  -e COLLECTOR_OTLP_ENABLED=true \
-  -p 16686:16686 \
-  -p 4317:4317 \
-  -p 4318:4318 \
-  jaegertracing/all-in-one:latest
+```text
+Invocation (root)
+├─ invoke_agent
+│  ├─ call_llm (user question)
+│  │  └─ 🕐 1.2s ← Gemini API latency
+│  ├─ execute_tool (add_numbers)
+│  │  └─ result: 579
+│  └─ call_llm (final response)
+│     └─ 🕐 0.8s
+└─ SUCCESS ✓
 ```
 
-## Step 4: Run the Agent
+Each span includes:
 
-```bash
-python math_agent.py
-```
+- **Exact timing** (microsecond precision)
+- **Tool inputs/outputs** (what arguments were passed)
+- **LLM prompts and responses** (if not redacted)
+- **Error traces** (if something failed)
 
-Expected output:
+This is invaluable for debugging:
 
-```
-Final answer: 579
-```
+- "Why did the agent pick the wrong tool?" → See the LLM reasoning
+- "Why is my system slow?" → Flame graph shows the bottleneck
+- "Did the tool actually run?" → See the span execution timing
 
-## Step 5: View Traces in Jaeger
+## Two Approaches at a Glance
 
-1. Open Jaeger UI at http://localhost:16686
-2. Select service: `google-adk-math-agent`
-3. Click "Find Traces"
-4. Click any trace to see hierarchical span details
+| Scenario | Approach | Code |
+|----------|----------|------|
+| Using `adk web` | Environment variables | `os.environ["OTEL_..."]` |
+| Standalone script | Manual setup | `trace.set_tracer_provider()` |
+| Need custom sampling | Manual setup | Control `TracerProvider` directly |
+| Local development | Either | Both work equally well |
 
-You will see spans like:
+## Common Issues
 
-- Agent planning
-- Tool selection and execution
-- LLM calls to Gemini
-- Response generation
+**Q: Traces not appearing in Jaeger?**  
+A: Check Jaeger is running (`docker ps`), and verify `OTEL_EXPORTER_OTLP_ENDPOINT=http://localhost:4318`
 
-## Bonus: Run with ADK Dev UI
+**Q: I see warnings about "Overriding TracerProvider"?**  
+A: You're using manual setup with `adk web`. Switch to environment variables instead.
 
-Instead of `InMemoryRunner`, use `adk web .` in your agent folder – it starts a nice chat UI and still exports traces to Jaeger exactly the same way.
+**Q: Can I use this in production?**  
+A: Yes. Export to Google Cloud Trace, Honeycomb, Datadog, or any
+OTLP-compatible backend by changing the endpoint.
 
-## Cleanup
+## The Real Tutorial
 
-```bash
-docker rm -f jaeger
-```
+This blog post is the high-level "why." For the complete working
+example with tests, see:
+
+📚 **[OpenTelemetry + ADK + Jaeger Tutorial](https://github.com/google/adk-python/tree/main/til_opentelemetry_jaeger_20251118)**
+
+- 42 unit tests
+- Both approaches demonstrated
+- Production-ready configuration
+- Makefile automation
+- Troubleshooting guide
 
 ## Summary
 
-- ADK has **excellent out-of-the-box OpenTelemetry instrumentation** – no manual `@trace` decorators needed.
-- To send traces anywhere (Jaeger, Tempo, Zipkin, Google Cloud Trace, Honeycomb, etc.), just configure the global `TracerProvider` with an OTLP exporter before importing ADK.
-- Works locally, in containers, Cloud Run, Vertex AI Agent Engine, or on-prem.
+✓ **ADK has excellent OTel support out of the box**  
+✓ **Use environment variables for `adk web` mode** (no conflicts)  
+✓ **Use manual setup for standalone scripts** (full control)  
+✓ **Jaeger visualizes everything: reasoning, LLM calls, tool execution**  
+✓ **Works locally and in production (change the endpoint)**  
 
-This setup turns the "black box" of AI agents into a fully observable, debuggable system – essential for production.
+The "black box" of AI agents becomes fully observable. Debug with confidence.
 
-Happy agent building! 🚀
+Happy tracing! 🔍
+
+
