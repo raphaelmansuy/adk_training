@@ -486,9 +486,13 @@ Once validated:
 ### Related Tutorials
 
 - **[Tutorial 01-35](/)** - Foundation tutorials (prerequisites)
-- **[Tutorial 02: Function Tools](/tutorial/02_function_tools_agent)** - Tool implementation patterns
-- **[Tutorial 04: Sequential Workflows](/tutorial/04_sequential_agent)** - Agent orchestration
-- **[Tutorial 30: Full-stack Integration](/tutorial/30_nextjs_adk_frontend)** - Production deployment
+- **[Tutorial 02: Function Tools](/docs/function_tools)** - Tool implementation patterns
+
+- **[Tutorial 04: Sequential Workflows](/docs/sequential_workflows)** -
+  Agent orchestration
+
+- **[Tutorial 30: Full-stack Integration](/docs/nextjs_adk_integration)** -
+  Production deployment
 
 ### Community & Support
 
