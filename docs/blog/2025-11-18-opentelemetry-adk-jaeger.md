@@ -1,6 +1,10 @@
 ---
 title: "Observing ADK Agents: OpenTelemetry Tracing with Jaeger"
-authors: [adk-team]
+authors:
+  - name: ADK Training Team
+    title: Google ADK Training
+    url: https://github.com/raphaelmansuy/adk_training
+    image_url: https://github.com/raphaelmansuy.png
 tags: [adk, opentelemetry, jaeger, observability, tracing, debugging]
 ---
 
