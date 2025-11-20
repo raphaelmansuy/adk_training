@@ -142,6 +142,49 @@ const sidebars: SidebarsConfig = {
         },
       ],
     },
+    {
+      type: 'category',
+      label: 'SEO Audit & Implementation',
+      collapsed: true,
+      description: 'Comprehensive SEO audit with 6-month implementation roadmap',
+      items: [
+        {
+          type: 'doc',
+          id: 'seo_audit/seo_audit_index',
+          label: '🎯 SEO Audit Index',
+        },
+        {
+          type: 'doc',
+          id: 'seo_audit/seo_executive_summary',
+          label: 'Executive Summary',
+        },
+        {
+          type: 'doc',
+          id: 'seo_audit/seo_detailed_findings',
+          label: 'Detailed Findings',
+        },
+        {
+          type: 'doc',
+          id: 'seo_audit/seo_implementation_guide',
+          label: 'Implementation Guide',
+        },
+        {
+          type: 'doc',
+          id: 'seo_audit/seo_phase_based_roadmap',
+          label: 'Phase-Based Roadmap',
+        },
+        {
+          type: 'doc',
+          id: 'seo_audit/seo_monitoring_dashboard',
+          label: 'Monitoring Dashboard',
+        },
+        {
+          type: 'doc',
+          id: 'seo_audit/seo_progress_tracking',
+          label: 'Progress Tracking',
+        },
+      ],
+    },
   ],
 };
 
