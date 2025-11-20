@@ -254,6 +254,100 @@ const config: Config = {
         },
       }),
     },
+
+    // FAQ Schema for rich snippets
+    {
+      tagName: 'script',
+      attributes: {
+        type: 'application/ld+json',
+      },
+      innerHTML: JSON.stringify({
+        '@context': 'https://schema.org',
+        '@type': 'FAQPage',
+        mainEntity: [
+          {
+            '@type': 'Question',
+            name: 'What is Google ADK (Agent Development Kit)?',
+            acceptedAnswer: {
+              '@type': 'Answer',
+              text: 'Google Agent Development Kit (ADK) is a comprehensive framework for building production-ready AI agents using Google Gemini models. It provides tools for agent orchestration, multi-agent systems, state management, and deployment patterns.',
+            },
+          },
+          {
+            '@type': 'Question',
+            name: 'Is Google ADK training free?',
+            acceptedAnswer: {
+              '@type': 'Answer',
+              text: 'Yes! All 34 tutorials, mental models, code examples, and production deployment guides are completely free. You can access everything without any registration or payment.',
+            },
+          },
+          {
+            '@type': 'Question',
+            name: 'What will I learn from Google ADK Training Hub?',
+            acceptedAnswer: {
+              '@type': 'Answer',
+              text: 'You will learn to build production AI agents from scratch, including multi-agent systems, agent orchestration patterns, Google Gemini integration, deployment on Cloud Run and Vertex AI, UI integration (React, Next.js, Streamlit), MCP tools, A2A protocol, and comprehensive testing strategies.',
+            },
+          },
+          {
+            '@type': 'Question',
+            name: 'Do I need prior AI experience to start?',
+            acceptedAnswer: {
+              '@type': 'Answer',
+              text: 'No prior AI experience required! The training starts from first principles with a "Hello World" agent and progressively covers advanced topics. Basic Python or JavaScript knowledge is helpful but not mandatory.',
+            },
+          },
+          {
+            '@type': 'Question',
+            name: 'How long does it take to complete the training?',
+            acceptedAnswer: {
+              '@type': 'Answer',
+              text: 'The complete training comprises 34 tutorials totaling approximately 34 hours of hands-on learning. You can go at your own pace - complete it in a week of intensive study or spread it over several weeks.',
+            },
+          },
+          {
+            '@type': 'Question',
+            name: 'Can I deploy agents to production after this training?',
+            acceptedAnswer: {
+              '@type': 'Answer',
+              text: 'Absolutely! The training includes comprehensive production deployment guides for Google Cloud Run, Vertex AI Agent Engine, and GKE. You will learn testing, monitoring, and best practices for production-grade AI agents.',
+            },
+          },
+        ],
+      }),
+    },
+
+    // Breadcrumb Schema for better navigation
+    {
+      tagName: 'script',
+      attributes: {
+        type: 'application/ld+json',
+      },
+      innerHTML: JSON.stringify({
+        '@context': 'https://schema.org',
+        '@type': 'BreadcrumbList',
+        itemListElement: [
+          {
+            '@type': 'ListItem',
+            position: 1,
+            name: 'Home',
+            item: 'https://raphaelmansuy.github.io/adk_training/',
+          },
+          {
+            '@type': 'ListItem',
+            position: 2,
+            name: 'Tutorials',
+            item: 'https://raphaelmansuy.github.io/adk_training/docs/',
+          },
+          {
+            '@type': 'ListItem',
+            position: 3,
+            name: 'Mental Models',
+            item: 'https://raphaelmansuy.github.io/adk_training/docs/overview',
+          },
+        ],
+      }),
+    },
   ],
 
   presets: [
@@ -267,6 +361,12 @@ const config: Config = {
           // Remove this to remove the "edit this page" links.
           editUrl:
             'https://github.com/raphaelmansuy/adk_training/edit/main/docs/docs/',
+          // SEO: Add canonical URLs to prevent duplicate content issues
+          // This ensures each page has a canonical tag pointing to the preferred URL
+          routeBasePath: 'docs',
+          // Show last update time and author for better SEO signals
+          showLastUpdateTime: true,
+          showLastUpdateAuthor: true,
         },
         blog: {
           showReadingTime: true,
@@ -283,6 +383,13 @@ const config: Config = {
           onInlineTags: 'warn',
           onInlineAuthors: 'ignore',
           onUntruncatedBlogPosts: 'warn',
+          // SEO: Show last update time for better freshness signals
+          showLastUpdateTime: true,
+          showLastUpdateAuthor: true,
+          // SEO: Generate proper blog post schema for rich snippets
+          // Docusaurus automatically adds BlogPosting schema to blog posts
+          blogTitle: 'Google ADK Training Blog',
+          blogDescription: 'Latest updates, tutorials, and insights about Google Agent Development Kit',
         },
         theme: {
           customCss: './src/css/custom.css',
@@ -326,7 +433,24 @@ const config: Config = {
     [
       '@docusaurus/plugin-google-gtag',
       {
-        trackingID: 'GA_MEASUREMENT_ID', // Replace with your actual GA4 measurement ID
+        /**
+         * 🔴 CRITICAL: Replace 'GA_MEASUREMENT_ID' with your actual Google Analytics 4 Measurement ID
+         * 
+         * How to get your GA4 Measurement ID:
+         * 1. Go to https://analytics.google.com
+         * 2. Create a new GA4 property (if you don't have one)
+         * 3. Property name: "Google ADK Training Hub"
+         * 4. Data stream platform: Web
+         * 5. Website URL: https://raphaelmansuy.github.io
+         * 6. Stream name: adk_training
+         * 7. Copy the Measurement ID (format: G-XXXXXXXXXX)
+         * 8. Replace 'GA_MEASUREMENT_ID' below with your actual ID
+         * 
+         * Example: trackingID: 'G-ABC123DEF4',
+         * 
+         * See implementation guide: /docs/seo_audit/seo_implementation_guide
+         */
+        trackingID: 'GA_MEASUREMENT_ID', // ⚠️ PLACEHOLDER - NOT TRACKING until you add your actual ID
         anonymizeIP: true,
       },
     ],
@@ -387,8 +511,29 @@ const config: Config = {
       { property: 'og:type', content: 'website' },
       { property: 'og:site_name', content: 'Google ADK Training Hub' },
 
-      // Google Search Console verification
-      { name: 'google-site-verification', content: 'tuQTXHERxeAB5YzYV7ZHPEFqwMYBCEBVmsYy_m-nJEU' }, // Replace with your actual verification code
+      /**
+       * 🔴 CRITICAL: Google Search Console Verification
+       * 
+       * Replace 'tuQTXHERxeAB5YzYV7ZHPEFqwMYBCEBVmsYy_m-nJEU' with your actual verification code
+       * 
+       * How to get your verification code:
+       * 1. Go to https://search.google.com/search-console
+       * 2. Click "Add property"
+       * 3. Select "URL prefix"
+       * 4. Enter: https://raphaelmansuy.github.io/adk_training/
+       * 5. Choose "HTML tag" verification method
+       * 6. Copy the content value from: <meta name="google-site-verification" content="XXXXX"/>
+       * 7. Replace the content value below with your actual code
+       * 8. Deploy your site, then click "Verify" in Search Console
+       * 
+       * After verification, you can:
+       * - Submit your sitemap: sitemap.xml
+       * - Monitor indexing status
+       * - View search performance data
+       * 
+       * See implementation guide: /docs/seo_audit/seo_implementation_guide
+       */
+      { name: 'google-site-verification', content: 'tuQTXHERxeAB5YzYV7ZHPEFqwMYBCEBVmsYy_m-nJEU' }, // ⚠️ PLACEHOLDER - Site not verified until you add your actual code
     ],
 
     // Replace with your project's social card
