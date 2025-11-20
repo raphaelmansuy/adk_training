@@ -319,7 +319,7 @@ TOTAL TIME: 6-8 hours
 - [ ] Organic sessions: 500-1,500
 - [ ] Keywords ranking: 50+
 - [ ] Backlinks: 5-10
-- [ ] Avg position: <20
+- [ ] Avg position: &lt;20
 
 ### Long-term (Month 4-6)
 - [ ] Organic sessions: 5,000+

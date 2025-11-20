@@ -72,13 +72,13 @@ We are [on track / behind / ahead] of our 6-month goals. [1-2 sentence explanati
 | Impressions | X | X | +X% | 10,000+ |
 | Clicks | X | X | +X% | 1,000+ |
 | CTR | X% | X% | +X% | 3-5% |
-| Avg Position | X | X | -X | <5 |
+| Avg Position | X | X | -X | &lt;5 |
 | **Analytics** |
 | Organic Sessions | X | X | +X% | 5,000+ |
 | Organic Users | X | X | +X% | 4,000+ |
 | Pageviews | X | X | +X% | 15,000+ |
 | Session Duration | Xm | Xm | +X% | 3+ min |
-| Bounce Rate | X% | X% | -X% | <40% |
+| Bounce Rate | X% | X% | -X% | &lt;40% |
 | Pages/Session | X | X | +X | 3+ |
 | **Rankings** |
 | Keywords Top 3 | X | X | +X | 5+ |
@@ -288,7 +288,7 @@ We are [on track / behind / ahead] of our 6-month goals. [1-2 sentence explanati
 
 ### Engagement Trends
 - **Session duration trend:** +X% (target: 3+ min)
-- **Bounce rate trend:** -X% (target: <40%)
+- **Bounce rate trend:** -X% (target: &lt;40%)
 - **Pages per session trend:** +X (target: 3+)
 - **User behavior:** [Improving / Stable / Concerning]
 

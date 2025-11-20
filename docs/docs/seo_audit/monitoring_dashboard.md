@@ -34,7 +34,7 @@ import Comments from '@site/src/components/Comments';
 - Total Clicks: Organic traffic clicks from Google
 - Total Impressions: Times your site appears in search results
 - Average CTR: Click-through rate (target: 3-5%)
-- Average Position: Where you rank (target: <5)
+- Average Position: Where you rank (target: &lt;5)
 
 **Tracking Template:**
 
@@ -45,7 +45,7 @@ Performance Overview:
 ├─ Clicks: [X] (last week: [X], +/-[X]%)
 ├─ Impressions: [X] (last week: [X], +/-[X]%)
 ├─ CTR: [X]% (target: 3-5%)
-└─ Avg Position: [X] (target: <5)
+└─ Avg Position: [X] (target: &lt;5)
 
 Top 5 Keywords:
 ├─ "google adk tutorial" [Clicks: X, Position: X]
@@ -291,16 +291,16 @@ Month: [MONTH/YEAR]
 
 Homepage Performance (Mobile):
 ├─ Performance Score: [X]/100 (target: 75+)
-├─ LCP: [X]ms (target: <2500ms)
-├─ FID/INP: [X]ms (target: <100ms)
-├─ CLS: [X] (target: <0.1)
+├─ LCP: [X]ms (target: &lt;2500ms)
+├─ FID/INP: [X]ms (target: &lt;100ms)
+├─ CLS: [X] (target: &lt;0.1)
 └─ TTFB: [X]ms
 
 Homepage Performance (Desktop):
 ├─ Performance Score: [X]/100 (target: 85+)
-├─ LCP: [X]ms (target: <2500ms)
-├─ FID/INP: [X]ms (target: <100ms)
-├─ CLS: [X] (target: <0.1)
+├─ LCP: [X]ms (target: &lt;2500ms)
+├─ FID/INP: [X]ms (target: &lt;100ms)
+├─ CLS: [X] (target: &lt;0.1)
 └─ TTFB: [X]ms
 
 Opportunities for Improvement:
@@ -462,7 +462,7 @@ Goals:
 | Organic Users | X | X | +X% | X |
 | Organic Pageviews | X | X | +X% | X |
 | Avg Session Duration | Xmin | Xmin | +X% | 3min+ |
-| Bounce Rate | X% | X% | -X% | <40% |
+| Bounce Rate | X% | X% | -X% | &lt;40% |
 | Keywords (Top 10) | X | X | +X | X |
 | Backlinks | X | X | +X | X |
 | Domain Authority | X | X | +X | X |
@@ -550,7 +550,7 @@ Goals:
 ║    Organic Sessions: 500-1,500                                ║
 ║    Keywords Top 10: 5-10                                      ║
 ║    Backlinks: 5-10                                            ║
-║    Avg Position: <20                                          ║
+║    Avg Position: &lt;20                                          ║
 ║                                                                ║
 ║  MONTH 6 (Goal):                                              ║
 ║    Organic Sessions: 5,000+ monthly                           ║
