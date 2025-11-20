@@ -155,6 +155,11 @@ const sidebars: SidebarsConfig = {
         },
         {
           type: 'doc',
+          id: 'seo_audit/seo_quick_setup',
+          label: '⚡ Quick Setup Guide',
+        },
+        {
+          type: 'doc',
           id: 'seo_audit/seo_executive_summary',
           label: 'Executive Summary',
         },

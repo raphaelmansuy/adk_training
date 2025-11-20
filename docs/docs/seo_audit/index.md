@@ -22,7 +22,7 @@ If you only have 5 minutes, do this:
 1. **Read:** [Executive Summary](./executive_summary) (3 min)
 2. **Understand:** Your site is good but missing critical configuration
 3. **Commit:** You'll fix the 5 critical items this week
-4. **Next:** Follow the checklist in [Implementation Guide](./implementation_guide)
+4. **Next:** Follow the [Quick Setup Guide](./quick_setup_guide) (30 min) to configure GA4 and Search Console
 
 ---
 
@@ -34,6 +34,7 @@ This SEO audit package contains **6 comprehensive guides** totaling 40,000+ word
 
 | File | Purpose | Read Time | For Whom |
 |------|---------|-----------|----------|
+| [**Quick Setup Guide**](./quick_setup_guide) | ⚡ Configure GA4 & Search Console NOW | 30 min | Everyone (Start here!) |
 | [**Executive Summary**](./executive_summary) | High-level overview of issues and quick wins | 10 min | Everyone |
 | [**Detailed Findings**](./detailed_findings) | Deep-dive analysis of all SEO issues | 30 min | SEO practitioners |
 | [**Implementation Guide**](./implementation_guide) | Step-by-step technical implementation | 45 min | Developers/Engineers |
