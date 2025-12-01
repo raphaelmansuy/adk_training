@@ -94,7 +94,9 @@ Always have this as a safety limit!
 ```python
 def exit_loop(tool_context: ToolContext):
     """Signal that refinement is complete."""
-    tool_context.actions.end_of_agent = True
+    # Signal to stop looping
+    tool_context.actions.escalate = True 
+    tool_context.actions.skip_summarization = True
     return {"text": "Loop exited successfully. The agent has determined the task is complete."}
 
 refiner = Agent(
