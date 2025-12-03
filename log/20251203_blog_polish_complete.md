@@ -16,7 +16,7 @@ Cleaned up and polished all 7 blog posts in the ADK Training Hub documentation.
 |------|---------|
 | `2025-11-18-opentelemetry-adk-jaeger.md` | Added slug, date, description |
 | `2025-11-07-gepa-optimization.md` | Added description, authors, removed redundant body date |
-| `2025-10-21-gemini-enterprise.md` | Already complete (no changes needed) |
+| `2025-10-21-gemini-enterprise.md` | Added description for SEO/social sharing |
 | `2025-10-17-deploy-ai-agents.md` | Already complete (no changes needed) |
 | `2025-10-14-multi-agent-pattern.md` | Added description, authors, removed redundant body date |
 | `2025-10-14-tutorial-progress-update.md` | Updated title to 35 tutorials, added description/authors, updated content |
@@ -43,10 +43,11 @@ Cleaned up and polished all 7 blog posts in the ADK Training Hub documentation.
 
 1. `/docs/blog/2025-11-18-opentelemetry-adk-jaeger.md`
 2. `/docs/blog/2025-11-07-gepa-optimization.md`
-3. `/docs/blog/2025-10-14-multi-agent-pattern.md`
-4. `/docs/blog/2025-10-14-tutorial-progress-update.md`
-5. `/docs/blog/2025-10-09-welcome-to-adk-training-hub.md`
-6. `/docs/blog/authors.yml`
+3. `/docs/blog/2025-10-21-gemini-enterprise.md`
+4. `/docs/blog/2025-10-14-multi-agent-pattern.md`
+5. `/docs/blog/2025-10-14-tutorial-progress-update.md`
+6. `/docs/blog/2025-10-09-welcome-to-adk-training-hub.md`
+7. `/docs/blog/authors.yml`
 
 ## Screenshots Captured
 
