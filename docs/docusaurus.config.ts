@@ -382,7 +382,9 @@ const config: Config = {
           // Remove this to remove the "edit this page" links.
           editUrl:
             'https://github.com/raphaelmansuy/adk_training/edit/main/',
-          authorsMapPath: 'blog/authors.yml',
+          // authorsMapPath is relative to blog content directory (blog/)
+          // Default is 'authors.yml' - file should be at blog/authors.yml
+          authorsMapPath: 'authors.yml',
           // Useful options to enforce blogging best practices
           onInlineTags: 'warn',
           onInlineAuthors: 'ignore',
