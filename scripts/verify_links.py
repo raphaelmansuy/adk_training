@@ -39,6 +39,7 @@ import time
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from pathlib import Path
 from typing import Dict, List, Tuple, Set, Optional
+import re
 from urllib.parse import urlparse
 
 try:
@@ -77,7 +78,11 @@ class LinkVerifier:
         max_workers: int = 10,
         skip_external: bool = False,
         only_external: bool = False,
-        verbose: bool = False
+        verbose: bool = False,
+        retries: int = 2,
+        backoff: float = 0.5,
+        verify_anchors: bool = True,
+        log_file: Optional[Path] = None,
     ):
         """
         Initialize the LinkVerifier.
@@ -115,6 +120,19 @@ class LinkVerifier:
         self.working_external_links: Set[str] = set()
         self.broken_external_links: Dict[str, int] = {}
 
+        # HTTP retry/backoff settings
+        self.retries = max(1, int(retries))
+        self.backoff = float(backoff)
+
+        # anchor verification
+        self.verify_anchors = bool(verify_anchors)
+
+        # optional log file to record details
+        self.log_file = Path(log_file) if log_file else None
+
+        # cache results for external URL checks to avoid duplicate requests
+        self._external_cache: Dict[str, Tuple[bool, int, str]] = {}
+
     def should_skip_link(self, href: str) -> bool:
         """
         Determine if a link should be skipped.
@@ -127,9 +145,12 @@ class LinkVerifier:
         """
         href_lower = href.lower().strip()
 
-        # Skip empty links and anchors
-        if not href_lower or href_lower == '#':
+        # Skip empty links
+        if not href_lower:
             return True
+        # If the link is the simple '#' (anchor-only): only skip if anchor verification is disabled
+        if href_lower == '#':
+            return not self.verify_anchors
 
         # Skip special protocols
         for protocol in self.SKIP_PROTOCOLS:
@@ -153,6 +174,41 @@ class LinkVerifier:
         # External links start with http/https or //
         return href_lower.startswith(('http://', 'https://', '//'))
 
+    def _normalize_anchor(self, anchor: str) -> str:
+        """Normalize anchor/id text: many headings are transformed by Docusaurus (lower, hyphen)
+
+        We do a best-effort normalization to match generated ids.
+        """
+        return re.sub(r"[^a-z0-9\-]", "", anchor.strip().lower().replace(' ', '-'))
+
+    def _is_dropdown_trigger(self, tag) -> bool:
+        """
+        Check if an anchor tag is a dropdown trigger (non-navigating link).
+        
+        Docusaurus navbar dropdowns use href="#" with aria-haspopup="true" or
+        role="button" to indicate a non-navigating dropdown trigger.
+        
+        Args:
+            tag: BeautifulSoup tag element
+            
+        Returns:
+            True if this is a dropdown trigger, False otherwise
+        """
+        href = tag.get('href', '').strip()
+        if href != '#':
+            return False
+        
+        # Check for dropdown/button attributes
+        aria_haspopup = tag.get('aria-haspopup', '').lower()
+        role = tag.get('role', '').lower()
+        
+        if aria_haspopup in ('true', 'menu', 'listbox'):
+            return True
+        if role == 'button':
+            return True
+            
+        return False
+
     def extract_links_from_file(self, html_file: Path) -> List[Tuple[str, str]]:
         """
         Extract all links from an HTML file.
@@ -169,16 +225,73 @@ class LinkVerifier:
             with open(html_file, 'r', encoding='utf-8') as f:
                 soup = BeautifulSoup(f, 'html.parser')
 
-            # Extract all anchor tags
+            # Extract all anchor tags (include anchors and hrefs)
             for tag in soup.find_all('a', href=True):
                 href = tag['href'].strip()
-                if href:
+                if href is not None:
+                    # Skip dropdown trigger links (href="#" with aria-haspopup or role="button")
+                    if self._is_dropdown_trigger(tag):
+                        self.stats['skipped_links'] = self.stats.get('skipped_links', 0) + 1
+                        continue
                     links.append((href, str(html_file)))
 
         except Exception as e:
             logger.warning(f"Error reading {html_file}: {e}")
 
         return links
+
+    def _candidate_targets_for_href(self, href: str, source_file: Path) -> List[Path]:
+        """Return candidate filesystem targets for a given href / source_file.
+
+        This tries the raw path, appending .html, index.html in dir, and common site mapping patterns.
+        """
+        candidates: List[Path] = []
+
+        path_part = href.split('#')[0]
+
+        # empty path part means anchor-only link
+        if not path_part:
+            return candidates
+
+        # Normalize base path removals (site-specific)
+        if path_part.startswith('/adk_training/'):
+            path_part = '/' + path_part[len('/adk_training/') :]
+        elif path_part.startswith('adk_training/'):
+            path_part = path_part[len('adk_training/') :]
+
+        # Absolute from build root
+        if path_part.startswith('/'):
+            candidates.append(self.build_dir / path_part.lstrip('/'))
+        else:
+            source_dir = Path(source_file).parent
+            candidates.append((source_dir / path_part).resolve())
+
+        # variations
+        # add .html
+        for base in list(candidates):
+            candidates.append(base.with_suffix('.html'))
+            if base.is_dir():
+                candidates.append(base / 'index.html')
+
+        # map /docs/<slug> -> /docs/<slug>/index.html
+        if path_part.startswith('/docs/'):
+            base = self.build_dir / path_part.lstrip('/')
+            candidates.append(base.with_suffix('.html'))
+            candidates.append(base / 'index.html')
+
+        # deduplicate while preserving order
+        seen = set()
+        uniq = []
+        for p in candidates:
+            try:
+                p = p.resolve()
+            except Exception:
+                p = Path(p)
+            if str(p) not in seen:
+                seen.add(str(p))
+                uniq.append(p)
+
+        return uniq
 
     def verify_internal_link(self, href: str, source_file: Path) -> Tuple[bool, str]:
         """
@@ -192,40 +305,44 @@ class LinkVerifier:
             Tuple of (is_working, message)
         """
         try:
-            # Extract the path part (remove anchor)
-            path_part = href.split('#')[0]
-
-            if not path_part:
-                return True, "Anchor-only link"
-
-            # Strip baseUrl prefix if present (e.g., /adk_training/)
-            # This handles Docusaurus sites deployed with a base URL
-            if path_part.startswith('/adk_training/'):
-                path_part = '/' + path_part[len('/adk_training/'):]
-            elif path_part.startswith('adk_training/'):
-                path_part = path_part[len('adk_training/'):]
-
-            # Resolve the target path
-            if path_part.startswith('/'):
-                # Absolute path from build root
-                target = self.build_dir / path_part.lstrip('/')
+            anchor = ''
+            if '#' in href:
+                parts = href.split('#', 1)
+                path_part = parts[0]
+                anchor = parts[1]
             else:
-                # Relative path
-                source_dir = Path(source_file).parent
-                target = (source_dir / path_part).resolve()
+                path_part = href
 
-            # Check if file exists
-            if target.exists() and target.is_file():
-                return True, "File exists"
+            # anchor-only links -> verify the anchor exists in the same source file
+            if path_part.strip() == '':
+                # Use the source_file itself to find anchor
+                if not anchor:
+                    return False, 'Empty anchor and no path'
+                ok, msg = self.verify_anchor_in_file(source_file, anchor)
+                return ok, msg
 
-            # Check if it's a directory with index.html
-            if target.is_dir() and (target / 'index.html').exists():
-                return True, "Directory with index.html"
+            # build a list of candidate target files
+            candidates = self._candidate_targets_for_href(href, source_file)
 
-            return False, f"File not found: {target}"
+            for target in candidates:
+                # check file exists
+                if target.exists() and target.is_file():
+                    # if anchor present, check anchor exists in file
+                    if anchor:
+                        ok, msg = self.verify_anchor_in_file(target, anchor)
+                        if ok:
+                            return True, f'File exists + anchor found in {target.name}'
+                        else:
+                            # anchor missing in this target; keep checking other candidates
+                            continue
+                    return True, f'File exists: {target}'
+
+            # if none of the candidates matched, return helpful message
+            tried = ', '.join([str(c) for c in candidates[:6]])
+            return False, f'File not found. Tried: {tried}'
 
         except Exception as e:
-            return False, f"Error resolving link: {e}"
+            return False, f'Error resolving link: {e}'
 
     def suggest_fix_for_link(self, href: str) -> Optional[str]:
         """
@@ -257,6 +374,56 @@ class LinkVerifier:
 
         return None
 
+    def verify_anchor_in_file(self, file_path: Path, anchor: str) -> Tuple[bool, str]:
+        """Verify anchor/id exists inside the given HTML file.
+
+        Will try id attribute and name anchors, plus best-effort normalized heading ids.
+        Also handles URL-encoded anchors (e.g., %EF%B8%8F for emoji).
+        """
+        try:
+            from urllib.parse import unquote
+            
+            if not file_path.exists():
+                return False, f'File not found for anchor check: {file_path}'
+
+            with open(file_path, 'r', encoding='utf-8') as f:
+                soup = BeautifulSoup(f, 'html.parser')
+
+            # Try both the original anchor and URL-decoded version
+            anchors_to_try = [anchor]
+            decoded_anchor = unquote(anchor)
+            if decoded_anchor != anchor:
+                anchors_to_try.append(decoded_anchor)
+
+            for anch in anchors_to_try:
+                # direct id match
+                if soup.find(id=anch):
+                    return True, 'Anchor id found'
+
+                # old-style name anchors
+                if soup.find('a', attrs={'name': anch}):
+                    return True, 'Named anchor found'
+
+                # check normalized anchor (headings often transform into lowercase-hyphen form)
+                norm = self._normalize_anchor(anch)
+                if soup.find(id=norm):
+                    return True, 'Normalized anchor id found'
+
+            # try to match by heading text -> generate slug id heuristically
+            norm = self._normalize_anchor(anchor)
+            headings = soup.find_all(re.compile('^h[1-6]$'))
+            for h in headings:
+                text = ' '.join(h.stripped_strings)
+                if not text:
+                    continue
+                if self._normalize_anchor(text) == norm:
+                    return True, 'Heading slug matches anchor'
+
+            return False, 'Anchor not found in file'
+
+        except Exception as e:
+            return False, f'Error verifying anchor: {e}'
+
     def verify_external_link(self, url: str) -> Tuple[bool, int, str]:
         """
         Verify that an external link is accessible.
@@ -267,8 +434,9 @@ class LinkVerifier:
         Returns:
             Tuple of (is_working, status_code, message)
         """
+        # Provide a more robust external link check: try HEAD first, on some servers
+        # HEAD is refused or returns 405 -> fallback to GET. Also support retries.
         try:
-            # Add scheme if missing
             if url.startswith('//'):
                 url = 'https:' + url
 
@@ -276,26 +444,59 @@ class LinkVerifier:
                 'User-Agent': 'Mozilla/5.0 (compatible; DocusaurusLinkVerifier/1.0)'
             }
 
-            response = requests.head(
-                url,
-                timeout=self.timeout,
-                headers=headers,
-                allow_redirects=True,
-                verify=True
-            )
+            session = requests.Session()
 
-            # Consider 2xx and 3xx status codes as working
-            is_working = response.status_code < 400
-            return is_working, response.status_code, f"HTTP {response.status_code}"
+            # retry loop (simple fixed attempts)
+            attempts = max(1, getattr(self, 'retries', 1))
+            backoff = getattr(self, 'backoff', 0.5)
+            last_status = 0
+            last_message = ''
 
-        except requests.exceptions.Timeout:
-            return False, 0, "Timeout"
-        except requests.exceptions.ConnectionError:
-            return False, 0, "Connection error"
-        except requests.exceptions.RequestException as e:
-            return False, 0, f"Request error: {str(e)[:50]}"
+            for attempt in range(1, attempts + 1):
+                try:
+                    response = session.head(
+                        url,
+                        timeout=self.timeout,
+                        headers=headers,
+                        allow_redirects=True,
+                        verify=True,
+                    )
+
+                    last_status = response.status_code
+
+                    # Many servers reject HEAD requests with 405; try GET in that case
+                    if response.status_code == 405 or response.status_code >= 400:
+                        # fallback to GET to validate the link
+                        response = session.get(
+                            url,
+                            timeout=self.timeout,
+                            headers=headers,
+                            allow_redirects=True,
+                            stream=True,
+                            verify=True,
+                        )
+                        last_status = response.status_code
+
+                    is_working = last_status < 400
+                    last_message = f'HTTP {last_status}'
+                    return is_working, last_status, last_message
+
+                except requests.exceptions.Timeout:
+                    last_message = 'Timeout'
+                except requests.exceptions.ConnectionError:
+                    last_message = 'Connection error'
+                except requests.exceptions.RequestException as e:
+                    last_message = f'Request error: {str(e)[:120]}'
+
+                # If not last attempt, wait a bit
+                if attempt < attempts:
+                    time.sleep(backoff * attempt)
+
+            # exhausted retries
+            return False, last_status or 0, last_message or 'Unknown error'
+
         except Exception as e:
-            return False, 0, f"Unexpected error: {str(e)[:50]}"
+            return False, 0, f'Unexpected error: {str(e)[:120]}'
 
     def scan_html_files(self) -> List[Path]:
         """
@@ -407,16 +608,38 @@ class LinkVerifier:
         """Verify external links concurrently."""
         unique_urls = set(url for url, _ in external_links)
 
+        # Prepare URLs to actually check (skip ones in cache)
+        urls_to_check = [u for u in unique_urls if u not in self._external_cache]
+
+        # Add cached results first
+        for url in unique_urls:
+            if url in self._external_cache:
+                is_working, status_code, message = self._external_cache[url]
+                if is_working:
+                    self.stats['working_links'] += 1
+                    self.working_external_links.add(url)
+                    logger.debug(f"✓ {url} - {message} (cached)")
+                else:
+                    self.stats['broken_links'] += 1
+                    self.broken_external_links[url] = status_code
+                    logger.warning(f"✗ {url} - {message} (cached)")
+
+        if not urls_to_check:
+            return
+
         with ThreadPoolExecutor(max_workers=self.max_workers) as executor:
             futures = {
                 executor.submit(self.verify_external_link, url): url
-                for url in unique_urls
+                for url in urls_to_check
             }
 
             for future in as_completed(futures):
                 url = futures[future]
                 try:
                     is_working, status_code, message = future.result()
+
+                    # cache result
+                    self._external_cache[url] = (is_working, status_code, message)
 
                     if is_working:
                         self.stats['working_links'] += 1
@@ -521,6 +744,30 @@ class LinkVerifier:
         except Exception as e:
             logger.error(f"Error exporting JSON report: {e}")
 
+    def export_csv(self, filepath: Path) -> None:
+        """Export broken links to a CSV file (simple table)"""
+        try:
+            import csv
+
+            cols = ['url', 'type', 'error', 'status_code', 'source', 'suggestion']
+            with open(filepath, 'w', newline='', encoding='utf-8') as f:
+                writer = csv.DictWriter(f, fieldnames=cols)
+                writer.writeheader()
+                for b in self.broken_links:
+                    row = {
+                        'url': b.get('url'),
+                        'type': b.get('type'),
+                        'error': b.get('error'),
+                        'status_code': b.get('status_code', ''),
+                        'source': b.get('source') or ','.join(b.get('sources', [])),
+                        'suggestion': b.get('suggestion', ''),
+                    }
+                    writer.writerow(row)
+
+            logger.info(f"CSV report exported to: {filepath}")
+        except Exception as e:
+            logger.error(f"Error writing CSV: {e}")
+
 
 def main():
     """Main entry point for the script."""
@@ -580,9 +827,41 @@ Examples:
     )
 
     parser.add_argument(
+        '--retries',
+        type=int,
+        default=2,
+        help='Number of retry attempts for external links (default: 2)'
+    )
+
+    parser.add_argument(
+        '--backoff',
+        type=float,
+        default=0.5,
+        help='Backoff multiplier between retries (seconds, default: 0.5)'
+    )
+
+    parser.add_argument(
+        '--no-verify-anchors',
+        action='store_true',
+        help='Do not verify anchor/id fragments (#anchor) inside pages'
+    )
+
+    parser.add_argument(
+        '--log-file',
+        type=Path,
+        help='Optional path to write a detailed log file (JSON)'
+    )
+
+    parser.add_argument(
         '--json-output',
         type=Path,
         help='Export results to JSON file'
+    )
+
+    parser.add_argument(
+        '--export-csv',
+        type=Path,
+        help='Export broken links to CSV file (path)'
     )
 
     parser.add_argument(
@@ -606,7 +885,11 @@ Examples:
         max_workers=args.workers,
         skip_external=args.skip_external,
         only_external=args.only_external,
-        verbose=args.verbose
+        verbose=args.verbose,
+        retries=args.retries,
+        backoff=args.backoff,
+        verify_anchors=(not args.no_verify_anchors),
+        log_file=args.log_file,
     )
 
     try:
@@ -621,9 +904,20 @@ Examples:
         # Add timing info
         logger.info(f"Verification completed in {elapsed_time:.2f} seconds")
 
-        # Export JSON if requested
+        # Export JSON if requested (explicit json-output)
         if args.json_output:
             verifier.export_json(args.json_output)
+
+        # Optional log file - write full JSON if requested (alias)
+        if args.log_file:
+            verifier.export_json(args.log_file)
+
+        # Export CSV of broken links if requested
+        if args.export_csv:
+            try:
+                verifier.export_csv(args.export_csv)
+            except Exception as e:
+                logger.error(f"Error writing CSV: {e}")
 
         # Return appropriate exit code
         if verifier.stats['broken_links'] > 0:

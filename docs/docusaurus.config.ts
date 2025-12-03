@@ -59,7 +59,11 @@ const config: Config = {
   organizationName: 'raphaelmansuy', // Usually your GitHub org/user name.
   projectName: 'adk_training', // Usually your repo name.
 
-  onBrokenLinks: 'ignore',
+  // Broken link handling: 'warn' shows warnings during build, 'throw' fails the build
+  // Changed from 'ignore' to 'warn' to catch broken internal doc links early
+  onBrokenLinks: 'warn',
+  onBrokenMarkdownLinks: 'warn',
+  onBrokenAnchors: 'warn',
 
   markdown: {
     mermaid: true,

@@ -1,12 +1,11 @@
 ---
 slug: gepa-optimization-tutorial
 title: "Optimize Your Google ADK Agent's SOP with GEPA: Stop Manual Tweaking"
+description: "Learn how to automatically optimize your AI agent's instructions using Genetic Evolutionary Prompt Augmentation (GEPA). Stop manual tweaking and let evolution find the perfect prompts."
+authors: [adk-team]
 tags: [gepa, prompt-optimization, genetic-algorithms, tutorial, advanced, adk]
+date: 2025-11-07
 ---
-
-# Optimize Your Google ADK Agent's SOP with GEPA: Stop Manual Tweaking
-
-Published: November 7, 2025
 
 Your agent's instructions are its Standard Operating Procedure (SOP). In Google
 ADK, this SOP lives in the agent's prompt—the detailed instructions that guide
