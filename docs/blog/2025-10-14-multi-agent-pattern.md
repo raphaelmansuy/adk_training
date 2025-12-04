@@ -1,12 +1,11 @@
 ---
 slug: multi-agent-pattern-complexity-management
 title: "The Multi-Agent Pattern: Managing Complexity Through Divide and Conquer"
+description: "Master the multi-agent pattern for managing complexity in AI systems. Learn divide-and-conquer strategies, context management, and orchestration patterns."
+authors: [raphael]
 tags: [multi-agent, architecture, complexity-management, adk, patterns]
+date: 2025-10-14
 ---
-
-# The Multi-Agent Pattern: Managing Complexity Through Divide and Conquer
-
-October 14, 2025
 
 The multi-agent pattern using specialized agents as tools isn't primarily
 about raw performance gains—it's fundamentally about managing complexity and

@@ -1,12 +1,11 @@
 ---
 slug: welcome-to-adk-training-hub
 title: Welcome to ADK Training Hub
+description: "Your comprehensive guide to mastering Google Agent Development Kit (ADK) and building production-ready AI agents. 35 tutorials, working code, and mental models."
+authors: [raphael]
 tags: [introduction, adk, training, ai, agents]
+date: 2025-10-09
 ---
-
-# Welcome to ADK Training Hub
-
-Published: October 9, 2025
 
 Welcome to the ADK Training Hub - your comprehensive guide to mastering Google Agent Development Kit (ADK) and building production-ready AI agents from first principles.
 
@@ -49,8 +48,8 @@ Connect your agents to modern web frameworks including Next.js, React, Streamlit
 
 ## Key Features
 
-- **34 Comprehensive Tutorials** with working implementations
-- **12 Completed Tutorials** featuring automated testing and production patterns
+- **35 Comprehensive Tutorials** with working implementations
+- **100% Complete** - all tutorials featuring automated testing and production patterns
 - **Mental Models Framework** for understanding ADK architecture
 - **Multi-Framework Integration** examples for various UI platforms
 - **Production Deployment** guides for cloud platforms
@@ -58,9 +57,9 @@ Connect your agents to modern web frameworks including Next.js, React, Streamlit
 
 ## Current Status
 
-Completion: 12/34 tutorials implemented (35%)
+✅ **Complete**: All 35 tutorials implemented (100%)
 
-All completed tutorials include:
+All tutorials include:
 
 - ✅ Working code implementations
 - ✅ Comprehensive test suites

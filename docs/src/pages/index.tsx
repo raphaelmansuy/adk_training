@@ -315,7 +315,7 @@ function TILSection() {
               <span className={styles.tilTag}>Open Source</span>
             </div>
             <div className={styles.tilActions}>
-              <Link className={styles.tilLink} to="/docs/til/TIL_TEMPLATE">
+              <Link className={styles.tilLink} to="/docs/til/til_template">
                 📝 TIL Template
               </Link>
               <Link 
