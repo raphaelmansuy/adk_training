@@ -1,7 +1,7 @@
 # ADK Training Hub - Quick Start Makefile
 # User-friendly commands for the entire project
 
-.PHONY: help setup docs dev test clean format-md tutorials format-md build-docs build-docs-safe build-docs-verify recover-terminal
+.PHONY: help setup docs dev test clean format-md tutorials format-md build-docs build-docs-safe build-docs-verify recover-terminal optimize-images check-images
 
 # Default target - show help
 help:
@@ -17,6 +17,10 @@ help:
 	@echo "  make build-docs-safe    - Build docs with PTY protection (use external terminal!)"
 	@echo "  make build-docs-verify  - Build docs & verify all links"
 	@echo "  make recover-terminal   - Recover from PTY disconnect crashes"
+	@echo ""
+	@echo "Blog Image Optimization:"
+	@echo "  make check-images       - Check which images exceed 5MB LinkedIn limit"
+	@echo "  make optimize-images    - Optimize all oversized blog images to <5MB"
 	@echo ""
 	@echo "Development Commands:"
 	@echo "  make test           - Run all tests across tutorials"
@@ -138,6 +142,16 @@ format-md:
 		echo "❌ Error: npx not found. Please install Node.js and run 'make setup' first."; \
 		exit 1; \
 	fi
+
+# Check blog image sizes (LinkedIn 5MB limit)
+check-images:
+	@echo "🖼️  Checking blog image sizes..."
+	cd docs && npm run check-images
+
+# Optimize blog images to under 5MB
+optimize-images:
+	@echo "🎨 Optimizing blog images for social media..."
+	cd docs && npm run optimize-images
 
 # Check environment (internal use)
 check-env:
