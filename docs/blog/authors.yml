@@ -1,16 +1,17 @@
-adk-team:
-  name: ADK Training Team
-  title: Google ADK Training
-  url: https://github.com/raphaelmansuy/adk_training
-  image_url: https://github.com/raphaelmansuy.png
-  socials:
-    github: raphaelmansuy
-
 raphael:
-  name: Raphael Mansuy
-  title: Creator & Maintainer
-  url: https://github.com/raphaelmansuy
+  name: Raphaël MANSUY
+  title: Elitizon Ltd
+  url: https://www.linkedin.com/in/raphaelmansuy/
   image_url: https://github.com/raphaelmansuy.png
   socials:
     github: raphaelmansuy
-    twitter: raphaelmansuy
+    linkedin: raphaelmansuy
+
+adk-team:
+  name: Raphaël MANSUY
+  title: Elitizon Ltd
+  url: https://www.linkedin.com/in/raphaelmansuy/
+  image_url: https://github.com/raphaelmansuy.png
+  socials:
+    github: raphaelmansuy
+    linkedin: raphaelmansuy

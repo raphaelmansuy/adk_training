@@ -1,9 +1,9 @@
 ---
 title: "Fast-track Your GenAI Agents: Deep Dive into the Google Cloud Agent Starter Pack"
 authors:
-  - name: ADK Training Team
-    title: Google ADK Training
-    url: https://github.com/raphaelmansuy/adk_training
+  - name: Raphaël MANSUY
+    title: Elitizon Ltd
+    url: https://www.linkedin.com/in/raphaelmansuy/
     image_url: https://github.com/raphaelmansuy.png
 tags: [agent-starter-pack, gcp, genai, observability, production, vertex]
 ---

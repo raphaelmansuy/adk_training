@@ -308,6 +308,8 @@ dist
 tmp/
 temp/
 
+zz_temp/
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json
