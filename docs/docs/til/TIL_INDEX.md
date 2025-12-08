@@ -242,7 +242,7 @@ Every TIL includes:
 
 ### RSS Feed
 
-Subscribe to the [ADK Training RSS Feed](/blog/rss.xml) to get notified when new TILs are published.
+Subscribe to the [ADK Training RSS Feed](pathname:///adk_training/blog/rss.xml) to get notified when new TILs are published.
 
 ### Social
 
