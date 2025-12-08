@@ -405,12 +405,12 @@ We're targeting **85% completion by November 2025**:
 
 **Today's Quick Lessons (TILs) complement the full tutorials:**
 
-- **[TIL: Pause & Resume Invocations](/docs/til/til_pause_resume_20251020)** -
+- **[TIL: Pause & Resume Invocations](/blog/til-pause-resume)** -
   Essential for Tutorial 08+ (state management and fault tolerance)
-- **[TIL: Context Compaction](/docs/til/til_context_compaction_20250119)** -
+- **[TIL: Context Compaction](/blog/til-context-compaction)** -
   Complements Tutorial 08+ (memory optimization for long conversations)
 
-**All TILs** available at the [TIL Index](/docs/til/til_index)
+**All TILs** available at the [TIL Index](/blog/tags/til)
 
 ---
 

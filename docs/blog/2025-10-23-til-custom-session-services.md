@@ -1,38 +1,22 @@
 ---
-id: til_custom_session_services_20251023
+slug: til-custom-session-services
 title: "TIL: Registering Custom Session Services in Google ADK 1.17"
 description: "Extend ADK with custom session storage (Redis, MongoDB, etc)"
-sidebar_label: "TIL: Custom Session Services (Oct 23)"
-sidebar_position: 4
+authors: [adk-team]
 tags:
-  [
-    "til",
-    "quick-learn",
-    "session-services",
-    "service-registry",
-    "adk-1.17",
-    "extensibility",
-    "storage-backends",
-  ]
-keywords:
-  [
-    "adk",
-    "session service",
-    "service registry",
-    "redis",
-    "mongodb",
-    "custom storage",
-    "backend integration",
-  ]
-status: "completed"
-difficulty: "intermediate"
-estimated_time: "8 minutes"
-publication_date: "2025-10-23"
-adk_version_minimum: "1.17"
-implementation_link: "https://github.com/raphaelmansuy/adk_training/tree/main/til_implementation/til_custom_session_services_20251023"
+  - til
+  - quick-learn
+  - custom-session-services
+  - adk
+  - storage-backends
+date: 2025-10-23
 ---
 
 import Comments from '@site/src/components/Comments';
+
+Extend ADK with custom session storage backends like Redis, MongoDB, PostgreSQL, or DynamoDB for persistent sessions that survive server restarts.
+
+<!-- truncate -->
 
 ## TIL: Custom Session Services - Extend ADK with Your Own Storage Backend
 
@@ -553,11 +537,11 @@ automatically. ✨
 
 ### Related TILs
 
-- **[TIL: Context Compaction](/docs/til/til_context_compaction_20250119)** - Optimize
+- **[TIL: Context Compaction](/blog/til-context-compaction)** - Optimize
   memory usage in long conversations (works well with persistent sessions!)
-- **[TIL: Pause and Resume Invocations](/docs/til/til_pause_resume_20251020)** -
+- **[TIL: Pause and Resume Invocations](/blog/til-pause-resume)** -
   Checkpoint agent execution state
-- **[Back to TIL Index](/docs/til/til_index)** - Browse all quick-learn guides
+- **[Back to TIL Index](/blog/tags/til)** - Browse all quick-learn guides
 
 ### Related ADK Tutorials
 

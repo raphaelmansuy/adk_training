@@ -97,6 +97,11 @@ export function SyntaxThemeSelector() {
   const [isOpen, setIsOpen] = useState(false);
 
   useEffect(() => {
+    // Only run in browser environment (not during SSR)
+    if (typeof window === 'undefined') {
+      return;
+    }
+
     // Load saved theme from localStorage
     const savedTheme = localStorage.getItem('adk-syntax-theme');
     if (savedTheme && THEMES.find(t => t.id === savedTheme)) {
@@ -110,6 +115,11 @@ export function SyntaxThemeSelector() {
   }, []);
 
   const applyTheme = (themeId: string) => {
+    // Only run in browser environment
+    if (typeof window === 'undefined' || typeof document === 'undefined') {
+      return;
+    }
+
     // Validate theme ID
     if (!THEMES.find(t => t.id === themeId)) {
       console.warn(`Invalid theme ID: ${themeId}. Using default theme.`);
@@ -133,9 +143,11 @@ export function SyntaxThemeSelector() {
       console.log('HTML classes:', document.documentElement.className);
     }
 
-    // Store preference in localStorage
+    // Store preference in localStorage (browser only)
     try {
-      localStorage.setItem('adk-syntax-theme', themeId);
+      if (typeof localStorage !== 'undefined') {
+        localStorage.setItem('adk-syntax-theme', themeId);
+      }
     } catch (error) {
       console.warn('Failed to save theme preference:', error);
     }

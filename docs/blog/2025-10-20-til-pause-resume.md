@@ -1,37 +1,22 @@
 ---
-id: til_pause_resume_20251020
+slug: til-pause-resume
 title: "TIL: Pause and Resume Invocations with Google ADK 1.16.0"
 description: "Quick guide to using Pause and Resume Invocations: checkpoint agent state and resume execution later for long-running workflows, human-in-the-loop, and fault tolerance"
-sidebar_label: "TIL: Pause & Resume (Oct 20)"
-sidebar_position: 2
+authors: [adk-team]
 tags:
-  [
-    "til",
-    "quick-learn",
-    "pause-resume",
-    "adk-1.16",
-    "state-checkpointing",
-    "fault-tolerance",
-    "human-in-loop",
-  ]
-keywords:
-  [
-    "adk",
-    "pause resume",
-    "invocation",
-    "checkpoint",
-    "state persistence",
-    "fault tolerance",
-  ]
-status: "completed"
-difficulty: "intermediate"
-estimated_time: "10 minutes"
-publication_date: "2025-10-20"
-adk_version_minimum: "1.16.0"
-implementation_link: "https://github.com/raphaelmansuy/adk_training/tree/main/til_implementation/til_pause_resume_20251020"
+  - til
+  - quick-learn
+  - pause-resume
+  - adk
+  - fault-tolerance
+date: 2025-10-20
 ---
 
 import Comments from '@site/src/components/Comments';
+
+Long-running agent tasks need to be interrupted gracefully or paused for human feedback without losing progress. System failures can interrupt execution mid-task, causing work to be lost.
+
+<!-- truncate -->
 
 ## TIL: Pause and Resume Invocations - Resilient Agent Workflows
 
@@ -645,17 +630,17 @@ This feature is essential for production agents that need reliability, human ove
 
 ### Related TILs
 
-- **[TIL: Context Compaction](til_context_compaction_20250119)** -
+- **[TIL: Context Compaction](/blog/til-context-compaction)** -
   Perfect combo! Use Pause/Resume to checkpoint at milestones, then apply
   Context Compaction to reduce token growth across resumed sessions. Essential
   for long-running workflows that span multiple invocations.
 
-- **[TIL: Evaluating Tool Use Quality](til_rubric_based_tool_use_quality_20251021)** -
+- **[TIL: Evaluating Tool Use Quality](/blog/til-tool-use-quality)** -
   After implementing pause/resume workflows, measure if your paused agents
   maintain tool quality across resumptions. Validates state restoration doesn't
   degrade agent behavior.
 
-- **[Back to TIL Index](til_index)** - Browse all quick-learn guides
+- **[Back to TIL Index](/blog/tags/til)** - Browse all quick-learn guides
 
 ### Related ADK Tutorials
 

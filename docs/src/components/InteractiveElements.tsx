@@ -120,12 +120,18 @@ export function GitHubStats() {
         error: null
       };
       
-      // Cache the results
+      // Cache the results (browser only)
       const cacheData = {
         stats: newStats,
         timestamp: Date.now()
       };
-      localStorage.setItem(CACHE_KEY, JSON.stringify(cacheData));
+      if (typeof localStorage !== 'undefined') {
+        try {
+          localStorage.setItem(CACHE_KEY, JSON.stringify(cacheData));
+        } catch (storageError) {
+          console.warn('Failed to cache GitHub stats:', storageError);
+        }
+      }
       
       setStats(newStats);
     } catch (error) {
@@ -139,6 +145,11 @@ export function GitHubStats() {
   };
 
   const getCachedStats = () => {
+    // Only access localStorage in browser environment
+    if (typeof localStorage === 'undefined') {
+      return null;
+    }
+
     try {
       const cached = localStorage.getItem(CACHE_KEY);
       if (cached) {

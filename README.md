@@ -268,14 +268,15 @@ extended user interactions.
 - **Time**: 8 minutes
 - **ADK Version**: 1.16+
 - **Implementation**: Full working code with tests
-- **Read**: [TIL: Context Compaction →](./docs/til/til_context_compaction_20250119.md)
+- **Read**: [TIL: Context Compaction →](https://raphaelmansuy.github.io/adk_training/blog/til-context-compaction)
 
 ### TIL Guidelines
 
-Want to create your own TIL? See our comprehensive guide:
+Browse all TIL articles on the blog:
 
-- [TIL Template & Guidelines →](./docs/til/TIL_TEMPLATE.md)
- - [TIL: Registering Custom Session Services (Oct 23, 2025) →](./docs/til/til_custom_session_services_20251023)
+- [All TIL Articles →](https://raphaelmansuy.github.io/adk_training/blog/tags/til)
+- [TIL: Registering Custom Session Services →](https://raphaelmansuy.github.io/adk_training/blog/til-custom-session-services)
+- [TIL: Pause & Resume →](https://raphaelmansuy.github.io/adk_training/blog/til-pause-resume)
 - **New TIL every week** - Stay current with ADK features
 - **Your submissions welcome** - Contribute your own TILs
 

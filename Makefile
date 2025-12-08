@@ -46,9 +46,9 @@ setup:
 
 # Build and serve documentation
 docs:
-	@echo "📖 Starting documentation server..."
+	@echo "📖 Building and serving documentation..."
 	@echo "🌐 Open http://localhost:3000 in your browser"
-	cd docs && npm start
+	cd docs && npm run build && npm run serve
 
 # Build docs SAFELY with PTY protection (recommended)
 build-docs-safe:

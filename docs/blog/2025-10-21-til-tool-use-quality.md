@@ -1,36 +1,22 @@
 ---
-id: til_rubric_based_tool_use_quality_20251021
+slug: til-tool-use-quality
 title: "TIL: Evaluating Tool Use Quality with Google ADK 1.16"
 description: "Quick guide to using Rubric Based Tool Use Quality Metric: evaluate how well your agents select and use tools to accomplish tasks with ADK 1.16's new evaluation framework"
-sidebar_label: "TIL: Tool Use Quality (Oct 21)"
-sidebar_position: 3
+authors: [adk-team]
 tags:
-  [
-    "til",
-    "quick-learn",
-    "evaluation",
-    "metrics",
-    "adk-1.16",
-    "tool-use",
-    "quality-assurance",
-  ]
-keywords:
-  [
-    "adk",
-    "evaluation",
-    "tool use quality",
-    "rubric based evaluation",
-    "agent assessment",
-  ]
-status: "completed"
-difficulty: "intermediate"
-estimated_time: "8 minutes"
-publication_date: "2025-10-21"
-adk_version_minimum: "1.16"
-implementation_link: "https://github.com/raphaelmansuy/adk_training/tree/main/til_implementation/til_rubric_based_tool_use_quality_20251021"
+  - til
+  - quick-learn
+  - evaluation
+  - adk
+  - tool-use-quality
+date: 2025-10-21
 ---
 
 import Comments from '@site/src/components/Comments';
+
+Your agent gets the final answer right, but did it get there the right way? Learn how to evaluate tool selection and usage quality with ADK 1.16's rubric-based evaluation framework.
+
+<!-- truncate -->
 
 ## TIL: Evaluating Tool Use Quality - Does Your Agent Pick the Right Tools?
 
@@ -695,16 +681,16 @@ Catch tool misuse before production. ✨
 
 ### Related TILs
 
-- **[TIL: Pause and Resume Invocations](til_pause_resume_20251020)** -
+- **[TIL: Pause and Resume Invocations](/blog/til-pause-resume)** -
   Use pause/resume to implement human-in-the-loop workflows that verify tool
   quality before proceeding. Perfect for evaluating agent decisions at
   checkpoints.
 
-- **[TIL: Context Compaction](til_context_compaction_20250119)** -
+- **[TIL: Context Compaction](/blog/til-context-compaction)** -
   Ensure context compaction doesn't degrade tool selection quality. Monitor
   tool use quality metrics as context becomes more compressed.
 
-- **[Back to TIL Index](til_index)** - Browse all quick-learn guides
+- **[Back to TIL Index](/blog/tags/til)** - Browse all quick-learn guides
 
 ### Related ADK Tutorials
 

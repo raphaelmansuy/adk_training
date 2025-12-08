@@ -1,35 +1,25 @@
 ---
-id: til_context_compaction_20250119
+slug: til-context-compaction
 title: "TIL: Context Compaction with Google ADK 1.16"
 description: "Quick guide to using Context Compaction: automatically summarize conversation history to reduce token usage and costs with ADK 1.16's new LLM event summarization feature"
-sidebar_label: "TIL: Context Compaction (Oct 19)"
-sidebar_position: 3
+authors: [adk-team]
 tags:
-  [
-    "til",
-    "quick-learn",
-    "context-compaction",
-    "adk-1.16",
-    "token-optimization",
-    "memory-management",
-  ]
-keywords:
-  [
-    "adk",
-    "context compaction",
-    "event summarization",
-    "token reduction",
-    "conversation memory",
-  ]
-status: "completed"
-difficulty: "intermediate"
-estimated_time: "8 minutes"
-publication_date: "2025-10-19"
-adk_version_minimum: "1.16"
-implementation_link: "https://github.com/raphaelmansuy/adk_training/tree/main/til_implementation/til_context_compaction_20250119"
+  - til
+  - quick-learn
+  - context-compaction
+  - adk
+  - token-optimization
+  - memory-management
+date: 2025-10-19
 ---
 
 import Comments from '@site/src/components/Comments';
+
+Long agent conversations accumulate thousands of tokens. After 100+ exchanges, sending the entire history to the model becomes expensive and slow. Context Compaction fixes this by intelligently summarizing old interactions.
+
+**In one sentence**: Context Compaction automatically summarizes older conversation events using an LLM, reducing token usage while preserving conversational context.
+
+<!-- truncate -->
 
 ## TIL: Context Compaction - Keep Long Conversations Token-Efficient
 
@@ -439,18 +429,18 @@ Enable it once, save money forever. ✨
 
 ### Related TILs
 
-- **[TIL: Pause and Resume Invocations](til_pause_resume_20251020)** - Perfect
+- **[TIL: Pause and Resume Invocations](/blog/til-pause-resume)** - Perfect
   combo! Combine checkpointing with context compaction for complete
   long-running workflow state management. Use Pause/Resume to checkpoint at
   milestones, then Context Compaction to manage token growth across resumed
   sessions.
 
-- **[TIL: Evaluating Tool Use Quality](til_rubric_based_tool_use_quality_20251021)** -
+- **[TIL: Evaluating Tool Use Quality](/blog/til-tool-use-quality)** -
   After optimizing token usage with context compaction, measure if your agent
   is using the right tools efficiently. Validates that your agent quality
   remains high with compacted context.
 
-- **[Back to TIL Index](til_index)** - Browse all quick-learn guides
+- **[Back to TIL Index](/blog/tags/til)** - Browse all quick-learn guides
 
 ### Related ADK Tutorials
 
