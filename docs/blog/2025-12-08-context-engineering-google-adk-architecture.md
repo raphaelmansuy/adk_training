@@ -15,7 +15,7 @@ The progression of Generative AI from novelty to enterprise cornerstone has nece
 
 The Google Gen AI Agent Development Kit (ADK) signals the arrival of **Context Engineering**—a discipline that treats context not as a mutable string buffer but as a **compiled view** over rich stateful systems.
 
-![Industrialization of Agency](./assets/context-engineering/industrialization-of-agency.png)
+![Industrialization of Agency](/img/blog/industrialization-of-agency.png)
 
 <!--truncate-->
 
@@ -33,7 +33,7 @@ The ADK fills this gap with a modular, model-agnostic, deployment-agnostic frame
 
 To master the ADK, internalize its core thesis: **context is a dynamic, engineered resource requiring active management** to prevent cognitive overload and financial waste.
 
-![Context as a System](./assets/context-engineering/context-as-system.png)
+![Context as a System](/img/blog/context-as-system.png)
 
 ### 2.1 The "Why": Solving the Context Window Dilemma
 
@@ -63,7 +63,7 @@ This modularity allows architects to "program" the context window, inserting cus
 
 The ADK Agent is a composable unit of logic defined by strict configuration contracts.
 
-![Agent Anatomy](./assets/context-engineering/agent-anatomy.png)
+![Agent Anatomy](/img/blog/agent-anatomy.png)
 
 ### 3.1 The LlmAgent: The Cognitive Core
 
@@ -164,7 +164,7 @@ These agent definitions specify *what* the system does—the cognitive capabilit
 
 We've defined agents. Now we need to understand the execution machinery that brings them to life. The distinction between Agent (structure) and Flow (execution) is one of ADK's most powerful features.
 
-![Cognitive Engine](./assets/context-engineering/cognitive-engine.png)
+![Cognitive Engine](/img/blog/cognitive-engine.png)
 
 ### 4.1 BaseLlmFlow: The Execution Loop
 
@@ -241,7 +241,7 @@ In Multi-Agent scenarios using AutoFlow, **AgentTransferProcessor** is vital:
 
 A recurring failure mode: conflating "History" (what was said) with "State" (what is true). ADK solves this by rigorously separating **Session**, **State**, and **Memory**.
 
-![State Management](./assets/context-engineering/state-management.png)
+![State Management](/img/blog/state-management.png)
 
 ### 5.1 Sessions: The Container of Interaction
 
@@ -303,7 +303,7 @@ State solves the *within-session* context problem. But what happens when the ses
 
 State provides continuity within a conversation. Memory provides continuity across conversations. The Context Window, however large, is ephemeral—it clears when a session ends. To build agents that "know" a user over months or years, ADK introduces **Memory Services**.
 
-![Memory Systems](./assets/context-engineering/memory-systems.png)
+![Memory Systems](/img/blog/memory-systems.png)
 
 ### 6.1 The Distinction: Context vs. Memory
 
@@ -341,7 +341,7 @@ We've covered how single agents remember within and across sessions. But complex
 
 Single agents have limits—bounded context windows, limited tool sets, single cognitive profiles. Complex enterprise workflows demand specialization. ADK's true power emerges in Multi-Agent Systems (MAS), providing primitives for hierarchical, decentralized, or swarm-based agent networks.
 
-![Multi-Agent Systems](./assets/context-engineering/multi-agent-systems.png)
+![Multi-Agent Systems](/img/blog/multi-agent-systems.png)
 
 ### 7.1 The Delegation Mechanism
 
@@ -398,7 +398,7 @@ Multi-agent coordination handles task delegation. But what happens when agents n
 
 Tools handle function calls and API interactions. But agents do not live in text-only worlds. They must process PDFs, images, spreadsheets, and audio. ADK manages these via the **Artifact Subsystem**.
 
-![Artifact Subsystem](./assets/context-engineering/artifact-subsystem.png)
+![Artifact Subsystem](/img/blog/artifact-subsystem.png)
 
 ### 8.1 The Artifact Pattern
 
@@ -442,7 +442,7 @@ async def load_artifact(context: CallbackContext, artifact_name: str):
 
 Tools are the agent's hands. In ADK, creating a tool is Pythonically simple, but the underlying machinery is sophisticated.
 
-![Tooling Bridge](./assets/context-engineering/tooling-bridge.png)
+![Tooling Bridge](/img/blog/tooling-bridge.png)
 
 ### 9.1 Definition by Inspection
 
@@ -496,7 +496,7 @@ For sensitive actions (e.g., "Refund User", "Delete Database"), autonomy is a ri
 
 Architecture and capabilities mean nothing if the system cannot run reliably in production. Transitioning from prototype to production requires attention to environment constraints and observability infrastructure.
 
-![Observability and Production](./assets/context-engineering/observability-production.png)
+![Observability and Production](/img/blog/observability-production.png)
 
 ### 10.1 Environment Constraints
 
@@ -656,7 +656,7 @@ This multi-layer observability strategy ensures you can debug individual request
 
 ## 11. Conclusion: The Era of Engineered Agency
 
-![Era of Engineered Agency](./assets/context-engineering/engineered-agency-era.png)
+![Era of Engineered Agency](/img/blog/engineered-agency-era.png)
 
 We began with context engineering as a paradigm shift. We've journeyed through agent anatomy, execution flows, state management, memory systems, multi-agent coordination, tools, artifacts, and observability. The Google Gen AI Agent Development Kit represents a definitive step toward AI industrialization. It moves the field from the "scripting" mentality—where agents are fragile, opaque, and stateless—toward a "systems engineering" mentality.
 
