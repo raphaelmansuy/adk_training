@@ -3,9 +3,9 @@ slug: opentelemetry-adk-jaeger
 title: "Observing ADK Agents: OpenTelemetry Tracing with Jaeger"
 description: "Learn how to add distributed tracing to your Google ADK agents using OpenTelemetry and Jaeger. Visualize every step from reasoning to tool execution."
 authors:
-  - name: ADK Training Team
-    title: Google ADK Training
-    url: https://github.com/raphaelmansuy/adk_training
+  - name: Raphaël MANSUY
+    title: Elitizon Ltd
+    url: https://www.linkedin.com/in/raphaelmansuy/
     image_url: https://github.com/raphaelmansuy.png
 tags: [adk, opentelemetry, jaeger, observability, tracing, debugging]
 date: 2025-11-18

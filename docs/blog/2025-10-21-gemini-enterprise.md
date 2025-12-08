@@ -3,9 +3,9 @@ slug: gemini-enterprise-vs-agent-engine
 title: "Gemini Enterprise: Why Your AI Agents Need Enterprise-Grade Capabilities"
 description: "Understand the difference between Gemini Enterprise and standard AI APIs. Learn about data sovereignty, compliance, and when to choose enterprise-grade AI for your production agents."
 authors:
-  - name: Raphael Mansuy
-    title: Creator & Maintainer
-    url: https://github.com/raphaelmansuy
+  - name: Raphaël MANSUY
+    title: Elitizon Ltd
+    url: https://www.linkedin.com/in/raphaelmansuy/
     image_url: https://github.com/raphaelmansuy.png
 tags:
   - gemini

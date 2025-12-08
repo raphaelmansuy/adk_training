@@ -1,6 +1,6 @@
 ---
 slug: tutorial-progress-october-2025
-title: "Google ADK Training Hub: 35 Tutorials Complete - Your Path to Production AI Agents"
+title: "Elitizon Ltd Training Hub: 35 Tutorials Complete - Your Path to Production AI Agents"
 description: "Major milestone: All 35 tutorials are now complete with working implementations. From first agent to production deployment, everything you need is ready."
 authors: [adk-team]
 tags: [progress-update, tutorials, adk, milestone]

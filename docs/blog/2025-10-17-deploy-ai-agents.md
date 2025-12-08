@@ -4,9 +4,9 @@ title: "Deploy Your AI Agent in 5 Minutes (Seriously)"
 description: "The complete guide to choosing and deploying AI agents. Includes decision framework, cost breakdown, and real-world scenarios. Simple enough for startups, powerful enough for enterprises."
 tags: [deployment, adk, cloud-run, agent-engine, production, architecture]
 authors:
-  - name: ADK Training Team
-    title: Google ADK Training
-    url: https://github.com/raphaelmansuy/adk_training
+  - name: Raphaël MANSUY
+    title: Elitizon Ltd
+    url: https://www.linkedin.com/in/raphaelmansuy/
     image_url: https://github.com/raphaelmansuy.png
 date: 2025-10-17
 image: /img/blog-deploy-agents-hero.svg
