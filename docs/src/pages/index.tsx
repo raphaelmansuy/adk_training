@@ -288,8 +288,8 @@ function TILSection() {
               <span className={styles.tilTag}>intermediate</span>
             </div>
             <div className={styles.tilActions}>
-              <Link className={styles.tilLink} to="/docs/til/til_context_compaction_20250119">
-                📖 Read Article
+              <Link className={styles.tilLink} to="/blog/til-context-compaction">
+                📝 Read Article
               </Link>
               <Link 
                 className={styles.tilCodeLink} 
@@ -315,8 +315,8 @@ function TILSection() {
               <span className={styles.tilTag}>Open Source</span>
             </div>
             <div className={styles.tilActions}>
-              <Link className={styles.tilLink} to="/docs/til/til_template">
-                📝 TIL Template
+              <Link className={styles.tilLink} to="/blog/tags/til">
+                📝 Browse TILs
               </Link>
               <Link 
                 className={styles.tilCodeLink}
@@ -331,7 +331,7 @@ function TILSection() {
         </div>
         <div className={styles.tilFooter}>
           <p>🎯 Each TIL includes a complete working implementation with tests</p>
-          <Link className={styles.tilViewAll} to="/docs/til/til_index">
+          <Link className={styles.tilViewAll} to="/blog/tags/til">
             View All TIL Articles →
           </Link>
         </div>

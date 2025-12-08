@@ -104,44 +104,6 @@ const sidebars: SidebarsConfig = {
         'file_search_policy_navigator',
       ],
     },
-    {
-      type: 'category',
-      label: 'Today I Learn (TIL)',
-      collapsed: true,
-      description: 'Quick daily learning pieces on specific ADK features',
-      items: [
-        {
-          type: 'doc',
-          id: 'til/til_index',
-          label: '🎯 TIL Index',
-        },
-        {
-          type: 'doc',
-          id: 'til/til_custom_session_services_20251023',
-          label: 'TIL: Custom Session Services (Oct 23)',
-        },
-        {
-          type: 'doc',
-          id: 'til/til_rubric_based_tool_use_quality_20251021',
-          label: 'TIL: Tool Use Quality (Oct 21)',
-        },
-        {
-          type: 'doc',
-          id: 'til/til_pause_resume_20251020',
-          label: 'TIL: Pause & Resume (Oct 20)',
-        },
-        {
-          type: 'doc',
-          id: 'til/til_context_compaction_20250119',
-          label: 'TIL: Context Compaction (Oct 19)',
-        },
-        {
-          type: 'doc',
-          id: 'til/til_template',
-          label: '📋 TIL Guidelines & Template',
-        },
-      ],
-    },
 
   ],
 };

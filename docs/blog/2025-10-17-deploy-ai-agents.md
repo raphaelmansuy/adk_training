@@ -491,9 +491,9 @@ Now go deploy that agent. The world is waiting.
 
 **Optimize Your Deployment with TILs:**
 
-- **[TIL: Pause & Resume Invocations](/docs/til/til_pause_resume_20251020)** -
+- **[TIL: Pause & Resume Invocations](/blog/til-pause-resume)** -
   Build resilient, fault-tolerant workflows
-- **[TIL: Context Compaction](/docs/til/til_context_compaction_20250119)** -
+- **[TIL: Context Compaction](/blog/til-context-compaction)** -
   Reduce costs in long-running production agents
 
 **Related Tutorials:**

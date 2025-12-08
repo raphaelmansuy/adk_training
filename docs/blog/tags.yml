@@ -1,0 +1,237 @@
+# Blog Tags Configuration
+# Define tags with rich descriptions for better categorization
+
+til:
+  label: 'Today I Learn (TIL)'
+  permalink: '/til'
+  description: 'Quick, focused 5-10 minute guides on specific Google ADK features. Each TIL teaches one concept with working code examples and practical implementation.'
+
+tutorial:
+  label: 'Tutorial'
+  permalink: '/tutorial'
+  description: 'Comprehensive step-by-step guides for building with Google ADK.'
+
+tutorials:
+  label: 'Tutorials'
+  permalink: '/tutorials'
+  description: 'Comprehensive step-by-step guides for building with Google ADK.'
+
+advanced:
+  label: 'Advanced'
+  permalink: '/advanced'
+  description: 'Advanced patterns, optimization techniques, and production-ready implementations for experienced developers.'
+
+gepa:
+  label: 'GEPA'
+  permalink: '/gepa'
+  description: 'Genetic Evolutionary Prompt Augmentation - automated prompt optimization for AI agents.'
+
+prompt-optimization:
+  label: 'Prompt Optimization'
+  permalink: '/prompt-optimization'
+  description: 'Techniques and strategies for optimizing AI agent prompts and instructions.'
+
+genetic-algorithms:
+  label: 'Genetic Algorithms'
+  permalink: '/genetic-algorithms'
+  description: 'Using evolutionary algorithms to optimize AI agent behavior and prompts.'
+
+adk:
+  label: 'Google ADK'
+  permalink: '/adk'
+  description: 'Articles related to Google Agent Development Kit (ADK) features and capabilities.'
+
+context-compaction:
+  label: 'Context Compaction'
+  permalink: '/context-compaction'
+  description: 'Automatically summarize conversation history to reduce token usage and costs.'
+
+token-optimization:
+  label: 'Token Optimization'
+  permalink: '/token-optimization'
+  description: 'Strategies for reducing token consumption and API costs in AI applications.'
+
+memory-management:
+  label: 'Memory Management'
+  permalink: '/memory-management'
+  description: 'Managing conversation state, history, and agent memory effectively.'
+
+pause-resume:
+  label: 'Pause & Resume'
+  permalink: '/pause-resume'
+  description: 'Pause long-running agent invocations and resume them later with full context.'
+
+tool-use-quality:
+  label: 'Tool Use Quality'
+  permalink: '/tool-use-quality'
+  description: 'Evaluating and improving AI agent tool calling accuracy and effectiveness.'
+
+custom-session-services:
+  label: 'Custom Session Services'
+  permalink: '/custom-session-services'
+  description: 'Extending ADK with custom session storage backends for persistence and scalability.'
+
+quick-learn:
+  label: 'Quick Learn'
+  permalink: '/quick-learn'
+  description: '5-10 minute focused learning articles on specific topics.'
+
+agent-architecture:
+  label: 'Agent Architecture'
+  permalink: '/agent-architecture'
+  description: 'Design patterns and architectural approaches for building AI agent systems.'
+
+multi-agent:
+  label: 'Multi-Agent Systems'
+  permalink: '/multi-agent'
+  description: 'Building systems with multiple cooperating AI agents.'
+
+deployment:
+  label: 'Deployment'
+  permalink: '/deployment'
+  description: 'Deploying AI agents to production environments.'
+
+observability:
+  label: 'Observability'
+  permalink: '/observability'
+  description: 'Monitoring, logging, and debugging AI agent systems.'
+
+opentelemetry:
+  label: 'OpenTelemetry'
+  permalink: '/opentelemetry'
+  description: 'Using OpenTelemetry for distributed tracing and observability in AI agents.'
+
+jaeger:
+  label: 'Jaeger'
+  permalink: '/jaeger'
+  description: 'Jaeger distributed tracing for AI agent systems.'
+
+introduction:
+  label: 'Introduction'
+  permalink: '/introduction'
+  description: 'Introductory content and getting started guides.'
+
+training:
+  label: 'Training'
+  permalink: '/training'
+  description: 'Training materials and learning resources.'
+
+ai:
+  label: 'AI'
+  permalink: '/ai'
+  description: 'Artificial intelligence concepts and applications.'
+
+agents:
+  label: 'Agents'
+  permalink: '/agents'
+  description: 'AI agent systems and architectures.'
+
+cloud-run:
+  label: 'Cloud Run'
+  permalink: '/cloud-run'
+  description: 'Google Cloud Run serverless deployment platform.'
+
+agent-engine:
+  label: 'Agent Engine'
+  permalink: '/agent-engine'
+  description: 'Vertex AI Agent Engine for managed agent deployment.'
+
+production:
+  label: 'Production'
+  permalink: '/production'
+  description: 'Production deployment strategies and best practices.'
+
+architecture:
+  label: 'Architecture'
+  permalink: '/architecture'
+  description: 'System architecture patterns and design.'
+
+progress-update:
+  label: 'Progress Update'
+  permalink: '/progress-update'
+  description: 'Project progress updates and milestones.'
+
+milestone:
+  label: 'Milestone'
+  permalink: '/milestone'
+  description: 'Project milestones and achievements.'
+
+complexity-management:
+  label: 'Complexity Management'
+  permalink: '/complexity-management'
+  description: 'Managing complexity in agent systems.'
+
+patterns:
+  label: 'Patterns'
+  permalink: '/patterns'
+  description: 'Design patterns and best practices.'
+
+fault-tolerance:
+  label: 'Fault Tolerance'
+  permalink: '/fault-tolerance'
+  description: 'Building resilient and fault-tolerant systems.'
+
+evaluation:
+  label: 'Evaluation'
+  permalink: '/evaluation'
+  description: 'Agent evaluation and quality metrics.'
+
+storage-backends:
+  label: 'Storage Backends'
+  permalink: '/storage-backends'
+  description: 'Database and storage backend integrations.'
+
+gemini:
+  label: 'Gemini'
+  permalink: '/gemini'
+  description: 'Google Gemini models and APIs.'
+
+enterprise:
+  label: 'Enterprise'
+  permalink: '/enterprise'
+  description: 'Enterprise-grade solutions and features.'
+
+ai-agents:
+  label: 'AI Agents'
+  permalink: '/ai-agents'
+  description: 'AI agent development and deployment.'
+
+tracing:
+  label: 'Tracing'
+  permalink: '/tracing'
+  description: 'Distributed tracing and observability.'
+
+debugging:
+  label: 'Debugging'
+  permalink: '/debugging'
+  description: 'Debugging techniques and tools.'
+
+agent-starter-pack:
+  label: 'Agent Starter Pack'
+  permalink: '/agent-starter-pack'
+  description: 'Quick start templates and boilerplate code.'
+
+gcp:
+  label: 'Google Cloud Platform'
+  permalink: '/gcp'
+  description: 'Google Cloud Platform services and integration.'
+
+genai:
+  label: 'Generative AI'
+  permalink: '/genai'
+  description: 'Generative AI technologies and applications.'
+
+vertex:
+  label: 'Vertex AI'
+  permalink: '/vertex'
+  description: 'Google Vertex AI platform and services.'
+
+context-engineering:
+  label: 'Context Engineering'
+  permalink: '/context-engineering'
+  description: 'Engineering context for better agent performance.'
+
+state-management:
+  label: 'State Management'
+  permalink: '/state-management'
+  description: 'Managing agent state and conversation context.'

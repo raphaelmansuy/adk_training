@@ -1167,9 +1167,9 @@ costs.
 
 **Related TILs for Implementation:**
 
-- **[TIL: Pause & Resume Invocations](/docs/til/til_pause_resume_20251020)** -
+- **[TIL: Pause & Resume Invocations](/blog/til-pause-resume)** -
   Implement state management in multi-agent handoffs
-- **[TIL: Context Compaction](/docs/til/til_context_compaction_20250119)** -
+- **[TIL: Context Compaction](/blog/til-context-compaction)** -
   Manage token costs across orchestrator + sub-agent communication
 
 **Related Tutorials:**

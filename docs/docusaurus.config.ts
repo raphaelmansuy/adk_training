@@ -62,11 +62,13 @@ const config: Config = {
   // Broken link handling: 'warn' shows warnings during build, 'throw' fails the build
   // Changed from 'ignore' to 'warn' to catch broken internal doc links early
   onBrokenLinks: 'warn',
-  onBrokenMarkdownLinks: 'warn',
   onBrokenAnchors: 'warn',
 
   markdown: {
     mermaid: true,
+    hooks: {
+      onBrokenMarkdownLinks: 'warn',
+    },
   },
 
   // Even if you don't use internationalization, you can use this field to set
@@ -479,6 +481,38 @@ const config: Config = {
         // Plugin to handle custom og:image dimensions for blog posts
       },
     ],
+    [
+      '@docusaurus/plugin-client-redirects',
+      {
+        redirects: [
+          // Redirect old TIL doc URLs to new blog URLs
+          {
+            from: '/docs/til/til_index',
+            to: '/blog/tags/til',
+          },
+          {
+            from: '/docs/til/til_context_compaction_20250119',
+            to: '/blog/til-context-compaction',
+          },
+          {
+            from: '/docs/til/til_pause_resume_20251020',
+            to: '/blog/til-pause-resume',
+          },
+          {
+            from: '/docs/til/til_rubric_based_tool_use_quality_20251021',
+            to: '/blog/til-tool-use-quality',
+          },
+          {
+            from: '/docs/til/til_custom_session_services_20251023',
+            to: '/blog/til-custom-session-services',
+          },
+          {
+            from: '/docs/til/til_template',
+            to: '/blog/tags/til',
+          },
+        ],
+      },
+    ],
     // TODO: Re-enable PWA plugin after creating custom PwaReloadPopup theme component
     // [
     //   '@docusaurus/plugin-pwa',
@@ -572,26 +606,9 @@ const config: Config = {
           position: 'left',
         },
         {
-          type: 'dropdown',
-          label: '📚 Today I Learn',
+          to: '/blog/tags/til',
+          label: '📚 TIL',
           position: 'left',
-          items: [
-            {
-              label: 'TIL Index',
-              to: '/docs/til/til_index',
-              description: 'Browse all TIL articles',
-            },
-            {
-              label: 'Context Compaction (Oct 19)',
-              to: '/docs/til/til_context_compaction_20250119',
-              description: 'Reduce token usage in long conversations',
-            },
-            {
-              label: 'TIL Guidelines',
-              to: '/docs/til/til_template',
-              description: 'How to create TIL articles',
-            },
-          ],
         },
         {to: '/blog', label: 'Blog', position: 'left'},
         {
