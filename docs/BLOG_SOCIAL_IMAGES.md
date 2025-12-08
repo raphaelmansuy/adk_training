@@ -96,14 +96,20 @@ When the blog post is built, the resulting HTML includes:
 
 ```html
 <meta property="og:image" content="https://raphaelmansuy.github.io/adk_training/img/blog/context-engineering-social-card.png">
+<meta property="og:image:secure_url" content="https://raphaelmansuy.github.io/adk_training/img/blog/context-engineering-social-card.png">
 <meta property="og:image:width" content="2816">
 <meta property="og:image:height" content="1536">
+<meta property="og:image:type" content="image/png">
+<meta property="og:image:alt" content="...">
 <meta name="twitter:image" content="https://raphaelmansuy.github.io/adk_training/img/blog/context-engineering-social-card.png">
 ```
 
 This tells social platforms:
 - Which image to display
 - The exact dimensions for proper aspect ratio
+- HTTPS secure URL (required by LinkedIn)
+- Image MIME type (image/png or image/jpeg)
+- Alt text for accessibility
 - No distortion or incorrect scaling
 
 ## Social Media Platform Guidelines
@@ -113,11 +119,13 @@ This tells social platforms:
 - **Recommended**: 1200x630 (16:10 ratio) or 2:1 ratio
 - **Supported**: Any aspect ratio, but 1.91:1 to 4:5 works best
 - **Our setup**: 2816x1536 (1.833:1) works well on LinkedIn
-- **Caching**: LinkedIn caches preview images. To update:
+- **Required tags**: `og:image`, `og:image:secure_url`, `og:image:width`, `og:image:height`, `og:image:type`
+- **Caching**: LinkedIn aggressively caches preview images. To update:
   1. Use the [LinkedIn Post Inspector](https://www.linkedin.com/post-inspector/inspect/)
   2. Paste your URL
-  3. Click "Inspect"
-  4. Clear cache by modifying the URL query parameter
+  3. Click "Inspect" (may need to click multiple times)
+  4. Alternative: Add query parameter `?v=1` to force new cache entry
+  5. See [LINKEDIN_CACHE_CLEAR.md](./LINKEDIN_CACHE_CLEAR.md) for detailed guide
 
 ### Twitter/X
 
