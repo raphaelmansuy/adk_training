@@ -8,6 +8,8 @@ authors:
     image_url: https://github.com/raphaelmansuy.png
 tags: [adk, context-engineering, architecture, production, multi-agent, observability, state-management]
 image: /img/blog/context-engineering-social-card.png
+image_width: 2816
+image_height: 1536
 keywords: [google adk, context engineering, ai agents, production ai, multi-agent systems, state management, observability, agent architecture, gemini, vertex ai]
 ---
 

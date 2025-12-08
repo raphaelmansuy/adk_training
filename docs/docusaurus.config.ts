@@ -473,6 +473,12 @@ const config: Config = {
         language: ['en'],
       },
     ],
+    [
+      require.resolve('./plugins/docusaurus-plugin-og-image-dimensions.js'),
+      {
+        // Plugin to handle custom og:image dimensions for blog posts
+      },
+    ],
     // TODO: Re-enable PWA plugin after creating custom PwaReloadPopup theme component
     // [
     //   '@docusaurus/plugin-pwa',
