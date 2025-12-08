@@ -208,7 +208,8 @@ __marimo__/
 .streamlit/secrets.toml
 
 # Logs
-logs
+log/
+logs/
 *.log
 npm-debug.log*
 yarn-debug.log*
