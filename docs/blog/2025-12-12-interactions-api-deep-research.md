@@ -26,7 +26,7 @@ The AI development landscape is shifting from stateless request-response pattern
 
 <!-- truncate -->
 
-![Interactions API Overview](./assets/interraction/interraction.png)
+![Interactions API Overview](/img/blog/interraction.png)
 
 ## Why the Interactions API Matters
 
