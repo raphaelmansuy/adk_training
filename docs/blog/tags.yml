@@ -235,3 +235,28 @@ state-management:
   label: 'State Management'
   permalink: '/state-management'
   description: 'Managing agent state and conversation context.'
+
+interactions-api:
+  label: 'Interactions API'
+  permalink: '/interactions-api'
+  description: 'Google Gemini Interactions API for stateful conversations and agent execution.'
+
+deep-research:
+  label: 'Deep Research'
+  permalink: '/deep-research'
+  description: 'Gemini Deep Research Agent for autonomous multi-step research tasks.'
+
+background-execution:
+  label: 'Background Execution'
+  permalink: '/background-execution'
+  description: 'Running long-running AI tasks asynchronously in the background.'
+
+mcp:
+  label: 'MCP'
+  permalink: '/mcp'
+  description: 'Model Context Protocol for tool integration and interoperability.'
+
+function-calling:
+  label: 'Function Calling'
+  permalink: '/function-calling'
+  description: 'AI model function calling and tool use capabilities.'

@@ -1,0 +1,24 @@
+[build-system]
+requires = ["setuptools>=65.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "interactions_api_basic"
+version = "0.1.0"
+description = "Basic examples of Google Gemini Interactions API - stateful conversations, streaming, and function calling"
+requires-python = ">=3.10"
+dependencies = [
+    "google-genai>=1.55.0",
+    "python-dotenv>=1.0.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=7.0.0",
+    "pytest-cov>=4.0.0",
+    "pytest-asyncio>=0.21.0",
+]
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["interactions_basic_agent*"]
