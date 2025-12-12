@@ -28,6 +28,7 @@ The AI development landscape is shifting from stateless request-response pattern
 
 ![Interactions API Overview](/img/blog/interraction_og.png)
 
+
 ## Why the Interactions API Matters
 
 ### The Evolution from generateContent to Interactions
