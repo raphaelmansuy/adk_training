@@ -12,6 +12,8 @@ tags:
   - tutorial
   - genai
 date: 2025-12-12
+image: /img/blog/interraction.png
+image_alt: "Interactions API overview diagram"
 ---
 
 import Comments from '@site/src/components/Comments';
