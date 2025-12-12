@@ -12,6 +12,8 @@ tags:
   - tutorial
   - genai
 date: 2025-12-12
+image: /img/blog/interraction_og.png
+image_alt: "Interactions API overview diagram"
 ---
 
 import Comments from '@site/src/components/Comments';
@@ -24,7 +26,8 @@ The AI development landscape is shifting from stateless request-response pattern
 
 <!-- truncate -->
 
-![Interactions API Overview](./assets/interraction/interraction.png)
+![Interactions API Overview](/img/blog/interraction_og.png)
+
 
 ## Why the Interactions API Matters
 
