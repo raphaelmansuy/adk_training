@@ -310,6 +310,9 @@ temp/
 
 zz_temp/
 
+# Ignore spec directory (removed from repo history)
+spec/
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json
